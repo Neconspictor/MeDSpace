@@ -1,0 +1,14 @@
+\begin{thebibliography}{1}
+
+\bibitem{keyToBibEntry}
+M.~D\"{o}ller, R.~Tous, M.~Gruhne, K.~Yoon, M.~Sano, and I.~S. Burnett, ``{The
+  MPEG Query Format: On the way to unify the access to Multimedia Retrieval
+  Systems},'' {\em IEEE Multimedia}, vol.~15, no.~4, pp.~82--95, 2008.
+
+\bibitem{w3c_example}
+W.~Lee, T.~B{\"u}rger, F.~Sasaki, V.~Malais{\'e}, F.~Stegmaier, and
+  J.~S{\"o}derberg, ``{Ontology for Media Resource 1.0}.'' W3C Working Draft,
+  2009.
+\newblock \url{http://www.w3.org/TR/mediaont-10/}.
+
+\end{thebibliography}

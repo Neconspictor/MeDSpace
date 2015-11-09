@@ -2,3 +2,5 @@ Fragen:
 
 Direct mapping from relational databases ro RDF
 R2RML - Für was wird es gebraucht?
+
+DebugIt - Daten sind homogen oder heterogen? (Daten werden homogenisiert...) 'represented homogeneously via ontologies'
