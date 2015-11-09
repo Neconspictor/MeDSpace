@@ -1,0 +1,4 @@
+Fragen:
+
+Direct mapping from relational databases ro RDF
+R2RML - Für was wird es gebraucht?
