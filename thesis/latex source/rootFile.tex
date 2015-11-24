@@ -1,6 +1,6 @@
 \documentclass[a4paper,12pt,titlepage, twoside, openright, cleardoubleempty]{scrreprt} %page-size, letter-size, with title, is an article
 
-\usepackage[ngerman]{babel} %all inserted strings will be german
+\usepackage[ngerman, english]{babel} %all inserted strings will be german
 \usepackage{a4wide} %for better viewing of a4 pages
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -22,6 +22,8 @@
 \usepackage{listings}
 
 \usepackage[vlined,boxed]{algorithm2e}
+
+\usepackage[normalem]{ulem}
 
 \lstset{basicstyle=\ttfamily,breaklines=true}
 
@@ -112,9 +114,11 @@ citecolor   = {cyan}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Titelseite
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\selectlanguage{ngerman}
 \include{titlepage}
 
 \pagestyle{fancy}
+\selectlanguage{english}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Kurzfassung (wenn möglich auf Englisch, ansonsten Deutsch)
@@ -132,7 +136,7 @@ citecolor   = {cyan}
 %%% Tabellenverzeichnis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \listoftables
-\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+\addcontentsline{toc}{chapter}{List of Tables}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Abbildungsverzeichnis
@@ -155,7 +159,12 @@ citecolor   = {cyan}
 %%%     - oder den ganzen Text einfach reinschreiben (unübersichtlich)
 %%% Wie es gemacht wird spielt fürr den eigentlichen Output keine Rolle.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\include{intro}
+%\include{intro/intro}
+
+%\include{summaries/summaries}
+\include{summaries/TowardsAModelToDataspaces_NDJAFA}
+\include{summaries/DatabasesToDataspacesANewAbstractionForInformationManagement}
+\include{summaries/PrinciplesOfDataspaceSystems}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibtex-Tool: http://jabref.sourceforge.net/
@@ -164,6 +173,8 @@ citecolor   = {cyan}
 \bibliography{bib.bib}
 \addcontentsline{toc}{chapter}{\bibname}
 
+
+\selectlanguage{ngerman}
 \include{assertion}
 
 \end{document}

@@ -1,0 +1,29 @@
+Data integration einleitung, was ist das?
+
+was für Datenbanken sind das? Was für Informationen gibt es da?  Patientendaten, Medikamente, 
+
+Lexical Normalization, Syntactic Normalization -> was ist das?
+
+
+Man hat Daten: 1. Erst die Syntax
+
+Local Wrapper -> was macht er? Was muss man machen? macht Übersetzung von lokaler zu globaler Sprache; was kann er machen? Anfrage von global zu lokal und umgekehert
+
+Wie sehen die Datenbanken aus?
+
+D2R-Mapping bereits implementiert, kann verwendet werden
+
+Zitieren, dass DebugIt über Datenintegration über Ontologie 
+
+Tabelle machen mit Papers über verschiedene Ansätze 
+
+
+Ordnen! Papers immer darüber betrachten, was für Implementierung, was für Schriftliche Arbeit
+
+Was ist Ziel meiner Arbeit? Grundbegriffe von Datenintegration erklären (Buch!)
+
+
+Stichwortsuche, Paper schicken, drüber reden noch einmal
+
+
+Wens man nichts in den Papers findet, Leute anschreiben

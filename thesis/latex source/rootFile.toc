@@ -1,0 +1,11 @@
+\select@language {english}
+\select@language {ngerman}
+\select@language {english}
+\contentsline {chapter}{List of Tables}{vii}{chapter*.3}
+\contentsline {chapter}{List of Figures}{ix}{chapter*.4}
+\contentsline {chapter}{\numberline {1}Summaries of read papers}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Towards a Model for Multimedia Dataspaces}{1}{section.1.1}
+\contentsline {section}{\numberline {1.2}Databases to Dataspaces - A New Abstraction for Information Management}{3}{section.1.2}
+\contentsline {section}{\numberline {1.3}Principles of Dataspace Systems}{7}{section.1.3}
+\contentsline {chapter}{Bibliography}{11}{chapter*.5}
+\select@language {ngerman}
