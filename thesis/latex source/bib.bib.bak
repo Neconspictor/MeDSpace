@@ -40,24 +40,6 @@
   Url                      = {http://dblp.uni-trier.de/db/conf/wise/wise2004.html#HeQZW04}
 }
 
-@InProceedings{DBLP:conf/birthday/SarmaDH09,
-  Title                    = {Data Modeling in Dataspace Support Platforms},
-  Author                   = {Anish Das Sarma and
- Xin Luna Dong and
- Alon Y. Halevy},
-  Booktitle                = {Conceptual Modeling: Foundations and Applications - Essays in Honor
- of John Mylopoulos},
-  Year                     = {2009},
-  Pages                    = {122--138},
-
-  Bibsource                = {dblp computer science bibliography, http://dblp.org},
-  Biburl                   = {http://dblp.uni-trier.de/rec/bib/conf/birthday/SarmaDH09},
-  Crossref                 = {DBLP:conf/birthday/2009mylopoulos},
-  Doi                      = {10.1007/978-3-642-02463-4_8},
-  Timestamp                = {Mon, 04 Mar 2013 22:08:08 +0100},
-  Url                      = {http://dx.doi.org/10.1007/978-3-642-02463-4_8}
-}
-
 @InProceedings{DBLP:conf/swat4ls/SchoberCDEDJTPLB14,
   Title                    = {DebugIT: Ontology-mediated Layered Data Integration for Real-time
  Antibiotics Resistance Surveillance},

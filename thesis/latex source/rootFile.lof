@@ -3,4 +3,7 @@
 \select@language {english}
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {1.1}{\ignorespaces Environment of a Dataspace}}{11}{figure.1.1}
+\contentsline {figure}{\numberline {1.2}{\ignorespaces System architecture}}{13}{figure.1.2}
+\contentsline {figure}{\numberline {1.3}{\ignorespaces The layered mediator architecture of the DebugIT project}}{15}{figure.1.3}
+\contentsline {figure}{\numberline {1.4}{\ignorespaces Architecture of a data integration system that handles uncertainty}}{18}{figure.1.4}
 \select@language {ngerman}

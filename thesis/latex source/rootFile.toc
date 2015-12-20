@@ -8,5 +8,9 @@
 \contentsline {section}{\numberline {1.2}Databases to Dataspaces - A New Abstraction for Information Management}{3}{section.1.2}
 \contentsline {section}{\numberline {1.3}Principles of Dataspace Systems}{7}{section.1.3}
 \contentsline {section}{\numberline {1.4}Towards Realization of Dataspaces}{11}{section.1.4}
-\contentsline {chapter}{Bibliography}{15}{chapter*.5}
+\contentsline {section}{\numberline {1.5}DebugIT - Ontology-mediated layered Data Integration for real-time Antibiotics Resistance Surveillance}{15}{section.1.5}
+\contentsline {section}{\numberline {1.6}Data Modeling in Dataspace Support Systems}{17}{section.1.6}
+\contentsline {subsection}{\numberline {1.6.1}Uncertainty in Data integration}{17}{subsection.1.6.1}
+\contentsline {subsection}{\numberline {1.6.2}System architecture}{18}{subsection.1.6.2}
+\contentsline {chapter}{Bibliography}{22}{chapter*.5}
 \select@language {ngerman}
