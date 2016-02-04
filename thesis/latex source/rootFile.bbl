@@ -1,5 +1,10 @@
 \begin{thebibliography}{10}
 
+\bibitem{DBLP:books/dp/LeserN2006}
+U.~Leser and F.~Naumann, {\em Informationsintegration: Architekturen und
+  Methoden zur Integration verteilter und heterogener Datenquellen}.
+\newblock dpunkt, 2006.
+
 \bibitem{6167826}
 A.~Ndjafa, H.~Kosch, D.~Coquil, and L.~Brunie, ``Towards a model for multimedia
   dataspaces,'' in {\em Multimedia on the Web (MMWeb), 2011 Workshop on},
@@ -91,11 +96,6 @@ Q.~He, L.~Qiu, G.~Zhao, and S.~Wang, ``Text categorization based on domain
 \bibitem{WurstDiss}
 S.~H.~R. Wurst, {\em Dataspace Integration in der medizinischen Forschung}.
 \newblock PhD thesis, Technische Universitaet Muenchen, 2010.
-
-\bibitem{DBLP:books/dp/LeserN2006}
-U.~Leser and F.~Naumann, {\em Informationsintegration: Architekturen und
-  Methoden zur Integration verteilter und heterogener Datenquellen}.
-\newblock dpunkt, 2006.
 
 \bibitem{UniFreiburgDebugITInfo}
 ``Debugit: Detecting and eliminating bacteria using information technology. a

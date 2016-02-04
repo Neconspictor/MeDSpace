@@ -1,4 +1,4 @@
-Data integration einleitung, was ist das?
+﻿Data integration einleitung, was ist das?
 
 was für Datenbanken sind das? Was für Informationen gibt es da?  Patientendaten, Medikamente, 
 
@@ -26,4 +26,4 @@ Was ist Ziel meiner Arbeit? Grundbegriffe von Datenintegration erklären (Buch!)
 Stichwortsuche, Paper schicken, drüber reden noch einmal
 
 
-Wens man nichts in den Papers findet, Leute anschreiben
+Wen man nichts in den Papers findet, Leute anschreiben

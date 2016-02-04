@@ -3,12 +3,14 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: rootFile.aux
 A level-1 auxiliary file: titlepage.aux
 A level-1 auxiliary file: abstract.aux
+A level-1 auxiliary file: data-integration/data-integration.aux
 A level-1 auxiliary file: summaries/TowardsAModelToDataspaces_NDJAFA.aux
 A level-1 auxiliary file: summaries/DatabasesToDataspacesANewAbstractionForInformationManagement.aux
 A level-1 auxiliary file: summaries/PrinciplesOfDataspaceSystems.aux
 A level-1 auxiliary file: summaries/TowardsRealizationOfDataspaces.aux
 A level-1 auxiliary file: summaries/DebugITOntologyMediatedLayeredDataIntegration.aux
 A level-1 auxiliary file: summaries/DataModelingInDataspaceSupportSystems.aux
+A level-1 auxiliary file: glossary/glossary.aux
 The style file: ieeetr.bst
 A level-1 auxiliary file: assertion.aux
 Database file #1: bib.bib.bib
@@ -40,7 +42,7 @@ Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choq
 while executing---line 969 of file ieeetr.bst
 You've used 25 entries,
             1876 wiz_defined-function locations,
-            668 strings with 9776 characters,
+            670 strings with 9834 characters,
 and the built_in function-call counts, 7042 in all, are:
 = -- 665
 > -- 280

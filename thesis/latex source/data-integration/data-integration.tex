@@ -1,0 +1,46 @@
+\chapter{Motivation}
+\section{Information Integration}
+
+Information integration addresses to integrate existing databases. Synonyms for information integration are information fusion, data consolidation, data cleansing or data warehousing. The goal of information integration is almost always to simplify the access to a range of existing information systems through a central, integrated component with a unified interface for users and applications. Therefore, integrated information systems provide a unified view on the data sources. Existing information systems can be diverse: Classical relational database systems, files, data accessed by web services or HTML formulas, data generating applications or even other integrated information systems. (from \cite[p. 3-4]{DBLP:books/dp/LeserN2006}, own translation).\\
+Today, data is classified into three diverse categories. Structured data like it is stored in relational databases, have a predefined structure through a schema.
+Semi-structured data also have a schema, but they can deviate from the schema. An example of semi-structured data is a XML file without an accompanying XML schema. The third class is unstructured data and contains, as the name implies, no given structure. Typical unstructured data is natural language text.
+(from \cite[p. 17]{DBLP:books/dp/LeserN2006}, own translation).\\
+If we speak of diverse information systems we usually mean heterogeneous systems. Heterogeneity exists among data sources as well as between data sources and the integrated system. In most of all integrated information systems only the latter heterogeneity matters, as data sources often do not communicate among themselves. 
+To bridge heterogeneity, it is obviously necessary to translate queries and to implement missing functionality in the integrated system. Table \ref{kinds-of-heterogeneity} shows an overview of existing kinds of heterogeneity (from \cite[p. 60/61]{DBLP:books/dp/LeserN2006}, own translation).
+
+\begin{table}[]
+\centering
+\caption{Kinds of heterogeneity}
+\label{kinds-of-heterogeneity}
+\begin{tabular}{|l|p{0.7\textwidth}|}
+\hline
+ \textbf{Technical  heterogeneity}  &  includes all problems to realize the access of the data of the data sources technically. This heterogeneity is overcome if the integrated system is able to send a query to a data source and that data source principally understands the query and produces a set of data as result.\\ \hline
+ \textbf{Syntactic  heterogeneity}    &  includes problems in the illustration of information. This heterogeneity is overcome if all information meaning the same are illustrated equally.\\ \hline
+ \textbf{Data model  heterogeneity} &  means problems in the presentation of data of the used data models. This heterogeneity is solved if the data sources and the integrated system use the same data model.\\ \hline
+ \textbf{Structural  heterogeneity}    &  includes differences in the structural representation of information. This heterogeneity is solved if semantic identical concepts are also structural equally modeled. \\ \hline
+ \textbf{Schematically  heterogeneity} &  Important special case of the structural heterogeneity, whereby there are differences in the used data model.\\ \hline
+ \textbf{Semantic  heterogeneity}    &  Includes problems regarding the meaning of used terms and concepts. This heterogeneity is solved if the integrated system and the data source understand by the used names for schema elements really mean the same. Equal names means consequently equal meaning.\\ \hline
+\end{tabular}
+\end{table}
+
+In general, there are two different types of information integration: The materialized integration and the virtual integration. The difference between these two approaches is as follows: At materialized integration the data to be integrated is stored  into the integrated system itself, so on a central point. The data in the data sources remains but for querying the materialized view is used. At virtual integration, the data is only transported from the data source to the integrated system while the query processing. This temporary data is then again discarded. So integration isn't done once but on each query. Of course, an integrated information system can use both principles. Such a system is called hybrid. Both types have in common that a query is processed on a global schema. For the virtual integrated system, the data only exists virtual, thus relations between data sources and the global schema have to be specified and on query time the query has to be split into into query schedules. The schedules are responsible to extract the needed information from the different data sources and subsequently merge and transform the data (from \cite[p. 86-88]{DBLP:books/dp/LeserN2006}, own translation).
+
+
+\begin{table}[]
+\centering
+\caption{Different architectures of integrated information systems}
+\label{architectures-of-integrated-information-systems}
+\begin{tabular}{|l|p{0.7\textwidth}|}
+\hline
+ \textbf{}  &  includes all problems to realize the access of the data of the data sources technically. This heterogeneity is overcome if the integrated system is able to send a query to a data source and that data source principally understands the query and produces a set of data as result.\\ \hline
+ \textbf{Syntactic  heterogeneity}    &  includes problems in the illustration of information. This heterogeneity is overcome if all information meaning the same are illustrated equally.\\ \hline
+ \textbf{Data model  heterogeneity} &  means problems in the presentation of data of the used data models. This heterogeneity is solved if the data sources and the integrated system use the same data model.\\ \hline
+ \textbf{Structural  heterogeneity}    &  includes differences in the structural representation of information. This heterogeneity is solved if semantic identical concepts are also structural equally modeled. \\ \hline
+ \textbf{Schematically  heterogeneity} &  Important special case of the structural heterogeneity, whereby there are differences in the used data model.\\ \hline
+ \textbf{Semantic  heterogeneity}    &  Includes problems regarding the meaning of used terms and concepts. This heterogeneity is solved if the integrated system and the data source understand by the used names for schema elements really mean the same. Equal names means consequently equal meaning.\\ \hline
+\end{tabular}
+\end{table}
+
+
+
+\textcolor{red}{//comment!//}

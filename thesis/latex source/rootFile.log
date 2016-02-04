@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/W32TeX) (preloaded format=pdflatex 2015.5.15)  10 DEC 2015 13:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/W32TeX) (preloaded format=pdflatex 2015.5.15)  4 FEB 2016 18:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -932,12 +932,14 @@ Package hyperref Info: Option `colorlinks' set `false' on input line 90.
 
 Writing index file rootFile.idx
 (./rootFile.aux (./titlepage.aux) (./abstract.aux)
+(./data-integration/data-integration.aux)
 (./summaries/TowardsAModelToDataspaces_NDJAFA.aux)
 (./summaries/DatabasesToDataspacesANewAbstractionForInformationManagement.aux)
 (./summaries/PrinciplesOfDataspaceSystems.aux)
 (./summaries/TowardsRealizationOfDataspaces.aux)
 (./summaries/DebugITOntologyMediatedLayeredDataIntegration.aux)
-(./summaries/DataModelingInDataspaceSupportSystems.aux) (./assertion.aux))
+(./summaries/DataModelingInDataspaceSupportSystems.aux)
+(./glossary/glossary.aux) (./assertion.aux))
 \openout1 = `rootFile.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 109.
@@ -1148,10 +1150,9 @@ Package babel Info: Redefining ngerman shorthand "~
 
 
 ]
-\openout2 = `summaries/TowardsAModelToDataspaces_NDJAFA.aux'.
+\openout2 = `data-integration/data-integration.aux'.
 
-
-(./summaries/TowardsAModelToDataspaces_NDJAFA.tex
+ (./data-integration/data-integration.tex
 Chapter 1.
 
 Class scrreprt Warning: \float@addtolists detected!
@@ -1168,47 +1169,66 @@ Class scrreprt Warning: \float@addtolists detected!
 (scrreprt)              a package that still implements the
 (scrreprt)              deprecated \float@addtolist interface .
 
-)
-Underfull \hbox (badness 10000) in paragraph at lines 26--167
 
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 11.
+
+
+Overfull \hbox (60.7445pt too wide) in paragraph at lines 15--24
+ [][] 
  []
 
-[1
+) [1
 
 
 
 ] [2]
+\openout2 = `summaries/TowardsAModelToDataspaces_NDJAFA.aux'.
+
+ (./summaries/TowardsAModelToDataspaces_NDJAFA.tex
+Chapter 2.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 26--170
+
+ []
+
+[3
+
+
+
+
+] [4]
 \openout2 = `summaries/DatabasesToDataspacesANewAbstractionForInformationManage
 ment.aux'.
 
 
 (./summaries/DatabasesToDataspacesANewAbstractionForInformationManagement.tex
-[3
+[5
 
 
-] [4] [5]) [6]
+] [6] [7]) [8]
 \openout2 = `summaries/PrinciplesOfDataspaceSystems.aux'.
 
- (./summaries/PrinciplesOfDataspaceSystems.tex [7
+ (./summaries/PrinciplesOfDataspaceSystems.tex [9
 
 
-] [8] [9])
-[10]
+] [10]
+[11]) [12]
 \openout2 = `summaries/TowardsRealizationOfDataspaces.aux'.
 
  (./summaries/TowardsRealizationOfDataspaces.tex
-<figures/TowardsRealizationOfDataspaces1.png, id=189, 569.87906pt x 393.72093pt
+<figures/TowardsRealizationOfDataspaces1.png, id=219, 569.87906pt x 393.72093pt
 >
 File: figures/TowardsRealizationOfDataspaces1.png Graphic file (type png)
  <use figures/TowardsRealizationOfDataspaces1.png>
 Package pdftex.def Info: figures/TowardsRealizationOfDataspaces1.png used on in
 put line 10.
 (pdftex.def)             Requested size: 320.57364pt x 221.47949pt.
- [11
+ [13
 
 
  <./figures/TowardsRealizationOfDataspaces1.png>]
-<figures/TowardsRealizationOfDataspaces2.png, id=208, 274.77657pt x 407.27156pt
+<figures/TowardsRealizationOfDataspaces2.png, id=238, 274.77657pt x 407.27156pt
 >
 File: figures/TowardsRealizationOfDataspaces2.png Graphic file (type png)
  <use figures/TowardsRealizationOfDataspaces2.png>
@@ -1218,14 +1238,14 @@ put line 38.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [12]
-[13 <./figures/TowardsRealizationOfDataspaces2.png>]) [14]
+ [14]
+[15 <./figures/TowardsRealizationOfDataspaces2.png>]) [16]
 \openout2 = `summaries/DebugITOntologyMediatedLayeredDataIntegration.aux'.
 
 
 (./summaries/DebugITOntologyMediatedLayeredDataIntegration.tex
 <figures/DebugIT-Ontology-mediated-layered-Data-Integration-architecture.png, i
-d=228, 1045.9075pt x 722.7pt>
+d=259, 1045.9075pt x 722.7pt>
 File: figures/DebugIT-Ontology-mediated-layered-Data-Integration-architecture.p
 ng Graphic file (type png)
 
@@ -1249,7 +1269,7 @@ Package Fancyhdr Warning: \headheight is too small (17.07164pt):
  We now make it that large for the rest of the document.
  This may cause the page layout to be inconsistent, however.
 
-[15
+[17
 
 
  <./figures/DebugIT-Ontology-mediated-layered-Data-Integration-architecture.png
@@ -1260,38 +1280,48 @@ File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 31.
-) [16]
+) [18]
 \openout2 = `summaries/DataModelingInDataspaceSupportSystems.aux'.
 
 
-(./summaries/DataModelingInDataspaceSupportSystems.tex [17
+(./summaries/DataModelingInDataspaceSupportSystems.tex [19
 
 
 ]
-<figures/DataModelingInDSSPs-Figure1.png, id=271, 518.6878pt x 366.61969pt>
+<figures/DataModelingInDSSPs-Figure1.png, id=301, 518.6878pt x 366.61969pt>
 File: figures/DataModelingInDSSPs-Figure1.png Graphic file (type png)
 
 <use figures/DataModelingInDSSPs-Figure1.png>
 Package pdftex.def Info: figures/DataModelingInDSSPs-Figure1.png used on input 
 line 28.
 (pdftex.def)             Requested size: 320.57364pt x 226.59698pt.
-) [18 <./figures/DataModelingInDSSPs-Figure1.png>] [19] (./rootFile.bbl [20
+) [20 <./figures/DataModelingInDSSPs-Figure1.png>] [21]
+\openout2 = `glossary/glossary.aux'.
+
+ (./glossary/glossary.tex [22
 
 
 
-] [21]
+
+]
+Chapter 3.
+) [23] (./rootFile.bbl [24
+
+
+
+] [25]
 LaTeX Font Info:    Font shape `OMS/lmr/m/it' in size <12> not available
 (Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 113.
 )
 Package babel Info: Redefining ngerman shorthand "|
-(babel)             in language  on input line 183.
+(babel)             in language  on input line 188.
 Package babel Info: Redefining ngerman shorthand "~
-(babel)             in language  on input line 183.
+(babel)             in language  on input line 188.
 Package babel Info: Redefining ngerman shorthand "|
-(babel)             in language  on input line 183.
+(babel)             in language  on input line 188.
 Package babel Info: Redefining ngerman shorthand "~
-(babel)             in language  on input line 183.
- [22]
+(babel)             in language  on input line 188.
+ [26]
 \openout2 = `assertion.aux'.
 
  (./assertion.tex
@@ -1312,7 +1342,7 @@ Package babel Info: Redefining ngerman shorthand "|
 (babel)             in language  on input line 22.
 Package babel Info: Redefining ngerman shorthand "~
 (babel)             in language  on input line 22.
-[23
+[27
 
 
 
@@ -1320,29 +1350,31 @@ Package babel Info: Redefining ngerman shorthand "~
 \tf@thm=\write10
 \openout10 = `rootFile.thm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 185.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 185.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 190.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 190.
  (./rootFile.aux (./titlepage.aux) (./abstract.aux)
+(./data-integration/data-integration.aux)
 (./summaries/TowardsAModelToDataspaces_NDJAFA.aux)
 (./summaries/DatabasesToDataspacesANewAbstractionForInformationManagement.aux)
 (./summaries/PrinciplesOfDataspaceSystems.aux)
 (./summaries/TowardsRealizationOfDataspaces.aux)
 (./summaries/DebugITOntologyMediatedLayeredDataIntegration.aux)
-(./summaries/DataModelingInDataspaceSupportSystems.aux) (./assertion.aux))
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 185.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 185.
+(./summaries/DataModelingInDataspaceSupportSystems.aux)
+(./glossary/glossary.aux) (./assertion.aux))
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 190.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 190.
 Package rerunfilecheck Info: File `rootFile.out' has not changed.
-(rerunfilecheck)             Checksum: B311D51EE7489C898F07A6FBA2F334B4;996.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 185.
+(rerunfilecheck)             Checksum: B0A045C87E6500C4520E12FD482E4408;1162.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 190.
  ) 
 Here is how much of TeX's memory you used:
- 22359 strings out of 493109
- 372348 string characters out of 6138587
- 579424 words of memory out of 5000000
- 25234 multiletter control sequences out of 15000+600000
+ 22395 strings out of 493109
+ 373163 string characters out of 6138587
+ 580404 words of memory out of 5000000
+ 25247 multiletter control sequences out of 15000+600000
  78949 words of font info for 69 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 49i,12n,72p,1204b,458s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 49i,12n,72p,1207b,456s stack positions out of 5000i,500n,10000p,200000b,80000s
 {d:/texlive/2014/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{d:/texlive/2014/tex
 mf-dist/fonts/enc/dvips/lm/lm-ec.enc}{d:/texlive/2014/texmf-dist/fonts/enc/dvip
 s/lm/lm-mathsy.enc}<d:/texlive/2014/texmf-dist/fonts/type1/public/cbfonts/grmn1
@@ -1354,10 +1386,10 @@ ive/2014/texmf-dist/fonts/type1/public/lm/lmr8.pfb><d:/texlive/2014/texmf-dist/
 fonts/type1/public/lm/lmri12.pfb><d:/texlive/2014/texmf-dist/fonts/type1/public
 /lm/lmro12.pfb><d:/texlive/2014/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb><
 d:/texlive/2014/texmf-dist/fonts/type1/public/lm/lmsy10.pfb>
-Output written on rootFile.pdf (33 pages, 471514 bytes).
+Output written on rootFile.pdf (37 pages, 477747 bytes).
 PDF statistics:
- 363 PDF objects out of 1000 (max. 8388607)
- 306 compressed objects within 4 object streams
- 83 named destinations out of 1000 (max. 500000)
- 117 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 408 PDF objects out of 1000 (max. 8388607)
+ 347 compressed objects within 4 object streams
+ 91 named destinations out of 1000 (max. 500000)
+ 141 words of extra memory for PDF output out of 10000 (max. 10000000)
 
