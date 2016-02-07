@@ -1,0 +1,29 @@
+\section{Towards a Model for Multimedia Dataspaces}
+
+In the paper 'Towards a Model for Multimedia Dataspaces'\cite{6167826} the authors present a representation model for dataspaces, which is an approach based on the dataspace and dataspace-view paradigm for uniformly represent  structured and semi structured data, ontologies and other similar knowledge representation models. 
+With that model, the authors address the current explosion of digital information and data sources. Many branches (i.a. in the medicine) need now large amounts of distributed, heterogeneous data. 
+
+However, traditional data integration methods are barely applicable to formulate search queries on a distributed,  heterogeneous data set, containing files with many different file formats, as traditional data integration systems are designed for complete structured data.
+Thus, these systems need a global schema for calculating search queries. 
+Addressing this issue, the concept of dataspaces was developed as an abstraction of wide-area, heterogeneous and distributed data management.
+For dataspaces there is no need of upfront efforts to semantically integrate data before basic services such as keyword search can be provided. 
+
+Dataspaces support uncertainties in schema-mapping and consider that schema mapping from sources to  mediated schema may be incorrect.
+A further interesting feature of dataspaces is successive data integration. So, the system is able to  integrate data in iterations as the time goes on depending on user needs.
+
+Research in the field of dataspaces is currently very active, but despite of the deep interest, existing models suffer on a number of shortcomings limiting their applicability.
+These include the tendency of overlooking the different types of relations that can exist between data items, which restricts the amount of information they can generally integrate.
+Second, they focus on classical text data ignoring the specifics of multimedia data. Third they don't provide the fine-granularity in the persistence of integrated data that is needed in certain domains.
+
+To address these issues, the authors developed a dataspace model, which sees the dataspace as a set of classes, objects (instances of classes) and relations.
+In the latter case there exist relations between classes (CRC), relations between objects and classes (ORC) and relations between objects (ORO).
+Furthermore relations can be internal or external defining whether the anticipating relation objects are in the same data source or in different ones.
+
+A design goal of the model is the maximization of its expression in terms of the types of relations that it can represent, enabling it to deal with information originating from structured data, semi-structured data, ontologies and other forms of knowledge representation as well as from canonical  
+knowledge.
+
+Import to note is the fact that the model includes similarity relations in the type of relations. 
+Similarity functions are a feature of multimedia data that defines a measurement for non-exact matching between objects.
+This kind of relations can be used to derive relations between other objects in the dataspace.
+Additionally the model introduces the concept of dataspace-view. 
+This makes it possible to store query results of an existing dataspace into a new sub-dataspace with different modes of persistence(virtualized view, materialized view, mode of synchronization with the content of the original sources,...).\\

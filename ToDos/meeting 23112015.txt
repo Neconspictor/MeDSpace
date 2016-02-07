@@ -2,7 +2,7 @@
 
 was für Datenbanken sind das? Was für Informationen gibt es da?  Patientendaten, Medikamente, 
 
-Lexical Normalization, Syntactic Normalization -> was ist das?
+Lexical Normalization, Syntactic Normalization -> was ist das?  Informationintegration, S. 326(?)
 
 
 Man hat Daten: 1. Erst die Syntax

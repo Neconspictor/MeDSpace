@@ -3,17 +3,26 @@
 \select@language {english}
 \contentsline {chapter}{List of Tables}{vii}{chapter*.3}
 \contentsline {chapter}{List of Figures}{ix}{chapter*.4}
-\contentsline {chapter}{\numberline {1}Motivation}{1}{chapter.1}
-\contentsline {section}{\numberline {1.1}Information Integration}{1}{section.1.1}
-\contentsline {chapter}{\numberline {2}Summaries of read papers}{3}{chapter.2}
-\contentsline {section}{\numberline {2.1}Towards a Model for Multimedia Dataspaces}{3}{section.2.1}
-\contentsline {section}{\numberline {2.2}Databases to Dataspaces - A New Abstraction for Information Management}{5}{section.2.2}
-\contentsline {section}{\numberline {2.3}Principles of Dataspace Systems}{9}{section.2.3}
-\contentsline {section}{\numberline {2.4}Towards Realization of Dataspaces}{13}{section.2.4}
-\contentsline {section}{\numberline {2.5}DebugIT - Ontology-mediated layered Data Integration for real-time Antibiotics Resistance Surveillance}{17}{section.2.5}
-\contentsline {section}{\numberline {2.6}Data Modeling in Dataspace Support Systems}{19}{section.2.6}
-\contentsline {subsection}{\numberline {2.6.1}Uncertainty in Data integration}{19}{subsection.2.6.1}
-\contentsline {subsection}{\numberline {2.6.2}System architecture}{20}{subsection.2.6.2}
-\contentsline {chapter}{\numberline {3}Glossary}{23}{chapter.3}
-\contentsline {chapter}{Bibliography}{26}{chapter*.5}
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Motivation}{1}{section.1.1}
+\contentsline {chapter}{\numberline {2}Theoretical}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Information Integration}{3}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Architectures}{4}{subsection.2.1.1}
+\contentsline {section}{\numberline {2.2}Dataspaces}{6}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Query answering}{10}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Towards Realization of Dataspaces}{13}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Uncertainty in Data integration}{17}{subsection.2.2.3}
+\contentsline {section}{\numberline {2.3}Towards a Model for Multimedia Dataspaces}{19}{section.2.3}
+\contentsline {chapter}{\numberline {3}Reference Projects}{21}{chapter.3}
+\contentsline {section}{\numberline {3.1}DebugIT}{21}{section.3.1}
+\contentsline {chapter}{\numberline {4}Implementation}{23}{chapter.4}
+\contentsline {section}{\numberline {4.1}Setting up databases}{23}{section.4.1}
+\contentsline {section}{\numberline {4.2}Wrappers}{23}{section.4.2}
+\contentsline {section}{\numberline {4.3}Register}{23}{section.4.3}
+\contentsline {section}{\numberline {4.4}Basic dataspace querying}{23}{section.4.4}
+\contentsline {section}{\numberline {4.5}Advanced query techniques/features}{23}{section.4.5}
+\contentsline {section}{\numberline {4.6}GUI}{23}{section.4.6}
+\contentsline {section}{\numberline {4.7}Validation}{23}{section.4.7}
+\contentsline {chapter}{\numberline {5}Glossary}{25}{chapter.5}
+\contentsline {chapter}{Bibliography}{28}{chapter*.5}
 \select@language {ngerman}
