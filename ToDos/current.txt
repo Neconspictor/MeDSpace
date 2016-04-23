@@ -1,0 +1,18 @@
+discuss more in depth:
+
+- Services of Dataspaces (Search and Query, especially keyword search)
+- logical components
+- sub dataspaces
+- research challenges (e.g. LUA Introspection)
+- Uncertainties in schema mapping
+- Probabilistic mediated schemas
+- Successive data integration/Pay-as-you-go fashion
+- Research field in dataspaces is currently very active
+- exisiting models suffer on a number of shortcomings
+-> model for multimedia dataspaces
+- dataspace views
+- similarity relations 
+- section about current state of dataspace realizations (-> it isn't realizable till now!)
+ -> Mention current main challenges that have to be overcome
+- Automatic creation of schema mappings (BootstrappingPay-as-you-goDataIntegrationSystems 
+has goot starting references!)

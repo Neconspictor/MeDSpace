@@ -5,11 +5,6 @@ U.~Leser and F.~Naumann, {\em Informationsintegration: Architekturen und
   Methoden zur Integration verteilter und heterogener Datenquellen}.
 \newblock dpunkt, 2006.
 
-\bibitem{6167826}
-A.~Ndjafa, H.~Kosch, D.~Coquil, and L.~Brunie, ``Towards a model for multimedia
-  dataspaces,'' in {\em Multimedia on the Web (MMWeb), 2011 Workshop on},
-  pp.~33--37, Sept 2011.
-
 \bibitem{Franklin:2005:DDN:1107499.1107502}
 M.~Franklin, A.~Halevy, and D.~Maier, ``From databases to dataspaces: A new
   abstraction for information management,'' {\em SIGMOD Rec.}, vol.~34,
@@ -20,40 +15,6 @@ A.~Halevy, M.~Franklin, and D.~Maier, ``Principles of dataspace systems,'' in
   {\em Proceedings of the Twenty-fifth ACM SIGMOD-SIGACT-SIGART Symposium on
   Principles of Database Systems}, PODS '06, (New York, NY, USA), pp.~1--9,
   ACM, 2006.
-
-\bibitem{FoundationOfDatabases1995}
-R.~H. S.~Abiteboul and V.~Vianu, {\em Foundations of Databases}.
-\newblock Addison-Wesley, 1995.
-
-\bibitem{Barbara:1992:MPD:627288.627535}
-D.~Barbar\'{a}, H.~Garcia-Molina, and D.~Porter, ``The management of
-  probabilistic data,'' {\em IEEE Trans. on Knowl. and Data Eng.}, vol.~4,
-  pp.~487--502, Oct. 1992.
-
-\bibitem{WorkingModelsForUncertainData}
-A.~H. A.~Das~Sarma, O.~Benjelloun and J.~Widom., ``Working models for uncertain
-  data,'' {\em Proc. of ICDE}, April 2006.
-
-\bibitem{Grahne:1984:DSD:645912.671297}
-G.~Grahne, ``Dependency satisfaction in databases with incomplete
-  information,'' in {\em Proceedings of the 10th International Conference on
-  Very Large Data Bases}, VLDB '84, (San Francisco, CA, USA), pp.~37--45,
-  Morgan Kaufmann Publishers Inc., 1984.
-
-\bibitem{Lakshmanan:1997:PFP:261124.261131}
-L.~V.~S. Lakshmanan, N.~Leone, R.~Ross, and V.~S. Subrahmanian, ``Probview: A
-  flexible probabilistic database system,'' {\em ACM Trans. Database Syst.},
-  vol.~22, pp.~419--469, Sept. 1997.
-
-\bibitem{DBLP:reference/db/Grahne09a}
-G.~Grahne, ``Conditional tables,'' in {\em Encyclopedia of Database Systems},
-  pp.~446--447, 2009.
-
-\bibitem{Chandra:1977:OIC:800105.803397}
-A.~K. Chandra and P.~M. Merlin, ``Optimal implementation of conjunctive queries
-  in relational data bases,'' in {\em Proceedings of the Ninth Annual ACM
-  Symposium on Theory of Computing}, STOC '77, (New York, NY, USA), pp.~77--90,
-  ACM, 1977.
 
 \bibitem{1698348}
 I.~Elsayed, P.~Brezany, and A.~Tjoa, ``Towards realization of dataspaces,'' in
@@ -93,6 +54,22 @@ Q.~He, L.~Qiu, G.~Zhao, and S.~Wang, ``Text categorization based on domain
   Orlowska, and K.~G. Jeffery, eds.), vol.~3306 of {\em Lecture Notes in
   Computer Science}, pp.~319--324, Springer, 2004.
 
+\bibitem{DBLP:conf/birthday/SarmaDH09}
+A.~D. Sarma, X.~L. Dong, and A.~Y. Halevy, ``Data modeling in dataspace support
+  platforms,'' in {\em Conceptual Modeling: Foundations and Applications -
+  Essays in Honor of John Mylopoulos}, pp.~122--138, 2009.
+
+\bibitem{DasSarma:2008:BPD:1376616.1376702}
+A.~Das~Sarma, X.~Dong, and A.~Halevy, ``Bootstrapping pay-as-you-go data
+  integration systems,'' in {\em Proceedings of the 2008 ACM SIGMOD
+  International Conference on Management of Data}, SIGMOD '08, (New York, NY,
+  USA), pp.~861--874, ACM, 2008.
+
+\bibitem{6167826}
+A.~Ndjafa, H.~Kosch, D.~Coquil, and L.~Brunie, ``Towards a model for multimedia
+  dataspaces,'' in {\em Multimedia on the Web (MMWeb), 2011 Workshop on},
+  pp.~33--37, Sept 2011.
+
 \bibitem{WurstDiss}
 S.~H.~R. Wurst, {\em Dataspace Integration in der medizinischen Forschung}.
 \newblock PhD thesis, Technische Universitaet Muenchen, 2010.
@@ -123,10 +100,5 @@ R.~C. D. T. F. E. C. D. M.-C.~J. Ariane Assélé~Kama, Audi~Primadhanty, ``Data
 \bibitem{Schober_developingdco:}
 D.~Schober, I.~Tudose, and M.~Boeker, ``Developing dco: The debugit core
   ontology for antibiotics resistence modelling.''
-
-\bibitem{DBLP:conf/birthday/SarmaDH09}
-A.~D. Sarma, X.~L. Dong, and A.~Y. Halevy, ``Data modeling in dataspace support
-  platforms,'' in {\em Conceptual Modeling: Foundations and Applications -
-  Essays in Honor of John Mylopoulos}, pp.~122--138, 2009.
 
 \end{thebibliography}

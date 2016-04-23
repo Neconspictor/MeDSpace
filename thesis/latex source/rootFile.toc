@@ -5,24 +5,25 @@
 \contentsline {chapter}{List of Figures}{ix}{chapter*.4}
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
 \contentsline {section}{\numberline {1.1}Motivation}{1}{section.1.1}
-\contentsline {chapter}{\numberline {2}Theoretical}{3}{chapter.2}
+\contentsline {chapter}{\numberline {2}Foundation in Data integration}{3}{chapter.2}
 \contentsline {section}{\numberline {2.1}Information Integration}{3}{section.2.1}
 \contentsline {subsection}{\numberline {2.1.1}Architectures}{4}{subsection.2.1.1}
-\contentsline {section}{\numberline {2.2}Dataspaces}{6}{section.2.2}
-\contentsline {subsection}{\numberline {2.2.1}Query answering}{10}{subsection.2.2.1}
-\contentsline {subsection}{\numberline {2.2.2}Towards Realization of Dataspaces}{13}{subsection.2.2.2}
-\contentsline {subsection}{\numberline {2.2.3}Uncertainty in Data integration}{17}{subsection.2.2.3}
-\contentsline {section}{\numberline {2.3}Towards a Model for Multimedia Dataspaces}{19}{section.2.3}
-\contentsline {chapter}{\numberline {3}Reference Projects}{21}{chapter.3}
-\contentsline {section}{\numberline {3.1}DebugIT}{21}{section.3.1}
-\contentsline {chapter}{\numberline {4}Implementation}{23}{chapter.4}
-\contentsline {section}{\numberline {4.1}Setting up databases}{23}{section.4.1}
-\contentsline {section}{\numberline {4.2}Wrappers}{23}{section.4.2}
-\contentsline {section}{\numberline {4.3}Register}{23}{section.4.3}
-\contentsline {section}{\numberline {4.4}Basic dataspace querying}{23}{section.4.4}
-\contentsline {section}{\numberline {4.5}Advanced query techniques/features}{23}{section.4.5}
-\contentsline {section}{\numberline {4.6}GUI}{23}{section.4.6}
-\contentsline {section}{\numberline {4.7}Validation}{23}{section.4.7}
-\contentsline {chapter}{\numberline {5}Glossary}{25}{chapter.5}
-\contentsline {chapter}{Bibliography}{28}{chapter*.5}
+\contentsline {chapter}{\numberline {3}Dataspaces}{7}{chapter.3}
+\contentsline {section}{\numberline {3.1}Components and Services}{8}{section.3.1}
+\contentsline {section}{\numberline {3.2}Query answering}{12}{section.3.2}
+\contentsline {section}{\numberline {3.3}Uncertainty in Dataspaces}{13}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Probabilistic Mediated Schema Mapping}{15}{subsection.3.3.1}
+\contentsline {section}{\numberline {3.4}Towards a Model for Multimedia Dataspaces}{16}{section.3.4}
+\contentsline {chapter}{\numberline {4}Reference Projects}{19}{chapter.4}
+\contentsline {section}{\numberline {4.1}DebugIT}{19}{section.4.1}
+\contentsline {chapter}{\numberline {5}Implementation}{21}{chapter.5}
+\contentsline {section}{\numberline {5.1}Setting up databases}{21}{section.5.1}
+\contentsline {section}{\numberline {5.2}Wrappers}{21}{section.5.2}
+\contentsline {section}{\numberline {5.3}Register}{21}{section.5.3}
+\contentsline {section}{\numberline {5.4}Basic dataspace querying}{21}{section.5.4}
+\contentsline {section}{\numberline {5.5}Advanced query techniques/features}{21}{section.5.5}
+\contentsline {section}{\numberline {5.6}GUI}{21}{section.5.6}
+\contentsline {section}{\numberline {5.7}Validation}{21}{section.5.7}
+\contentsline {chapter}{\numberline {6}Glossary}{23}{chapter.6}
+\contentsline {chapter}{Bibliography}{26}{chapter*.5}
 \select@language {ngerman}

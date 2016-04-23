@@ -3,35 +3,21 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: rootFile.aux
 A level-1 auxiliary file: titlepage.aux
 A level-1 auxiliary file: abstract.aux
-A level-1 auxiliary file: data-integration/data-integration.aux
-A level-1 auxiliary file: summaries/TowardsAModelToDataspaces_NDJAFA.aux
-A level-1 auxiliary file: summaries/DatabasesToDataspacesANewAbstractionForInformationManagement.aux
-A level-1 auxiliary file: summaries/PrinciplesOfDataspaceSystems.aux
-A level-1 auxiliary file: summaries/TowardsRealizationOfDataspaces.aux
-A level-1 auxiliary file: summaries/DebugITOntologyMediatedLayeredDataIntegration.aux
-A level-1 auxiliary file: summaries/DataModelingInDataspaceSupportSystems.aux
+A level-1 auxiliary file: introduction/motivation.aux
+A level-1 auxiliary file: implementation/implementation.aux
 A level-1 auxiliary file: glossary/glossary.aux
 The style file: ieeetr.bst
 A level-1 auxiliary file: assertion.aux
 Database file #1: bib.bib.bib
-A bad cross reference---entry "DBLP:reference/db/Grahne09a"
-refers to entry "DBLP:reference/db/2009", which doesn't exist
 A bad cross reference---entry "conf/wise/HeQZW04"
 refers to entry "conf/wise/2004", which doesn't exist
-A bad cross reference---entry "DBLP:conf/swat4ls/SchoberCDEDJTPLB14"
-refers to entry "DBLP:conf/swat4ls/2014", which doesn't exist
 A bad cross reference---entry "DBLP:conf/birthday/SarmaDH09"
 refers to entry "DBLP:conf/birthday/2009mylopoulos", which doesn't exist
-Warning--I didn't find a database entry for "DBLP:reference/db/2009"
+A bad cross reference---entry "DBLP:conf/swat4ls/SchoberCDEDJTPLB14"
+refers to entry "DBLP:conf/swat4ls/2014", which doesn't exist
 Warning--I didn't find a database entry for "conf/wise/2004"
 Warning--I didn't find a database entry for "DBLP:conf/birthday/2009mylopoulos"
 Warning--I didn't find a database entry for "DBLP:conf/swat4ls/2014"
-Name 1 in "S. Abiteboul, R. Hull, and V. Vianu" has a comma at the end for entry FoundationOfDatabases1995
-while executing---line 969 of file ieeetr.bst
-Warning--empty chapter and pages in FoundationOfDatabases1995
-Name 1 in "A. Das Sarma, O. Benjelloun, A. Halevy, and J. Widom." has a comma at the end for entry WorkingModelsForUncertainData
-while executing---line 969 of file ieeetr.bst
-Warning--empty publisher in DBLP:reference/db/Grahne09a
 Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choquet, Douglas Teodoro, Frank Enders, Catherine Duclos, Marie-Christine Jaulent" for entry DebugITDDO
 while executing---line 969 of file ieeetr.bst
 Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choquet, Douglas Teodoro, Frank Enders, Catherine Duclos, Marie-Christine Jaulent" for entry DebugITDDO
@@ -40,45 +26,45 @@ Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choq
 while executing---line 969 of file ieeetr.bst
 Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choquet, Douglas Teodoro, Frank Enders, Catherine Duclos, Marie-Christine Jaulent" for entry DebugITDDO
 while executing---line 969 of file ieeetr.bst
-You've used 25 entries,
+You've used 19 entries,
             1876 wiz_defined-function locations,
-            670 strings with 9834 characters,
-and the built_in function-call counts, 7042 in all, are:
-= -- 665
-> -- 280
+            618 strings with 8315 characters,
+and the built_in function-call counts, 5441 in all, are:
+= -- 501
+> -- 234
 < -- 0
-+ -- 103
-- -- 78
-* -- 498
-:= -- 968
-add.period$ -- 28
-call.type$ -- 25
-change.case$ -- 21
++ -- 85
+- -- 66
+* -- 388
+:= -- 754
+add.period$ -- 21
+call.type$ -- 19
+change.case$ -- 16
 chr.to.int$ -- 0
-cite$ -- 27
-duplicate$ -- 380
-empty$ -- 712
-format.name$ -- 78
-if$ -- 1730
+cite$ -- 19
+duplicate$ -- 292
+empty$ -- 547
+format.name$ -- 66
+if$ -- 1334
 int.to.chr$ -- 0
-int.to.str$ -- 25
-missing$ -- 23
-newline$ -- 82
-num.names$ -- 26
-pop$ -- 114
+int.to.str$ -- 19
+missing$ -- 16
+newline$ -- 63
+num.names$ -- 20
+pop$ -- 92
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 255
+skip$ -- 195
 stack$ -- 0
-substring$ -- 443
-swap$ -- 140
+substring$ -- 331
+swap$ -- 106
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 2
-while$ -- 70
-width$ -- 27
-write$ -- 241
-(There were 10 error messages)
+warning$ -- 0
+while$ -- 52
+width$ -- 21
+write$ -- 183
+(There were 7 error messages)

@@ -9,8 +9,6 @@ To bridge heterogeneity, it is obviously necessary to translate queries and to i
 
 \begin{table}[]
 \centering
-\caption{Kinds of heterogeneity}
-\label{kinds-of-heterogeneity}
 \begin{tabular}{|l|p{0.7\textwidth}|}
 \hline
  \textbf{Technical  heterogeneity}  &  includes all problems to realize the access of the data of the data sources technically. This heterogeneity is overcome if the integrated system is able to send a query to a data source and that data source principally understands the query and produces a set of data as result.\\ \hline
@@ -20,6 +18,8 @@ To bridge heterogeneity, it is obviously necessary to translate queries and to i
  \textbf{Schematic  heterogeneity} &  Important special case of the structural heterogeneity, whereby there are differences in the used data model.\\ \hline
  \textbf{Semantic  heterogeneity}    &  Includes problems regarding the meaning of used terms and concepts. This heterogeneity is solved if the integrated system and the data source understand by the used names for schema elements really mean the same. Equal names means consequently equal meaning.\\ \hline
 \end{tabular}
+\caption{Kinds of heterogeneity}
+\label{kinds-of-heterogeneity}
 \end{table}
 
 In general, there are two different types of information integration: The materialized integration and the virtual integration. The difference between these two approaches is as follows: At materialized integration the data to be integrated is stored  into the integrated system itself, so on a central point. The data in the data sources remains but for querying the materialized view is used. At virtual integration, the data is only transported from the data source to the integrated system while the query processing. This temporary data is then again discarded. So integration isn't done once but on each query. Of course, an integrated information system can use both principles. Such a system is called hybrid. Both types have in common that a query is processed on a global schema. For the virtual integrated system, the data only exists virtual, thus relations between data sources and the global schema have to be specified and on query time the query has to be split into into query schedules. The schedules are responsible to extract the needed information from the different data sources and subsequently merge and transform the data (from \cite[p. 86-88]{DBLP:books/dp/LeserN2006}, own translation).

@@ -3,11 +3,11 @@
 \select@language {english}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Environment of a Dataspace}}{14}{figure.2.1}
-\contentsline {figure}{\numberline {2.2}{\ignorespaces System architecture}}{16}{figure.2.2}
-\contentsline {figure}{\numberline {2.3}{\ignorespaces Architecture of a data integration system that handles uncertainty}}{19}{figure.2.3}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{21}{figure.3.1}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Environment of a Dataspace}}{9}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Architecture of a data integration system that handles uncertainty}}{15}{figure.3.2}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{19}{figure.4.1}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \select@language {ngerman}

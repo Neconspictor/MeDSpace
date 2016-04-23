@@ -1,0 +1,390 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix ddo: <http://babar.unige.ch:8080/vocab/resource/ddo_code#>.
+@prefix biosko: <http://eulersharp.sourceforge.net/2003/03swap/bioSKOSSchemes#>.
+@prefix clisko: <http://www.agfa.com/w3c/2009/clinicalSKOSSchemes#>.
+
+#
+# Classes
+#
+
+ddo:Bacterium	# maps to biotop:BacterialColony and cao:Bacterium
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """bacteria"""@en;
+    skos:definition """Aggregation of bacteria growing together as offspring of an unicellular organism without intracellular membranes, different from Archaeum mainly in DNA replication."""@en;
+    rdfs:subClassOf
+    	[ 	a owl:Restriction; 
+			owl:onProperty ddo:hasBacteriumCode; 
+    		owl:allValuesFrom biosko:uniProtTaxonomyDT ]	# ddo:BacteriaCode 
+#		[ 	a owl:Restriction;       
+#    		owl:onProperty skos:inScheme; 
+#			owl:hasValue biosko:uniProtTaxonomy ]
+	.
+	
+ddo:Drug	# maps to dco:PharmacologicSubstance
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """drug"""@en;
+    skos:definition """A natural, synthetic or semi-synthetic substance including endogenous body substance used to diagnose, prevent, maintain, treat or analyze abnormal and normal biological functions in vivo or in vitro" (NCI Thesaurus)."""@en;
+    rdfs:subClassOf 
+    	[  	a owl:Restriction; 
+		 	owl:onProperty ddo:hasDrug;
+		 	owl:allValuesFrom xsd:int ],    
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasDrugCode; 
+    		owl:allValuesFrom clisko:atc20090101DT] # ddo:drugName
+#		[ 	a owl:Restriction;
+#			owl:onProperty skos:inScheme;
+#			owl:hasValue clisko:atc20090101 ],
+	.
+
+ddo:Culture	# dco:BacterialCultureProcedure
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """culture"""@en;
+    skos:definition """Method of multiplying bacteria by letting them reproduce in predetermined culture media under controlled laboratory conditions."""@en;
+    rdfs:subClassOf
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasEpisodeOfCare; 
+    		owl:someValuesFrom ddo:EpisodeOfCare ],
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasCollectDate; 
+    		owl:someValuesFrom xsd:dateTime ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasCultureProcedure; 
+    		owl:allValuesFrom clisko:sct20080731DT ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasResultDate; 
+    		owl:someValuesFrom xsd:dateTime ], 
+    	[	a owl:Restriction; 
+    		owl:onProperty ddo:hasSampleType; 
+    		owl:allValuesFrom clisko:sct20080731DT ]
+    .
+    
+ddo:EpisodeOfCare	# dco:EpisodeOfCare
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """episode of care"""@en;
+    skos:definition """An interval of care by a health care facility or provider for a specific medical problem or condition. It may be continuous or it may consist of a series of intervals(PatientStay) marked by one or more brief separations from care, and can also identify the sequence of care (e.g., emergency, inpatient, outpatient), thus serving as one measure of health care provided" (MeSH)."""@en;
+    rdfs:subClassOf 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasPatient; 
+    		owl:someValuesFrom ddo:Patient ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasAdmissionToHospitalDate; 
+    		owl:someValuesFrom xsd:dateTime ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasAdmissionToServiceDate; 
+    		owl:someValuesFrom xsd:dateTime ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasDischargeFromServiceDate; 
+    		owl:someValuesFrom xsd:dateTime ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasDischargeFromHospitalDate; 
+    		owl:someValuesFrom xsd:dateTime ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasStepOfEpisodeOfCare; 
+    		owl:allValuesFrom xsd:int ]
+    .
+
+ddo:Antibiogram	# maps partially to outcome of dco:BacterialCultureProcedure 
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """culture results"""@en;
+    skos:definition """Outcome of a bacterial culture annex antibiogram procedure."""@en;
+    rdfs:subClassOf 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasCulture; 
+    		owl:someValuesFrom ddo:Culture ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasIdentifiedBacterium; 
+    		owl:someValuesFrom ddo:Bacterium ],
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasBacteriumQuantity; 
+    		owl:someValuesFrom xsd:int ], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasTestedDrug; 
+    		owl:someValuesFrom ddo:Drug	], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasOutcome; 
+    		owl:someValuesFrom clisko:sct20080731DT ]
+    .
+
+ddo:PatientTreatment	# dco:TherapeuticOrPreventiveProcedure
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """patient treatment"""@en;
+    skos:definition """An attempted remediation of a human health problem."""@en;
+    rdfs:subClassOf 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasEpisodeOfCare; 
+    		owl:someValuesFrom ddo:EpisodeOfCare ], 
+    	[  	a owl:Restriction; 
+    		owl:onProperty ddo:hasPrimaryDiagnosis; 
+		    owl:allValuesFrom clisko:icd10DT ],     
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasSecondaryDiagnosis; 
+			owl:allValuesFrom clisko:icd10DT ],     
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasIntervention; 
+			owl:allValuesFrom clisko:icd10DT ]   
+    .
+
+ddo:Patient	# dco:Patient
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """patient"""@en;
+    skos:definition """Human receiving health care."""@en;
+    rdfs:subClassOf 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasDateOfBirth; 
+    		owl:someValuesFrom xsd:gYear], 
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasDateOfDeath; 
+    		owl:someValuesFrom xsd:gYear],     		
+    	[ 	a owl:Restriction; 
+    		owl:onProperty ddo:hasSex; 
+    		owl:someValuesFrom clisko:sct20080731DT]
+    .
+
+ddo:AntibioticTherapy	# I assume antibiotic treatment is meant; link with ddo:Patient_treatment needed? 
+    a rdfs:Class;
+    rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+    rdfs:label """pathogen treatment"""@en;
+    skos:definition """Clinical therapy implying an antibiotic."""@en;
+    rdfs:subClassOf 
+	    [ 	a owl:Restriction; 
+	    	owl:onProperty ddo:hasEpisodeOfCare; 
+	    	owl:someValuesFrom ddo:EpisodeOfCare ], 
+	    [ 	a owl:Restriction; 
+	    	owl:onProperty ddo:hasBeginDate; 
+	    	owl:someValuesFrom xsd:dateTime ], 
+	    [ 	a owl:Restriction; 
+	    	owl:onProperty ddo:hasEndDate; 
+	    	owl:someValuesFrom xsd:dateTime ], 
+	    [ 	a owl:Restriction; 
+	    	owl:onProperty ddo:hasDrug; 
+	    	owl:someValuesFrom ddo:Drug ], 
+	    [ 	a owl:Restriction; 
+	    	owl:onProperty ddo:hasDoseQuantity; 
+	    	owl:someValuesFrom xsd:float ], 
+	    [ 	a owl:Restriction; 
+	    	owl:onProperty ddo:hasDoseUnit; 
+	    	owl:someValuesFrom xsd:string ],
+	    [ 	a owl:Restriction; 
+	    	owl:onProperty ddo:hasDoseFrequency; 
+	    	owl:someValuesFrom clisko:sct20080731DT ], 
+	    [  	a owl:Restriction; 
+	    	owl:onProperty ddo:hasRoute; 
+	    	owl:someValuesFrom clisko:sct20080731DT ]    
+	    .
+
+#
+# Properties
+#
+
+
+ddo:hasPatient
+	a owl:ObjectProperty
+	.
+
+ddo:hasEpisodeOfCare
+	a owl:ObjectProperty
+	.
+
+#####################
+# Table bacteria
+
+ddo:hasBacteriumId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.
+
+ddo:hasBacteriumCode
+	a owl:DatatypeProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+	skos:definition """Specifying a taxonomic identity of a bacterium."""@en # if ok: "as defined in uniprot taxonomy"
+	. 
+
+#####################
+# Table drug
+
+ddo:hasDrugId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.
+
+ddo:hasDrugCode
+	a owl:DatatypeProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;
+	skos:definition """Specifying an active part of a (commercially available) clinical drug."""@en
+	.
+
+#####################
+# Table culture
+	
+ddo:hasCultureId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.	
+	
+ddo:hasCollectDate
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+
+ddo:hasResultDate
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+
+ddo:hasCultureTechnique
+	a owl:DatatypeProperty
+	.
+		
+ddo:hasCultureProcedure
+	a owl:DatatypeProperty
+	.
+	
+ddo:hasSampleType
+	a owl:DatatypeProperty
+	.
+
+#####################
+# Table culture_results
+
+ddo:hasCultureResultsId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.
+
+ddo:hasIdentifiedBacterium
+	a owl:ObjectProperty
+	.
+
+ddo:hasTestedDrug
+	a owl:ObjectProperty
+	.
+
+ddo:hasBacteriumQuantity
+	a owl:DatatypeProperty
+	.
+	
+ddo:hasOutcome
+	a owl:DatatypeProperty
+	.
+
+#####################
+# Table pathogen_treatment 
+
+ddo:hasAntibioticTherapyId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.
+
+ddo:hasBeginDate
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+	
+ddo:hasEndDate
+	a owl:DatatypeProperty,
+	owl:FunctionalProperty	
+	.
+
+ddo:hasDoseFrequency
+	a owl:DatatypeProperty
+	.
+
+ddo:hasDoseQuantity
+	a owl:DatatypeProperty
+	.
+
+ddo:hasDoseUnit
+	a owl:DatatypeProperty
+	.
+
+ddo:hasRoute
+	a owl:DatatypeProperty
+	.
+
+#####################
+# Table episode_of_care
+
+ddo:hasEpisodeOfCareId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.
+
+ddo:hasAdmissionToHospitalDate
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+
+ddo:hasDischargeFromHospitalDate
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+
+ddo:hasAdmissionToServiceDate
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+
+ddo:hasDischargeFromServiceDate
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+
+ddo:hasStepOfEpisodeOfCare
+	a owl:DatatypeProperty
+	.
+
+#####################
+# Table patient_treatment
+
+ddo:hasPatientTreatmentId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.
+
+ddo:hasPrimaryDiagnosis
+	a owl:DatatypeProperty
+	.
+
+ddo:hasSecondaryDiagnosis
+	a owl:DatatypeProperty
+	.
+
+ddo:hasIntervention
+	a owl:DatatypeProperty
+	.
+	
+ddo:hasReasonForAdmission
+	a owl:DatatypeProperty
+	.
+
+#####################
+# Table patient_data
+
+ddo:hasPatientId
+	a owl:DatatypeProperty, owl:InverseFunctionalProperty;
+	rdfs:isDefinedBy <http://babar.unige.ch:8080/vocab/resource/ddo_code#>;	
+	.
+
+ddo:hasSex
+	a owl:DatatypeProperty
+	.
+
+ddo:hasDateOfBirth
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
+	
+ddo:hasDateOfDeath
+	a owl:DatatypeProperty, 
+	owl:FunctionalProperty
+	.
