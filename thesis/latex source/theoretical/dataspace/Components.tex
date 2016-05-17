@@ -14,14 +14,14 @@ As a response to this problem, the authors postulate the concept of dataspaces a
 Many of the services a dataspace provide, data integration and exchange systems provide, too. The main difference between these systems is that data integration systems need a semantic integration process before they can provide any services on the data. But dataspace is not kind of a classic data integration approach. In order to avoid semantic integration, a dataspace uses the concept of data coexistence.  The idea is to provide base functionality over all data sources, regardless of their specific integration constraints. E.g. a DSSP is able to provide a keyword search similar to a desktop file search. If more sophisticated operations are required such as relational queries, data mining or monitoring of specific data sources, additional effort can be done to integrate the sources tighter. This incremental process is also called as 'pay-as-you-go' fashion.
 
 
-\textcolor{red}{\textbf{Stuff that has to be reorganized:}}\\
-\textcolor{red}{Following paragraph have to be moved to more suitable place!}\\
-The document ``Principles of Dataspace System'' of Alon Haley, Michael Franklin and David Meier\cite{Halevy:2006:PDS:1142351.1142352} is based on their previous work ``From Databases to Dataspaces - A New Abstraction for Information Management''\cite{Franklin:2005:DDN:1107499.1107502} where the concept of dataspaces was firstly presented, and poses specific technical challenges realizing Dataspace Support Platforms (DSSPs) relating to query answering, introspection and the benefits of human attention for improving semantic relationships within a dataspace.  
-In the following are stated the results of the above mentioned challenges:
+%\textcolor{red}{\textbf{Stuff that has to be reorganized:}}\\
+%\textcolor{red}{Following paragraph have to be moved to more suitable place!}\\
+%The document ``Principles of Dataspace System'' of Alon Haley, Michael Franklin and David Meier\cite{Halevy:2006:PDS:1142351.1142352} is based on their previous work ``From Databases to Dataspaces - A New Abstraction for Information Management''\cite{Franklin:2005:DDN:1107499.1107502} where the concept of dataspaces was firstly presented, and poses specific technical challenges realizing Dataspace Support Platforms (DSSPs) relating to query answering, introspection and the benefits of human attention for improving semantic relationships within a dataspace.  
+%In the following are stated the results of the above mentioned challenges:
 
 
-In the paper ``Towards Realization of Dataspaces'', written by Ibrahim Elsayed and Peter Brezany\cite{1698348}, the architecture and functionality of a Dataspace Management System(DMS) is presented. Additionally it is discussed, how grid technology of future implementations is able to support such an architecture. A DMS is a set of software programs, which controls the organization, storage and retrieval of data in a Dataspace. It also handles the security and integrity of a Dataspace.
-In the following, the architecture and the functionality requirements of a DMS will be described.   
+%In the paper ``Towards Realization of Dataspaces'', written by Ibrahim Elsayed and Peter Brezany\cite{1698348}, the architecture and functionality of a Dataspace Management System(DMS) is presented. Additionally it is discussed, how grid technology of future implementations is able to support such an architecture. A DMS is a set of software programs, which controls the organization, storage and retrieval of data in a Dataspace. It also handles the security and integrity of a Dataspace.
+%In the following, the architecture and the functionality requirements of a DMS will be described.   
 
 A Dataspace should contain all information being relevant for a specific organization/task regardless of their file format or storage location, and it should model a collection of relationships between the data repositories. Therefore the authors define the dataspace as a set of participants and relationships. Participants of a dataspace are individual data sources . Some participants support expressive query languages for querying while others only provide limited access interfaces. Participants can reach from structured, semi-structured right up to unstructured data sources. Some sources provide traditional updates, some are only be appendable, while others are immutable. Further, dataspaces can be nested within each other, which means that a dataspace should be able to be a part of another dataspace.  Thus, a dataspace has to provide methods and rules for accessing its sub dataspaces.
 
@@ -134,7 +134,7 @@ For DMS it is assumed that queries are posed as keywords. This is contrary to tr
 	\begin{center}
 		\includegraphics[width=0.75\textwidth]{figures/DataModelingInDSSPs-Figure1.png}
 	\end{center}
-	\caption{Architecture of a data integration system that handles uncertainty}
+	\caption{Architecture of a data integration system that handles uncertainty \textcolor{red}{TODO: Discuss image more in depth?}}
 	\label{DataModelingInDSSPsFigure1}
 \end{figure}
 

@@ -13,17 +13,17 @@
 \contentsline {section}{\numberline {3.2}Query answering}{12}{section.3.2}
 \contentsline {section}{\numberline {3.3}Uncertainty in Dataspaces}{13}{section.3.3}
 \contentsline {subsection}{\numberline {3.3.1}Probabilistic Mediated Schema Mapping}{15}{subsection.3.3.1}
-\contentsline {section}{\numberline {3.4}Towards a Model for Multimedia Dataspaces}{16}{section.3.4}
-\contentsline {chapter}{\numberline {4}Reference Projects}{19}{chapter.4}
-\contentsline {section}{\numberline {4.1}DebugIT}{19}{section.4.1}
-\contentsline {chapter}{\numberline {5}Implementation}{21}{chapter.5}
-\contentsline {section}{\numberline {5.1}Setting up databases}{21}{section.5.1}
-\contentsline {section}{\numberline {5.2}Wrappers}{21}{section.5.2}
-\contentsline {section}{\numberline {5.3}Register}{21}{section.5.3}
-\contentsline {section}{\numberline {5.4}Basic dataspace querying}{21}{section.5.4}
-\contentsline {section}{\numberline {5.5}Advanced query techniques/features}{21}{section.5.5}
-\contentsline {section}{\numberline {5.6}GUI}{21}{section.5.6}
-\contentsline {section}{\numberline {5.7}Validation}{21}{section.5.7}
-\contentsline {chapter}{\numberline {6}Glossary}{23}{chapter.6}
-\contentsline {chapter}{Bibliography}{26}{chapter*.5}
+\contentsline {section}{\numberline {3.4}Towards a Model for Multimedia Dataspaces}{18}{section.3.4}
+\contentsline {chapter}{\numberline {4}Reference Projects}{21}{chapter.4}
+\contentsline {section}{\numberline {4.1}DebugIT}{21}{section.4.1}
+\contentsline {chapter}{\numberline {5}Implementation}{23}{chapter.5}
+\contentsline {section}{\numberline {5.1}Setting up databases}{23}{section.5.1}
+\contentsline {section}{\numberline {5.2}Wrappers}{23}{section.5.2}
+\contentsline {section}{\numberline {5.3}Register}{23}{section.5.3}
+\contentsline {section}{\numberline {5.4}Basic dataspace querying}{23}{section.5.4}
+\contentsline {section}{\numberline {5.5}Advanced query techniques/features}{23}{section.5.5}
+\contentsline {section}{\numberline {5.6}GUI}{23}{section.5.6}
+\contentsline {section}{\numberline {5.7}Validation}{23}{section.5.7}
+\contentsline {chapter}{\numberline {6}Glossary}{25}{chapter.6}
+\contentsline {chapter}{Bibliography}{28}{chapter*.5}
 \select@language {ngerman}

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="148.80994mm"
+   height="48.74424mm"
+   viewBox="0 0 527.27931 172.71581"
+   id="svg4328"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Antibiogram-p-mapping-example.svg">
+  <defs
+     id="defs4330">
+    <linearGradient
+       id="linearGradient5002"
+       osb:paint="gradient">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5004" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop5006" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="269.5171"
+     inkscape:cy="-9.2382066"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="706"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata4333">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-12.131984,-23.026911)">
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.371;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5000"
+       width="259.228"
+       height="171.34471"
+       x="12.817531"
+       y="23.712458" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.371;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5014"
+       width="245.5126"
+       height="169.75117"
+       x="292.92148"
+       y="25.014297" />
+    <g
+       style="font-style:normal;font-weight:normal;font-size:12px;font-family:Dialog;color-interpolation:auto;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto"
+       id="g7266"
+       transform="translate(32.178811,-15.889325)">
+      <text
+         sodipodi:linespacing="125%"
+         id="text4189"
+         y="65.370712"
+         x="-7.1498795"
+         style="font-style:normal;font-weight:normal;font-size:20.71001244px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           dy="0 9.7632923"
+           y="65.370712"
+           x="-7.1498795"
+           id="tspan4191"
+           sodipodi:role="line">S<tspan
+   dy="4.5562029 -16.231047"
+   id="tspan4193"
+   style="font-size:10.35500622px">1<tspan
+   dy="-5.9798594"
+   id="tspan4198"
+   style="font-size:20.71001244px">:</tspan></tspan></tspan><tspan
+           id="tspan4195"
+           dy="0 9.7632923"
+           y="91.258224"
+           x="-7.1498795"
+           sodipodi:role="line" /></text>
+      <g
+         transform="translate(-30,9.0232075)"
+         id="g6594"
+         style="font-style:normal;font-weight:normal;font-size:12px;font-family:Dialog;color-interpolation:auto;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto">
+        <g
+           id="g6559">
+          <defs
+             id="defs1">
+            <clipPath
+               clipPathUnits="userSpaceOnUse"
+               id="clipPath1">
+              <path
+                 inkscape:connector-curvature="0"
+                 d="m 0,0 2147483600,0 0,2147483600 L 0,2147483600 0,0 Z"
+                 id="path6563" />
+            </clipPath>
+            <clipPath
+               clipPathUnits="userSpaceOnUse"
+               id="clipPath2">
+              <path
+                 inkscape:connector-curvature="0"
+                 d="m 0,0 0,120 240,0 0,-120 z"
+                 id="path6566" />
+            </clipPath>
+          </defs>
+          <g
+             style="fill:#ffffff;fill-opacity:0;stroke:#ffffff;stroke-opacity:0"
+             transform="translate(20,70)"
+             id="g6568">
+            <rect
+               style="stroke:none"
+               x="0.5"
+               width="238.5"
+               height="118.5"
+               y="0.5"
+               clip-path="url(#clipPath2)"
+               id="rect6570" />
+          </g>
+          <g
+             transform="translate(20,70)"
+             id="g6572">
+            <rect
+               style="fill:none"
+               x="0.5"
+               width="238.5"
+               height="118.5"
+               y="0.5"
+               clip-path="url(#clipPath2)"
+               id="rect6574" />
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="82"
+               font-size="14px"
+               y="17.9688"
+               clip-path="url(#clipPath2)"
+               xml:space="preserve"
+               id="text6576">Antibiogram</text>
+            <path
+               style="fill:none"
+               inkscape:connector-curvature="0"
+               d="m 1,23.9688 238,0"
+               clip-path="url(#clipPath2)"
+               id="path6578" />
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="38.9375"
+               clip-path="url(#clipPath2)"
+               xml:space="preserve"
+               id="text6580">id: int</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="54.9062"
+               clip-path="url(#clipPath2)"
+               xml:space="preserve"
+               id="text6582">cultureId: int</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="70.875"
+               clip-path="url(#clipPath2)"
+               xml:space="preserve"
+               id="text6584">antimicrobial: string</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="86.843803"
+               clip-path="url(#clipPath2)"
+               xml:space="preserve"
+               id="text6586">mic: float</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="102.8125"
+               clip-path="url(#clipPath2)"
+               xml:space="preserve"
+               id="text6588">susceptibility: string</text>
+          </g>
+        </g>
+      </g>
+    </g>
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect7291"
+       width="11.111678"
+       height="44.446712"
+       x="148.99989"
+       y="334.64642" />
+    <g
+       style="font-style:normal;font-weight:normal;font-size:12px;font-family:Dialog;color-interpolation:auto;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto"
+       id="g7324"
+       transform="translate(312.89969,-17.379172)">
+      <text
+         sodipodi:linespacing="125%"
+         id="text4189-5"
+         y="65.370712"
+         x="-5.8355918"
+         style="font-style:normal;font-weight:normal;font-size:20.71001244px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           dy="0"
+           y="65.370712"
+           x="-5.8355918"
+           id="tspan4191-0"
+           sodipodi:role="line">S<tspan
+   dy="2.5142858 -16.231047"
+   id="tspan4193-9"
+   style="font-size:10.35500622px">2<tspan
+   dy="-3.4655733"
+   id="tspan4198-4"
+   style="font-size:20.71001244px">:</tspan></tspan></tspan><tspan
+           id="tspan4195-9"
+           dy="0 9.7632923"
+           y="91.258224"
+           x="-5.8355918"
+           sodipodi:role="line" /></text>
+      <g
+         transform="translate(-20,4.0232051)"
+         id="g7219"
+         style="font-style:normal;font-weight:normal;font-size:12px;font-family:Dialog;color-interpolation:auto;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto">
+        <g
+           id="g7182">
+          <defs
+             id="defs1-6">
+            <clipPath
+               clipPathUnits="userSpaceOnUse"
+               id="clipPath1-1">
+              <path
+                 inkscape:connector-curvature="0"
+                 d="m 0,0 2147483600,0 0,2147483600 L 0,2147483600 0,0 Z"
+                 id="path7186" />
+            </clipPath>
+            <clipPath
+               clipPathUnits="userSpaceOnUse"
+               id="clipPath2-0">
+              <path
+                 inkscape:connector-curvature="0"
+                 d="m 0,0 0,130 220,0 0,-130 z"
+                 id="path7189" />
+            </clipPath>
+          </defs>
+          <g
+             style="fill:#ffffff;fill-opacity:0;stroke:#ffffff;stroke-opacity:0"
+             transform="translate(10,70)"
+             id="g7191">
+            <rect
+               style="stroke:none"
+               x="0.5"
+               width="218.5"
+               height="128.5"
+               y="0.5"
+               clip-path="url(#clipPath2-0)"
+               id="rect7193" />
+          </g>
+          <g
+             transform="translate(10,70)"
+             id="g7195">
+            <rect
+               style="fill:none"
+               x="0.5"
+               width="218.5"
+               height="128.5"
+               y="0.5"
+               clip-path="url(#clipPath2-0)"
+               id="rect7197" />
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="72"
+               font-size="14px"
+               y="17.9688"
+               clip-path="url(#clipPath2-0)"
+               xml:space="preserve"
+               id="text7199">Antibiogram</text>
+            <path
+               style="fill:none"
+               inkscape:connector-curvature="0"
+               d="m 1,23.9688 218,0"
+               clip-path="url(#clipPath2-0)"
+               id="path7201" />
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="38.9375"
+               clip-path="url(#clipPath2-0)"
+               xml:space="preserve"
+               id="text7203">id: int</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="54.9062"
+               clip-path="url(#clipPath2-0)"
+               xml:space="preserve"
+               id="text7205">culture: int</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="70.875"
+               clip-path="url(#clipPath2-0)"
+               xml:space="preserve"
+               id="text7207">antibiotic: string</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="86.843803"
+               clip-path="url(#clipPath2-0)"
+               xml:space="preserve"
+               id="text7209">antibacterial: string</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="102.8125"
+               clip-path="url(#clipPath2-0)"
+               xml:space="preserve"
+               id="text7211">mic: float</text>
+            <text
+               style="font-size:14px;font-family:sans-serif;stroke:none"
+               x="5"
+               font-size="14px"
+               y="118.7812"
+               clip-path="url(#clipPath2-0)"
+               xml:space="preserve"
+               id="text7213">susceptibility: string</text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

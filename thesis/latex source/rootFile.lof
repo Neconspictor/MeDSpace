@@ -5,9 +5,11 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces Environment of a Dataspace}}{9}{figure.3.1}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Architecture of a data integration system that handles uncertainty}}{15}{figure.3.2}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Architecture of a data integration system that handles uncertainty \leavevmode {\color {red}TODO: Discuss image more in depth?}}}{14}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Bootstaping a 'Pay as you go' data integration system}}{16}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Concepts of our example}}{17}{figure.3.4}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{19}{figure.4.1}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{21}{figure.4.1}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \select@language {ngerman}
