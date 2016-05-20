@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="140.8204mm"
+   height="111.35331mm"
+   viewBox="0 0 498.96992 394.55891"
+   id="svg9752"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="federatedDatabaseArchitecture.svg">
+  <defs
+     id="defs9754" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98255208"
+     inkscape:cx="36.78294"
+     inkscape:cy="226.68898"
+     inkscape:document-units="px"
+     inkscape:current-layer="g14135"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="706"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata9757">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-120.68469,-242.69232)">
+    <g
+       transform="translate(247.66772,-233.77833)"
+       id="layer1-8"
+       inkscape:label="Ebene 1">
+      <g
+         transform="translate(-306.08816,503.27441)"
+         id="layer1-1"
+         inkscape:label="Ebene 1">
+        <g
+           id="g14135">
+          <g
+             transform="translate(71.541137,-145.21902)"
+             id="g10552">
+            <g
+               id="g10581">
+              <rect
+                 y="118.87347"
+                 x="201.64635"
+                 height="31.361935"
+                 width="150.16626"
+                 id="rect8608-5"
+                 style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:0.91644114;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+              <text
+                 sodipodi:linespacing="125%"
+                 id="text8622-7"
+                 y="139.92471"
+                 x="206.68303"
+                 style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 xml:space="preserve"><tspan
+                   y="139.92471"
+                   x="206.68303"
+                   id="tspan8624-99"
+                   sodipodi:role="line">External schema</tspan></text>
+            </g>
+          </g>
+          <g
+             transform="matrix(0.06341028,0.08697512,-0.16082024,0.11724797,498.76145,-22.235297)"
+             id="layer1-9-7-0-8"
+             inkscape:label="Ebene 1">
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-40-9-49"
+               d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+            <rect
+               ry="0"
+               rx="0"
+               y="100.85202"
+               x="241.80634"
+               height="269.80609"
+               width="39.958771"
+               id="rect9735-2-7-9"
+               style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-4-2-2-5"
+               d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          </g>
+          <g
+             transform="matrix(0.06817524,0.08329269,-0.15401128,0.12605856,439.43694,-25.344487)"
+             id="layer1-9-7-0-8-5"
+             inkscape:label="Ebene 1">
+            <g
+               transform="matrix(-0.23887954,-0.52516476,1.7955062,-0.23887952,-245.87029,538.78944)"
+               id="g10682">
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+                 id="path9731-40-9-49-7"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+              <rect
+                 style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                 id="rect9735-2-7-9-2"
+                 width="39.958771"
+                 height="269.80609"
+                 x="241.80634"
+                 y="100.85202"
+                 rx="0"
+                 ry="0" />
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+                 id="path9731-4-2-2-5-3"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+            </g>
+          </g>
+          <g
+             inkscape:label="Ebene 1"
+             id="layer1-3-1"
+             transform="matrix(0.38051334,0,0,0.38051334,316.42138,-134.04447)">
+            <g
+               id="g11272-8">
+              <circle
+                 r="8.7207966"
+                 cy="326.44135"
+                 cx="317.31418"
+                 id="path11238-35"
+                 style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+              <circle
+                 r="8.7207966"
+                 cy="326.31506"
+                 cx="341.68411"
+                 id="path11238-3-3"
+                 style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+              <circle
+                 r="8.7207966"
+                 cy="326.06253"
+                 cx="365.92773"
+                 id="path11238-3-6-8"
+                 style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+            </g>
+          </g>
+          <g
+             id="g10448-9-8"
+             transform="translate(66.156771,-98.931197)">
+            <g
+               transform="translate(92.441961,1.8057659)"
+               id="g11418-8-9-9">
+              <g
+                 transform="translate(-20.870239,10.794951)"
+                 id="g11687">
+                <g
+                   transform="translate(-46.816851,-1.0177576)"
+                   id="g13989">
+                  <rect
+                     y="140.85367"
+                     x="183.50471"
+                     height="30.926371"
+                     width="331.43149"
+                     id="rect8608-1-5-9-8"
+                     style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.352005;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                  <text
+                     sodipodi:linespacing="125%"
+                     id="text8622-3-8-0-5"
+                     y="161.68713"
+                     x="189.34138"
+                     style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                     xml:space="preserve"><tspan
+                       y="161.68713"
+                       x="189.34138"
+                       sodipodi:role="line"
+                       id="tspan10408-7-5-2">Global conceptual (federated) schema</tspan></text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g
+             transform="matrix(0.07051422,0.08132207,-0.15036754,0.13038343,548.37086,54.568732)"
+             id="layer1-9-7-0-8-5-0"
+             inkscape:label="Ebene 1">
+            <g
+               transform="matrix(-0.23887954,-0.52516476,1.7955062,-0.23887952,-245.87029,538.78944)"
+               id="g10682-8">
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+                 id="path9731-40-9-49-7-4"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+              <rect
+                 style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                 id="rect9735-2-7-9-2-4"
+                 width="39.958771"
+                 height="269.80609"
+                 x="241.80634"
+                 y="100.85202"
+                 rx="0"
+                 ry="0" />
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+                 id="path9731-4-2-2-5-3-0"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+            </g>
+          </g>
+          <g
+             transform="matrix(0.06341028,0.08697512,-0.16082024,0.11724797,390.14856,54.11359)"
+             id="layer1-9-7-0-8-4"
+             inkscape:label="Ebene 1">
+            <g
+               transform="translate(18.12427,29.521046)"
+               id="g13983">
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+                 id="path9731-40-9-49-9"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+              <g
+                 id="g13979">
+                <rect
+                   ry="0"
+                   rx="0"
+                   y="100.85202"
+                   x="241.80634"
+                   height="269.80609"
+                   width="39.958771"
+                   id="rect9735-2-7-9-0"
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                   sodipodi:nodetypes="cccc"
+                   inkscape:connector-curvature="0"
+                   id="path9731-4-2-2-5-2"
+                   d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+                   style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+              </g>
+            </g>
+          </g>
+          <g
+             id="g10474-9-7"
+             transform="translate(-215.95282,-26.505275)">
+            <g
+               transform="translate(145.47878,-24.209876)"
+               id="g11526-7-5-5">
+              <g
+                 transform="translate(-1.4393268,4.3179804)"
+                 id="g11563-9-8">
+                <g
+                   transform="translate(-71.243034,38.67479)"
+                   id="g13875">
+                  <g
+                     id="g13872">
+                    <rect
+                       style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.15852296;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                       id="rect8608-4-9-7-9"
+                       width="224.8916"
+                       height="33.465866"
+                       x="322.84079"
+                       y="210.05179" />
+                  </g>
+                  <text
+                     sodipodi:linespacing="125%"
+                     id="text8622-8-4-7-3"
+                     y="232.4213"
+                     x="328.7742"
+                     style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                     xml:space="preserve"><tspan
+                       y="232.4213"
+                       x="328.7742"
+                       sodipodi:role="line"
+                       id="tspan11524-3-1-8">Local component schema</tspan></text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g
+             transform="matrix(0.10857246,0,0,0.06815819,266.34604,237.35767)"
+             id="layer1-9-7-0-0-0-2-1"
+             inkscape:label="Ebene 1">
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-40-9-1-0-3-8"
+               d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+            <rect
+               ry="0"
+               rx="0"
+               y="100.85202"
+               x="241.80634"
+               height="269.80609"
+               width="39.958771"
+               id="rect9735-2-7-92-1-7-1"
+               style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-4-2-2-8-5-6-3"
+               d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          </g>
+          <g
+             transform="matrix(0.10857246,0,0,0.06815819,523.17136,169.54837)"
+             id="layer1-9-7-0-0-0-8-4"
+             inkscape:label="Ebene 1">
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-40-9-1-0-7-9"
+               d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+            <rect
+               ry="0"
+               rx="0"
+               y="100.85202"
+               x="241.80634"
+               height="269.80609"
+               width="39.958771"
+               id="rect9735-2-7-92-1-4-3"
+               style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-4-2-2-8-5-8-8"
+               d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          </g>
+          <g
+             id="g10474-9-7-2"
+             transform="translate(-195.59766,-85.53522)">
+            <g
+               transform="translate(141.40775,-24.209876)"
+               id="g11526-7-5-5-6">
+              <g
+                 transform="translate(10.773765,4.3179804)"
+                 id="g11563-9-8-4">
+                <g
+                   transform="translate(-66.154246,29.514971)"
+                   id="g13825">
+                  <rect
+                     y="209.99959"
+                     x="322.7886"
+                     height="32.552513"
+                     width="191.40999"
+                     id="rect8608-4-9-7-9-8"
+                     style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.05412364;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                  <text
+                     sodipodi:linespacing="125%"
+                     id="text8622-8-4-7-3-3"
+                     y="231.40353"
+                     x="327.75644"
+                     style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                     xml:space="preserve"><tspan
+                       y="231.40353"
+                       x="327.75644"
+                       sodipodi:role="line"
+                       id="tspan11524-3-1-8-3">Local export schema</tspan></text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g
+             transform="matrix(0.10857246,0,0,0.06815819,268.38156,169.16791)"
+             id="layer1-9-7-0-0-0-2-1-8"
+             inkscape:label="Ebene 1">
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-40-9-1-0-3-8-3"
+               d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+            <rect
+               ry="0"
+               rx="0"
+               y="100.85202"
+               x="241.80634"
+               height="269.80609"
+               width="39.958771"
+               id="rect9735-2-7-92-1-7-1-5"
+               style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-4-2-2-8-5-6-3-2"
+               d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          </g>
+          <g
+             inkscape:label="Ebene 1"
+             id="layer1-3-1-3-4-7-4"
+             transform="matrix(0.38051334,0,0,0.38051334,292.44907,13.390947)">
+            <g
+               id="g11272-8-8-4-1-3">
+              <g
+                 transform="translate(5.3493927,37.445749)"
+                 id="g13830">
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-35-7-8-4-7"
+                   cx="317.31418"
+                   cy="326.44135"
+                   r="8.7207966" />
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-3-3-7-1-3-5"
+                   cx="341.68411"
+                   cy="326.31506"
+                   r="8.7207966" />
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-3-6-8-9-0-9-3"
+                   cx="365.92773"
+                   cy="326.06253"
+                   r="8.7207966" />
+              </g>
+            </g>
+          </g>
+          <g
+             id="g10474-9-7-2-7"
+             transform="translate(50.351492,-86.96166)">
+            <g
+               transform="translate(145.47878,-24.209876)"
+               id="g11526-7-5-5-6-5">
+              <g
+                 transform="translate(-1.4393268,4.3179804)"
+                 id="g11563-9-8-4-8">
+                <g
+                   transform="translate(-66.154246,29.514971)"
+                   id="g13825-6">
+                  <rect
+                     y="209.99959"
+                     x="322.7886"
+                     height="32.552513"
+                     width="191.40999"
+                     id="rect8608-4-9-7-9-8-5"
+                     style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.05412364;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                  <text
+                     sodipodi:linespacing="125%"
+                     id="text8622-8-4-7-3-3-8"
+                     y="231.40353"
+                     x="327.75644"
+                     style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                     xml:space="preserve"><tspan
+                       y="231.40353"
+                       x="327.75644"
+                       sodipodi:role="line"
+                       id="tspan11524-3-1-8-3-4">Local export schema</tspan></text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g
+             id="g10474-9-7-1"
+             transform="translate(56.966928,-27.422835)">
+            <g
+               transform="translate(145.47878,-24.209876)"
+               id="g11526-7-5-5-5">
+              <g
+                 transform="translate(-1.4393268,4.3179804)"
+                 id="g11563-9-8-46">
+                <g
+                   transform="translate(-71.243034,38.67479)"
+                   id="g13875-8">
+                  <g
+                     id="g13872-1">
+                    <rect
+                       style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.15852296;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                       id="rect8608-4-9-7-9-0"
+                       width="224.8916"
+                       height="33.465866"
+                       x="322.84079"
+                       y="210.05179" />
+                  </g>
+                  <text
+                     sodipodi:linespacing="125%"
+                     id="text8622-8-4-7-3-2"
+                     y="232.4213"
+                     x="328.7742"
+                     style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                     xml:space="preserve"><tspan
+                       y="232.4213"
+                       x="328.7742"
+                       sodipodi:role="line"
+                       id="tspan11524-3-1-8-7">Local component schema</tspan></text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g
+             id="g14013">
+            <g
+               inkscape:label="Ebene 1"
+               id="layer1-9-7-0-0-0"
+               transform="matrix(0.10857246,0,0,0.06815819,515.95357,302.83206)">
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+                 id="path9731-40-9-1-0"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+              <rect
+                 style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                 id="rect9735-2-7-92-1"
+                 width="39.958771"
+                 height="269.80609"
+                 x="241.80634"
+                 y="100.85202"
+                 rx="0"
+                 ry="0" />
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+                 id="path9731-4-2-2-8-5"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+            </g>
+            <g
+               transform="translate(-221.13509,38.588669)"
+               id="g10474-9">
+              <g
+                 id="g11526-7-5"
+                 transform="translate(145.47878,-24.209876)">
+                <g
+                   id="g11563-9"
+                   transform="translate(-1.4393268,4.3179804)">
+                  <g
+                     id="g13926"
+                     transform="translate(-62.083216,41.728063)">
+                    <rect
+                       style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.13350093;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                       id="rect8608-4-9-7"
+                       width="221.86334"
+                       height="32.473137"
+                       x="322.82828"
+                       y="210.03928" />
+                    <text
+                       xml:space="preserve"
+                       style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                       x="328.7742"
+                       y="232.4213"
+                       id="text8622-8-4-7"
+                       sodipodi:linespacing="125%"><tspan
+                         id="tspan11524-3-1"
+                         sodipodi:role="line"
+                         x="328.7742"
+                         y="232.4213">Local conceptual schema</tspan></text>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g
+               id="g13994">
+              <g
+                 id="g10448"
+                 transform="translate(177.1296,193.49333)">
+                <g
+                   transform="translate(92.441961,1.8057659)"
+                   id="g11418-8">
+                  <rect
+                     y="140.69807"
+                     x="183.34912"
+                     height="31.237576"
+                     width="194.45647"
+                     id="rect8608-1-5"
+                     style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.0407989;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                  <text
+                     sodipodi:linespacing="125%"
+                     id="text8622-3-8"
+                     y="161.68713"
+                     x="189.34138"
+                     style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                     xml:space="preserve"><tspan
+                       y="161.68713"
+                       x="189.34138"
+                       sodipodi:role="line"
+                       id="tspan10408-7">Local internal schema</tspan></text>
+                </g>
+              </g>
+              <g
+                 transform="translate(4.0710305,1.0177576)"
+                 id="g13971">
+                <g
+                   id="g13964">
+                  <g
+                     inkscape:label="Ebene 1"
+                     id="layer1-3-1-3"
+                     transform="matrix(0.38051334,0,0,0.38051334,292.05749,226.75308)">
+                    <g
+                       id="g11272-8-8">
+                      <circle
+                         r="8.7207966"
+                         cy="326.44135"
+                         cx="317.31418"
+                         id="path11238-35-7"
+                         style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                      <circle
+                         r="8.7207966"
+                         cy="326.31506"
+                         cx="341.68411"
+                         id="path11238-3-3-7"
+                         style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                      <circle
+                         r="8.7207966"
+                         cy="326.06253"
+                         cx="365.92773"
+                         id="path11238-3-6-8-9"
+                         style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                    </g>
+                  </g>
+                </g>
+              </g>
+              <g
+                 id="g10448-9"
+                 transform="translate(-66.43592,192.95358)">
+                <g
+                   transform="translate(92.441961,1.8057659)"
+                   id="g11418-8-9">
+                  <rect
+                     y="140.69807"
+                     x="183.34912"
+                     height="31.237576"
+                     width="194.45647"
+                     id="rect8608-1-5-9"
+                     style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.0407989;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+                  <text
+                     sodipodi:linespacing="125%"
+                     id="text8622-3-8-0"
+                     y="161.68713"
+                     x="189.34138"
+                     style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                     xml:space="preserve"><tspan
+                       y="161.68713"
+                       x="189.34138"
+                       sodipodi:role="line"
+                       id="tspan10408-7-5">Local internal schema</tspan></text>
+                </g>
+              </g>
+            </g>
+            <g
+               inkscape:label="Ebene 1"
+               id="layer1-9-7-0-0-0-2"
+               transform="matrix(0.10857246,0,0,0.06815819,261.16377,302.4516)">
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+                 id="path9731-40-9-1-0-3"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+              <rect
+                 style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                 id="rect9735-2-7-92-1-7"
+                 width="39.958771"
+                 height="269.80609"
+                 x="241.80634"
+                 y="100.85202"
+                 rx="0"
+                 ry="0" />
+              <path
+                 style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+                 id="path9731-4-2-2-8-5-6"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+            </g>
+            <g
+               transform="matrix(0.38051334,0,0,0.38051334,298.46213,163.97652)"
+               id="layer1-3-1-3-4"
+               inkscape:label="Ebene 1">
+              <g
+                 id="g11272-8-8-4">
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-35-7-8"
+                   cx="317.31418"
+                   cy="326.44135"
+                   r="8.7207966" />
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-3-3-7-1"
+                   cx="341.68411"
+                   cy="326.31506"
+                   r="8.7207966" />
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-3-6-8-9-0"
+                   cx="365.92773"
+                   cy="326.06253"
+                   r="8.7207966" />
+              </g>
+            </g>
+            <g
+               transform="translate(48.315996,39.240289)"
+               id="g10474-9-6">
+              <g
+                 id="g11526-7-5-9"
+                 transform="translate(145.47878,-24.209876)">
+                <g
+                   id="g11563-9-2"
+                   transform="translate(-1.4393268,4.3179804)">
+                  <g
+                     id="g13926-9"
+                     transform="translate(-62.083216,41.728063)">
+                    <rect
+                       style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:1.13350093;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                       id="rect8608-4-9-7-6"
+                       width="221.86334"
+                       height="32.473137"
+                       x="322.82828"
+                       y="210.03928" />
+                    <text
+                       xml:space="preserve"
+                       style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                       x="328.7742"
+                       y="232.4213"
+                       id="text8622-8-4-7-2"
+                       sodipodi:linespacing="125%"><tspan
+                         id="tspan11524-3-1-0"
+                         sodipodi:role="line"
+                         x="328.7742"
+                         y="232.4213">Local conceptual schema</tspan></text>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g
+               transform="matrix(0.38051334,0,0,0.38051334,297.94036,93.921965)"
+               id="layer1-3-1-3-4-4"
+               inkscape:label="Ebene 1">
+              <g
+                 id="g11272-8-8-4-3">
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-35-7-8-9"
+                   cx="317.31418"
+                   cy="326.44135"
+                   r="8.7207966" />
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-3-3-7-1-7"
+                   cx="341.68411"
+                   cy="326.31506"
+                   r="8.7207966" />
+                <circle
+                   style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.07299995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                   id="path11238-3-6-8-9-0-2"
+                   cx="365.92773"
+                   cy="326.06253"
+                   r="8.7207966" />
+              </g>
+            </g>
+          </g>
+          <g
+             transform="matrix(0.10857246,0,0,0.06815819,520.38262,235.00993)"
+             id="layer1-9-7-0-0-0-2-1-3"
+             inkscape:label="Ebene 1">
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-40-9-1-0-3-8-9"
+               d="m 261.78572,44.147918 -43.21428,61.428572 86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+            <rect
+               ry="0"
+               rx="0"
+               y="100.85202"
+               x="241.80634"
+               height="269.80609"
+               width="39.958771"
+               id="rect9735-2-7-92-1-7-1-59"
+               style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.82851446;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path9731-4-2-2-8-5-6-3-5"
+               d="m 262.33437,430.03611 43.21428,-61.42857 -86.80674,0 z"
+               style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          </g>
+          <g
+             transform="translate(273.85719,-144.38737)"
+             id="g10552-8">
+            <g
+               id="g10581-8">
+              <rect
+                 y="118.87347"
+                 x="201.64635"
+                 height="31.361935"
+                 width="150.16626"
+                 id="rect8608-5-3"
+                 style="opacity:1;fill:#717171;fill-opacity:1;stroke:#000000;stroke-width:0.91644114;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+              <text
+                 sodipodi:linespacing="125%"
+                 id="text8622-7-3"
+                 y="139.92471"
+                 x="206.68303"
+                 style="font-style:normal;font-weight:normal;font-size:16.68852997px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                 xml:space="preserve"><tspan
+                   y="139.92471"
+                   x="206.68303"
+                   id="tspan8624-99-4"
+                   sodipodi:role="line">External schema</tspan></text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

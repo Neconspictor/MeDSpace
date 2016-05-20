@@ -3,13 +3,18 @@
 \select@language {english}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Architecture of a monolithic database \leavevmode {\color {red}TODO: own figure but inspired by book; cite properly}}}{7}{figure.2.1}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Architecture of a distributed database}}{7}{figure.2.2}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Architecture of a multidatabase system}}{8}{figure.2.3}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Architecture of a federated database management systems (FDBMS)}}{9}{figure.2.4}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Architecture of a mediator-based information system}}{9}{figure.2.5}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Environment of a Dataspace}}{9}{figure.3.1}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Architecture of a data integration system that handles uncertainty \leavevmode {\color {red}TODO: Discuss image more in depth?}}}{14}{figure.3.2}
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Bootstaping a 'Pay as you go' data integration system}}{16}{figure.3.3}
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Concepts of our example}}{17}{figure.3.4}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Environment of a Dataspace}}{13}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Architecture of a data integration system that handles uncertainty \leavevmode {\color {red}TODO: Discuss image more in depth?}}}{18}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Bootstaping a 'Pay as you go' data integration system}}{20}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Concepts of our example}}{21}{figure.3.4}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{21}{figure.4.1}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{25}{figure.4.1}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \select@language {ngerman}
