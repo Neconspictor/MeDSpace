@@ -1,0 +1,6 @@
+\section{Dataspaces}
+\input{theoretical/dataspace/DatabasesToDataspacesANewAbstractionForInformationManagement}
+\input{theoretical/dataspace/PrinciplesOfDataspaceSystems}
+\input{theoretical/dataspace/TowardsRealizationOfDataspaces}
+\input{theoretical/dataspace/DataModelingInDataspaceSupportSystems}
+\input{summaries/TowardsAModelToDataspaces_NDJAFA}

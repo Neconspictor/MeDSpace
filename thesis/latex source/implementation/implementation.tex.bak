@@ -2,10 +2,6 @@
 \section{Setting up databases}
 \section{Wrappers}
 \section{Register}
-\section{Connecting PHP server to Java backend}
-
-I decided to use both, PHP and Java in back end. 
-
 \section{Basic dataspace querying}
 \section{Advanced query techniques/features}
 \section{GUI}

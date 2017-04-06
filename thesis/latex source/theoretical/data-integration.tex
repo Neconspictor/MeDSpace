@@ -20,20 +20,58 @@ To bridge heterogeneity, it is obviously necessary to translate queries and to i
 \label{kinds-of-heterogeneity}
 \end{table}
 
-In general, there are two different types of data integration: The materialized integration and the virtual integration. The difference between these two approaches is as follows: At materialized integration the data to be integrated is stored  into the integrated system itself, so on a central point. The data in the data sources remains but for querying the materialized view is used. At virtual integration, the data is only transported from the data source to the integrated system while the query processing. This temporary data is then again discarded. So integration isn't done once but on each query. Of course, an integrated information system can use both principles. Such a system is called hybrid. Both types have in common that a query is processed on a global schema. For the virtual integrated system, the data only exists virtual, thus relations between data sources and the global schema have to be specified and on query time the query has to be split into into query schedules. The schedules are responsible to extract the needed information from the different data sources and subsequently merge and transform the data (from \cite[p. 86-88]{DBLP:books/dp/LeserN2006}, own translation).
+In general, there are two different types of data integration: The materialized integration and the virtual integration. The difference between these two approaches is as follows: At materialized integration the data to be integrated is stored  into the integrated system itself, so on a central point. The data in the data sources remains but for querying the materialized view is used. At virtual integration, the data is only transported from the data source to the integrated system while the query processing. This temporary data is then again discarded. So integration isn't done once but on each query. Of course, an integrated information system can use both principles. Such a system is called hybrid. Both types have in common that a query is processed on a global schema. For the virtual integrated system, the data only exists virtual, thus relations between data sources and the global schema have to be specified and on query time the query has to be split into query schedules. The schedules are responsible to extract the needed information from the different data sources and subsequently merge and transform the data (from \cite[p. 86-88]{DBLP:books/dp/LeserN2006}, own translation).
 
 \section{Heterogeneity}
+\textcolor{red}{From: \cite[chapter 3.3 (p.58-78)]{DBLP:books/dp/LeserN2006}}
+
 Information systems providing not the same methods, models and structures for accessing their data are called \textit{heterogeneous}. It is often the case, that distributed systems (and therefore are maintained independently) tend to be heterogeneous. In other words, distribution leads often to heterogeneity but not necessarily. De facto, it is to observe, that data sources tend to be the more heterogeneous the more they are autonomous. Two independent systems will in practice always  be heterogeneous, even if they contain the same kind of data. Heterogeneity arises from different requirements, different developers and different temporal developments. It even occurs if initially identical software systems are used but over time they were adapted to the specific enterprise's needs. This process is called \textit{customizing}. 
 
+Heterogeneity is the main issue of data integration. As a consequence, integrated systems often restrict autonomy of the data sources making them more homogeneous. A common example would be the use of industry-specific standards like common exchange formats, interfaces or communication protocols.
+
+Heterogeneity exists between the data sources as well between the data sources and the integrated system. But often only the latter case is relevant as the data sources often don't communicate among themselves. An example of heterogeneity of data sources and integrated system would be, if the data sources would be provide SQL-access but the integrated would use SPARQL for querying.
+
+It should be clear that in order to overcome heterogeneity, it is necessary to translate queries and the integrated system has to implement functionality, a data source might miss. But this isn't possible in all cases resp. only with big effort. (\textcolor{red}{TODO: Maybe an example?})
+
 As the understanding of heterogeneity is essential for further proceeding, we will go a little more in depth for each kind of heterogeneity:
+
+\subsection{Technical  heterogeneity}
+With this kind of heterogeneity are meant differences between information systems, that aren't established by their data or descriptions, but by the possibilities accessing the data. There are different technical layers on which heterogeneity can exist:
 \begin{itemize}
-\item Technical  heterogeneity
-\item Syntactic  heterogeneity
-\item Data model heterogeneity
-\item Structural  heterogeneity
-\item Schematic  heterogeneity
-\item Semantic  heterogeneity
+\item \textbf{Request function:} query language, parameterized  functions, canned queries
+\item \textbf{Query language:} SQL, XQuery, full text search,...
+\item \textbf{Exchange format:} binary data, XML, HTML, tabular,...
+\item \textbf{communication protocol:} HTTP, JDBC, SOAP,...
 \end{itemize}
+\subsection{Syntactic  heterogeneity}
+Syntactic heterogeneity describes differences in the presentation of the same circumstances. For example different number formats (little endian and big endian), different character encoding (Unicode, ASCII) or different seperators in text files (tab delimited and comma separated values (CSV)). Syntactic heterogeneity therefore can be reduced to technical differences in the presentation of information. Whereas the \textit{synonym problem,} which deals with the representation of equal concepts through different names, is an issue of \textit{semantic heterogeneity}.
+\subsection{Data model  heterogeneity}
+Structured information systems describes their managed data using schemas in a certain data model. Thus, data model heterogeneity arises, if the integrated system and a data source manage their data in different data models. Important to note is the fact, that data model heterogeneity is independent from semantic differences. Two systems can use two different data models both describing the same circumstance, e.g. describing data in the object oriented or relational data model. Nevertheless it is to observe that differences in the data model often induces semantic heterogeneity.
+\textcolor{red}{TODO: Maybe example image of different data model concepts?}
+\subsection{Structural  heterogeneity}
+Using the same data model doesn't mean that semantic equal data has to be described equally. We speak of structural heterogeneity, if two schemas are different even though they represent the same extract of the real world (i.d. the intension of their schema elements is equal). 
+
+Structural heterogeneity can have many reasons like different preferences of developers, different requirements, using different data models, technical restrictions and so on. This arises from the \textit{design autonomity} of data sources. A Data source has design autonomity if it can freely decide in which way it provides its data, including the data format, the data model, the schema, syntactic represenation of data, the use of key and comprehension systems and the units of values[\cite[p.55]{DBLP:books/dp/LeserN2006}].
+
+\subsection{Schematic  heterogeneity}
+A special case of structural heterogeneity is schematic heterogeneity. Schematic heterogeneity is present if different elements of the data model are used to model the same circumstance. In the relational model it is possible to model information as relations, as attributes or as values, for instance. 
+
+Schematic conflicts are particular difficult to resolve, as it isn't usually possible to overcome them with the query language. So is it mandatory to explicitly state attributes and relations in relational languages. If schematic heterogeneous data sources should be integrated, one would define a view. But the query has to be altered if something in these elements is changed.
+
+\subsection{Semantic  heterogeneity}
+Sole values have no implicit meaning in an information system. Looking at the number '20' on a table doesn't allow conclusions concerning its meaning. In fact, it could be anything. Only through \textit{interpretation} data becomes information, and for interpretation one needs knowledge about the concrete use case and world knowledge. The interpretation of data is also called its \textit{semantic}. To interpret data in a information system, further information is therefore consulted:
+\begin{itemize}
+\item The name of the schema element containing the datum
+\item The position of the schema element within the schema
+\item Other data values stored in the schema element
+\end{itemize}
+Comprehending all this information, we speak from the data's \textit{context}. Data is obtaining only its meaning by taking into account its context. But it should be considered that some parts of the context are given in machine-readable form (like the schema), and some not (e.g. domain specific knowledge). Also absolute identical schemas having different contexts can have different semantic meanings. Owing to circumstances, an integrated system has to make implicit context knowledge explicit e.g. by introducing new schema elements.
+
+Semantic conflicts relate to the interpretation of names resp. symbols. Semantic conflicts occur in the interaction of names and concepts in different systems. A \textit{concept} means here the intension of a name, the set of real world objects of a name is called its extension. The most common semantic conflicts are synonyms and homonyms. Two names are \textit{synonyms} if they have the same intension, but are syntactic different. Whereas two names are \textit{homonyms} if they are syntactic identical, but their intensions are different. But more difficult to treat are names, whose intensions neither are identical nor are completely different, but conclude themselves or are overlapping.
+
+In principle, it is difficult to detect semantic conflicts and resolve them clearly. Reasons are that for schema analysis are only available the schema themselves and some example data. Sometimes there is additionally some domain knowledge and documentation of the data sources, but that isn't always the case, particular on autonomous systems. Particular cases occurs always if the concepts aren't clearly defined or are interpreted differently. 
+
+On the other hand, complete resolving isn't always possible, only with big effort achievable or  simple not necessary. This is also called \textit{remaining blur}.
 
 \section{Distribution}
 \textcolor{red}{From: \cite[chapter 3.1 (p.51-54)]{DBLP:books/dp/LeserN2006}}
@@ -112,7 +150,37 @@ The global schema can be created either by schema integration or schema mapping.
 	\label{FDBMSArchitecture}
 \end{figure}
 
-\textbf{Mediator-based information systems} (as seen in \ref{MediatorBasedArchitecture}) are a generalization of the previous architectures, as they know only two separate components, namely Wrappers and Mediators: Wrappers are software components responsible for the access to a solely data source. A Wrapper has to break down technical, data model, schematic and interface heterogeneity. Mediators access one or more wrappers and deliver a specific value, normally structural and semantic data integration.
+\textbf{Mediator-based information systems} (as seen in \ref{MediatorBasedArchitecture}) are a generalization of the previous architectures, as they know only two separate components, namely Wrappers and Mediators: Wrappers are software components responsible for the access to a solely data source. A Wrapper has to break down technical, data model, schematic and interface heterogeneity. It realizes the communication between the mediators and data sources. To its task count:
+\begin{itemize}
+\item overcoming interface heterogeneity (e.g. SQL to html formulars)
+\item overcoming language heterogeneity. This includes the handling of restricted data sources and different query languages.
+\item Providing data model transparency through translating the data into the canonical data model.
+\item resolving schema heterogeneity by using a suitable mapping between the source schema and the global schema.
+\item Supporting the global query optimizing by providing information about the query capabilities of the data source and expected costs.
+\end{itemize}
+
+As the system to be created within this thesis uses wrappers, we go more in depth and look at the design, architecture and implementation goals of an architecture using wrappers. The following statements are results of from \cite{Roth:1997:DSW:645923.670992}:
+
+
+\textbf{Low start-up costs:} Writing a wrapper should be possible to do very quickly, very simple wrappers even in matters of hours. The authoring of a wrapper should also be as simple as possible, so that the wrapper can be written with little or no knowledge about the internal structure of the integrated system.
+
+\textbf{Easy evolving:} Evolving should be done very easy due to two reasons: A wrapper should be implemented very fast to show feasibility. More sophisticated features a data source can provide, should be added later. Additionally can the data source change  itself over time and the wrapper should be easily adaptable. 
+
+
+On the other hand are mediators software components, which use knowledge of certain data to \textit{create and provide} information for other applications. In a mediator-based architecture, mediators access one or more wrappers and deliver a specific value, normally structural and semantic data integration.
+
+The following list shows an extract of the services, a mediator might provide (from, \cite[p. 5-6]{Wiederhold1996TheCB}): 
+\begin{itemize}
+\item Selection of likely relevant material
+\item Invocation of wrappers to deal with legacy sources
+\item Resolution of domain term	terminology and ontology differences
+\item Sending the information and meta-data to the customer application
+\item Imposition of security filters to guard private data
+\item Omission of replicated information
+\item Assessment of quality of material from diverse sources
+\item Integration of material from diverse source domains based on join keys
+\end{itemize}
+
 In this architecture, data sources usually don't know of the existence of the integrated system, and so autonomy is preserved for all data sources (\cite[p. 97]{DBLP:books/dp/LeserN2006}, own translation).
 \begin{figure}[H]
 	\begin{center}

@@ -5,21 +5,32 @@ U.~Leser and F.~Naumann, {\em Informationsintegration: Architekturen und
   Methoden zur Integration verteilter und heterogener Datenquellen}.
 \newblock dpunkt, 2006.
 
+\bibitem{Roth:1997:DSW:645923.670992}
+M.~T. Roth and P.~M. Schwarz, ``Don't scrap it, wrap it! a wrapper architecture
+  for legacy data sources,'' in {\em Proceedings of the 23rd International
+  Conference on Very Large Data Bases}, VLDB '97, (San Francisco, CA, USA),
+  pp.~266--275, Morgan Kaufmann Publishers Inc., 1997.
+
+\bibitem{Wiederhold1996TheCB}
+G.~Wiederhold, M.~Genesereth, and M.~Papazoglou, ``The conceptual basis for
+  mediation services mail to issue editor the conceptual basis for mediation
+  services,'' 1996.
+
 \bibitem{Franklin:2005:DDN:1107499.1107502}
 M.~Franklin, A.~Halevy, and D.~Maier, ``From databases to dataspaces: A new
   abstraction for information management,'' {\em SIGMOD Rec.}, vol.~34,
   pp.~27--33, Dec. 2005.
+
+\bibitem{1698348}
+I.~Elsayed, P.~Brezany, and A.~Tjoa, ``Towards realization of dataspaces,'' in
+  {\em Database and Expert Systems Applications, 2006. DEXA '06. 17th
+  International Workshop on}, pp.~266--272, 2006.
 
 \bibitem{Halevy:2006:PDS:1142351.1142352}
 A.~Halevy, M.~Franklin, and D.~Maier, ``Principles of dataspace systems,'' in
   {\em Proceedings of the Twenty-fifth ACM SIGMOD-SIGACT-SIGART Symposium on
   Principles of Database Systems}, PODS '06, (New York, NY, USA), pp.~1--9,
   ACM, 2006.
-
-\bibitem{1698348}
-I.~Elsayed, P.~Brezany, and A.~Tjoa, ``Towards realization of dataspaces,'' in
-  {\em Database and Expert Systems Applications, 2006. DEXA '06. 17th
-  International Workshop on}, pp.~266--272, 2006.
 
 \bibitem{994693}
 S.~Agrawal, S.~Chaudhuri, and G.~Das, ``Dbxplorer: a system for keyword-based

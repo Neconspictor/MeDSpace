@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/W32TeX) (preloaded format=pdflatex 2015.5.15)  20 MAY 2016 15:35
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/W32TeX) (preloaded format=pdflatex 2015.5.15)  5 SEP 2016 16:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1154,18 +1154,17 @@ Package babel Info: Redefining ngerman shorthand "~
 
 
 
-] (./rootFile.toc)
+] (./rootFile.toc [5])
 \tf@toc=\write7
 \openout7 = `rootFile.toc'.
 
- [5] [6
-
-
-] (./rootFile.lot)
+ [6] (./rootFile.lot)
 \tf@lot=\write8
 \openout8 = `rootFile.lot'.
 
 [7
+
+
 
 
 ] [8
@@ -1222,86 +1221,75 @@ Overfull \hbox (48.9665pt too wide) in paragraph at lines 10--19
 Underfull \vbox (badness 5008) has occurred while \output is active []
 
  [3]
-LaTeX Font Info:    Try loading font information for OMS+lmr on input line 30.
-
-(d:/texlive/2014/texmf-dist/tex/latex/lm/omslmr.fd
+[4]
+LaTeX Font Info:    Try loading font information for OMS+lmr on input line 41.
+ (d:/texlive/2014/texmf-dist/tex/latex/lm/omslmr.fd
 File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 30.
- [4] [5]
-<figures/monolithicalDatabaseArchitecture.pdf, id=262, 248.40327pt x 306.2456pt
+(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 41.
+ [5] [6] [7]
+<figures/monolithicalDatabaseArchitecture.pdf, id=303, 248.40327pt x 306.2456pt
 >
 File: figures/monolithicalDatabaseArchitecture.pdf Graphic file (type pdf)
  <use figures/monolithicalDatabaseArchitecture.pdf>
 Package pdftex.def Info: figures/monolithicalDatabaseArchitecture.pdf used on i
-nput line 75.
+nput line 113.
 (pdftex.def)             Requested size: 124.20132pt x 153.12242pt.
-
-Underfull \vbox (badness 2302) has occurred while \output is active []
-
- [6]
-<figures/distributedDatabaseArchitecture.pdf, id=269, 361.55731pt x 261.73764pt
+ [8]
+<figures/distributedDatabaseArchitecture.pdf, id=310, 361.55731pt x 261.73764pt
 >
 File: figures/distributedDatabaseArchitecture.pdf Graphic file (type pdf)
  <use figures/distributedDatabaseArchitecture.pdf>
 Package pdftex.def Info: figures/distributedDatabaseArchitecture.pdf used on in
-put line 89.
+put line 127.
 (pdftex.def)             Requested size: 180.77821pt x 130.8685pt.
-
-<figures/MultidatabaseArchitecture.pdf, id=272, 361.55731pt x 301.78337pt>
+ [9 <./figures/monolithicalDatabaseArchitecture.pdf>]
+<figures/MultidatabaseArchitecture.pdf, id=326, 361.55731pt x 301.78337pt>
 File: figures/MultidatabaseArchitecture.pdf Graphic file (type pdf)
 
 <use figures/MultidatabaseArchitecture.pdf>
 Package pdftex.def Info: figures/MultidatabaseArchitecture.pdf used on input li
-ne 98.
+ne 136.
 (pdftex.def)             Requested size: 180.77821pt x 150.89131pt.
- [7 <./figures/monolithicalDatabaseArchitecture.pdf> <./figures/distributedData
-baseArchitecture.pdf
 
-pdfTeX warning: pdflatex.exe (file ./figures/distributedDatabaseArchitecture.pd
-f): PDF inclusion: multiple pdfs with page group included in a single page
->]
-<figures/federatedDatabaseArchitecture.pdf, id=294, 400.67284pt x 316.83086pt>
+<figures/federatedDatabaseArchitecture.pdf, id=329, 400.67284pt x 316.83086pt>
 File: figures/federatedDatabaseArchitecture.pdf Graphic file (type pdf)
 
 <use figures/federatedDatabaseArchitecture.pdf>
 Package pdftex.def Info: figures/federatedDatabaseArchitecture.pdf used on inpu
-t line 109.
+t line 147.
 (pdftex.def)             Requested size: 200.33592pt x 158.41504pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 103--113
+Underfull \hbox (badness 10000) in paragraph at lines 141--151
 
  []
 
+[10 <./figures/distributedDatabaseArchitecture.pdf> <./figures/MultidatabaseArc
+hitecture.pdf
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [8 <./figures/MultidatabaseArchitecture.pdf>]
-<figures/MediatorBasedArchitecture.pdf, id=310, 364.36998pt x 257.58862pt>
+pdfTeX warning: pdflatex.exe (file ./figures/MultidatabaseArchitecture.pdf): PD
+F inclusion: multiple pdfs with page group included in a single page
+>] [11 <./figures/federatedDatabaseArchitecture.pdf>]
+<figures/MediatorBasedArchitecture.pdf, id=366, 364.36998pt x 257.58862pt>
 File: figures/MediatorBasedArchitecture.pdf Graphic file (type pdf)
 
 <use figures/MediatorBasedArchitecture.pdf>
 Package pdftex.def Info: figures/MediatorBasedArchitecture.pdf used on input li
-ne 119.
+ne 187.
 (pdftex.def)             Requested size: 182.18454pt x 128.79399pt.
 )
-Underfull \hbox (badness 10000) in paragraph at lines 126--175
+Underfull \hbox (badness 10000) in paragraph at lines 194--175
 
  []
 
-[9 <./figures/federatedDatabaseArchitecture.pdf> <./figures/MediatorBasedArchit
-ecture.pdf
-
-pdfTeX warning: pdflatex.exe (file ./figures/MediatorBasedArchitecture.pdf): PD
-F inclusion: multiple pdfs with page group included in a single page
->] [10]
-Chapter 3.
-(./theoretical/dataspace/Components.tex [11
+[12 <./figures/MediatorBasedArchitecture.pdf>] [13] [14
 
 
 ]
-<figures/TowardsRealizationOfDataspaces1.png, id=344, 569.87906pt x 393.72093pt
+Chapter 3.
+(./theoretical/dataspace/Components.tex [15]
+<figures/TowardsRealizationOfDataspaces1.png, id=398, 569.87906pt x 393.72093pt
 >
 File: figures/TowardsRealizationOfDataspaces1.png Graphic file (type png)
  <use figures/TowardsRealizationOfDataspaces1.png>
@@ -1311,8 +1299,8 @@ put line 39.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [12]
-[13 <./figures/TowardsRealizationOfDataspaces1.png>] [14]
+ [16]
+[17 <./figures/TowardsRealizationOfDataspaces1.png>] [18]
 Underfull \hbox (badness 10000) in paragraph at lines 79--81
 
  []
@@ -1322,7 +1310,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 82--83
 
  []
 
-[15]
+[19]
 Underfull \hbox (badness 10000) in paragraph at lines 84--85
 
  []
@@ -1337,8 +1325,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 88--89
 
  []
 
-[16] [17]
-<figures/DataModelingInDSSPs-Figure1.png, id=394, 518.6878pt x 366.61969pt>
+[20] [21]
+<figures/DataModelingInDSSPs-Figure1.png, id=449, 518.6878pt x 366.61969pt>
 File: figures/DataModelingInDSSPs-Figure1.png Graphic file (type png)
 
 <use figures/DataModelingInDSSPs-Figure1.png>
@@ -1346,9 +1334,9 @@ Package pdftex.def Info: figures/DataModelingInDSSPs-Figure1.png used on input
 line 135.
 (pdftex.def)             Requested size: 320.57364pt x 226.59698pt.
 )
-(./theoretical/dataspace/ProbabilisticMediatedSchemaMapping.tex [18 <./figures/
+(./theoretical/dataspace/ProbabilisticMediatedSchemaMapping.tex [22 <./figures/
 DataModelingInDSSPs-Figure1.png>]
-<figures/BootstrappingPayAsYouGoDISystems1.png, id=407, 541.27219pt x 563.85657
+<figures/BootstrappingPayAsYouGoDISystems1.png, id=462, 541.27219pt x 563.85657
 pt>
 File: figures/BootstrappingPayAsYouGoDISystems1.png Graphic file (type png)
  <use figures/BootstrappingPayAsYouGoDISystems1.png>
@@ -1358,15 +1346,15 @@ input line 15.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [19]
-<figures/PMappingExampleConcepts.pdf, id=414, 423.40529pt x 138.6908pt>
+ [23]
+<figures/PMappingExampleConcepts.pdf, id=469, 423.40529pt x 138.6908pt>
 File: figures/PMappingExampleConcepts.pdf Graphic file (type pdf)
 
 <use figures/PMappingExampleConcepts.pdf>
 Package pdftex.def Info: figures/PMappingExampleConcepts.pdf used on input line
  31.
 (pdftex.def)             Requested size: 317.55318pt x 104.01782pt.
- [20 <./figures/BootstrappingPayAsYouGoDISystems1.png>]
+ [24 <./figures/BootstrappingPayAsYouGoDISystems1.png>]
 Overfull \hbox (23.99998pt too wide) in paragraph at lines 49--61
  [][] 
  []
@@ -1376,16 +1364,16 @@ Overfull \hbox (23.99998pt too wide) in paragraph at lines 49--61
  [] 
  []
 
-[21 <./figures/PMappingExampleConcepts.pdf>])
-(./theoretical/dataspace/TowardsAModelToDataspaces_NDJAFA.tex [22]) [23]
-[24
+[25 <./figures/PMappingExampleConcepts.pdf>])
+(./theoretical/dataspace/TowardsAModelToDataspaces_NDJAFA.tex [26]) [27]
+[28
 
 
 ]
 Chapter 4.
 (./reference-projects/DebugITOntologyMediatedLayeredDataIntegration.tex
 <figures/DebugIT-Ontology-mediated-layered-Data-Integration-architecture.png, i
-d=518, 1045.9075pt x 722.7pt>
+d=572, 1045.9075pt x 722.7pt>
 File: figures/DebugIT-Ontology-mediated-layered-Data-Integration-architecture.p
 ng Graphic file (type png)
 
@@ -1402,34 +1390,34 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <7> on input line 15.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 15.
- [25 <./figures/DebugIT-Ontology-mediated-layered-Data-Integration-architecture
-.png>]) [26]
+ [29 <./figures/DebugIT-Ontology-mediated-layered-Data-Integration-architecture
+.png>]) [30]
 \openout2 = `implementation/implementation.aux'.
 
 
 (./implementation/implementation.tex
 Chapter 5.
-) [27
+) [31
 
 
 
 ]
 \openout2 = `glossary/glossary.aux'.
 
- (./glossary/glossary.tex [28
+ (./glossary/glossary.tex [32
 
 
 
 
 ]
 Chapter 6.
-) [29] (./rootFile.bbl [30
+) [33] (./rootFile.bbl [34
 
 
 
-] [31]
+] [35]
 LaTeX Font Info:    Font shape `OMS/lmr/m/it' in size <12> not available
-(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 90.
+(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 101.
 )
 Package babel Info: Redefining ngerman shorthand "|
 (babel)             in language  on input line 200.
@@ -1439,7 +1427,7 @@ Package babel Info: Redefining ngerman shorthand "|
 (babel)             in language  on input line 200.
 Package babel Info: Redefining ngerman shorthand "~
 (babel)             in language  on input line 200.
- [32]
+ [36]
 \openout2 = `assertion.aux'.
 
  (./assertion.tex
@@ -1460,7 +1448,7 @@ Package babel Info: Redefining ngerman shorthand "|
 (babel)             in language  on input line 22.
 Package babel Info: Redefining ngerman shorthand "~
 (babel)             in language  on input line 22.
-[33
+[37
 
 
 
@@ -1475,18 +1463,25 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 202.
 (./glossary/glossary.aux) (./assertion.aux))
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 202.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 202.
-Package rerunfilecheck Info: File `rootFile.out' has not changed.
-(rerunfilecheck)             Checksum: 01987FB89AAB4F699BAF5633BE8E0F2A;1862.
+
+
+Package rerunfilecheck Warning: File `rootFile.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `rootFile.out':
+(rerunfilecheck)             Before: 75B722985EBF11547F6259C5F5BF1E71;2361
+(rerunfilecheck)             After:  933FAD48F7DF9D3C1657638830FFDBD6;2449.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 202.
  ) 
 Here is how much of TeX's memory you used:
- 23126 strings out of 493109
- 384018 string characters out of 6138587
- 593803 words of memory out of 5000000
- 25944 multiletter control sequences out of 15000+600000
+ 23147 strings out of 493109
+ 384367 string characters out of 6138587
+ 592899 words of memory out of 5000000
+ 25952 multiletter control sequences out of 15000+600000
  83210 words of font info for 70 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 49i,12n,72p,1417b,476s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 49i,12n,72p,1417b,552s stack positions out of 5000i,500n,10000p,200000b,80000s
 {d:/texlive/2014/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{d:/texlive/2014/tex
 mf-dist/fonts/enc/dvips/lm/lm-rm.enc}{d:/texlive/2014/texmf-dist/fonts/enc/dvip
 s/lm/lm-mathit.enc}{d:/texlive/2014/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc
@@ -1501,10 +1496,10 @@ texlive/2014/texmf-dist/fonts/type1/public/lm/lmri12.pfb><d:/texlive/2014/texmf
 -dist/fonts/type1/public/lm/lmri8.pfb><d:/texlive/2014/texmf-dist/fonts/type1/p
 ublic/lm/lmro12.pfb><d:/texlive/2014/texmf-dist/fonts/type1/public/lm/lmssbx10.
 pfb><d:/texlive/2014/texmf-dist/fonts/type1/public/lm/lmsy10.pfb>
-Output written on rootFile.pdf (43 pages, 588304 bytes).
+Output written on rootFile.pdf (47 pages, 600719 bytes).
 PDF statistics:
- 664 PDF objects out of 1000 (max. 8388607)
- 554 compressed objects within 6 object streams
- 113 named destinations out of 1000 (max. 500000)
- 283 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 721 PDF objects out of 1000 (max. 8388607)
+ 606 compressed objects within 7 object streams
+ 126 named destinations out of 1000 (max. 500000)
+ 331 words of extra memory for PDF output out of 10000 (max. 10000000)
 

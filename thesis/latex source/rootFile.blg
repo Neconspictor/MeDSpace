@@ -18,6 +18,7 @@ refers to entry "DBLP:conf/swat4ls/2014", which doesn't exist
 Warning--I didn't find a database entry for "conf/wise/2004"
 Warning--I didn't find a database entry for "DBLP:conf/birthday/2009mylopoulos"
 Warning--I didn't find a database entry for "DBLP:conf/swat4ls/2014"
+Warning--empty booktitle in Wiederhold1996TheCB
 Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choquet, Douglas Teodoro, Frank Enders, Catherine Duclos, Marie-Christine Jaulent" for entry DebugITDDO
 while executing---line 969 of file ieeetr.bst
 Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choquet, Douglas Teodoro, Frank Enders, Catherine Duclos, Marie-Christine Jaulent" for entry DebugITDDO
@@ -26,45 +27,45 @@ Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choq
 while executing---line 969 of file ieeetr.bst
 Too many commas in name 1 of "Ariane Assélé Kama, Audi Primadhanty, Rémy Choquet, Douglas Teodoro, Frank Enders, Catherine Duclos, Marie-Christine Jaulent" for entry DebugITDDO
 while executing---line 969 of file ieeetr.bst
-You've used 19 entries,
+You've used 21 entries,
             1876 wiz_defined-function locations,
-            618 strings with 8315 characters,
-and the built_in function-call counts, 5441 in all, are:
-= -- 501
-> -- 234
+            633 strings with 8833 characters,
+and the built_in function-call counts, 5978 in all, are:
+= -- 551
+> -- 253
 < -- 0
-+ -- 85
-- -- 66
-* -- 388
-:= -- 754
-add.period$ -- 21
-call.type$ -- 19
-change.case$ -- 16
++ -- 92
+- -- 71
+* -- 425
+:= -- 825
+add.period$ -- 23
+call.type$ -- 21
+change.case$ -- 18
 chr.to.int$ -- 0
-cite$ -- 19
-duplicate$ -- 292
-empty$ -- 547
-format.name$ -- 66
-if$ -- 1334
+cite$ -- 22
+duplicate$ -- 325
+empty$ -- 606
+format.name$ -- 71
+if$ -- 1466
 int.to.chr$ -- 0
-int.to.str$ -- 19
-missing$ -- 16
-newline$ -- 63
-num.names$ -- 20
-pop$ -- 92
+int.to.str$ -- 21
+missing$ -- 18
+newline$ -- 69
+num.names$ -- 22
+pop$ -- 104
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 195
+skip$ -- 213
 stack$ -- 0
-substring$ -- 331
-swap$ -- 106
+substring$ -- 363
+swap$ -- 115
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 0
-while$ -- 52
-width$ -- 21
-write$ -- 183
+warning$ -- 1
+while$ -- 57
+width$ -- 23
+write$ -- 202
 (There were 7 error messages)
