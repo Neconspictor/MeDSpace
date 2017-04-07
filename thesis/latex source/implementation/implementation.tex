@@ -2,7 +2,7 @@
 
 \textbf{Importance of unicode}
 
-A dataspace includes data sources possibly spread around the globe. It is near infering to support a wide area of different languages. In terms of character sets, it is therefore necessary to use a unicode encoding.
+A dataspace includes data sources possibly spread around the globe. It is near inferring to support a wide area of different languages. In terms of character sets, it is therefore necessary to use a unicode encoding.
 Unicode is a system assigning each character a unique code point and it is designed to support the worldwide interchange, processing and display of texts written in different languages\cite{UnicodeStandard}.\newline
 There exist several encodings for unicode. The more well known are the UTF and UCS encoding families. In the draft of HTML5 it is advised to use UTF-8 for new web pages\cite{HTML5Rec}. 
 Thus, to simplify processing, we follow the recommendation and use UTF-8 throughout the dataspace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
@@ -18,7 +18,7 @@ and install it for you target platform. Additionally you will need the Connector
 At time of writing, the most recent stable versions are the community server 5.7.17 and the Connector/J 5.1.41. These versions are used for the thesis project and all following commands are related on them. If you're using 
 different versions, assure that the instructions are adapted properly. As a detailed installation instruction for all supported platforms would break the mold, the reader is encouraged to consult the official 
 manual\footnote{\url{https://dev.mysql.com/doc/}}. 
-Assure that the MySQL binary folder is integrated into your classpath, so that you can access it globally in a shell/command line. Although not necessary it is recommended for security reasons 
+Assure that the MySQL binary folder is integrated into your class path, so that you can access it globally in a shell/command line. Although not necessary it is recommended for security reasons 
 to set a password for the root user\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/default-privileges.html} , \url{https://dev.mysql.com/doc/refman/5.7/en/resetting-permissions.html}}. 
 After installing the server, do postinstallation setup and testing\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/postinstallation.html}}. 
 
@@ -35,8 +35,9 @@ in the mysql section and
 	collation\-server=utf8\_general\_ci
 \end{codebox}
 
-in the mysqld section. Then restart the mysqld daemon. In the following, it is aussumed, that you have a running MySQL server now that can be accessed via shell/command line.
-Try to connect to the database:
+in the mysqld section. Then restart the mysqld daemon. In the following, it is assumed, that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system the command line isn't using UTF-8 by default
+\footnote{To set the encoding to UTF-8 on the windows command line, change the active code page to 65001 and set 'Lucida Console' as the displaying font. In contrast to the font, the code page is only active for the current console session. But you can automate this command with a AutoRun setting. For more information see \url{https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433}}.  
+Now try to connect to the database as the user root:
 
 \begin{codebox}
 	mysql -u root -p 
@@ -47,12 +48,28 @@ If you've done all right, you should be connected to the database after entering
 The next step is to validate, that UTF-8 is indeed continuously used. Execute:
 
 \begin{codebox}
-	show variables like 'char\%';
+	SHOW VARIABLES LIKE 'char\%';
 \end{codebox}
 
-and check, that the variables character\_set\_client, character\_set\_connection, character\_set\_database, character\_set\_results, character\_set\_server and character\_set\_system are all set to utf8.
+and check, that the variables \emph{character\_set\_client}, \emph{character\_set\_connection}, \emph{character\_set\_database}, \emph{character\_set\_results}, \emph{character\_set\_server} and \emph{character\_set\_system} are all set to utf8.
 Basically, these variables are used to interpret and write data consistently in UTF-8. More information about the stated variables can be found on the manual
 \footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html\#sysvar_character_set_client}}.
+
+The next step is to create a database which later will be filled with medical test data:
+
+\begin{codebox}
+	CREATE DATABASE medspace;
+\end{codebox}
+
+Further, we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few as possible' we grant the user only reading rights for fetching data from the \emph{medspace} database:
+
+\begin{codebox}
+	CREATE USER medspace\_client@'\%' IDENTIFIED BY '\emph{user\_password}';
+	GRANT SELECT ON medspace.* TO 'medspace\_client'@'\%';
+	
+\end{codebox}
+
+Hereby, \emph{user\_password} is the password of the new user.
 
 
 \section{Wrappers}
