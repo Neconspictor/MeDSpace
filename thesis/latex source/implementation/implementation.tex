@@ -1,5 +1,60 @@
 \chapter{Implementation}
+
+\textbf{Importance of unicode}
+
+A dataspace includes data sources possibly spread around the globe. It is near infering to support a wide area of different languages. In terms of character sets, it is therefore necessary to use a unicode encoding.
+Unicode is a system assigning each character a unique code point and it is designed to support the worldwide interchange, processing and display of texts written in different languages\cite{UnicodeStandard}.\newline
+There exist several encodings for unicode. The more well known are the UTF and UCS encoding families. In the draft of HTML5 it is advised to use UTF-8 for new web pages\cite{HTML5Rec}. 
+Thus, to simplify processing, we follow the recommendation and use UTF-8 throughout the dataspace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
+
 \section{Setting up databases}
+
+
+\subsection{Setting up a MySQL data source}
+
+To setup a MySQL data source download a recent stable MySQL community server\footnote{\url{https://www.mysql.de/downloads/}} 
+and install it for you target platform. Additionally you will need the Connector/J components, the official JDBC driver for MySQL. 
+
+At time of writing, the most recent stable versions are the community server 5.7.17 and the Connector/J 5.1.41. These versions are used for the thesis project and all following commands are related on them. If you're using 
+different versions, assure that the instructions are adapted properly. As a detailed installation instruction for all supported platforms would break the mold, the reader is encouraged to consult the official 
+manual\footnote{\url{https://dev.mysql.com/doc/}}. 
+Assure that the MySQL binary folder is integrated into your classpath, so that you can access it globally in a shell/command line. Although not necessary it is recommended for security reasons 
+to set a password for the root user\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/default-privileges.html} , \url{https://dev.mysql.com/doc/refman/5.7/en/resetting-permissions.html}}. 
+After installing the server, do postinstallation setup and testing\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/postinstallation.html}}. 
+
+To support UTF-8, set in your my.cnf 
+
+\begin{codebox}
+	default-character-set = utf8
+\end{codebox}
+
+in the mysql section and
+
+\begin{codebox}
+	character-set-server=utf8\newline
+	collation\-server=utf8\_general\_ci
+\end{codebox}
+
+in the mysqld section. Then restart the mysqld daemon. In the following, it is aussumed, that you have a running MySQL server now that can be accessed via shell/command line.
+Try to connect to the database:
+
+\begin{codebox}
+	mysql -u root -p 
+\end{codebox}
+
+If you've done all right, you should be connected to the database after entering and confirming the password, that you've previously stated for the user root.
+
+The next step is to validate, that UTF-8 is indeed continuously used. Execute:
+
+\begin{codebox}
+	show variables like 'char\%';
+\end{codebox}
+
+and check, that the variables character\_set\_client, character\_set\_connection, character\_set\_database, character\_set\_results, character\_set\_server and character\_set\_system are all set to utf8.
+Basically, these variables are used to interpret and write data consistently in UTF-8. More information about the stated variables can be found on the manual
+\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html\#sysvar_character_set_client}}.
+
+
 \section{Wrappers}
 \section{Register}
 \section{Connecting PHP server to Java backend}
