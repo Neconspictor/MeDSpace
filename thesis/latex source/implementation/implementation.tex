@@ -55,21 +55,16 @@ and check, that the variables \emph{character\_set\_client}, \emph{character\_se
 Basically, these variables are used to interpret and write data consistently in UTF-8. More information about the stated variables can be found on the manual
 \footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html\#sysvar_character_set_client}}.
 
-The next step is to create a database which later will be filled with medical test data:
+The next step is to initialize the data source with a database and some content. Further we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few rights as possible' we grant that user only reading rights for fetching data. The commands for initializing the data source and creating a read-user are in the file \textbf{init.sql} which is located in the appendix data in the folder \textbf{implementation/SQL}.
+
+To execute commands from a file, execute while logged in as the root user:
 
 \begin{codebox}
-	CREATE DATABASE medspace;
+	SOURCE \emph{path\_to\_sql\_file};
 \end{codebox}
 
-Further, we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few as possible' we grant the user only reading rights for fetching data from the \emph{medspace} database:
-
-\begin{codebox}
-	CREATE USER medspace\_client@'\%' IDENTIFIED BY '\emph{user\_password}';
-	GRANT SELECT ON medspace.* TO 'medspace\_client'@'\%';
-	
-\end{codebox}
-
-Hereby, \emph{user\_password} is the password of the new user.
+where \emph{path\_to\_sql\_file} is the full (absolute or relative) path to the sql file.
+Per default, the created database will be named \textbf{medspace} and the read-user will be called \textbf{medspace\_client}. If you want edit the init.sql file, beware that the file is encoded in UTF-8. As we instructed mysql to use UTF-8 in every case, this is encoding is required. Assure that your file editor saves the file in that encoding, too.
 
 
 \section{Wrappers}
