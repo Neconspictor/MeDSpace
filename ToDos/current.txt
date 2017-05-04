@@ -1,5 +1,6 @@
 discuss more in depth:
 
+Theory:
 - Services of Dataspaces (Search and Query, especially keyword search)
 - logical components
 - sub dataspaces
@@ -16,3 +17,9 @@ discuss more in depth:
  -> Mention current main challenges that have to be overcome
 - Automatic creation of schema mappings (BootstrappingPay-as-you-goDataIntegrationSystems 
 has goot starting references!)
+
+Implementation:
+- D2R module adjusted to the needs of the medspace project
+
+Documentation:
+- D2R language specification tailored to medspace
