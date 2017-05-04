@@ -20,6 +20,21 @@ has goot starting references!)
 
 Implementation:
 - D2R module adjusted to the needs of the medspace project
+- d2r:sql has to be changed in such a way, that on query time, the query for a class mapping is narrowed down before
+  the query is executed. This is important, as when there are thousands or even millions of entities, 
+  it would take to long, especially for a keyword search. Thus let do filter the entity set by the database!
 
 Documentation:
+D2R-Module:
 - D2R language specification tailored to medspace
+- Upgraded D2R to Java 8
+- Java 8 removed JDBC-ODBC bridge -> removed odbcDSN attribute from DBConnection
+- jdbcDriver and jdbcDSN are obligatory and not optional as stated in the D2R language specification
+- Fixed missing or wrong javadocs
+- D2R is lincensed in LGPGL v. 2.0 and thus can be combined with proprietary software
+  if separated properly from the proprietary code (Important is to clearly seperate between 
+  the D2R module and the medspace project code!).
+  -> D2R is used as a shared library, thus allowing users to use their own library version
+  -> Source Code of the D2R module as to be provided to the end user
+  -> attribution requirement: In the readme their should be a notice, that the D2R module was 
+     changed/adapted and used in the medspace project.
