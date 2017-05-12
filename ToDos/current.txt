@@ -23,6 +23,8 @@ Implementation:
 - d2r:sql has to be changed in such a way, that on query time, the query for a class mapping is narrowed down before
   the query is executed. This is important, as when there are thousands or even millions of entities, 
   it would take to long, especially for a keyword search. Thus let do filter the entity set by the database!
+  Tests:
+  - 
 
 Documentation:
 D2R-Module:
