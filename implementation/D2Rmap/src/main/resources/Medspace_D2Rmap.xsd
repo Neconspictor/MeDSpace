@@ -26,9 +26,9 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="DBConnection">
-		<xsd:choice maxOccurs="unbounded">
+		<xsd:sequence>
 			<xsd:element name="DBAuthentification" type="d2r:DBAuthentification" minOccurs="0" maxOccurs="1" />
-		</xsd:choice>
+		</xsd:sequence>
 		<xsd:attribute name="jdbcDriver" type="xsd:string" use="required"/>
 		<xsd:attribute name="jdbcDSN" type="xsd:string" use="required"/>
 	</xsd:complexType>

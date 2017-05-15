@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="Setting"/>
-    <xs:element name="ServiceTypeInitializer"/>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:d2r="http://www.medspace.com/D2Rmap"
+           xmlns="http://www.medspace.com/D2Rmap"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+>
+    <xs:import namespace="http://www.medspace.com/D2Rmap"/>
+    <xs:element name="DBAuthentification" type="d2r:DBAuthentification"/>
+    <xs:element name="DBConnection" type="d2r:DBConnection"/>
 </xs:schema>
