@@ -1,0 +1,3 @@
+task runApp(type: JavaExec) {
+  main = 'TestProcessor'
+}

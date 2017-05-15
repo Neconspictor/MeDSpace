@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://www.medspace.com/D2Rmap"
+	xmlns:d2r="http://www.medspace.com/D2Rmap"
+	elementFormDefault="qualified">
+	
+	<xsd:element name="Map">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DBConnection" type="d2r:DBConnection" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="OutputFormat" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="Namespace" type="d2r:Namespace" minOccurs="0" maxOccurs="unbounded"/>
+					<xsd:element name="ClassMap" type="d2r:ClassMap" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="TranslationTable" type="d2r:TranslationTable" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="DBAuthentification">
+		<xsd:attribute name="username" type="xsd:string" use="required"/>
+		<xsd:attribute name="password" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="DBConnection">
+		<xsd:choice maxOccurs="unbounded">
+			<xsd:element name="DBAuthentification" type="d2r:DBAuthentification" minOccurs="0" maxOccurs="1" />
+		</xsd:choice>
+		<xsd:attribute name="jdbcDriver" type="xsd:string" use="required"/>
+		<xsd:attribute name="jdbcDSN" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	
+	<xsd:complexType name="Namespace">
+		<xsd:attribute name="prefix" type="xsd:string" use="required"/>
+		<xsd:attribute name="namespace" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ClassMap">
+		<xsd:choice maxOccurs="unbounded">
+			<xsd:element name="DatatypePropertyBridge" type="d2r:DatatypePropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ObjectPropertyBridge" type="d2r:ObjectPropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+		<xsd:attribute name="sql" type="xsd:string" use="required"/>
+		<xsd:attribute name="groupBy" type="xsd:string" use="required"/>
+		<xsd:attribute name="id" type="xsd:string" use="optional"/>
+		<xsd:attribute name="type" type="xsd:string" use="optional"/>
+		<xsd:attribute name="uriColumn" type="xsd:string" use="optional"/>
+		<xsd:attribute name="uriPattern" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="DatatypePropertyBridge">
+		<xsd:attribute name="property" type="xsd:string" use="required"/>
+		<xsd:attribute name="column" type="xsd:string" use="optional"/>
+		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
+		<xsd:attribute name="value" type="xsd:string" use="optional"/>
+		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
+		<xsd:attribute name="datatype" type="xsd:string" use="optional"/>
+		<xsd:attribute name="useCollection" type="xsd:string" use="optional"/>
+		<xsd:attribute name="lang" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ObjectPropertyBridge">
+		<xsd:attribute name="property" type="xsd:string" use="required"/>
+		<xsd:attribute name="column" type="xsd:string" use="optional"/>
+		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
+		<xsd:attribute name="value" type="xsd:string" use="optional"/>
+		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
+		<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
+		<xsd:attribute name="referredGroupBy" type="xsd:string" use="optional"/>
+		<xsd:attribute name="useCollection" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="TranslationTable">
+		<xsd:choice maxOccurs="unbounded">
+			<xsd:element name="Translation" type="d2r:Translation" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:choice>
+		<xsd:attribute name="id" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Translation">
+		<xsd:attribute name="key" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+</xsd:schema> 

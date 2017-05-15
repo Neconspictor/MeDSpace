@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<d2r:Map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:d2r="http://www.medspace.com/D2Rmap"
+         xsi:schemaLocation="http://www.medspace.com/D2Rmap http://www.medspace.com/D2Rmap/Medspace_D2Rmap.xsd">
+
+    <d2r:DBConnection  jdbcDriver="com.mysql.jdbc.Driver" jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false">
+        <d2r:DBAuthentification username="medspace_client" password="k4N!rT"/>
+    </d2r:DBConnection>
+    <d2r:OutputFormat>RDF/JSON</d2r:OutputFormat>
+    <d2r:Namespace prefix="test" namespace="http://localhost/patient_test_namesapce#"/>
+    <d2r:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>
+    <d2r:Namespace prefix="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+
+
+    <!-- D2R GroupMap: Organization, University, Institut, Department -->
+    <!--d2r:type="rdf:PlainLiteral"-->
+    <d2r:ClassMap
+            type="test:language"
+            sql="SELECT * FROM language;"
+            groupBy="language.name"
+            uriPattern="http://localhost/languages#@@language.name@@">
+
+        <d2r:DatatypePropertyBridge property="test:name" column="language.name"/>
+    </d2r:ClassMap>
+</d2r:Map>
