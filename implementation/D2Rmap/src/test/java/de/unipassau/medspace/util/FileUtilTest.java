@@ -1,5 +1,6 @@
 package de.unipassau.medspace.util;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -7,6 +8,32 @@ import org.junit.Test;
  * Created by David Goeth on 16.05.2017.
  */
 public class FileUtilTest {
+
+  /**
+   *  Tests for method FileUtil.getAbsoluteFilePathFromResource
+   * */
+
+  @Test (expected=IllegalArgumentException.class)
+  public void  getAbsoluteFilePathFromResourceTestEmptyString() {
+    String path = FileUtil.getAbsoluteFilePathFromResource("");
+  }
+
+  @Test (expected=IllegalArgumentException.class)
+  public void  getAbsoluteFilePathFromResourceTestNoValidResource() {
+    String path = FileUtil.getAbsoluteFilePathFromResource("test/testFile.txt");
+  }
+
+  @Test (expected=NullPointerException.class)
+  public void  getAbsoluteFilePathFromResourceTestNull() {
+    String path = FileUtil.getAbsoluteFilePathFromResource(null);
+  }
+
+  @Test
+  public void  getAbsoluteFilePathFromResourceTestValidResource() {
+    String path = FileUtil.getAbsoluteFilePathFromResource("/testSchema.xml");
+    Assert.assertNotNull("The path of a valid resource mustn't be null!", path);
+    Assert.assertFalse("The path of a valid resource mustn't be an empty string!", path.isEmpty());
+  }
 
   /**
    *  Tests for method FileUtil.isResource
@@ -28,5 +55,11 @@ public class FileUtilTest {
   public void  isResourceTestFilesArentResources() {
     boolean isResource = FileUtil.isResource("test/testFile.txt");
     Assert.assertFalse("A file isn't a resource!", isResource);
+  }
+
+  @Test(expected=NullPointerException.class)
+  public void  isResourceTestNull() {
+    boolean isResource = FileUtil.isResource(null);
+    Assert.assertFalse("Null isn't a valid resource!", isResource);
   }
 }
