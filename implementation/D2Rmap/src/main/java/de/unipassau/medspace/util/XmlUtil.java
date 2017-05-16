@@ -30,10 +30,10 @@ public class XmlUtil {
 
   private static Logger log = Logger.getLogger(XmlUtil.class.getName());
 
-  public static InputSource getFromFile(String filename) throws FileNotFoundException, URISyntaxException {
+  public static InputSource getFromFile(String filename) throws FileNotFoundException {
     if (FileUtil.isResource(filename)) {
       URL resource = Class.class.getResource(filename);
-      filename = Paths.get(resource.toURI()).toString();
+      filename = resource.getFile();
     }
     return new InputSource(new FileReader(filename));
   }

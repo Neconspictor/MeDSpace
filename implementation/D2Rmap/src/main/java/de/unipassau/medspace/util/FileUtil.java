@@ -7,6 +7,6 @@ package de.unipassau.medspace.util;
 public class FileUtil {
 
   public static boolean isResource(String filename) {
-    return filename.startsWith("/") ? true : false;
+     return  Class.class.getResource(filename) != null;
   }
 }
