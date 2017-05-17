@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.testSchema.com/AnotherSchema"
+>
+
+    <xsd:element name="AnotherElement">
+    </xsd:element>
+
+</xsd:schema>

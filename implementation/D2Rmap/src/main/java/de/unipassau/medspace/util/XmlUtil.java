@@ -1,6 +1,5 @@
 package de.unipassau.medspace.util;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
@@ -20,9 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 
 /**
  * Utility class for parsing XML and XSD files.
@@ -31,15 +28,41 @@ public class XmlUtil {
 
   private static Logger log = Logger.getLogger(XmlUtil.class.getName());
 
-  public static DocumentBuilder createDocBuilder(String[] schemaFilenames) throws URISyntaxException, SAXException, ParserConfigurationException {
-    final Schema schema = createSchema(schemaFilenames);
+  /**
+   * Creates a document builder for parsing xml files using a given schema.
+   * The builder is configured so that it will throw an SAXException if an error
+   * occurs while parsing whereas warnings will be logged using the XmlUtil logger.
+   * <p>Note: Is is assumed, that <b>schema</b> is a valid xml schema. It is recommened to use
+   * {@link SchemaFactory} for creating the schema.
+   * </p>
+   * <p>Note: The schema is used for modern schema languages such as W3C Schema (XSD) or RELAX NG
+   * and cannot be used for DTDs.
+   * </p>
+   * @param schema The Schema for XML schema validation. If this parameter is null, no validation
+   *              will be done by the parser
+   * @return A document builder for pasring xml files
+   */
+  public static DocumentBuilder createDocBuilder(Schema schema) {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setValidating(false); // validation is only done for DTDs, but we use only XSDs. So we have to disable it.
+    // Validation is only done for DTDs, but we use only XSDs. So we have to disable it.
+    factory.setValidating(false);
+    // We use namespaces - the builder should handle them
     factory.setNamespaceAware(true);
+    // The builder validates the xml by this schema. If the schema is null, no schema will be used
     factory.setSchema(schema);
-    DocumentBuilder builder = factory.newDocumentBuilder();
+
+    DocumentBuilder builder = null;
+    try {
+      builder = factory.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      throw new IllegalStateException("factory isn't properly configured. Fix that bug!", e);
+    }
+
+    // Now, builder should never be null; but to assure it.
+    assert builder != null;
 
     // error handler for not well defined xml files
+    // we want to pass warnings, but errrors should throw an exception
     builder.setErrorHandler(new ErrorHandler() {
       @Override
       public void warning(SAXParseException exception) throws SAXException {
@@ -63,7 +86,7 @@ public class XmlUtil {
   /**
    * Creates a compound XSD schema from a set of specified XSD schema files.
    * @param schemaFilenames the file or resource names of the XSD schemas.
-   * @return The compund schema.
+   * @return The compound schema. The returned schema will always be valid and not null.
    * @throws NullPointerException If <b>schemaFilenames</b> is <b>null</b>
    * @throws SAXException If no compound XSD schema could be created.
    */
@@ -92,8 +115,7 @@ public class XmlUtil {
     try {
       schema = schemaFactory.newSchema(schemaSources);
     } catch(SAXException e) {
-      log.error(e.getMessage(), e);
-      throw new SAXException("Couldn't create compound schema!");
+      throw new SAXException("Couldn't create compound schema!", e);
     }
 
     return schema;
@@ -104,9 +126,11 @@ public class XmlUtil {
    *  Creates a InputSource object from a file or resource.
    * @param filename the path of the file or resource
    * @return A InputSource object that wraps the content of the specified file
-   * @throws FileNotFoundException if <b>filename</b> is not a valid file or resource
+   * @throws FileNotFoundException if the file name is not a valid file or resource
+   * @throws NullPointerException if the file name is null
    */
   public static InputSource getFromFile(String filename) throws FileNotFoundException {
+    if (filename == null) throw new NullPointerException("filename mustn't be null!");
     if (FileUtil.isResource(filename)) {
       URL resource = Class.class.getResource(filename);
       filename = resource.getFile();
@@ -119,25 +143,63 @@ public class XmlUtil {
    * @param content The string representing a text file
    * @return A InputSource objects that represents the delivered string
    *
-   * @throws IllegalArgumentException If parameter <b>content</b> is <b>null</b>
+   * @throws NullPointerException If the provided string is <b>null</b>
    */
   public static InputSource getFromString(String content) {
-    if (content == null) throw new IllegalArgumentException("Null is not a valid String object!");
+    if (content == null) throw new NullPointerException("Null is not a valid String object!");
     return new InputSource(new StringReader(content));
   }
 
-  public static Document parseFromFile(String filename, String[] schemaFiles) throws IOException, SAXException, ParserConfigurationException, URISyntaxException {
-    InputSource is = getFromFile(filename);
-    return parseFromSource(is, schemaFiles);
+  /**
+   * Parses a xml document from a file using a specified xml schema.
+   * @param filename The xml file to parse
+   * @param schema The schema to validate the xml content from the xml file
+   * @return A DOM representing the parsed xml content from the xml file
+   * @throws SAXException If the file couldn't be parsed using the specified schema
+   */
+  public static Document parseFromFile(String filename, Schema schema) throws SAXException {
+    if (filename == null) throw new NullPointerException("filename mustn't be null!");
+    try {
+      InputSource is = getFromFile(filename);
+      return parseFromSource(is, schema);
+    } catch (FileNotFoundException | SAXException e) {
+      throw new SAXException("Couldn't parse the file: " + filename, e);
+    }
   }
 
-  public static Document parseFromSource(InputSource source, String[] schemaFiles) throws SAXException, ParserConfigurationException, URISyntaxException, IOException {
-    DocumentBuilder builder = createDocBuilder(schemaFiles);
-    return builder.parse(source);
+  /**
+   * Parses a xml document from an input source using a xml schema.
+   * @param source The input source to parse
+   * @param schema The schema to validate the xml content from <b>source</b>
+   * @return A DOM representing the parsed xml content from <b>source</b>
+   * @throws SAXException If <b>source</b> couldn't be parsed using <b>schema</b>
+   * @throws NullPointerException If the input source is null
+   */
+  public static Document parseFromSource(InputSource source, Schema schema) throws SAXException {
+    if (source == null) throw new NullPointerException("source mustn't be null!");
+    DocumentBuilder builder = createDocBuilder(schema);
+    try {
+      return builder.parse(source);
+    } catch (IOException | SAXException | IllegalArgumentException e) {
+      throw new SAXException("Couldn't parse the input source.", e);
+    }
   }
 
-  public static Document parseFromString(String content, String[] schemaFiles) throws SAXException, ParserConfigurationException, IOException, URISyntaxException {
+  /**
+   * Parses a xml document from a string.
+   * @param content contains the xml content
+   * @param schema  The schema to validate the xml content from the string
+   * @return A DOM representing the parsed xml content from the string
+   * @throws SAXException If the xml content couldn't be parsed using <b>schema</b>
+   * @throws NullPointerException If <b>content</b> is null
+   */
+  public static Document parseFromString(String content, Schema schema) throws SAXException {
+    if (content == null) throw new NullPointerException("content mustn't be null!");
     InputSource is = getFromString(content);
-    return parseFromSource(is, schemaFiles);
+    try {
+      return parseFromSource(is, schema);
+    } catch (SAXException e) {
+      throw new SAXException("Couldn't parse xml content from string.", e);
+    }
   }
 }

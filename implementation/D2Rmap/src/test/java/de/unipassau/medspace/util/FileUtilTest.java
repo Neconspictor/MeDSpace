@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Created by David Goeth on 16.05.2017.
+ * Test class holding all unit tests for {@link FileUtil}
  */
 public class FileUtilTest {
 

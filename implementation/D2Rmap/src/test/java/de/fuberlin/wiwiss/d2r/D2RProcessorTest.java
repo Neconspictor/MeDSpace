@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.*;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
 import java.io.*;
 import java.net.URISyntaxException;
 /**
@@ -31,13 +32,15 @@ public class D2RProcessorTest {
       return new String[] {"/Medspace_D2Rmap.xsd"};
   }
 
-  public static Document parseFromFile(String filename, boolean useHelper) throws SAXException, ParserConfigurationException, URISyntaxException, IOException {
+  public static Document parseFromFile(String filename, boolean useHelper) throws SAXException {
     String[] schemaFiles = createTestSchemas(useHelper);
-    return XmlUtil.parseFromFile(filename, schemaFiles);
+    Schema schema = XmlUtil.createSchema(schemaFiles);
+    return XmlUtil.parseFromFile(filename, schema);
   }
 
-  public static Document parseFromString(String content, boolean useHelper) throws SAXException, ParserConfigurationException, URISyntaxException, IOException {
+  public static Document parseFromString(String content, boolean useHelper) throws SAXException  {
     String[] schemaFiles = createTestSchemas(useHelper);
-    return XmlUtil.parseFromString(content, schemaFiles);
+    Schema schema = XmlUtil.createSchema(schemaFiles);
+    return XmlUtil.parseFromString(content, schema);
   }
 }
