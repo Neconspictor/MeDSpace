@@ -6,10 +6,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.*;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
-import java.io.*;
-import java.net.URISyntaxException;
+
 /**
  * Created by necon on 09.05.2017.
  */

@@ -1,12 +1,14 @@
 package de.fuberlin.wiwiss.d2r;
 
 import org.apache.jena.rdf.model.*;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
  * An instance. Instances correspondent with Jena resources but have some additional properties for identification.
  * <BR>History: 01-15-2003   : Initial version of this class.
  * <BR>History: 09-25-2003   : Changed for Jena2.
+ * TODO this class properly should be refactored
  * @author Chris Bizer chris@bizer.de
  * @version V0.2
  */
@@ -16,7 +18,7 @@ public class Instance {
   private Resource instanceResource;
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rUtil.class);
+  private static Logger log = LogManager.getLogger(Instance.class);
 
   /**
    * Creates a resource node instance.
@@ -25,12 +27,7 @@ public class Instance {
    */
   protected Instance(String uri, Model model) {
     this.instanceURI = uri;
-    //try {
       this.instanceResource = model.createResource(uri);
-    //}
-    //catch (RDFException ex) { TODO handle error properly
-    //  log.error("Error while creating Jena resource " + uri, ex);
-    //}
   }
 
   /**
@@ -39,12 +36,7 @@ public class Instance {
    */
   protected Instance(Model model) {
     this.instanceURI = "bNode";
-    //try {
       this.instanceResource = model.createResource();
-    //}
-    //catch (RDFException ex) { TODO handle error properly
-    //  log.error("Error while creating Jena resource for a blank node.", ex);
-    //}
   }
 
   protected String getInstanceURI() {
@@ -73,11 +65,6 @@ public class Instance {
    * @param  value Jena RDFNode (literal or resource).
    */
   protected void addProperty(Property property, RDFNode value) {
-    //try {
       this.instanceResource.addProperty(property, value);
-    //}
-    //catch (RDFException ex) { TODO handle error properly
-    //  log.error("Error while adding property to Jena resource.", ex);
-    //}
   }
 }
