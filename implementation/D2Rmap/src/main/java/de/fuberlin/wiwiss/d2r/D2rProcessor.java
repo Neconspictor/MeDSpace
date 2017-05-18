@@ -32,15 +32,16 @@ import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
  * The D2R Map language specification and usage examples are found at
  * http://www.wiwiss.fu-berlin.de/suhl/bizer/d2rmap/D2Rmap.htm.
  *
- * <BR><BR>History: 
+ * <BR><BR>History:
+ * <BR>18-05-2017   : Updated for Java 8; removed unsafe operations
  * <BR>07-21-2004   : Process map methods added.
  * <BR>07-21-2004   : Connection and driver accessors added. 
  * <BR>07-21-2004   : Error handling changed to Log4J.
  * <BR>09-25-2003   : Changed for Jena2.
  * <BR>01-15-2003   : Initial version of this class.
  *
- * @author Chris Bizer chris@bizer.de
- * @version V0.3
+ * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
+ * @version V0.3.1
  */
 public class D2rProcessor {
   private String saveAs;
@@ -52,8 +53,8 @@ public class D2rProcessor {
   private String prepend;
   private String postpend;
   private Vector maps;
-  private HashMap translationTables;
-  private HashMap namespaces;
+  private HashMap<String, HashMap<String, String>> translationTables;
+  private HashMap<String, String> namespaces;
   private Model model;
   private boolean mapLoaded;
 
@@ -387,10 +388,10 @@ public class D2rProcessor {
         // Generate properties for all instances
         generatePropertiesForAllInstancesOfAllMaps();
         // add namespaces
-        Set namespaces = this.namespaces.entrySet();
-        for (Iterator it = namespaces.iterator(); it.hasNext(); ) {
-          java.util.Map.Entry ent = (java.util.Map.Entry) it.next();
-          this.model.setNsPrefix( (String) ent.getKey(), (String) ent.getValue());
+        Set<java.util.Map.Entry<String, String>> namespaces = this.namespaces.entrySet();
+        for (Iterator<java.util.Map.Entry<String, String>> it = namespaces.iterator(); it.hasNext(); ) {
+          java.util.Map.Entry<String, String> ent =  it.next();
+          this.model.setNsPrefix( ent.getKey(), ent.getValue());
         }
       }
       catch (FactoryException factoryException) {
@@ -436,12 +437,12 @@ public class D2rProcessor {
       this.generatePropertiesForAllInstancesOfAllMaps();
 
       // add namespaces
-      Set namespaces = this.namespaces.entrySet();
+      Set<java.util.Map.Entry<String, String>> namespaces = this.namespaces.entrySet();
 
-      for (Iterator it = namespaces.iterator(); it.hasNext(); ) {
+      for (Iterator<java.util.Map.Entry<String, String>> it = namespaces.iterator(); it.hasNext(); ) {
 
-        java.util.Map.Entry ent = (java.util.Map.Entry) it.next();
-        this.model.setNsPrefix( (String) ent.getKey(), (String) ent.getValue());
+        java.util.Map.Entry<String, String> ent = it.next();
+        this.model.setNsPrefix( ent.getKey(), ent.getValue());
       }
     }
     else {
@@ -600,7 +601,7 @@ public class D2rProcessor {
       for (int i = 0; i < numNodes; i++) {
         elem = (Element) list.item(i);
         String tableId = elem.getAttributeNS(D2R.D2RNS, "id").trim();
-        HashMap table = new HashMap();
+        HashMap<String, String> table = new HashMap();
         // Read Translations
         NodeList translationList = elem.getElementsByTagNameNS(D2R.D2RNS,
             "Translation");
@@ -716,7 +717,7 @@ public class D2rProcessor {
   private void generateInstancesForAllMaps() throws D2RException {
     for (Iterator it = this.maps.iterator(); it.hasNext(); ) {
       Map map = (Map) it.next();
-      map.generateInstances(this);
+      map.generateResources(this);
     }
   }
 
@@ -729,10 +730,10 @@ public class D2rProcessor {
     try {
 
       StringWriter writer = new StringWriter();
-      Set namespaces = this.namespaces.entrySet();
-      for (Iterator it = namespaces.iterator(); it.hasNext(); ) {
-        java.util.Map.Entry ent = (java.util.Map.Entry) it.next();
-        this.model.setNsPrefix( (String) ent.getKey(), (String) ent.getValue());
+      Set<java.util.Map.Entry<String, String>> namespaces = this.namespaces.entrySet();
+      for (Iterator<java.util.Map.Entry<String, String>> it = namespaces.iterator(); it.hasNext(); ) {
+        java.util.Map.Entry<String, String> ent = it.next();
+        this.model.setNsPrefix(ent.getKey(), ent.getValue());
       }
 
 
@@ -1021,7 +1022,7 @@ public class D2rProcessor {
    */
   protected String getNormalizedURI(String qName) {
     String prefix = D2rUtil.getNamespacePrefix(qName);
-    String URIprefix = (String)this.namespaces.get(prefix);
+    String URIprefix = this.namespaces.get(prefix);
     if (URIprefix != null) {
       String localname = D2rUtil.getLocalName(qName);
       return URIprefix + localname;

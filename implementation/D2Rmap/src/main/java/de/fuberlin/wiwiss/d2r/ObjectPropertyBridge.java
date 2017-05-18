@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 public class ObjectPropertyBridge
     extends Bridge {
   private String referredClass;
-  private Vector referredGroupBy;
+  private Vector<String> referredGroupBy;
 
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2rUtil.class);
@@ -31,7 +31,7 @@ public class ObjectPropertyBridge
     this.referredClass = referredClass;
   }
 
-  protected Vector getReferredGroupBy() {
+  protected Vector<String> getReferredGroupBy() {
     return referredGroupBy;
   }
 

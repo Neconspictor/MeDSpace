@@ -35,14 +35,14 @@ public class D2rUtil {
     return "NoLocalnameFound";
   }
 
-  protected static String getFieldName(String fName) {
+  protected static String getFieldNameUpperCase(String fName) {
     int len = fName.length();
     for (int i = 0; i < len; i++) {
       if (fName.charAt(i) == '.') {
-        return fName.substring(i + 1);
+        return fName.substring(i + 1).trim().toUpperCase();
       }
     }
-    return fName;
+    return fName.trim().toUpperCase();
   }
 
   /**
@@ -69,7 +69,7 @@ public class D2rUtil {
         startPosition = startPosition + deliminator.length();
         endPosition = pattern.indexOf(deliminator, startPosition);
         // get field
-        String fieldname = D2rUtil.getFieldName(pattern.substring(startPosition,
+        String fieldname = D2rUtil.getFieldNameUpperCase(pattern.substring(startPosition,
             endPosition).trim()).toUpperCase();
         result += tuple.get(fieldname);
         startPosition = endPosition + deliminator.length();
