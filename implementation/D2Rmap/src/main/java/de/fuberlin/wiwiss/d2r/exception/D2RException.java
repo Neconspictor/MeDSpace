@@ -1,9 +1,5 @@
 package de.fuberlin.wiwiss.d2r.exception;
 
-import org.apache.log4j.Logger;
-
-import de.fuberlin.wiwiss.d2r.D2rUtil;
-
 /**
  * Generic D2R exception class.
  * <BR>History: 01-15-2003   : Initial version of this class.
@@ -14,9 +10,6 @@ import de.fuberlin.wiwiss.d2r.D2rUtil;
 public class D2RException
     extends java.lang.Exception {
   private String message = null;
-
-  /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rUtil.class);
 
   public D2RException(String message) {
     this.message = message;
