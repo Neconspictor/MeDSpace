@@ -231,7 +231,7 @@ public class D2RMap {
   }
 
   protected void setId(String id) {
-    this.id = id;
+    this.id = id.trim();
   }
 
   /**

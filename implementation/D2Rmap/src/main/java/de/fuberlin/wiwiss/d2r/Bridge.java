@@ -26,21 +26,36 @@ abstract public class Bridge {
 
     protected String getTranslation() { return translation; }
 
-    protected void setTranslation(String translation) { this.translation = translation; }
+    protected void setTranslation(String translation) {
+        if (translation == null) this.translation = null;
+        else this.translation = translation.trim();
+    }
 
-    protected void setDataType(String dataType) { this.dataType = dataType; }
+    protected void setDataType(String dataType) {
+        if (dataType == null) this.dataType = null;
+        else this.dataType = dataType.trim();
+    }
 
     protected String getPattern() { return pattern; }
 
-    protected void setPattern(String pattern) { this.pattern = pattern; }
+    protected void setPattern(String pattern) {
+        if (pattern == null) this.pattern = null;
+        else this.pattern = pattern.trim();
+    }
 
     protected String getXmlLang() { return xmlLang; }
 
-    protected void setXmlLang(String xmlLang) { this.xmlLang = xmlLang; }
+    protected void setXmlLang(String xmlLang) {
+        if (xmlLang == null) this.xmlLang = null;
+        else this.xmlLang = xmlLang.trim();
+    }
 
     protected String getColumn() { return column; }
 
-    protected void setColumn(String column) { this.column = column; }
+    protected void setColumn(String column) {
+        if (column == null) this.column = null;
+        else this.column = column.trim();
+    }
 
     protected Property getProperty(D2rProcessor processor) {
         Property prop = null;
@@ -56,11 +71,17 @@ abstract public class Bridge {
 
     protected String getProperty() { return property; }
 
-    protected void setProperty(String property) { this.property = property; }
+    protected void setProperty(String property) {
+        if (property == null) this.property = null;
+        else this.property = property.trim();
+    }
 
     protected String getValue() { return value; }
 
-    protected void setValue(String value) { this.value = value; }
+    protected void setValue(String value) {
+        if (value == null) this.value = null;
+        else this.value = value.trim();
+    }
 
     /**
      *

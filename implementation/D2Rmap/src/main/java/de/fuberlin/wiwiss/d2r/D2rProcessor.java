@@ -46,17 +46,7 @@ import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
  * @version V0.3.1
  */
 public class D2rProcessor {
-  private String saveAs;
-  private String outputFormat;
-  private String jdbc;
-  private String jdbcDriver;
-  private String databaseUsername;
-  private String databasePassword;
-  private String prepend;
-  private String postpend;
-  private Vector<D2RMap> maps;
-  private HashMap<String, TranslationTable> translationTables;
-  private HashMap<String, String> namespaces;
+  private Configuration config;
   private Model model;
   private boolean mapLoaded;
 
@@ -75,13 +65,8 @@ public class D2rProcessor {
   }
 
   private void initialize() {
-    maps = new Vector<>();
-    namespaces = new HashMap<>();
-    namespaces.put(D2R.RDFNS_PREFIX, D2R.RDFNS);
-    translationTables = new HashMap<>();
+    config = ConfigurationReader.createDefaultConfig();
     mapLoaded = false;
-    outputFormat = D2R.STANDARD_OUTPUT_FORMAT;
-    saveAs = "StandardOut";
   }
 
   /**
@@ -140,7 +125,7 @@ public class D2rProcessor {
   }
 
   public String getOutputFormat() {
-    return outputFormat;
+    return config.getOutputFormat();
   }
 
   /**
@@ -163,28 +148,24 @@ public class D2rProcessor {
       File file = new File(mapFilename);
 
       //default output options
-      this.saveAs = "System.out";
+      config.setSaveAs("System.out");
       OutputStream outputStream = System.out;
 
       try {
 
         //check if a format has been specified
         if (format != null) {
-
-          this.outputFormat = format;
-        }
-        else {
-
-          this.outputFormat = D2R.STANDARD_OUTPUT_FORMAT;
+          config.setOutputFormat(format);
+        } else {
+          config.setOutputFormat(D2R.STANDARD_OUTPUT_FORMAT);
         }
 
         //default output is System.out
         if (outputFilename != null) {
-
-          this.saveAs = outputFilename;
+          config.setSaveAs(outputFilename);
 
           //output to file
-          File outFile = new File(this.saveAs);
+          File outFile = new File(config.getSaveAs());
           outputStream = new FileOutputStream(outFile);
         }
       }
@@ -273,7 +254,7 @@ public class D2rProcessor {
       try {
 
         //use standard format
-        this.outputFormat = D2R.STANDARD_OUTPUT_FORMAT;
+        config.setOutputFormat(D2R.STANDARD_OUTPUT_FORMAT);
 
         //Read D2R Map (Document)
         this.readMap(document);
@@ -386,7 +367,7 @@ public class D2rProcessor {
     // Generate properties for all instances
     generatePropertiesForAllInstancesOfAllMaps();
     // add namespaces
-    for (Entry<String, String> ent : this.namespaces.entrySet()) {
+    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
@@ -429,20 +410,12 @@ public class D2rProcessor {
     this.generatePropertiesForAllInstancesOfAllMaps();
 
     // add namespaces
-    for (Entry<String, String> ent : this.namespaces.entrySet()) {
+    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
     //reset model member
     this.model = originalModel;
-  }
-
-  /**
-   * Sets the output Format. Possible values are: RDF/XML, RDF/XML-ABBREV, N-TRIPLE, N3
-   * @param format the Output format.
-   */
-  public void setOutputFormat(String format) {
-    this.outputFormat = format;
   }
 
   /** Frees all resources. */
@@ -453,9 +426,9 @@ public class D2rProcessor {
   /** Serializes model to string and includes the content of the d2r:Prepend and d2r:Postpend statements. */
   private String serialize() throws D2RException {
     StringBuilder ser = new StringBuilder();
-    if (this.prepend != null) ser.append(this.prepend);
+    if (config.getPrepend() != null) ser.append(config.getPrepend());
     ser.append(this.modelToString());
-    if (this.postpend != null) ser.append(this.postpend);
+    if (config.getPostpend() != null) ser.append(config.getPostpend());
     return ser.toString();
   }
 
@@ -519,182 +492,14 @@ public class D2rProcessor {
   private void readMap(Document document) throws IOException, D2RException {
 
     //read the document object
-    if (document != null) {
-
-      // Read namespaces
-      NodeList list = document.getElementsByTagNameNS(D2R.D2RNS, "Namespace");
-      int numNodes = list.getLength();
-      for (int i = 0; i < numNodes; i++) {
-        Element elem = (Element) list.item(i);
-        this.namespaces.put(elem.getAttributeNS(D2R.D2RNS, "prefix"),
-                            elem.getAttributeNS(D2R.D2RNS, "namespace"));
-      }
-
-      // Read database connection
-      list = document.getElementsByTagNameNS(D2R.D2RNS, "DBConnection");
-      Element elem = (Element) list.item(0);
-
-      if (elem == null)
-        throw new D2RException("No DBConnection was specified in the mapping");
-
-      if (elem.hasAttributeNS(D2R.D2RNS,"jdbcDSN"))
-        this.jdbc = elem.getAttributeNS(D2R.D2RNS, "jdbcDSN");
-      if (elem.hasAttributeNS(D2R.D2RNS, "jdbcDriver"))
-        this.jdbcDriver = elem.getAttributeNS(D2R.D2RNS, "jdbcDriver");
-      if (elem.hasAttributeNS(D2R.D2RNS, "username"))
-        this.databaseUsername = elem.getAttributeNS(D2R.D2RNS, "username");
-      if (elem.hasAttributeNS(D2R.D2RNS, "password"))
-        this.databasePassword = elem.getAttributeNS(D2R.D2RNS, "password");
-
-      // Read prepend/postpend
-      list = document.getElementsByTagNameNS(D2R.D2RNS, "Prepend");
-      if (list.getLength() != 0) {
-        if (list.getLength() != 1)
-          throw new D2RException("Only one Prepend statement allowed.");
-        elem = (Element) list.item(0);
-        this.prepend = elem.getFirstChild().getNodeValue();
-      }
-      list = document.getElementsByTagNameNS(D2R.D2RNS, "Postpend");
-      if (list.getLength() != 0) {
-        if (list.getLength() != 1)
-          throw new D2RException("Only one Postpend statement allowed.");
-        elem = (Element) list.item(0);
-        this.postpend = elem.getFirstChild().getNodeValue();
-      }
-
-      // Read processor messages
-      list = document.getElementsByTagNameNS(D2R.D2RNS, "ProcessorMessage");
-      numNodes = list.getLength();
-      for (int i = 0; i < numNodes; i++) {
-        elem = (Element) list.item(i);
-        if (elem.hasAttributeNS(D2R.D2RNS, "saveAs"))
-          this.saveAs = elem.getAttributeNS(D2R.D2RNS, "saveAs").trim();
-        if (elem.hasAttributeNS(D2R.D2RNS, "outputFormat"))
-          this.outputFormat = elem.getAttributeNS(D2R.D2RNS, "outputFormat").
-              trim();
-      }
-
-      // Read translation tables
-      list = document.getElementsByTagNameNS(D2R.D2RNS, "ResultInstance");
-      numNodes = list.getLength();
-      for (int i = 0; i < numNodes; i++) {
-        elem = (Element) list.item(i);
-        String tableId = elem.getAttributeNS(D2R.D2RNS, "id").trim();
-        TranslationTable table = new TranslationTable();
-        // Read Translations
-        NodeList translationList = elem.getElementsByTagNameNS(D2R.D2RNS,
-            "Translation");
-        int numTranslationNodes = translationList.getLength();
-        for (int j = 0; j < numTranslationNodes; j++) {
-          Element translation = (Element) translationList.item(j);
-          table.put(translation.getAttributeNS(D2R.D2RNS, "key").trim(),
-                    translation.getAttributeNS(D2R.D2RNS, "value").trim());
-        }
-        this.translationTables.put(tableId, table);
-      }
-
-      // Read maps
-      list = document.getElementsByTagNameNS(D2R.D2RNS, "ClassMap");
-      numNodes = list.getLength();
-      for (int i = 0; i < numNodes; i++) {
-        elem = (Element) list.item(i);
-        D2RMap cMap = new D2RMap();
-        // Read type attribute
-        if (elem.hasAttributeNS(D2R.D2RNS, "type")) {
-          cMap.setId(elem.getAttributeNS(D2R.D2RNS, "type").trim());
-          // add rdf:type bridge TODO comment in
-          ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
-          typeBridge.setProperty("rdf:type");
-          typeBridge.setValue(elem.getAttributeNS(D2R.D2RNS, "type").trim());
-          cMap.addBridge(typeBridge);
-        }
-        // Read id attribute
-        if (elem.hasAttributeNS(D2R.D2RNS, "id"))
-          cMap.setId(elem.getAttributeNS(D2R.D2RNS, "id").trim());
-          // Read sql attribute
-        cMap.setSql(elem.getAttributeNS(D2R.D2RNS, "sql"));
-        // Read groupBy attributes
-        cMap.addGroupByFields(elem.getAttributeNS(D2R.D2RNS, "groupBy"));
-        // Read uriPattern
-        if (elem.hasAttributeNS(D2R.D2RNS, "uriPattern"))
-          cMap.setUriPattern(elem.getAttributeNS(D2R.D2RNS, "uriPattern"));
-        if (elem.hasAttributeNS(D2R.D2RNS, "uriColumn"))
-          cMap.setUriColumn(elem.getAttributeNS(D2R.D2RNS, "uriColumn"));
-
-          // Read datatype property mappings
-        NodeList propertyList = elem.getElementsByTagNameNS(D2R.D2RNS,
-            "DatatypePropertyBridge");
-        int numPropertyNodes = propertyList.getLength();
-        for (int j = 0; j < numPropertyNodes; j++) {
-          Element propertyElement = (Element) propertyList.item(j);
-          DatatypePropertyBridge propertyBridge = new DatatypePropertyBridge();
-          propertyBridge.setProperty(propertyElement.getAttributeNS(D2R.D2RNS,
-              "property").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "column"))
-            propertyBridge.setColumn(propertyElement.getAttributeNS(D2R.D2RNS,
-                "column").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "pattern"))
-            propertyBridge.setPattern(propertyElement.getAttributeNS(D2R.
-                D2RNS,
-                "pattern").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "value"))
-            propertyBridge.setValue(propertyElement.getAttributeNS(D2R.D2RNS,
-                "value").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "translate"))
-            propertyBridge.setTranslation(propertyElement.getAttributeNS(D2R.
-                D2RNS, "translate").trim());
-          if (propertyElement.hasAttributeNS(D2R.XMLNS, "lang"))
-            propertyBridge.setXmlLang(propertyElement.getAttributeNS(D2R.
-                XMLNS,
-                "lang").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "datatype"))
-            propertyBridge.setDataType(propertyElement.getAttributeNS(D2R.
-                D2RNS,
-                "datatype").trim());
-          cMap.addBridge(propertyBridge);
-        }
-
-        // Read object property mappings
-        propertyList = elem.getElementsByTagNameNS(D2R.D2RNS,
-            "ObjectPropertyBridge");
-        numPropertyNodes = propertyList.getLength();
-        for (int j = 0; j < numPropertyNodes; j++) {
-          Element propertyElement = (Element) propertyList.item(j);
-          ObjectPropertyBridge propertyBridge = new ObjectPropertyBridge();
-          propertyBridge.setProperty(propertyElement.getAttributeNS(D2R.D2RNS,
-              "property").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "column"))
-            propertyBridge.setColumn(propertyElement.getAttributeNS(D2R.D2RNS,
-                "column").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "pattern"))
-            propertyBridge.setPattern(propertyElement.getAttributeNS(D2R.
-                D2RNS,
-                "pattern").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "value"))
-            propertyBridge.setValue(propertyElement.getAttributeNS(D2R.D2RNS,
-                "value").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "translate"))
-            propertyBridge.setTranslation(propertyElement.getAttributeNS(D2R.
-                D2RNS, "translate").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "referredClass"))
-            propertyBridge.setReferredClass(propertyElement.getAttributeNS(
-                D2R.
-                D2RNS, "referredClass").trim());
-          if (propertyElement.hasAttributeNS(D2R.D2RNS, "referredGroupBy"))
-            propertyBridge.setReferredGroupBy(propertyElement.getAttributeNS(
-                D2R.D2RNS, "referredGroupBy").trim());
-          cMap.addBridge(propertyBridge);
-        }
-        maps.add(cMap);
-      }
-
-      mapLoaded = true;
-    }
+    if (document == null) return;
+    ConfigurationReader.readConfig(document, config);
+    mapLoaded = true;
   }
 
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
-    for (D2RMap map : maps) {
+    for (D2RMap map : config.maps) {
       map.generateResources(this);
     }
   }
@@ -705,19 +510,19 @@ public class D2rProcessor {
    */
   private String modelToString() {
       StringWriter writer = new StringWriter();
-    for (Entry<String, String> ent : this.namespaces.entrySet()) {
+    for (Entry<String, String> ent : config.namespaces.entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
-      log.debug("Converting Model to String. outputFormat: " + this.outputFormat);
+      log.debug("Converting Model to String. outputFormat: " + config.outputFormat);
 
-      this.model.write(writer, this.outputFormat);
+      this.model.write(writer, config.outputFormat);
       return writer.toString();
   }
 
   /** Generated properties for all instances of all D2R maps. */
   private void generatePropertiesForAllInstancesOfAllMaps() throws D2RException {
-    for (D2RMap map : maps) {
+    for (D2RMap map : config.maps) {
       map.generatePropertiesForAllInstances(this);
     }
   }
@@ -875,7 +680,7 @@ public class D2rProcessor {
    * @return Vector with all maps.
    */
   private Vector<D2RMap> getMaps() {
-    return maps;
+    return config.maps;
   }
 
   /**
@@ -896,7 +701,7 @@ public class D2rProcessor {
    * @return Vector with all maps.
    */
   HashMap<String, TranslationTable> getTranslationTables() {
-    return translationTables;
+    return config.translationTables;
   }
 
   /**
@@ -912,7 +717,7 @@ public class D2rProcessor {
    * @return jdbcDSN
    */
   private String getJdbc() {
-    return this.jdbc;
+    return config.jdbc;
   }
 
   /**
@@ -920,7 +725,7 @@ public class D2rProcessor {
    * @return jdbcDriver
    */
   private String getJdbcDriver() {
-    return this.jdbcDriver;
+    return config.jdbcDriver;
   }
 
   /**
@@ -928,7 +733,7 @@ public class D2rProcessor {
    * @return username
    */
   private String getDatabaseUsername() {
-    return this.databaseUsername;
+    return config.databaseUsername;
   }
 
   /**
@@ -936,7 +741,7 @@ public class D2rProcessor {
    * @return password
    */
   private String getDatabasePassword() {
-    return this.databasePassword;
+    return config.databasePassword;
   }
 
   /**
@@ -948,7 +753,7 @@ public class D2rProcessor {
   @SuppressWarnings("SpellCheckingInspection")
   String getNormalizedURI(String qName) {
     String prefix = D2rUtil.getNamespacePrefix(qName);
-    String uriPrefix = this.namespaces.get(prefix);
+    String uriPrefix = config.namespaces.get(prefix);
     if (uriPrefix != null) {
       String localName = D2rUtil.getLocalName(qName);
       return uriPrefix + localName;

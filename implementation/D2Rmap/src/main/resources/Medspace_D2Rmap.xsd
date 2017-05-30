@@ -41,7 +41,7 @@
 	
 	<xsd:complexType name="ClassMap">
 		<xsd:choice maxOccurs="unbounded">
-			<xsd:element name="DatatypePropertyBridge" type="d2r:DatatypePropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="DataTypePropertyBridge" type="d2r:DataTypePropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="ObjectPropertyBridge" type="d2r:ObjectPropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:choice>
 		<xsd:attribute name="sql" type="xsd:string" use="required"/>
@@ -52,14 +52,13 @@
 		<xsd:attribute name="uriPattern" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 	
-	<xsd:complexType name="DatatypePropertyBridge">
+	<xsd:complexType name="DataTypePropertyBridge">
 		<xsd:attribute name="property" type="xsd:string" use="required"/>
 		<xsd:attribute name="column" type="xsd:string" use="optional"/>
 		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
 		<xsd:attribute name="value" type="xsd:string" use="optional"/>
 		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
 		<xsd:attribute name="dataType" type="xsd:string" use="optional"/>
-		<xsd:attribute name="useCollection" type="xsd:string" use="optional"/>
 		<xsd:attribute name="lang" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 	
@@ -71,7 +70,6 @@
 		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
 		<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
 		<xsd:attribute name="referredGroupBy" type="xsd:string" use="optional"/>
-		<xsd:attribute name="useCollection" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="TranslationTable">

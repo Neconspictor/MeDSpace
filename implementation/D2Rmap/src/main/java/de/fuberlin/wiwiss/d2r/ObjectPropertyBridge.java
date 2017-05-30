@@ -31,7 +31,7 @@ public class ObjectPropertyBridge
   }
 
   protected void setReferredClass(String referredClass) {
-    this.referredClass = referredClass;
+    this.referredClass = referredClass.trim();
   }
 
   protected Vector<String> getReferredGroupBy() {
@@ -43,7 +43,7 @@ public class ObjectPropertyBridge
    * @param  fields String with GroupBy fields separated by ','.
    */
   protected void setReferredGroupBy(String fields) {
-    StringTokenizer tokenizer = new StringTokenizer(fields, ",");
+    StringTokenizer tokenizer = new StringTokenizer(fields.trim(), ",");
     while (tokenizer.hasMoreTokens())
       this.referredGroupBy.add(tokenizer.nextToken().trim());
   }
