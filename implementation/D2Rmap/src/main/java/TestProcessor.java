@@ -28,7 +28,7 @@ public class TestProcessor {
             System.out.println("D2R processor created ....");
             processor.readMap(D2RMap);
             System.out.println("D2R file read ....");
-            Model output = processor.getAllInstancesAsModel();
+            Model output = processor.generateAllInstancesAsModel();
             output.write(System.out, processor.getOutputFormat());
             System.out.println("RDF data exported ....");
         } catch (D2RException d2rex) {

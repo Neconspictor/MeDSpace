@@ -7,7 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.jena.shared.PrefixMapping;
+import de.unipassau.medspace.util.SqlUtil;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.w3c.dom.*;
@@ -17,6 +17,8 @@ import java.net.URL;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.log4j.*;
 import java.sql.*;
+import java.util.Map.Entry;
+
 import de.fuberlin.wiwiss.d2r.factory.ModelFactory;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
@@ -33,7 +35,7 @@ import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
  * http://www.wiwiss.fu-berlin.de/suhl/bizer/d2rmap/D2Rmap.htm.
  *
  * <BR><BR>History:
- * <BR>18-05-2017   : Updated for Java 8; removed unsafe operations
+ * <BR>18-05-2017   : Updated for Java 8; removed unsafe operations; all-embracing refactoring
  * <BR>07-21-2004   : Process map methods added.
  * <BR>07-21-2004   : Connection and driver accessors added. 
  * <BR>07-21-2004   : Error handling changed to Log4J.
@@ -52,8 +54,8 @@ public class D2rProcessor {
   private String databasePassword;
   private String prepend;
   private String postpend;
-  private Vector maps;
-  private HashMap<String, HashMap<String, String>> translationTables;
+  private Vector<Map> maps;
+  private HashMap<String, TranslationTable> translationTables;
   private HashMap<String, String> namespaces;
   private Model model;
   private boolean mapLoaded;
@@ -69,17 +71,17 @@ public class D2rProcessor {
 
 
   public D2rProcessor() {
-    this.initialize();
+    initialize();
   }
 
   private void initialize() {
-    this.maps = new Vector();
-    this.namespaces = new HashMap();
-    this.namespaces.put(D2R.RDFNSPREFIX, D2R.RDFNS);
-    this.translationTables = new HashMap();
-    this.mapLoaded = false;
-    this.outputFormat = D2R.STANDARD_OUTPUT_FORMAT;
-    this.saveAs = "StandardOut";
+    maps = new Vector<>();
+    namespaces = new HashMap<>();
+    namespaces.put(D2R.RDFNSPREFIX, D2R.RDFNS);
+    translationTables = new HashMap<>();
+    mapLoaded = false;
+    outputFormat = D2R.STANDARD_OUTPUT_FORMAT;
+    saveAs = "StandardOut";
   }
 
   /**
@@ -90,25 +92,22 @@ public class D2rProcessor {
    */
   public static void main(String[] args) {
 
-    String outputfilename = null;
-    String mapfilename = null;
+    String outputFilename = null;
+    String mapFilename = null;
     String fileFormat = null;
 
     try {
 
       // process parameters
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].substring(0, 8).equals("-format:")) {
-          fileFormat = args[i].substring(8).trim();
-        }
-        else if (args[i].substring(0, 5).equals("-map:")) {
-          mapfilename = args[i].substring(5).trim();
-        }
-        else if (args[i].substring(0, 8).equals("-output:")) {
-          outputfilename = args[i].substring(8).trim();
-        }
-        else {
-          throw new D2RException("Unknown command line argument: " + args[i]);
+      for (String arg : args) {
+        if (arg.substring(0, 8).equals("-format:")) {
+          fileFormat = arg.substring(8).trim();
+        } else if (arg.substring(0, 5).equals("-map:")) {
+          mapFilename = arg.substring(5).trim();
+        } else if (arg.substring(0, 8).equals("-output:")) {
+          outputFilename = arg.substring(8).trim();
+        } else {
+          throw new D2RException("Unknown command line argument: " + arg);
         }
       }
 
@@ -126,11 +125,11 @@ public class D2rProcessor {
       }
 
       //BEGIN PROCESSING
-      log.debug("Processing D2R Map: " + mapfilename + " ....");
+      log.debug("Processing D2R Map: " + mapFilename + " ....");
 
       // generate processor instance, process map
       D2rProcessor processor = new D2rProcessor();
-      processor.processMap(fileFormat, mapfilename, outputfilename);
+      processor.processMap(fileFormat, mapFilename, outputFilename);
 
       log.debug("processing complete.");
     }
@@ -154,15 +153,18 @@ public class D2rProcessor {
    * @param outputFilename The target file to write the result of the mapping
    * @throws D2RException Thrown if the mapping couldn't properly be done.
    */
-  public void processMap(String format, String mapFilename,
-                         String outputFilename) throws D2RException {
+  private void processMap(String format, String mapFilename,
+                          String outputFilename) throws D2RException {
 
     //validate input file path
     if (mapFilename != null) {
 
       //input and output
       File file = new File(mapFilename);
-      OutputStream outputStream = null;
+
+      //default output options
+      this.saveAs = "System.out";
+      OutputStream outputStream = System.out;
 
       try {
 
@@ -184,12 +186,6 @@ public class D2rProcessor {
           //output to file
           File outFile = new File(this.saveAs);
           outputStream = new FileOutputStream(outFile);
-        }
-        else {
-
-          //default output
-          this.saveAs = "System.out";
-          outputStream = System.out;
         }
       }
       catch (FileNotFoundException fileException) {
@@ -214,9 +210,9 @@ public class D2rProcessor {
    *
    * @param inputFile The D2R map
    * @param outStream The destination for writing the result of the mapping
-   * @throws D2RException
+   * @throws D2RException Thrown if the mapping couldn't properly be done.
    */
-  public void processMap(File inputFile, OutputStream outStream)
+  private void processMap(File inputFile, OutputStream outStream)
       throws D2RException {
 
     // validate input
@@ -231,27 +227,22 @@ public class D2rProcessor {
         this.readMap(inputFile);
 
         // Generate instances for all maps
-        String output = this.getAllInstancesAsString();
+        String output = this.generateAllInstancesAsString();
 
         // write model to output
         out = new PrintWriter(outStream);
         out.println(output);
-      }
-      catch (java.lang.Throwable ex) {
+      } catch (D2RException e) {
 
         //re-throw any errors as a D2RException that can be displayed to the user
-        throw new D2RException(ex.getMessage(), ex);
-      }
-      finally {
+        throw new D2RException(e.getMessage(), e);
+      } finally {
 
         //close the output stream
-        if (out != null) {
-
-          out.close();
-        }
+        if (out != null) {out.close();}
 
         //reset cached connection (assume it has been closed)
-        this.connection = null;
+        setConnection(null);
       }
     }
     else {
@@ -267,7 +258,7 @@ public class D2rProcessor {
    * @param driverClasspath The URL of the driver class path
    * @param document The D2R map
    * @param model Output model for writing results of the mapping to.
-   * @throws D2RException
+   * @throws D2RException Thrown if the mapping couldn't properly be done.
    */
   public void processMap(URL driverClasspath, Document document,
                          Model model) throws D2RException {
@@ -290,7 +281,7 @@ public class D2rProcessor {
         //process map and output results to the supplied model
         this.outputToModel(model);
       }
-      catch (java.lang.Throwable ex) {
+      catch (IOException ex) {
 
         //re-throw any errors as a D2RException that can be displayed to the user
         throw new D2RException(ex.getMessage(), ex);
@@ -309,7 +300,7 @@ public class D2rProcessor {
    *
    * @param inputFile The input file
    * @param model The model to save the result of the input file to.
-   * @throws D2RException
+   * @throws D2RException Thrown if the mapping couldn't properly be done.
    */
   public void processMap(File inputFile, Model model)
       throws D2RException {
@@ -340,115 +331,106 @@ public class D2rProcessor {
   /**
    * Processes the D2R map and returns all generated instances.
    * @return RDF, N3 or N-Triples depending on the processor instruction d2r:outputFormat.
+   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no Map was read before
+   * (see {@link #readMap(File)}, {@link #readMap(String)}, {@link #readMap(Document)})
    */
-  public String getAllInstancesAsString() throws D2RException {
+  private String generateAllInstancesAsString() throws D2RException {
 
     // Check if a map is loaded.
-    if (this.mapLoaded) {
-
-      try {
-
-        // Clear model
-        this.model = ModelFactory.getInstance().createDefaultModel();
-        // Generate instances for all maps
-        this.generateInstancesForAllMaps();
-        // Generate properties for all instances
-        this.generatePropertiesForAllInstancesOfAllMaps();
-
-      } catch (FactoryException factoryException) {
-
-        throw new D2RException("Could not get default Model from the " +
-                               "ModelFactory.", factoryException);
-      }
-
-      //toString
-      return this.serialize();
-    }
-    else {
+    if (!this.mapLoaded) {
       throw new D2RException(
-          "A D2R map has to be read before calling getAllInstancesAsString().");
+          "A D2R map has to be read before calling generateAllInstancesAsString().");
     }
+
+    try {
+      // Clear model
+      this.model = null;
+      this.model = ModelFactory.getInstance().createDefaultModel();
+    } catch (FactoryException e) {
+      throw new D2RException("Couldn't get default Model from the ModelFactory.", e);
+    }
+
+    // Generate instances for all maps
+    this.generateInstancesForAllMaps();
+    // Generate properties for all instances
+    this.generatePropertiesForAllInstancesOfAllMaps();
+
+    //toString
+    return this.serialize();
   }
 
   /**
    * Processes the D2R map and returns a Jena model containing all generated instances.
    * @return Jena model containing all generated instances.
+   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no Map was read before
+   * (see {@link #readMap(File)}, {@link #readMap(String)}, {@link #readMap(Document)})
    */
-  public Model getAllInstancesAsModel() throws D2RException {
+  public Model generateAllInstancesAsModel() throws D2RException {
 
     // Check if a map is loaded.
-    if (this.mapLoaded) {
-
-      try {
-
-        // Clear model
-        this.model = ModelFactory.getInstance().createDefaultModel();
-        // Generate instances for all maps
-        this.generateInstancesForAllMaps();
-        // Generate properties for all instances
-        generatePropertiesForAllInstancesOfAllMaps();
-        // add namespaces
-        Set<java.util.Map.Entry<String, String>> namespaces = this.namespaces.entrySet();
-        for (Iterator<java.util.Map.Entry<String, String>> it = namespaces.iterator(); it.hasNext(); ) {
-          java.util.Map.Entry<String, String> ent =  it.next();
-          this.model.setNsPrefix( ent.getKey(), ent.getValue());
-        }
-      }
-      catch (FactoryException factoryException) {
-
-        throw new D2RException("Could not get default Model from the " +
-                               "ModelFactory.", factoryException);
-      }
-
-      //Return model
-      return this.model;
+    if (!this.mapLoaded) {
+      throw new D2RException("A D2R map has to be read before calling generateAllInstancesAsModel().");
     }
-    else {
-      throw new D2RException(
-          "A D2R map has to be read before calling getAllInstancesAsModel().");
+
+    try {
+
+      // Clear model
+      this.model = ModelFactory.getInstance().createDefaultModel();
     }
+    catch (FactoryException e) {
+      throw new D2RException("Could not get default Model from the ModelFactory.", e);
+    }
+
+    // Generate instances for all maps
+    this.generateInstancesForAllMaps();
+    // Generate properties for all instances
+    generatePropertiesForAllInstancesOfAllMaps();
+    // add namespaces
+    for (Entry<String, String> ent : this.namespaces.entrySet()) {
+      this.model.setNsPrefix(ent.getKey(), ent.getValue());
+    }
+
+    //Return model
+    return this.model;
   }
 
   /**
    * Processes the D2R map outputting the results to the "model" parameter.
-   *
-   * @param model Model to save instances to.
-   * @throws D2RException
+   * NOTE: A map has to be loaded previously
+   * @param model Model to save instances to. NOTE: The parameter mustn't to be null.
+   * @throws D2RException Thrown if an error occurs
+   * @throws NullPointerException Thrown if <code> model</code> is null
    */
-  public void outputToModel(Model model) throws
+  private void outputToModel(Model model) throws
       D2RException {
 
-    // Momento Model object (maintains model's state)
+    // Backup the Model object (maintains model's state)
     Model originalModel = this.model;
 
     log.debug("Processing map to model.");
 
-    // Check if a map is loaded and ensure parameter is valid
-    if ( (this.mapLoaded)
-        && (model != null)) {
-
-      // use model parameter
-      this.model = model;
-
-      // Generate instances for all maps
-      this.generateInstancesForAllMaps();
-
-      // Generate properties for all instances
-      this.generatePropertiesForAllInstancesOfAllMaps();
-
-      // add namespaces
-      Set<java.util.Map.Entry<String, String>> namespaces = this.namespaces.entrySet();
-
-      for (Iterator<java.util.Map.Entry<String, String>> it = namespaces.iterator(); it.hasNext(); ) {
-
-        java.util.Map.Entry<String, String> ent = it.next();
-        this.model.setNsPrefix( ent.getKey(), ent.getValue());
-      }
+    if (model == null) {
+      throw new NullPointerException("model mustn't be null");
     }
-    else {
 
+    // Check if a map is loaded and ensure parameter is valid
+    if (!this.mapLoaded) {
       throw new D2RException("A D2R map has to be read before calling " +
-                             "getAllInstancesAsModel().");
+          "generateAllInstancesAsModel().");
+    }
+
+    // use model parameter
+    this.model = model;
+
+    // Generate instances for all maps
+    this.generateInstancesForAllMaps();
+
+    // Generate properties for all instances
+    this.generatePropertiesForAllInstancesOfAllMaps();
+
+    // add namespaces
+    for (Entry<String, String> ent : this.namespaces.entrySet()) {
+      this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
     //reset model member
@@ -470,16 +452,11 @@ public class D2rProcessor {
 
   /** Serializes model to string and includes the content of the d2r:Prepend and d2r:Postpend statements. */
   private String serialize() throws D2RException {
-    try {
-      String ser = "";
-      if (this.prepend != null) ser += this.prepend;
-      ser += this.modelToString();
-      if (this.postpend != null) ser += this.postpend;
-      return ser;
-    }
-    catch (D2RException ex) {
-      throw ex;
-    }
+    StringBuilder ser = new StringBuilder();
+    if (this.prepend != null) ser.append(this.prepend);
+    ser.append(this.modelToString());
+    if (this.postpend != null) ser.append(this.postpend);
+    return ser.toString();
   }
 
   /**
@@ -499,7 +476,7 @@ public class D2rProcessor {
    * Reads a D2R Map from File.
    * @param file The file of the D2R Map
    */
-  public void readMap(File file) throws IOException, D2RException {
+  private void readMap(File file) throws D2RException {
 
     //parsed file
     Document document;
@@ -520,16 +497,18 @@ public class D2rProcessor {
       this.readMap(document);
     }
     catch (SAXParseException spe) {
-      throw new IOException("Error while parsing XML file: " + "line " +
+      throw new D2RException("Error while parsing XML file: " + "line " +
                             spe.getLineNumber() +
                             ", uri: " + spe.getSystemId() + ", reason: " +
-                            spe.getMessage());
+                            spe.getMessage(), spe);
     }
     catch (SAXException sxe) {
-      throw new IOException("Error while parsing XML file.");
+      throw new D2RException("Error while parsing XML file: ", sxe);
     }
     catch (ParserConfigurationException pce) {
-      throw new IOException("Error while building XML parser.");
+      throw new D2RException("Error while building XML parser: ", pce);
+    } catch (IOException e) {
+      throw new D2RException("IO Error while parsing the map: ", e);
     }
   }
 
@@ -537,7 +516,7 @@ public class D2rProcessor {
    * Reads a D2R Map as a Document.
    * @param document the file of the D2R Map
    */
-  public void readMap(Document document) throws IOException, D2RException {
+  private void readMap(Document document) throws IOException, D2RException {
 
     //read the document object
     if (document != null) {
@@ -596,12 +575,12 @@ public class D2rProcessor {
       }
 
       // Read translation tables
-      list = document.getElementsByTagNameNS(D2R.D2RNS, "TranslationTable");
+      list = document.getElementsByTagNameNS(D2R.D2RNS, "ResultInstance");
       numNodes = list.getLength();
       for (int i = 0; i < numNodes; i++) {
         elem = (Element) list.item(i);
         String tableId = elem.getAttributeNS(D2R.D2RNS, "id").trim();
-        HashMap<String, String> table = new HashMap();
+        TranslationTable table = new TranslationTable();
         // Read Translations
         NodeList translationList = elem.getElementsByTagNameNS(D2R.D2RNS,
             "Translation");
@@ -648,7 +627,7 @@ public class D2rProcessor {
         int numPropertyNodes = propertyList.getLength();
         for (int j = 0; j < numPropertyNodes; j++) {
           Element propertyElement = (Element) propertyList.item(j);
-          DataPropertyBridge propertyBridge = new DataPropertyBridge();
+          DatatypePropertyBridge propertyBridge = new DatatypePropertyBridge();
           propertyBridge.setProperty(propertyElement.getAttributeNS(D2R.D2RNS,
               "property").trim());
           if (propertyElement.hasAttributeNS(D2R.D2RNS, "column"))
@@ -706,17 +685,16 @@ public class D2rProcessor {
                 D2R.D2RNS, "referredGroupBy").trim());
           cMap.addBridge(propertyBridge);
         }
-        this.maps.add(cMap);
+        maps.add(cMap);
       }
 
-      this.mapLoaded = true;
+      mapLoaded = true;
     }
   }
 
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
-    for (Iterator it = this.maps.iterator(); it.hasNext(); ) {
-      Map map = (Map) it.next();
+    for (Map map : maps) {
       map.generateResources(this);
     }
   }
@@ -725,34 +703,21 @@ public class D2rProcessor {
    * Uses a Jena writer to serialize model to RDF, N3 or N-TRIPLES.
    * @return serialization of model
    */
-  private String modelToString() throws D2RException {
-
-    try {
-
+  private String modelToString() {
       StringWriter writer = new StringWriter();
-      Set<java.util.Map.Entry<String, String>> namespaces = this.namespaces.entrySet();
-      for (Iterator<java.util.Map.Entry<String, String>> it = namespaces.iterator(); it.hasNext(); ) {
-        java.util.Map.Entry<String, String> ent = it.next();
-        this.model.setNsPrefix(ent.getKey(), ent.getValue());
-      }
+    for (Entry<String, String> ent : this.namespaces.entrySet()) {
+      this.model.setNsPrefix(ent.getKey(), ent.getValue());
+    }
 
-
-      log.debug("Converting Model to String. outputFormat: " +
-                  this.outputFormat);
+      log.debug("Converting Model to String. outputFormat: " + this.outputFormat);
 
       this.model.write(writer, this.outputFormat);
       return writer.toString();
-
-    }
-    catch (PrefixMapping.IllegalPrefixException ex) {
-      throw new D2RException("Error while converting Model to String.");
-    }
   }
 
   /** Generated properties for all instances of all D2R maps. */
   private void generatePropertiesForAllInstancesOfAllMaps() throws D2RException {
-    for (Iterator it = this.maps.iterator(); it.hasNext(); ) {
-      Map map = (Map) it.next();
+    for (Map map : maps) {
       map.generatePropertiesForAllInstances(this);
     }
   }
@@ -765,132 +730,91 @@ public class D2rProcessor {
    * NOTE: It is assumed the connection will be closed (or set to null) when
    * it is no longer needed (processing is complete).
    *
-   * @throws D2RException
+   * @throws D2RException Thrown if the connection to the datasource couldn't be retrieved
    * @return Connection
    */
-  public Connection getConnection() throws D2RException {
+  Connection getConnection() throws D2RException {
+    Connection con;
 
-    //value to be returned
-    Connection con = null;
-
-    //if there is a previous connection use it, otherwise try to create
-    //one using the details supplied
     try {
 
-      //validate connection
-      if ( (this.connection != null)
-          && (!this.connection.isClosed())) {
-
-        log.debug("Retreving existing connection.");
-
-        //use existing connection
-        con = this.connection;
+      //early exit when a connection already exists
+      if ( (this.connection != null) && (!this.connection.isClosed())) {
+        log.debug("Retrieving existing connection.");
+        return this.connection;
       }
-      else {
 
-        // Connect to database
-        String url = "";
+      // Connect to database
+      String url = this.getJdbc();
 
-        if (this.getJdbc() != null) {
-
-          url = this.getJdbc();
-        }
-
-
-        log.debug("Creating new connection. URL: " + url);
-
-
-        //make a new connection
-        if (url != "") {
-
-          //Driver used to establish connection
-          Driver driver = this.createDriver();
-
-          //use the Driver to establish a connection
-          Properties connectionProperties = new Properties();
-
-          //add the username and password to the properties
-          if (this.getDatabaseUsername() != null &&
-              this.getDatabasePassword() != null) {
-
-            connectionProperties.setProperty("user", this.getDatabaseUsername());
-            connectionProperties.setProperty("password",
-                                             this.getDatabasePassword());
-          }
-          else {
-
-            //no username/password supplied, used empty values
-            connectionProperties.setProperty("user", "");
-            connectionProperties.setProperty("password", "");
-          }
-
-          //connect to the URL using the Driver
-          if (driver != null) {
-
-            con = driver.connect(url, connectionProperties);
-          } else {
-
-            throw new D2RException("Could not establish Connection. " +
-                                   "Cannot obtain Driver.");
-          }
-        }
-        else {
-          throw new D2RException(
-              "Could not connect to database because of missing URL.");
-        }
-
-        //cache connection
-        this.setConnection(con);
+      //make a new connection
+      if (url == null || url.equals("")) {
+        throw new D2RException("Could not connect to database because of missing URL.");
       }
+
+      //Driver used to establish connection
+      Driver driver = this.createDriver();
+
+      if (driver == null) {
+        throw new D2RException("Could not establish Connection. Cannot obtain Driver.");
+      }
+
+      log.debug("Creating new connection. URL: " + url);
+
+      //use the Driver to establish a connection
+      Properties connectionProperties = new Properties();
+
+      //add the username and password to the properties
+      String username = "";
+      String password = "";
+      if (this.getDatabaseUsername() != null) {
+        username = this.getDatabaseUsername();
+      }
+      if (this.getDatabasePassword() != null) {
+        password = this.getDatabasePassword();
+      }
+
+      connectionProperties.setProperty("user", username);
+      connectionProperties.setProperty("password", password);
+
+      //connect to the URL using the Driver
+      con = driver.connect(url, connectionProperties);
+
+      //cache connection
+      this.setConnection(con);
     }
-    catch (SQLException ex) {
-      String message = "SQL Exception caught: ";
-      while (ex != null) {
-        message += " SQLState: " + ex.getSQLState();
-        message += "Message:  " + ex.getMessage();
-        message += "Vendor:   " + ex.getErrorCode();
-        ex = ex.getNextException();
-      }
+    catch (SQLException | D2RException ex) {
+      //if (con != null) SqlUtil.closeSilently(con);
+      String message = "Exception caught while trying to connect: ";
+      if (ex instanceof  SQLException) message += SqlUtil.unwrapMessage((SQLException) ex);
+      else message += ex.getMessage();
       throw new D2RException(message);
-    }
-    catch (java.lang.Throwable ex) {
-
-      //re-throw any errors as a D2RException that can be displayed to the user
-      throw new D2RException(ex.getMessage(), ex);
     }
 
     log.debug("Returning connection: " + con);
-
     return con;
   }
 
   /**
    * Creates a new JDBC Driver from this Object's Connection properties.
    *
-   * @throws D2RException
-   * @return Driver
+   * @throws D2RException Thrown if an error occurs while creating the Driver
+   * @return Driver The JDBC driver to the datasource. NOTE: It is guaranteed, that the result is not null
    */
   private Driver createDriver() throws D2RException {
-
     //value to be returned
-    Driver driver = null;
+    Driver driver;
 
     //name of Driver Class
-    String driverClass = null;
+    String driverClass = getJdbcDriver();
+
+    //get required information
+    if (driverClass == null) {
+      throw new D2RException("Could not connect to database because of " +
+          "missing Driver.");
+    }
 
     try {
-
-      //get required information
-      if (this.getJdbcDriver() != null) {
-
-        driverClass = this.getJdbcDriver();
-      }
-      else {
-
-        throw new D2RException("Could not connect to database because of " +
-                               "missing Driver.");
-      }
-
       //if there is a classpath supplied, use it to instantiate Driver
       if (this.getDriverClasspath() != null) {
 
@@ -910,6 +834,9 @@ public class D2rProcessor {
                              factoryException);
     }
 
+    if (driver == null)
+      throw new D2RException("Driver is supposed to be != null! Fix the bug!");
+
     return driver;
   }
 
@@ -918,7 +845,7 @@ public class D2rProcessor {
    *
    * @param connection Connection
    */
-  public void setConnection(Connection connection) {
+  private void setConnection(Connection connection) {
 
     this.connection = connection;
   }
@@ -928,7 +855,7 @@ public class D2rProcessor {
    *
    * @param classpath The class path to the driver in URL notation
    */
-  public void setDriverClasspath(URL classpath) {
+  private void setDriverClasspath(URL classpath) {
 
     this.driverClasspath = classpath;
   }
@@ -938,7 +865,7 @@ public class D2rProcessor {
    *
    * @return URL
    */
-  public URL getDriverClasspath(){
+  private URL getDriverClasspath(){
 
     return this.driverClasspath;
   }
@@ -947,7 +874,7 @@ public class D2rProcessor {
    * Returns an vector containing all D2R maps.
    * @return Vector with all maps.
    */
-  protected Vector getMaps() {
+  private Vector<Map> getMaps() {
     return maps;
   }
 
@@ -955,13 +882,10 @@ public class D2rProcessor {
    * Returns the D2R map identified by the id parameter.
    * @return D2R Map.
    */
-  protected Map getMapById(String id) {
-    Map referredMap;
-    for (Iterator it = this.getMaps().iterator(); it.hasNext(); ) {
-      Map itmap = (Map) it.next();
-      if (itmap.getId().equals(id)) {
-        referredMap = itmap;
-        return referredMap;
+  Map getMapById(String id) {
+    for (Map  map : this.getMaps()) {
+      if (map.getId().equals(id)) {
+        return map;
       }
     }
     return null;
@@ -971,7 +895,7 @@ public class D2rProcessor {
    * Returns an HashMap containing all translation tables.
    * @return Vector with all maps.
    */
-  protected HashMap getTranslationTables() {
+  HashMap<String, TranslationTable> getTranslationTables() {
     return translationTables;
   }
 
@@ -987,7 +911,7 @@ public class D2rProcessor {
    * Returns the JDBC data source name.
    * @return jdbcDSN
    */
-  protected String getJdbc() {
+  private String getJdbc() {
     return this.jdbc;
   }
 
@@ -995,7 +919,7 @@ public class D2rProcessor {
    * Returns the JDBC driver.
    * @return jdbcDriver
    */
-  protected String getJdbcDriver() {
+  private String getJdbcDriver() {
     return this.jdbcDriver;
   }
 
@@ -1003,7 +927,7 @@ public class D2rProcessor {
    * Returns the database username.
    * @return username
    */
-  protected String getDatabaseUsername() {
+  private String getDatabaseUsername() {
     return this.databaseUsername;
   }
 
@@ -1011,21 +935,22 @@ public class D2rProcessor {
    * Returns the database password.
    * @return password
    */
-  protected String getDatabasePassword() {
+  private String getDatabasePassword() {
     return this.databasePassword;
   }
 
   /**
    * Translates a qName to an URI using the namespace mapping of the D2R map.
-   * @param qName Qualified name to be translated.
+   * @param qName Qualified name to be translated. See <a href="https://www.w3.org/TR/REC-xml-names/#dt-qualname">
+   *              https://www.w3.org/TR/REC-xml-names/#dt-qualname</a> for a detailed description
    * @return the URI of the qualified name.
    */
-  protected String getNormalizedURI(String qName) {
+  String getNormalizedURI(String qName) {
     String prefix = D2rUtil.getNamespacePrefix(qName);
     String URIprefix = this.namespaces.get(prefix);
     if (URIprefix != null) {
-      String localname = D2rUtil.getLocalName(qName);
-      return URIprefix + localname;
+      String localName = D2rUtil.getLocalName(qName);
+      return URIprefix + localName;
     }
     else {
       return qName;

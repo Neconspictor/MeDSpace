@@ -98,7 +98,7 @@ public class Map {
       ResultSet rs = queryResult.getResultSet();
       int numCols = queryResult.getColumnCount();
       boolean more = rs.next();
-      HashMap<String, String> lastTuple = new HashMap<>();
+      ResultInstance lastTuple = new ResultInstance();
       // loop over the result set and create new resources if groupBy values differ.
       while (more) {
         // cache resource data from the last tuple
@@ -109,12 +109,7 @@ public class Map {
     }
     catch (SQLException ex) {
       String message = "SQL Exception caught: ";
-      while (ex != null) {
-        message += " SQLState: " + ex.getSQLState();
-        message += "Message:  " + ex.getMessage();
-        message += "Vendor:   " + ex.getErrorCode();
-        ex = ex.getNextException();
-      }
+      message += SqlUtil.unwrapMessage(ex);
       throw new D2RException(message);
     }
     catch (D2RException ex) {
@@ -172,150 +167,16 @@ public class Map {
       boolean more = rs.next();
       while (more) {
         // cache tuple data
-        HashMap<String, String> tuple = new HashMap(numCols);
+        ResultInstance tuple = new ResultInstance(numCols);
         for (int i = 1; i <= numCols; i++)
           tuple.put(rs.getMetaData().getColumnName(i).trim().toUpperCase(), rs.getString(i));
           // get instance id
         String instID = "";
         for (Iterator<String> it = this.groupBy.iterator(); it.hasNext(); ) {
-          instID += tuple.get(D2rUtil.getFieldNameUpperCase(it.next()).trim().toUpperCase());
+          instID += tuple.getValueByColmnName(it.next());
         }
         //get instance
-        Resource inst = getInstanceById(instID);
-        if (inst == null) {
-
-          log.warn("Warning: (CreateProperties) Didn't find instance " +
-                   instID + " in map " + this.getId() + ".");
-        }
-        else {
-          // add properties
-          for (Iterator<Bridge> propIt = this.bridges.iterator(); propIt.hasNext(); ) {
-            Bridge bridge = propIt.next();
-            // generate property
-            Property prop = bridge.getProperty(processor);
-            // generate value
-            if (bridge instanceof DataPropertyBridge) {
-              // Generate property value
-              String value = null;
-              if (bridge.getColumn() != null) {
-                // Column
-                String fieldName = D2rUtil.getFieldNameUpperCase(bridge.getColumn()).trim().toUpperCase();
-                if (! (tuple.get(D2rUtil.getFieldNameUpperCase(bridge.getColumn().trim().toUpperCase())) == null)) {
-                  value = tuple.get(D2rUtil.getFieldNameUpperCase(bridge.
-                      getColumn()).trim().toUpperCase());
-                  // translate value
-                  if (bridge.getTranslation() != null) {
-                    HashMap<String, HashMap<String, String>> tables = processor.getTranslationTables();
-                    // Warnung wenn Table nicht gefunden!!!!
-                    HashMap<String, String> table = tables.get(bridge.getTranslation());
-                    value = table.get(value);
-                  }
-                }
-              }
-              else if (bridge.getPattern() != null) {
-                // pattern
-                value = D2rUtil.parsePattern(bridge.getPattern(),
-                                             D2R.DELIMINATOR, tuple);
-              }
-              else {
-                value = bridge.getValue();
-              }
-              if (value != null) {
-                Literal literal;
-                if (bridge.getXmlLang() != null) {
-                  literal = model.createLiteral(value, bridge.getXmlLang());
-                }
-                else {
-                  literal = model.createLiteral(value);
-                }
-                inst.addProperty(prop, literal);
-              }
-            }
-            // object property bridge
-            if (bridge instanceof ObjectPropertyBridge) {
-              ObjectPropertyBridge objectBridge = (ObjectPropertyBridge) bridge;
-              Resource referredResource = null;
-              if (objectBridge.getReferredClass() != null) {
-                // get referred map
-                Map referredMap = processor.getMapById(objectBridge.
-                    getReferredClass());
-                if (referredMap != null) {
-                  // get referred instance
-                  instID = "";
-                  for (Iterator it = objectBridge.getReferredGroupBy().iterator();
-                       it.hasNext(); ) {
-                    instID +=
-                        tuple.get(D2rUtil.getFieldNameUpperCase( (String) it.next()).trim().toUpperCase());
-                  }
-                  referredResource = referredMap.getInstanceById(
-                      instID);
-                  if (referredResource == null) {
-
-                    log.warn("Warning: (CreateProperties) Reference to instance " +
-                             objectBridge.getReferredClass() + " " + instID +
-                             " not found in map " + this.getId() + ".");
-                  }
-                }
-                else {
-
-                  log.warn("Warning: (CreateProperties) Couldn't find referred " +
-                           "map " + objectBridge.getReferredClass() +
-                           " in map " + this.getId() + ".");
-                }
-              }
-              else if (objectBridge.getPattern() != null) {
-                // pattern
-                String value = D2rUtil.parsePattern(bridge.getPattern(),
-                    D2R.DELIMINATOR, tuple);
-                value = processor.getNormalizedURI(value);
-                referredResource = model.getResource(value);
-              }
-              else if (objectBridge.getColumn() != null) {
-                // column
-                String fieldName = D2rUtil.getFieldNameUpperCase(bridge.getColumn()).
-                    trim().toUpperCase();
-                if (! (tuple.get(D2rUtil.getFieldNameUpperCase(bridge.getColumn().trim().toUpperCase())) == null)) {
-                  String value = (String) tuple.get(D2rUtil.getFieldNameUpperCase(bridge.
-                      getColumn()).trim().toUpperCase());
-                  if (objectBridge.getTranslation() != null) {
-                    HashMap tables = processor.getTranslationTables();
-                    HashMap table = (HashMap) tables.get(objectBridge.
-                        getTranslation());
-                    if (table != null) {
-                      String translation = (String) table.get(value);
-                      // if not found in table and there is a pattern -> use pattern
-                      if (translation == null && objectBridge.getPattern() != null) {
-                        // alternative pattern
-                        translation = D2rUtil.parsePattern(bridge.getPattern(),
-                            D2R.DELIMINATOR, tuple);
-                      }
-                      value = translation;
-                    }
-                    else {
-
-                      log.warn("Warning: (CreateProperties) " +
-                               "Couldn't find translation table " +
-                               objectBridge.getTranslation() +
-                               " in map " + this.getId() + ".");
-                    }
-                  }
-                  value = processor.getNormalizedURI(value);
-                  referredResource = model.getResource(value);
-                }
-              }
-              else if (objectBridge.getValue() != null) {
-                // fixed value
-                String value = objectBridge.getValue();
-                value = processor.getNormalizedURI(value);
-                referredResource = model.getResource(value);
-              }
-              if (referredResource != null && prop != null) {
-                // add object property property
-                inst.addProperty(prop, referredResource);
-              }
-            }
-          }
-        }
+        generateTupleProperties(processor, model, tuple, instID);
         more = rs.next();
       }
       // Close result set and statement
@@ -335,6 +196,25 @@ public class Map {
     catch (java.lang.Throwable ex) {
       // Got some other type of exception.  Dump it.
       throw new D2RException(ex.getMessage());
+    }
+  }
+
+  private void generateTupleProperties(D2rProcessor processor, Model model, ResultInstance tuple, String instID) {
+    Resource inst = getInstanceById(instID);
+    if (inst == null) {
+      log.warn("Warning: (CreateProperties) Didn't find instance " +
+          instID + " in map " + this.getId() + ".");
+      return;
+    }
+
+    for (Iterator<Bridge> propIt = this.bridges.iterator(); propIt.hasNext(); ) {
+      Bridge bridge = propIt.next();
+      // generate property
+      Property prop = bridge.getProperty(processor);
+      RDFNode referredNode = bridge.getReferredNode(processor, model, tuple);
+      if (prop != null && referredNode != null) {
+        inst.addProperty(prop, referredNode);
+      }
     }
   }
 
@@ -432,10 +312,10 @@ public class Map {
     return builder.toString();
   }
 
-  private HashMap<String, String> createResource(D2rProcessor processor, Model model, ResultSet rs, int numCols,
-                                                 HashMap<String, String> lastTuple)
+  private ResultInstance createResource(D2rProcessor processor, Model model, ResultSet rs, int numCols,
+                                        ResultInstance lastTuple)
       throws SQLException, D2RException {
-    HashMap<String, String> currentTuple = new HashMap<>();
+    ResultInstance currentTuple = new ResultInstance();
     for (int i = 1; i <= numCols; i++) {
       String columnName = SqlUtil.getColumnNameUpperCase(i, rs);
       currentTuple.put(columnName, rs.getString(i));
@@ -449,9 +329,9 @@ public class Map {
     // TODO jena.model treats resources with the same uri as equal, so the model class shouldn't be a problem
     boolean newResource = false;
     for (Iterator<String> it = this.groupBy.iterator(); it.hasNext(); ) {
-      String fieldName = D2rUtil.getFieldNameUpperCase( it.next());
-      String current = currentTuple.get(fieldName); // TODO if current is null, something is not right!!!
-      if (!current.equals(lastTuple.get(fieldName))) {
+      String fieldName = it.next();
+      String current = currentTuple.getValueByColmnName(fieldName); // TODO if current is null, something is not right!!!
+      if (!current.equals(lastTuple.getValueByColmnName(fieldName))) {
         newResource = true;
         break;
       }
@@ -468,7 +348,7 @@ public class Map {
       resource = model.createResource(uri);
 
     } else if (this.uriColumn != null) {
-      String uri = currentTuple.get(D2rUtil.getFieldNameUpperCase(this.uriColumn));
+      String uri = currentTuple.getValueByColmnName(this.uriColumn);
       if (uri == null)
         throw new D2RException(
             "No NULL value in the URI colunm '" +
@@ -483,8 +363,7 @@ public class Map {
     // set instance id
     String resourceID = "";
     for (Iterator<String> it = this.groupBy.iterator(); it.hasNext(); ) {
-      resourceID +=
-          currentTuple.get(D2rUtil.getFieldNameUpperCase(it.next()));
+      resourceID += currentTuple.getValueByColmnName(it.next());
     }
     if (resource != null && resourceID != "") {
       //inst.setInstanceID(instID); TODO

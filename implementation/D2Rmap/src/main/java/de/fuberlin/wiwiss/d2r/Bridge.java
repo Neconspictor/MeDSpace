@@ -3,9 +3,11 @@ package de.fuberlin.wiwiss.d2r;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
+
 
 /**
- * Abstract class representing an D2R bridge. Extended by the subclasses ObjectPropertyBridge and DataPropertyBridge.
+ * Abstract class representing an D2R bridge. Extended by the subclasses ObjectPropertyBridge and DatatypePropertyBridge.
  * <BR><BR>History: 
  * <BR>07-21-2004   : Error handling changed to Log4J.
  * <BR>09-25-2003   : Changed for Jena2.
@@ -64,4 +66,13 @@ abstract public class Bridge {
     protected String getValue() { return value; }
 
     protected void setValue(String value) { this.value = value; }
+
+    /**
+     *
+     * @param processor
+     * @param model
+     * @param tuple
+     * @return
+     */
+    protected abstract RDFNode getReferredNode(D2rProcessor processor, Model model, ResultInstance tuple);
 }

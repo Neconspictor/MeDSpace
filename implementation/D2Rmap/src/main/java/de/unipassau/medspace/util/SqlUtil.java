@@ -33,6 +33,28 @@ public class SqlUtil {
     return columnName.toUpperCase();
   }
 
+  public static String unwrapMessage(SQLException e) {
+    StringBuilder message = new StringBuilder();
+    while (e != null) {
+      message.append(" SQLState: ");
+      message.append(e.getSQLState());
+      message.append("Message:  ");
+      message.append(e.getMessage());
+      message.append("Vendor:   ");
+      message.append(e.getErrorCode());
+      e = e.getNextException();
+    }
+    return message.toString();
+  }
+
+  public static void closeSilently(Connection con) {
+    try {
+      if (!con.isClosed()) con.close();
+    } catch (SQLException e) {
+      // ignore purposely
+    }
+  }
+
   public static class SQLQueryResult {
     private ResultSet set;
     private int numColumns;

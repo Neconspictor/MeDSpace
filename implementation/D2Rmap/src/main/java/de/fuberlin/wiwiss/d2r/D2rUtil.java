@@ -53,7 +53,7 @@ public class D2rUtil {
    * @return String with placeholders replaced.
    */
   protected static String parsePattern(String pattern, String deliminator,
-                                       HashMap tuple) {
+                                       ResultInstance tuple) {
     String result = "";
     int startPosition = 0;
     int endPosition = 0;
@@ -69,9 +69,8 @@ public class D2rUtil {
         startPosition = startPosition + deliminator.length();
         endPosition = pattern.indexOf(deliminator, startPosition);
         // get field
-        String fieldname = D2rUtil.getFieldNameUpperCase(pattern.substring(startPosition,
-            endPosition).trim()).toUpperCase();
-        result += tuple.get(fieldname);
+        String fieldname = pattern.substring(startPosition, endPosition);
+        result += tuple.getValueByColmnName(fieldname);
         startPosition = endPosition + deliminator.length();
       }
       if (endPosition + deliminator.length() < pattern.length())
