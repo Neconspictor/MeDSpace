@@ -1,0 +1,111 @@
+package de.fuberlin.wiwiss.d2r;
+
+import java.util.HashMap;
+import java.util.Vector;
+
+/**
+ * Created by David Goeth on 30.05.2017.
+ */
+public class Configuration {
+  String saveAs;
+  String outputFormat;
+  String jdbc;
+  String jdbcDriver;
+  String databaseUsername;
+  String databasePassword;
+  String prepend;
+  String postpend;
+  Vector<D2RMap> maps;
+  HashMap<String, TranslationTable> translationTables;
+  HashMap<String, String> namespaces;
+
+  public Configuration() {}
+
+  public String getSaveAs() {
+    return saveAs;
+  }
+
+  public void setSaveAs(String saveAs) {
+    this.saveAs = saveAs;
+  }
+
+  public String getOutputFormat() {
+    return outputFormat;
+  }
+
+  public void setOutputFormat(String outputFormat) {
+    this.outputFormat = outputFormat;
+  }
+
+  public String getJdbcDriver() {
+    return jdbcDriver;
+  }
+
+  public void setJdbcDriver(String jdbcDriver) {
+    this.jdbcDriver = jdbcDriver;
+  }
+
+  public String getJdbc() {
+    return jdbc;
+  }
+
+  public void setJdbc(String jdbc) {
+    this.jdbc = jdbc;
+  }
+
+  public String getDatabaseUsername() {
+    return databaseUsername;
+  }
+
+  public void setDatabaseUsername(String databaseUsername) {
+    this.databaseUsername = databaseUsername;
+  }
+
+  public String getDatabasePassword() {
+    return databasePassword;
+  }
+
+  public void setDatabasePassword(String databasePassword) {
+    this.databasePassword = databasePassword;
+  }
+
+  public String getPrepend() {
+    return prepend;
+  }
+
+  public void setPrepend(String prepend) {
+    this.prepend = prepend;
+  }
+
+  public String getPostpend() {
+    return postpend;
+  }
+
+  public void setPostpend(String postpend) {
+    this.postpend = postpend;
+  }
+
+  public Vector<D2RMap> getMaps() {
+    return maps;
+  }
+
+  public void setMaps(Vector<D2RMap> maps) {
+    this.maps = maps;
+  }
+
+  public HashMap<String, TranslationTable> getTranslationTables() {
+    return translationTables;
+  }
+
+  public void setTranslationTables(HashMap<String, TranslationTable> translationTables) {
+    this.translationTables = translationTables;
+  }
+
+  public HashMap<String, String> getNamespaces() {
+    return namespaces;
+  }
+
+  public void setNamespaces(HashMap<String, String> namespaces) {
+    this.namespaces = namespaces;
+  }
+}
