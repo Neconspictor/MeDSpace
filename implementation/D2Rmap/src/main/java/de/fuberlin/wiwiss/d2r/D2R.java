@@ -10,10 +10,10 @@ package de.fuberlin.wiwiss.d2r;
  * @version V0.2
  */
 public class D2R {
-    protected static final String D2RNS = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RMap/0.1#";
-    protected static final String XMLNS = "http://www.w3.org/XML/1998/namespace";
-    protected static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    protected static final String RDFNSPREFIX = "rdf";
-    protected static final String DELIMINATOR = "@@";
-    protected static final String STANDARD_OUTPUT_FORMAT = "RDF/XML";
+    static final String D2RNS = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RMap/0.1#";
+    static final String XMLNS = "http://www.w3.org/XML/1998/namespace";
+    static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    static final String RDFNS_PREFIX = "rdf";
+    static final String DELIMINATOR = "@@";
+    static final String STANDARD_OUTPUT_FORMAT = "RDF/XML";
 }

@@ -77,7 +77,7 @@ public class D2rProcessor {
   private void initialize() {
     maps = new Vector<>();
     namespaces = new HashMap<>();
-    namespaces.put(D2R.RDFNSPREFIX, D2R.RDFNS);
+    namespaces.put(D2R.RDFNS_PREFIX, D2R.RDFNS);
     translationTables = new HashMap<>();
     mapLoaded = false;
     outputFormat = D2R.STANDARD_OUTPUT_FORMAT;

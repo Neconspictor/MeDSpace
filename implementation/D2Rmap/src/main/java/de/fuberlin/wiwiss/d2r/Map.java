@@ -3,7 +3,6 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.Vector;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import java.util.Iterator;
 import java.sql.*;
 
 import de.unipassau.medspace.util.SqlUtil;
@@ -39,16 +38,16 @@ public class Map {
   private static Logger log = LogManager.getLogger(Map.class);
 
   protected Map() {
-    resources = new HashMap();
-    bridges = new Vector();
-    groupBy = new Vector();
+    resources = new HashMap<>();
+    bridges = new Vector<>();
+    groupBy = new Vector<>();
   }
 
   /**
    * Generates all resources for this map.
    * @param  processor Reference to an D2R processor instance.
    */
-  protected void generateResources(D2rProcessor processor) throws D2RException {
+  void generateResources(D2rProcessor processor) throws D2RException {
 
     try {
 
@@ -78,8 +77,8 @@ public class Map {
    * @param  processor Reference to an D2R processor instance.
    * @param  con The database connection.
    */
-  protected void generateResources(D2rProcessor processor,
-                                   Connection con, String query) throws D2RException {
+  private void generateResources(D2rProcessor processor,
+                                 Connection con, String query) throws D2RException {
 
     if (log.isDebugEnabled()) {
 
@@ -128,7 +127,7 @@ public class Map {
    * Generates properties for all resources of this map.
    * @param  processor Reference to an D2R processor instance.
    */
-  protected void generatePropertiesForAllInstances(D2rProcessor processor)
+  void generatePropertiesForAllInstances(D2rProcessor processor)
       throws D2RException {
 
     try {
@@ -154,8 +153,8 @@ public class Map {
    * @param  processor Reference to an D2R processor instance.
    * @param  con The database connection.
    */
-  protected void generatePropertiesForAllInstances(D2rProcessor processor,
-      Connection con) throws D2RException {
+  private void generatePropertiesForAllInstances(D2rProcessor processor,
+                                                 Connection con) throws D2RException {
     Model model = processor.getModel();
     String query = this.sql;
     try {
@@ -171,12 +170,12 @@ public class Map {
         for (int i = 1; i <= numCols; i++)
           tuple.put(rs.getMetaData().getColumnName(i).trim().toUpperCase(), rs.getString(i));
           // get instance id
-        String instID = "";
-        for (Iterator<String> it = this.groupBy.iterator(); it.hasNext(); ) {
-          instID += tuple.getValueByColmnName(it.next());
+        StringBuilder instID = new StringBuilder();
+        for (String aGroupBy : this.groupBy) {
+          instID.append(tuple.getValueByColmnName(aGroupBy));
         }
         //get instance
-        generateTupleProperties(processor, model, tuple, instID);
+        generateTupleProperties(processor, model, tuple, instID.toString());
         more = rs.next();
       }
       // Close result set and statement
@@ -184,18 +183,8 @@ public class Map {
       stmt.close();
     }
     catch (SQLException ex) {
-      String message = "SQL Exception caught: ";
-      while (ex != null) {
-        message += " SQLState: " + ex.getSQLState();
-        message += "Message:  " + ex.getMessage();
-        message += "Vendor:   " + ex.getErrorCode();
-        ex = ex.getNextException();
-      }
+      String message = "SQL Exception caught: " + SqlUtil.unwrapMessage(ex);
       throw new D2RException(message);
-    }
-    catch (java.lang.Throwable ex) {
-      // Got some other type of exception.  Dump it.
-      throw new D2RException(ex.getMessage());
     }
   }
 
@@ -207,8 +196,7 @@ public class Map {
       return;
     }
 
-    for (Iterator<Bridge> propIt = this.bridges.iterator(); propIt.hasNext(); ) {
-      Bridge bridge = propIt.next();
+    for (Bridge bridge : this.bridges) {
       // generate property
       Property prop = bridge.getProperty(processor);
       RDFNode referredNode = bridge.getReferredNode(processor, model, tuple);
@@ -218,27 +206,15 @@ public class Map {
     }
   }
 
-  protected Vector getBridges() {
-    return bridges;
-  }
-
-  protected void addBridge(Bridge bridge) {
+  void addBridge(Bridge bridge) {
     this.bridges.add(bridge);
   }
 
-  protected String getUriPattern() {
-    return uriPattern;
-  }
-
-  protected void setUriPattern(String uriPattern) {
+  void setUriPattern(String uriPattern) {
     this.uriPattern = uriPattern;
   }
 
-  protected String getUriColumn() {
-    return uriColumn;
-  }
-
-  protected void setUriColumn(String uriColumn) {
+  void setUriColumn(String uriColumn) {
     this.uriColumn = uriColumn;
   }
 
@@ -248,14 +224,6 @@ public class Map {
 
   protected void setSql(String sql) {
     this.sql = sql;
-  }
-
-  protected Vector getGroupBy() {
-    return groupBy;
-  }
-
-  protected void setGroupBy(Vector groupBy) {
-    this.groupBy = groupBy;
   }
 
   protected String getId() {
@@ -270,7 +238,7 @@ public class Map {
    * Adds GroupBy fields to the map.
    * @param  fields String containing all GroupBy fields separated be ','.
    */
-  protected void addGroupByFields(String fields) {
+  void addGroupByFields(String fields) {
     StringTokenizer tokenizer = new StringTokenizer(fields, ",");
     while (tokenizer.hasMoreTokens())
       this.groupBy.add(tokenizer.nextToken().trim());
@@ -281,7 +249,7 @@ public class Map {
    * @param id ID. Instances are identified by the values of the d2r:groupBy fields.
    * return Instance with the specified ID.
    */
-  protected Resource getInstanceById(String id) {
+  Resource getInstanceById(String id) {
     return this.resources.get(id);
   }
 
@@ -298,10 +266,10 @@ public class Map {
     if (semicolonIndex != -1)
       query = query.substring(0, query.indexOf(";"));
 
-    StringBuilder builder = new StringBuilder(query); // Stringbuilder for faster string creation
+    StringBuilder builder = new StringBuilder(query); // StringBuilder for faster string creation
     builder.append(" ORDER BY ");
-    for (Iterator<String> it = this.groupBy.iterator(); it.hasNext(); ) {
-      builder.append(it.next());
+    for (String aGroupBy : this.groupBy) {
+      builder.append(aGroupBy);
       builder.append(", ");
     }
 
@@ -328,8 +296,7 @@ public class Map {
     // TODO Or is the whole newResource testing stuff eventually obsolete???
     // TODO jena.model treats resources with the same uri as equal, so the model class shouldn't be a problem
     boolean newResource = false;
-    for (Iterator<String> it = this.groupBy.iterator(); it.hasNext(); ) {
-      String fieldName = it.next();
+    for (String fieldName : this.groupBy) {
       String current = currentTuple.getValueByColmnName(fieldName); // TODO if current is null, something is not right!!!
       if (!current.equals(lastTuple.getValueByColmnName(fieldName))) {
         newResource = true;
@@ -339,7 +306,7 @@ public class Map {
 
     if (!newResource) return currentTuple;
 
-    Resource resource = null;
+    Resource resource;
     // define URI and generate instance
     if (this.uriPattern != null) {
       String uri = D2rUtil.parsePattern(this.uriPattern, D2R.DELIMINATOR,
@@ -351,7 +318,7 @@ public class Map {
       String uri = currentTuple.getValueByColmnName(this.uriColumn);
       if (uri == null)
         throw new D2RException(
-            "No NULL value in the URI colunm '" +
+            "No NULL value in the URI column '" +
                 D2rUtil.getFieldNameUpperCase(this.uriColumn) + "' allowed.");
       uri = processor.getNormalizedURI(uri);
       resource = model.createResource(uri);
@@ -361,11 +328,12 @@ public class Map {
       resource = model.createResource();
     }
     // set instance id
-    String resourceID = "";
-    for (Iterator<String> it = this.groupBy.iterator(); it.hasNext(); ) {
-      resourceID += currentTuple.getValueByColmnName(it.next());
+    StringBuilder resourceIDBuilder = new StringBuilder();
+    for (String aGroupBy : this.groupBy) {
+      resourceIDBuilder.append(currentTuple.getValueByColmnName(aGroupBy));
     }
-    if (resource != null && resourceID != "") {
+    String resourceID = resourceIDBuilder.toString();
+    if (resource != null && resourceID.equals("")) {
       //inst.setInstanceID(instID); TODO
       resources.put(resourceID, resource);
     } else {
