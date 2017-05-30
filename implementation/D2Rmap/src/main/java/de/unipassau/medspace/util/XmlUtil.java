@@ -51,7 +51,7 @@ public class XmlUtil {
     // The builder validates the xml by this schema. If the schema is null, no schema will be used
     factory.setSchema(schema);
 
-    DocumentBuilder builder = null;
+    DocumentBuilder builder;
     try {
       builder = factory.newDocumentBuilder();
     } catch (ParserConfigurationException e) {
@@ -110,7 +110,7 @@ public class XmlUtil {
         .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
     // create the schema as the compound of the schema sources
-    Schema schema = null;
+    Schema schema;
 
     try {
       schema = schemaFactory.newSchema(schemaSources);

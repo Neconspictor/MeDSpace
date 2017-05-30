@@ -16,9 +16,6 @@ import java.util.HashMap;
  */
 public class DatatypePropertyBridge extends Bridge {
 
-  /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rUtil.class);
-
   @Override
   protected RDFNode getReferredNode(D2rProcessor processor, Model model, ResultInstance tuple) {
     // Generate property value

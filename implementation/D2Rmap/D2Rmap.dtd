@@ -46,7 +46,7 @@
 	d2r:pattern CDATA #IMPLIED
 	d2r:value CDATA #IMPLIED
 	d2r:translate CDATA #IMPLIED
-	d2r:datatype CDATA #IMPLIED
+	d2r:dataType CDATA #IMPLIED
 	d2r:useCollection CDATA #IMPLIED
 	xml:lang CDATA #IMPLIED
 >

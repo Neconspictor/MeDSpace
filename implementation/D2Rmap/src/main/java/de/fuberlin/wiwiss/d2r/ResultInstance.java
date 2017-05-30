@@ -3,16 +3,17 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.HashMap;
 
 /**
- * Created by David Goeth on 29.05.2017.
+ * A Utility class for instantiating result instances of a SQL query.
+ * This class is package private as it is not intended to be used globally.
  */
-public class ResultInstance {
+class ResultInstance {
   private HashMap<String, String> table;
 
-  public ResultInstance(int columnCount) {
+  ResultInstance(int columnCount) {
     table = new HashMap<>(columnCount);
   }
 
-  public ResultInstance() {
+  ResultInstance() {
     table = new HashMap<>();
   }
 
@@ -21,12 +22,12 @@ public class ResultInstance {
    * @param columnName The name of the column to get the value from.
    * @return The value of the specified column name; Null if the column couldn't be found.
    */
-  public String getValueByColmnName(String columnName) {
+  String getValueByColmnName(String columnName) {
     String key = D2rUtil.getFieldNameUpperCase(columnName);
     return table.get(key);
   }
 
-  public void put(String columnName, String value) {
+  void put(String columnName, String value) {
     String key = D2rUtil.getFieldNameUpperCase(columnName);
     table.put(key, value);
   }

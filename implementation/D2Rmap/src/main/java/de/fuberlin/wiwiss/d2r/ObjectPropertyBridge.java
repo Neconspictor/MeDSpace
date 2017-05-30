@@ -1,7 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
@@ -21,12 +20,10 @@ public class ObjectPropertyBridge
     extends Bridge {
   private String referredClass;
   private Vector<String> referredGroupBy;
-
-  /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rUtil.class);
+  private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
 
   protected ObjectPropertyBridge() {
-    this.referredGroupBy = new Vector();
+    referredGroupBy = new Vector<>();
   }
 
   protected String getReferredClass() {
@@ -78,19 +75,18 @@ public class ObjectPropertyBridge
   }
 
   private Resource getFromClass(D2rProcessor processor, ResultInstance tuple) {
-    Map referredMap = processor.getMapById(getReferredClass());
+    D2RMap referredMap = processor.getMapById(getReferredClass());
     if (referredMap == null) {
       log.warn("Warning: (CreateProperties) Couldn't find referred " +
           "map " + getReferredClass());
       return null;
     }
     // get referred instance
-    String instID = "";
-    for (Iterator<String> it = getReferredGroupBy().iterator();
-         it.hasNext(); ) {
-      instID +=
-          tuple.getValueByColmnName(it.next());
+    StringBuilder instIDBuilder = new StringBuilder();
+    for (String s : getReferredGroupBy()) {
+      instIDBuilder.append(tuple.getValueByColmnName(s));
     }
+    String instID = instIDBuilder.toString();
     Resource referredResource = referredMap.getInstanceById(
         instID);
     if (referredResource == null) {
@@ -124,8 +120,7 @@ public class ObjectPropertyBridge
   }
 
   private String getFromPattern(ResultInstance tuple) {
-    String value = D2rUtil.parsePattern(getPattern(),
+    return D2rUtil.parsePattern(getPattern(),
         D2R.DELIMINATOR, tuple);
-    return value;
   }
 }

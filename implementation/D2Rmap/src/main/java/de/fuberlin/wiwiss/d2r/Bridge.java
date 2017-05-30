@@ -3,8 +3,6 @@ package de.fuberlin.wiwiss.d2r;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-
 
 /**
  * Abstract class representing an D2R bridge. Extended by the subclasses ObjectPropertyBridge and DatatypePropertyBridge.
@@ -17,23 +15,20 @@ import java.util.HashMap;
  */
 abstract public class Bridge {
     private String translation;
-    private String datatype;
+    private String dataType;
     private String pattern;
     private String xmlLang;
     private String column;
     private String property;
     private String value;
 
-    /** log4j logger used for this class */
-    private static Logger log = Logger.getLogger(D2rUtil.class);
+    private static Logger log = Logger.getLogger(Bridge.class);
 
     protected String getTranslation() { return translation; }
 
     protected void setTranslation(String translation) { this.translation = translation; }
 
-    protected String getDatatype() { return datatype; }
-
-    protected void setDatatype(String datatype) { this.datatype = datatype; }
+    protected void setDataType(String dataType) { this.dataType = dataType; }
 
     protected String getPattern() { return pattern; }
 

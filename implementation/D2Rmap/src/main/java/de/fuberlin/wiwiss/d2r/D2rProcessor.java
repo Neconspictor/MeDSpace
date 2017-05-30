@@ -54,7 +54,7 @@ public class D2rProcessor {
   private String databasePassword;
   private String prepend;
   private String postpend;
-  private Vector<Map> maps;
+  private Vector<D2RMap> maps;
   private HashMap<String, TranslationTable> translationTables;
   private HashMap<String, String> namespaces;
   private Model model;
@@ -247,7 +247,7 @@ public class D2rProcessor {
     }
     else {
 
-      throw new D2RException("Could not process Map. File is null.");
+      throw new D2RException("Could not process D2RMap. File is null.");
     }
   }
 
@@ -324,14 +324,14 @@ public class D2rProcessor {
     }
     else {
 
-      throw new D2RException("Could not process Map. File is null.");
+      throw new D2RException("Could not process D2RMap. File is null.");
     }
   }
 
   /**
    * Processes the D2R map and returns all generated instances.
    * @return RDF, N3 or N-Triples depending on the processor instruction d2r:outputFormat.
-   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no Map was read before
+   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2RMap was read before
    * (see {@link #readMap(File)}, {@link #readMap(String)}, {@link #readMap(Document)})
    */
   private String generateAllInstancesAsString() throws D2RException {
@@ -362,7 +362,7 @@ public class D2rProcessor {
   /**
    * Processes the D2R map and returns a Jena model containing all generated instances.
    * @return Jena model containing all generated instances.
-   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no Map was read before
+   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2RMap was read before
    * (see {@link #readMap(File)}, {@link #readMap(String)}, {@link #readMap(Document)})
    */
   public Model generateAllInstancesAsModel() throws D2RException {
@@ -465,10 +465,10 @@ public class D2rProcessor {
    */
   public void readMap(String filename) throws IOException, D2RException {
 
-    //Map file
+    //D2RMap file
     File file = new File(filename);
 
-    //read the Map file
+    //read the D2RMap file
     this.readMap(file);
   }
 
@@ -598,7 +598,7 @@ public class D2rProcessor {
       numNodes = list.getLength();
       for (int i = 0; i < numNodes; i++) {
         elem = (Element) list.item(i);
-        Map cMap = new Map();
+        D2RMap cMap = new D2RMap();
         // Read type attribute
         if (elem.hasAttributeNS(D2R.D2RNS, "type")) {
           cMap.setId(elem.getAttributeNS(D2R.D2RNS, "type").trim());
@@ -648,7 +648,7 @@ public class D2rProcessor {
                 XMLNS,
                 "lang").trim());
           if (propertyElement.hasAttributeNS(D2R.D2RNS, "datatype"))
-            propertyBridge.setDatatype(propertyElement.getAttributeNS(D2R.
+            propertyBridge.setDataType(propertyElement.getAttributeNS(D2R.
                 D2RNS,
                 "datatype").trim());
           cMap.addBridge(propertyBridge);
@@ -694,7 +694,7 @@ public class D2rProcessor {
 
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
-    for (Map map : maps) {
+    for (D2RMap map : maps) {
       map.generateResources(this);
     }
   }
@@ -717,7 +717,7 @@ public class D2rProcessor {
 
   /** Generated properties for all instances of all D2R maps. */
   private void generatePropertiesForAllInstancesOfAllMaps() throws D2RException {
-    for (Map map : maps) {
+    for (D2RMap map : maps) {
       map.generatePropertiesForAllInstances(this);
     }
   }
@@ -874,7 +874,7 @@ public class D2rProcessor {
    * Returns an vector containing all D2R maps.
    * @return Vector with all maps.
    */
-  private Vector<Map> getMaps() {
+  private Vector<D2RMap> getMaps() {
     return maps;
   }
 
@@ -882,8 +882,8 @@ public class D2rProcessor {
    * Returns the D2R map identified by the id parameter.
    * @return D2R Map.
    */
-  Map getMapById(String id) {
-    for (Map  map : this.getMaps()) {
+  D2RMap getMapById(String id) {
+    for (D2RMap map : this.getMaps()) {
       if (map.getId().equals(id)) {
         return map;
       }
@@ -945,12 +945,13 @@ public class D2rProcessor {
    *              https://www.w3.org/TR/REC-xml-names/#dt-qualname</a> for a detailed description
    * @return the URI of the qualified name.
    */
+  @SuppressWarnings("SpellCheckingInspection")
   String getNormalizedURI(String qName) {
     String prefix = D2rUtil.getNamespacePrefix(qName);
-    String URIprefix = this.namespaces.get(prefix);
-    if (URIprefix != null) {
+    String uriPrefix = this.namespaces.get(prefix);
+    if (uriPrefix != null) {
       String localName = D2rUtil.getLocalName(qName);
-      return URIprefix + localName;
+      return uriPrefix + localName;
     }
     else {
       return qName;

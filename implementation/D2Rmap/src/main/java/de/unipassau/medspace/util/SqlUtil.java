@@ -61,10 +61,10 @@ public class SqlUtil {
     private Statement statement;
     private static Logger log = LogManager.getLogger(SQLQueryResult.class);
 
-    public SQLQueryResult(Connection connection, String query) throws SQLException {
+    SQLQueryResult(Connection connection, String query) throws SQLException {
         statement = connection.createStatement();
-        set = statement.executeQuery(query);;
-        numColumns = set.getMetaData().getColumnCount();
+        set = statement.executeQuery(query);
+      numColumns = set.getMetaData().getColumnCount();
     }
 
     public void close() {

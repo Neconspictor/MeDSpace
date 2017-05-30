@@ -1,31 +1,30 @@
 package de.fuberlin.wiwiss.d2r;
 
-import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 /**
  * Some utility methods used in the mapping process.
- * <BR>History: 01-15-2003   : Initial version of this class.
+ *
+ * <BR>History: 30-05-2017   : Some refactoring; made class package-private
  * <BR>History: 09-25-2003   : Changed for Jena2.
- * @author Chris Bizer chris@bizer.de
- * @version V0.2
+ * <BR>History: 01-15-2003   : Initial version of this class.
+ * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
+ * @version V0.3.1
  */
-public class D2rUtil {
-
-  /** log4j logger used for this class */
+class D2rUtil {
   private static Logger log = Logger.getLogger(D2rUtil.class);
 
-  protected static String getNamespacePrefix(String qName) {
-    int len = qName.length();
+  static String getNamespacePrefix(String qualifiedName) {
+    int len = qualifiedName.length();
     for (int i = 0; i < len; i++) {
-      if (qName.charAt(i) == ':') {
-        return qName.substring(0, i);
+      if (qualifiedName.charAt(i) == ':') {
+        return qualifiedName.substring(0, i);
       }
     }
     return "NoPrefixFound";
   }
 
-  protected static String getLocalName(String qName) {
+  static String getLocalName(String qName) {
     int len = qName.length();
     for (int i = 0; i < len; i++) {
       if (qName.charAt(i) == ':') {
@@ -35,7 +34,7 @@ public class D2rUtil {
     return "NoLocalnameFound";
   }
 
-  protected static String getFieldNameUpperCase(String fName) {
+  static String getFieldNameUpperCase(String fName) {
     int len = fName.length();
     for (int i = 0; i < len; i++) {
       if (fName.charAt(i) == '.') {
@@ -52,27 +51,29 @@ public class D2rUtil {
    * @param  tuple Hashmap with values used for replacement.
    * @return String with placeholders replaced.
    */
-  protected static String parsePattern(String pattern, String deliminator,
+  static String parsePattern(String pattern, String deliminator,
                                        ResultInstance tuple) {
     String result = "";
     int startPosition = 0;
     int endPosition = 0;
     try {
-      if (pattern.indexOf("@@") == -1)return pattern;
+      if (!pattern.contains("@@"))return pattern;
+      StringBuilder resultBuilder = new StringBuilder();
       while (startPosition < pattern.length() &&
              pattern.indexOf(deliminator, startPosition) != -1) {
         endPosition = startPosition;
         startPosition = pattern.indexOf(deliminator, startPosition);
         // get Text
         if (endPosition < startPosition)
-          result += pattern.substring(endPosition, startPosition).trim();
+          resultBuilder.append(pattern.substring(endPosition, startPosition).trim());
         startPosition = startPosition + deliminator.length();
         endPosition = pattern.indexOf(deliminator, startPosition);
         // get field
         String fieldname = pattern.substring(startPosition, endPosition);
-        result += tuple.getValueByColmnName(fieldname);
+        resultBuilder.append(tuple.getValueByColmnName(fieldname));
         startPosition = endPosition + deliminator.length();
       }
+      result = resultBuilder.toString();
       if (endPosition + deliminator.length() < pattern.length())
         result += pattern.substring(startPosition, pattern.length()).trim();
       return result;

@@ -14,8 +14,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
- * D2R Map Class. A Map class is created for every d2r:ClassMap element in the mapping file.
- * The Map class contains a Vector with all Bridges and an HashMap with all resources.
+ * D2RMap Class. A D2RMap class is created for every d2r:ClassMap element in the mapping file.
+ * The D2RMap class contains a Vector with all Bridges and an HashMap with all resources.
  * <BR><BR>History:
  * <BR>18-05-2017   : Updated for Java 8; removed unsafe operations
  * <BR>07-21-2004   : Error handling changed to Log4J.
@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
  * @version V0.3
  */
-public class Map {
+public class D2RMap {
   private HashMap<String, Resource> resources;
   private Vector<Bridge> bridges;
   private String uriPattern;
@@ -35,9 +35,9 @@ public class Map {
   private Vector<String> groupBy;
 
   /** log4j logger used for this class */
-  private static Logger log = LogManager.getLogger(Map.class);
+  private static Logger log = LogManager.getLogger(D2RMap.class);
 
-  protected Map() {
+  protected D2RMap() {
     resources = new HashMap<>();
     bridges = new Vector<>();
     groupBy = new Vector<>();

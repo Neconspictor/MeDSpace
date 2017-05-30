@@ -5,5 +5,5 @@ import java.util.HashMap;
 /**
  *
  */
-public class TranslationTable extends HashMap<String, String> {
+class TranslationTable extends HashMap<String, String> {
 }
