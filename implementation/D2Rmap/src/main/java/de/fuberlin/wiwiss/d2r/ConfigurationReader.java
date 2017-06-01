@@ -37,7 +37,6 @@ public class ConfigurationReader {
 
     // Read database connection
     list = document.getElementsByTagNameNS(D2R.D2RNS, D2R.ROOT_ELEMENT);
-    System.out.println(list.getLength());
     Element root = (Element) list.item(0);
 
     if (root == null)

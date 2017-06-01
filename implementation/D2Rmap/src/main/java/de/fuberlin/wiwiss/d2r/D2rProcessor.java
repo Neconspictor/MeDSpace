@@ -591,9 +591,12 @@ public class D2rProcessor {
     catch (SQLException | D2RException ex) {
       //if (con != null) SqlUtil.closeSilently(con);
       String message = "Exception caught while trying to connect: ";
-      if (ex instanceof  SQLException) message += SqlUtil.unwrapMessage((SQLException) ex);
-      else message += ex.getMessage();
-      throw new D2RException(message);
+      if (ex instanceof  SQLException) {
+        message += SqlUtil.unwrapMessage((SQLException) ex);
+      } else {
+        message += ex.getMessage();
+      }
+      throw new D2RException(message, ex);
     }
 
     log.debug("Returning connection: " + con);

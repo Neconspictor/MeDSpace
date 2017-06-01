@@ -1,11 +1,18 @@
 package de.fuberlin.wiwiss.d2r;
 
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.log4j.Logger;
+import sun.util.resources.zh.TimeZoneNames_zh_CN;
 
-import java.util.HashMap;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * D2R bridge for DataProperties (Literals).
@@ -17,9 +24,9 @@ import java.util.HashMap;
 public class DatatypePropertyBridge extends Bridge {
 
   @Override
-  protected RDFNode getReferredNode(D2rProcessor processor, Model model, ResultInstance tuple) {
+  protected RDFNode getValue(D2rProcessor processor, Model model, ResultInstance tuple) {
     // Generate property value
-    String value = null;
+    Object value = null;
     Literal literal = null;
     if (getColumn() != null) {
       value = tuple.getValueByColmnName(getColumn());
@@ -30,22 +37,27 @@ public class DatatypePropertyBridge extends Bridge {
         TranslationTable table = tables.get(getTranslation());
         value = table.get(value);
       }
-    }
-    else if (getPattern() != null) {
+    } else if (getPattern() != null) {
       // pattern
       value = D2rUtil.parsePattern(getPattern(),
           D2R.DELIMINATOR, tuple);
-    }
-    else {
+    } else {
       value = getValue();
     }
 
+    // The lang tag specifies indirectly the dataType (rdf:langeString)
+    // Thus the lang tag has a higher priority than the dataType tag
     if ((value != null) && (getXmlLang() != null)) {
-        literal = model.createLiteral(value, getXmlLang());
+      literal = model.createLiteral((String) value, getXmlLang());
+    } else if ((value != null) && (getDataType() != null)) {
+      // if no lang tag is set but the dataType tag create a typed literal
+      String dataType = processor.getNormalizedURI(getDataType());
+      RDFDatatype rdfType = TypeMapper.getInstance().getSafeTypeByName(dataType);
+      literal = model.createTypedLiteral(value, rdfType);
+    }  else {
+      // no lang tag and dataType set; assume xsd:string is the data type
+      literal = model.createTypedLiteral(value);
     }
-    else {
-      literal = model.createLiteral(value);
-    }
-      return literal;
+    return literal;
   }
 }

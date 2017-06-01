@@ -27,34 +27,69 @@ abstract public class Bridge {
     protected String getTranslation() { return translation; }
 
     protected void setTranslation(String translation) {
-        if (translation == null) this.translation = null;
-        else this.translation = translation.trim();
+        if (translation == null) {
+            this.translation = null;
+            return;
+        }
+
+        this.translation = translation.trim();
+        if (this.translation.equals("")) {
+            this.translation = null;
+        }
     }
 
     protected void setDataType(String dataType) {
-        if (dataType == null) this.dataType = null;
-        else this.dataType = dataType.trim();
+        if (dataType == null) {
+            this.dataType = null;
+            return;
+        }
+
+        this.dataType = dataType.trim();
+        if (this.dataType.equals("")) {
+            this.dataType = null;
+        }
     }
 
     protected String getPattern() { return pattern; }
 
     protected void setPattern(String pattern) {
-        if (pattern == null) this.pattern = null;
-        else this.pattern = pattern.trim();
+        if (pattern == null) {
+            this.pattern = null;
+            return;
+        }
+
+        this.pattern = pattern.trim();
+        if (this.pattern.equals("")) {
+            this.pattern = null;
+        }
     }
 
     protected String getXmlLang() { return xmlLang; }
 
     protected void setXmlLang(String xmlLang) {
-        if (xmlLang == null) this.xmlLang = null;
-        else this.xmlLang = xmlLang.trim();
+        if (xmlLang == null) {
+            this.xmlLang = null;
+            return;
+        }
+
+        this.xmlLang = xmlLang.trim();
+        if (this.xmlLang.equals("")) {
+            this.xmlLang = null;
+        }
     }
 
     protected String getColumn() { return column; }
 
     protected void setColumn(String column) {
-        if (column == null) this.column = null;
-        else this.column = column.trim();
+        if (column == null) {
+            this.column = null;
+            return;
+        }
+
+        this.column = column.trim();
+        if (this.column.equals("")) {
+            this.column = null;
+        }
     }
 
     protected Property getProperty(D2rProcessor processor) {
@@ -79,8 +114,15 @@ abstract public class Bridge {
     protected String getValue() { return value; }
 
     protected void setValue(String value) {
-        if (value == null) this.value = null;
-        else this.value = value.trim();
+        if (value == null) {
+            this.value = null;
+            return;
+        }
+
+        this.value = value.trim();
+        if (this.value.equals("")) {
+            this.value = null;
+        }
     }
 
     /**
@@ -90,5 +132,9 @@ abstract public class Bridge {
      * @param tuple
      * @return
      */
-    protected abstract RDFNode getReferredNode(D2rProcessor processor, Model model, ResultInstance tuple);
+    protected abstract RDFNode getValue(D2rProcessor processor, Model model, ResultInstance tuple);
+
+    public String getDataType() {
+        return this.dataType;
+    }
 }

@@ -49,7 +49,7 @@ public class ObjectPropertyBridge
   }
 
   @Override
-  protected RDFNode getReferredNode(D2rProcessor processor, Model model, ResultInstance tuple) {
+  protected RDFNode getValue(D2rProcessor processor, Model model, ResultInstance tuple) {
     Resource referredResource = null;
 
     if (getReferredClass() != null) {

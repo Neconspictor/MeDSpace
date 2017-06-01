@@ -199,7 +199,7 @@ public class D2RMap {
     for (Bridge bridge : this.bridges) {
       // generate property
       Property prop = bridge.getProperty(processor);
-      RDFNode referredNode = bridge.getReferredNode(processor, model, tuple);
+      RDFNode referredNode = bridge.getValue(processor, model, tuple);
       if (prop != null && referredNode != null) {
         inst.addProperty(prop, referredNode);
       }
@@ -274,7 +274,7 @@ public class D2RMap {
     }
 
     // Replace the last two characters (", ") by a ";"
-    builder.delete(builder.length() - 3, builder.length());
+    builder.delete(builder.length() - 2, builder.length());
     builder.append(";");
 
     return builder.toString();
@@ -333,7 +333,7 @@ public class D2RMap {
       resourceIDBuilder.append(currentTuple.getValueByColmnName(aGroupBy));
     }
     String resourceID = resourceIDBuilder.toString();
-    if (resource != null && resourceID.equals("")) {
+    if (resource != null && !resourceID.equals("")) {
       //inst.setInstanceID(instID); TODO
       resources.put(resourceID, resource);
     } else {
