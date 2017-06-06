@@ -164,7 +164,20 @@ public class ConfigurationReader {
     config.databasePassword = password;
   }
 
-  private static void readComplexTypeNamespace(Configuration config, Element elem) {
+  /**
+   * Reads a namespace element and adds it to the provided Configuration.
+   * @param config the Configuration the namespace element should be added to
+   * @param elem The namesapce element
+   */
+  public  static void readComplexTypeNamespace(Configuration config, Element elem) {
+    String prefix = elem.getAttribute(D2R.NAMESPACE_PREFIX_ATTRIBUTE);
+    String namespace = elem.getAttribute(D2R.NAMESPACE_NAMESPACE_ATTRIBUTE);
+
+    if (prefix.equals(""))
+      throw new IllegalStateException("prefix not set or empty.");
+    if (namespace.equals(""))
+      throw new IllegalStateException("namespace not set or empty.");
+
     config.getNamespaces().put(elem.getAttribute(D2R.NAMESPACE_PREFIX_ATTRIBUTE),
         elem.getAttribute(D2R.NAMESPACE_NAMESPACE_ATTRIBUTE));
   }
