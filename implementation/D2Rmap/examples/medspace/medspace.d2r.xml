@@ -23,6 +23,7 @@
 	<d2r:ClassMap 
 		type="test:language"
 		sql="SELECT * FROM language;"
+
 		groupBy="language.name"
 		uriPattern="http://localhost/patient_test_namespace/languages#@@language.name@@"
 		id="language">

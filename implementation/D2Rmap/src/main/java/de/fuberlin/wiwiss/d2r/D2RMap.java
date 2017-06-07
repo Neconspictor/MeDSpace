@@ -1,8 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
-import java.util.Vector;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.sql.*;
 
 import de.unipassau.medspace.util.SqlUtil;
@@ -37,6 +35,9 @@ public class D2RMap {
   /** log4j logger used for this class */
   private static Logger log = LogManager.getLogger(D2RMap.class);
 
+  private static Vector<String> querySelectStatementOrder = new Vector(Arrays.asList("SELECT", "FROM", "WHERE", "GROUP BY",
+  "HAVING", "UNION", "ORDER BY"));
+
   protected D2RMap() {
     resources = new HashMap<>();
     bridges = new Vector<>();
@@ -47,7 +48,7 @@ public class D2RMap {
    * Generates all resources for this map.
    * @param  processor Reference to an D2R processor instance.
    */
-  void generateResources(D2rProcessor processor) throws D2RException {
+  void generateResources(D2rProcessor processor, List<String> conditionList) throws D2RException {
 
     try {
 
@@ -55,6 +56,12 @@ public class D2RMap {
       Connection con = processor.getConnection();
 
       String query = this.sql.trim();
+
+      String ucQuery = query.toUpperCase();
+      if (ucQuery.contains("UNION"))
+        throw new D2RException("SQL statement should not contain UNION: " + query);
+
+      query = addConditionStatements(query, conditionList);
 
       // Add ORDER BY statements to the query
       query = addOrderByStatements(query);
@@ -70,6 +77,80 @@ public class D2RMap {
       //an error occurred while closing the connection
       throw new D2RException("Could not close JDBC Connection.", ex);
     }
+  }
+
+  public static String addConditionStatements(String query, List<String> conditionList) {
+    // Nothing to do?
+    if (conditionList.size() == 0)
+      return query;
+
+    String ucQuery = query.toUpperCase();
+    String startClause = "WHERE";
+
+    int beforeWhereClauseIndex = getBeforeIndex(ucQuery, querySelectStatementOrder, querySelectStatementOrder.indexOf(startClause));
+    int afterWhereClauseIndex = beforeWhereClauseIndex + startClause.length();
+    boolean containsStartClause = ucQuery.contains(startClause);
+    if (!containsStartClause) {
+      afterWhereClauseIndex = beforeWhereClauseIndex;
+    }
+    String beforeWhereClause = getBefore(query, beforeWhereClauseIndex);
+    String afterWhereClause = getAfter(query, afterWhereClauseIndex);
+
+    if (beforeWhereClause.matches("(.*)\\s")) { // ends with a whitesapce
+      beforeWhereClause = beforeWhereClause.substring(0, beforeWhereClause.length() - 1);
+    }
+
+    if (afterWhereClause.matches("^\\s(.*)")) { // begins with a whitesapce
+      afterWhereClause = afterWhereClause.substring(1, afterWhereClause.length());
+    }
+
+    // Create where condition clause statement
+    StringBuilder builder = new StringBuilder(" ");
+    String andStatement = " AND ";
+    builder.append(startClause);
+    builder.append(" ");
+    for (String condition : conditionList) {
+      builder.append(condition);
+      builder.append(andStatement);
+    }
+
+    // delete last " AND "
+    if (!containsStartClause) {
+      builder.delete(builder.length() - andStatement.length(), builder.length());
+      builder.append(" ");
+    }
+
+    // concatenate finally the query pieces
+    return beforeWhereClause + builder.toString() + afterWhereClause;
+  }
+
+  private static String getAfter(String query, int index) {
+    if ((index <= -1)
+    || (index >= query.length())) {
+      return "";
+    }
+    return query.substring(index, query.length());
+  }
+
+  private static String getBefore(String query, int index) {
+    if (index == -1) {
+      return query;
+    } else {
+      if (index > query.length())
+        index = query.length();
+      return query.substring(0, index);
+    }
+  }
+
+  private static int getBeforeIndex(String query, Vector<String> querySelectStatementOrder, int index) {
+    assert index != -1;
+    int splitIndex = -1;
+    for (int currentIndex = index; currentIndex != querySelectStatementOrder.size(); ++currentIndex) {
+      String clause = querySelectStatementOrder.get(currentIndex);
+        splitIndex = query.indexOf(clause);
+        if (splitIndex != -1) break;
+    }
+    return splitIndex;
   }
 
   /**

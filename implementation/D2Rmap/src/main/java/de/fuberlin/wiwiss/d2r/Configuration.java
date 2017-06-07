@@ -7,17 +7,17 @@ import java.util.Vector;
  * Created by David Goeth on 30.05.2017.
  */
 public class Configuration {
-  String saveAs;
-  String outputFormat;
-  String jdbc;
-  String jdbcDriver;
-  String databaseUsername;
-  String databasePassword;
-  String prepend;
-  String postpend;
-  Vector<D2RMap> maps;
-  HashMap<String, TranslationTable> translationTables;
-  HashMap<String, String> namespaces;
+  private String saveAs;
+  private String outputFormat;
+  private String jdbc;
+  private String jdbcDriver;
+  private String databaseUsername;
+  private String databasePassword;
+  private String prepend;
+  private String postpend;
+  private Vector<D2RMap> maps;
+  private HashMap<String, TranslationTable> translationTables;
+  private HashMap<String, String> namespaces;
 
   public Configuration() {}
 

@@ -499,9 +499,12 @@ public class D2rProcessor {
 
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
-    for (D2RMap map : config.maps) {
-      map.generateResources(this);
-    }
+    for (D2RMap map : config.getMaps())
+      generateResources(map);
+  }
+
+  private void generateResources(D2RMap map) throws D2RException {
+    map.generateResources(this, new Vector<>());
   }
 
   /**
@@ -510,19 +513,19 @@ public class D2rProcessor {
    */
   private String modelToString() {
       StringWriter writer = new StringWriter();
-    for (Entry<String, String> ent : config.namespaces.entrySet()) {
+    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
-      log.debug("Converting Model to String. outputFormat: " + config.outputFormat);
+      log.debug("Converting Model to String. outputFormat: " + config.getOutputFormat());
 
-      this.model.write(writer, config.outputFormat);
+      this.model.write(writer, config.getOutputFormat());
       return writer.toString();
   }
 
   /** Generated properties for all instances of all D2R maps. */
   private void generatePropertiesForAllInstancesOfAllMaps() throws D2RException {
-    for (D2RMap map : config.maps) {
+    for (D2RMap map : config.getMaps()) {
       map.generatePropertiesForAllInstances(this);
     }
   }
@@ -683,7 +686,7 @@ public class D2rProcessor {
    * @return Vector with all maps.
    */
   private Vector<D2RMap> getMaps() {
-    return config.maps;
+    return config.getMaps();
   }
 
   /**
@@ -704,7 +707,7 @@ public class D2rProcessor {
    * @return Vector with all maps.
    */
   HashMap<String, TranslationTable> getTranslationTables() {
-    return config.translationTables;
+    return config.getTranslationTables();
   }
 
   /**
@@ -720,7 +723,7 @@ public class D2rProcessor {
    * @return jdbcDSN
    */
   private String getJdbc() {
-    return config.jdbc;
+    return config.getJdbc();
   }
 
   /**
@@ -728,7 +731,7 @@ public class D2rProcessor {
    * @return jdbcDriver
    */
   private String getJdbcDriver() {
-    return config.jdbcDriver;
+    return config.getJdbcDriver();
   }
 
   /**
@@ -736,7 +739,7 @@ public class D2rProcessor {
    * @return username
    */
   private String getDatabaseUsername() {
-    return config.databaseUsername;
+    return config.getDatabaseUsername();
   }
 
   /**
@@ -744,7 +747,7 @@ public class D2rProcessor {
    * @return password
    */
   private String getDatabasePassword() {
-    return config.databasePassword;
+    return config.getDatabasePassword();
   }
 
   /**
@@ -756,7 +759,7 @@ public class D2rProcessor {
   @SuppressWarnings("SpellCheckingInspection")
   String getNormalizedURI(String qName) {
     String prefix = D2rUtil.getNamespacePrefix(qName);
-    String uriPrefix = config.namespaces.get(prefix);
+    String uriPrefix = config.getNamespaces().get(prefix);
     if (uriPrefix != null) {
       String localName = D2rUtil.getLocalName(qName);
       return uriPrefix + localName;

@@ -3,7 +3,6 @@ package de.fuberlin.wiwiss.d2r;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class ConfigurationReader {
     for (int i = 0; i < list.getLength(); i++) {
       readTranslationElement(table, (Element)list.item(0));
     }
-    config.translationTables.put(tableId, table);
+    config.getTranslationTables().put(tableId, table);
   }
 
   private static void readTranslationElement(TranslationTable table, Element elem) {
@@ -115,7 +114,7 @@ public class ConfigurationReader {
     for (int i = 0; i< propertyList.getLength(); ++i)
       readObjectPropertyElement((Element)propertyList.item(i), cMap);
 
-      config.maps.add(cMap);
+      config.getMaps().add(cMap);
   }
 
   private static void readDataTypePropertyElement(Element elem, D2RMap map) {
@@ -143,7 +142,7 @@ public class ConfigurationReader {
   }
 
   private static void readOutputFormatElement(Configuration config, Element elem) {
-      config.outputFormat = elem.getTextContent();
+      config.setOutputFormat(elem.getTextContent());
   }
 
   private static void readDBConnectionElement(Configuration config, Element elem) {
@@ -152,16 +151,16 @@ public class ConfigurationReader {
       readDBAuthentificationElement(config, (Element)authentifications.item(0));
 
     // jdbcDSN and jdbcDriver are required attributes
-    config.jdbc = elem.getAttribute(D2R.DBCONNECTION_JDBC_DSN_ATTRIBUTE);
-    config.jdbcDriver = elem.getAttribute(D2R.DBCONNECTION_JDBC_DRIVER_ATTRIBUTE);
+    config.setJdbc(elem.getAttribute(D2R.DBCONNECTION_JDBC_DSN_ATTRIBUTE));
+    config.setJdbcDriver(elem.getAttribute(D2R.DBCONNECTION_JDBC_DRIVER_ATTRIBUTE));
 
   }
 
   private static void readDBAuthentificationElement(Configuration config, Element elem) {
-    config.databaseUsername = elem.getAttribute(D2R.DBAUTHENTIFICATION_USERNAME_ATTRIBUTE);
+    config.setDatabaseUsername(elem.getAttribute(D2R.DBAUTHENTIFICATION_USERNAME_ATTRIBUTE));
     String password = elem.getAttribute(D2R.DBAUTHENTIFICATION_PASSWORD_ATTRIBUTE);
     if (password == null) password = "";
-    config.databasePassword = password;
+    config.setDatabasePassword(password);
   }
 
   /**
