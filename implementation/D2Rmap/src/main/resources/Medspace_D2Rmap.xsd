@@ -53,9 +53,7 @@
 	
 	<xsd:complexType name="DataTypePropertyBridge">
 		<xsd:attribute name="property" type="xsd:string" use="required"/>
-		<xsd:attribute name="column" type="xsd:string" use="optional"/>
-		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
-		<xsd:attribute name="value" type="xsd:string" use="optional"/>
+		<xsd:attribute name="pattern" type="xsd:string" use="required"/>
 		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
 		<xsd:attribute name="dataType" type="xsd:string" use="optional"/>
 		<xsd:attribute name="lang" type="xsd:string" use="optional"/>
@@ -63,9 +61,7 @@
 	
 	<xsd:complexType name="ObjectPropertyBridge">
 		<xsd:attribute name="property" type="xsd:string" use="required"/>
-		<xsd:attribute name="column" type="xsd:string" use="optional"/>
 		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
-		<xsd:attribute name="value" type="xsd:string" use="optional"/>
 		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
 		<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
 		<xsd:attribute name="referredColumns" type="xsd:string" use="optional"/>

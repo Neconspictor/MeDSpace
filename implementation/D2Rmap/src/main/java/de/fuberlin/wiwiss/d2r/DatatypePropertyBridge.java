@@ -23,22 +23,8 @@ public class DatatypePropertyBridge extends Bridge {
     Object value = null;
     Literal literal = null;
     Model model = processor.getModel();
-    if (getColumn() != null) {
-      value = tuple.getValueByColmnName(getColumn());
-      // translate value
-      if (getTranslation() != null) {
-        HashMap<String, TranslationTable> tables = processor.getTranslationTables();
-        // Warnung wenn Table nicht gefunden!!!! TODO: Maybe log a warning?
-        TranslationTable table = tables.get(getTranslation());
-        value = table.get(value);
-      }
-    } else if (getPattern() != null) {
-      // pattern
-      value = D2rUtil.parsePattern(getPattern(),
-          D2R.DELIMINATOR, tuple);
-    } else {
-      value = getValue();
-    }
+    value = D2rUtil.parsePattern(getPattern(),
+        D2R.DELIMINATOR, tuple);
 
     // The lang tag specifies indirectly the dataType (rdf:langeString)
     // Thus the lang tag has a higher priority than the dataType tag

@@ -93,7 +93,7 @@ public class ConfigurationReader {
         String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
         ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
         typeBridge.setProperty("rdf:type");
-        typeBridge.setValue(value);
+        typeBridge.setPattern(value);
         cMap.addBridge(typeBridge);
       }
 
@@ -117,9 +117,7 @@ public class ConfigurationReader {
   private static void readDataTypePropertyElement(Element elem, D2RMap map) {
     DatatypePropertyBridge bridge = new DatatypePropertyBridge();
     bridge.setProperty(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
-    bridge.setColumn(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_COLUMN_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
-    bridge.setValue(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_VALUE_ATTRIBUTE));
     bridge.setTranslation(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE));
     bridge.setDataType(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_DATA_TYPE_ATTRIBUTE));
     bridge.setXmlLang(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_LANG_ATTRIBUTE));
@@ -129,9 +127,7 @@ public class ConfigurationReader {
   private static void readObjectPropertyElement(Element elem, D2RMap map) {
     ObjectPropertyBridge bridge = new ObjectPropertyBridge();
     bridge.setProperty(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
-    bridge.setColumn(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_COLUMN_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
-    bridge.setValue(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_VALUE_ATTRIBUTE));
     bridge.setTranslation(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE));
     bridge.setReferredClass(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE));
     bridge.setReferredGroupBy(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE));

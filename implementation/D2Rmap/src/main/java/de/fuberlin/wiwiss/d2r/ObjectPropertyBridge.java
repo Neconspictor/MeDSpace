@@ -22,8 +22,10 @@ public class ObjectPropertyBridge
   private Vector<String> referredGroupBy;
   private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
 
+
   protected ObjectPropertyBridge() {
     referredGroupBy = new Vector<>();
+    referredClass = null;
   }
 
   protected String getReferredClass() {
@@ -32,6 +34,8 @@ public class ObjectPropertyBridge
 
   protected void setReferredClass(String referredClass) {
     this.referredClass = referredClass.trim();
+    if (this.referredClass.equals(""))
+      this.referredClass = null;
   }
 
   protected Vector<String> getReferredGroupBy() {
@@ -61,16 +65,6 @@ public class ObjectPropertyBridge
       value = processor.getNormalizedURI(value);
       referredResource = model.getResource(value);
     }
-    else if (getColumn() != null) {
-      String value = getFromColumn(processor, tuple);
-      value = processor.getNormalizedURI(value);
-      referredResource = model.getResource(value);
-    }
-    else if (getValue() != null) {
-      String value = getValue();
-      value = processor.getNormalizedURI(value);
-      referredResource = model.getResource(value);
-    }
 
     return referredResource;
   }
@@ -95,29 +89,6 @@ public class ObjectPropertyBridge
           getReferredClass() + " with resource id " + resourceID + " not found");
     }
     return referredResource;
-  }
-
-  private String getFromColumn(D2rProcessor processor, ResultResource tuple) {
-    String value = tuple.getValueByColmnName(getColumn());
-    if (getTranslation() != null) {
-      HashMap<String, TranslationTable> tables = processor.getTranslationTables();
-      TranslationTable table = tables.get(getTranslation());
-      if (table != null) {
-        String translation = table.get(value);
-        // if not found in table and there is a pattern -> use pattern
-        if (translation == null && getPattern() != null) {
-          // alternative pattern
-          translation = D2rUtil.parsePattern(getPattern(),
-              D2R.DELIMINATOR, tuple);
-        }
-        value = translation;
-      } else {
-        log.warn("Warning: (CreateProperties) " +
-            "Couldn't find translation table " +
-            getTranslation());
-      }
-    }
-    return value;
   }
 
   private String getFromPattern(ResultResource tuple) {

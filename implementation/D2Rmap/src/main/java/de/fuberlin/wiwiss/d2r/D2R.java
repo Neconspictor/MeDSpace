@@ -30,9 +30,7 @@ public class D2R {
     // complex type DataTypePropertyBridge
     static final String DATA_TYPE_PROPERTY_BRIDGE_ELEMENT = "DataTypePropertyBridge";
     static final String DATA_TYPE_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE = "property";
-    static final String DATA_TYPE_PROPERTY_BRIDGE_COLUMN_ATTRIBUTE = "column";
     static final String DATA_TYPE_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE = "pattern";
-    static final String DATA_TYPE_PROPERTY_BRIDGE_VALUE_ATTRIBUTE = "value";
     static final String DATA_TYPE_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE = "translate";
     static final String DATA_TYPE_PROPERTY_BRIDGE_DATA_TYPE_ATTRIBUTE = "dataType";
     static final String DATA_TYPE_PROPERTY_BRIDGE_LANG_ATTRIBUTE = "lang";
@@ -55,9 +53,7 @@ public class D2R {
     // complex type ObjectPropertyBridge
     static final String OBJECT_PROPERTY_BRIDGE_ELEMENT = "ObjectPropertyBridge";
     static final String OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE = "property";
-    static final String OBJECT_PROPERTY_BRIDGE_COLUMN_ATTRIBUTE = "column";
     static final String OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE = "pattern";
-    static final String OBJECT_PROPERTY_BRIDGE_VALUE_ATTRIBUTE = "value";
     static final String OBJECT_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE = "translate";
     static final String OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE = "referredClass";
     static final String OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE = "referredColumns";

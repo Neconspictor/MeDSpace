@@ -18,9 +18,7 @@ abstract public class Bridge {
     private String dataType;
     private String pattern;
     private String xmlLang;
-    private String column;
     private String property;
-    private String value;
 
     private static Logger log = Logger.getLogger(Bridge.class);
 
@@ -78,20 +76,6 @@ abstract public class Bridge {
         }
     }
 
-    protected String getColumn() { return column; }
-
-    protected void setColumn(String column) {
-        if (column == null) {
-            this.column = null;
-            return;
-        }
-
-        this.column = column.trim();
-        if (this.column.equals("")) {
-            this.column = null;
-        }
-    }
-
     protected Property getProperty(D2rProcessor processor) {
         Property prop = null;
         try {
@@ -109,20 +93,6 @@ abstract public class Bridge {
     protected void setProperty(String property) {
         if (property == null) this.property = null;
         else this.property = property.trim();
-    }
-
-    protected String getValue() { return value; }
-
-    protected void setValue(String value) {
-        if (value == null) {
-            this.value = null;
-            return;
-        }
-
-        this.value = value.trim();
-        if (this.value.equals("")) {
-            this.value = null;
-        }
     }
 
     /**
