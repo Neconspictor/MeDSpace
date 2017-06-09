@@ -52,7 +52,7 @@ class D2rUtil {
    * @return String with placeholders replaced.
    */
   static String parsePattern(String pattern, String deliminator,
-                                       ResultInstance tuple) {
+                                       ResultResource tuple) {
     String result = "";
     int startPosition = 0;
     int endPosition = 0;

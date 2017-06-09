@@ -2,16 +2,10 @@ package de.fuberlin.wiwiss.d2r;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
-import sun.util.resources.zh.TimeZoneNames_zh_CN;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -24,10 +18,11 @@ import java.util.*;
 public class DatatypePropertyBridge extends Bridge {
 
   @Override
-  protected RDFNode getValue(D2rProcessor processor, Model model, ResultInstance tuple) {
+  protected RDFNode getValue(D2rProcessor processor, ResultResource tuple) {
     // Generate property value
     Object value = null;
     Literal literal = null;
+    Model model = processor.getModel();
     if (getColumn() != null) {
       value = tuple.getValueByColmnName(getColumn());
       // translate value

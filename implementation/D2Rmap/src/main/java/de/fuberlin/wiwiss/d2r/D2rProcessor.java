@@ -333,8 +333,6 @@ public class D2rProcessor {
 
     // Generate instances for all maps
     this.generateInstancesForAllMaps();
-    // Generate properties for all instances
-    this.generatePropertiesForAllInstancesOfAllMaps();
 
     //toString
     return this.serialize();
@@ -364,8 +362,7 @@ public class D2rProcessor {
 
     // Generate instances for all maps
     this.generateInstancesForAllMaps();
-    // Generate properties for all instances
-    generatePropertiesForAllInstancesOfAllMaps();
+
     // add namespaces
     for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
@@ -405,9 +402,6 @@ public class D2rProcessor {
 
     // Generate instances for all maps
     this.generateInstancesForAllMaps();
-
-    // Generate properties for all instances
-    this.generatePropertiesForAllInstancesOfAllMaps();
 
     // add namespaces
     for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
@@ -500,13 +494,10 @@ public class D2rProcessor {
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
     for (D2RMap map : config.getMaps())
-      generateResources(map);
+      map.generateResources(this, new Vector<>());;
+    for (D2RMap map : config.getMaps())
+      map.generateResourceProperties(this);
   }
-
-  private void generateResources(D2RMap map) throws D2RException {
-    map.generateResources(this, new Vector<>());
-  }
-
   /**
    * Uses a Jena writer to serialize model to RDF, N3 or N-TRIPLES.
    * @return serialization of model
@@ -521,13 +512,6 @@ public class D2rProcessor {
 
       this.model.write(writer, config.getOutputFormat());
       return writer.toString();
-  }
-
-  /** Generated properties for all instances of all D2R maps. */
-  private void generatePropertiesForAllInstancesOfAllMaps() throws D2RException {
-    for (D2RMap map : config.getMaps()) {
-      map.generatePropertiesForAllInstances(this);
-    }
   }
 
   /**

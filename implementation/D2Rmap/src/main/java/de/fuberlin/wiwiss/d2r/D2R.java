@@ -22,10 +22,9 @@ public class D2R {
 
     static final String CLASS_MAP_ELEMENT = "ClassMap";
     static final String CLASS_MAP_SQL_ATTRIBUTE = "sql";
-    static final String CLASS_MAP_GROUPBY_ATTRIBUTE = "groupBy";
+    static final String CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE = "resourceIdColumns";
     static final String CLASS_MAP_ID_ATTRIBUTE = "id";
     static final String CLASS_MAP_TYPE_ATTRIBUTE = "type";
-    static final String CLASS_MAP_URI_COLUMN_ATTRIBUTE = "uriColumn";
     static final String CLASS_MAP_URI_PATTERN_ATTRIBUTE = "uriPattern";
 
     // complex type DataTypePropertyBridge
@@ -61,7 +60,7 @@ public class D2R {
     static final String OBJECT_PROPERTY_BRIDGE_VALUE_ATTRIBUTE = "value";
     static final String OBJECT_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE = "translate";
     static final String OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE = "referredClass";
-    static final String OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE = "referredGroupBy";
+    static final String OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE = "referredColumns";
 
     // element OutputFormat
     static final String OUTPUT_FORMAT_ELEMENT = "OutputFormat";

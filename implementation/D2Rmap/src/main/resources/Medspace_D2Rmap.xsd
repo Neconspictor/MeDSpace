@@ -45,10 +45,9 @@
 			<xsd:element name="ObjectPropertyBridge" type="d2r:ObjectPropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:choice>
 		<xsd:attribute name="sql" type="xsd:string" use="required"/>
-		<xsd:attribute name="groupBy" type="xsd:string" use="required"/>
+		<xsd:attribute name="resourceIdColumns" type="xsd:string" use="required"/>
 		<xsd:attribute name="id" type="xsd:string" use="optional"/>
 		<xsd:attribute name="type" type="xsd:string" use="optional"/>
-		<xsd:attribute name="uriColumn" type="xsd:string" use="optional"/>
 		<xsd:attribute name="uriPattern" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 	
@@ -69,7 +68,7 @@
 		<xsd:attribute name="value" type="xsd:string" use="optional"/>
 		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
 		<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
-		<xsd:attribute name="referredGroupBy" type="xsd:string" use="optional"/>
+		<xsd:attribute name="referredColumns" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="TranslationTable">

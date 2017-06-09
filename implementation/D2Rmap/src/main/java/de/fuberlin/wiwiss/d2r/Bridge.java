@@ -128,11 +128,10 @@ abstract public class Bridge {
     /**
      *
      * @param processor
-     * @param model
      * @param tuple
      * @return
      */
-    protected abstract RDFNode getValue(D2rProcessor processor, Model model, ResultInstance tuple);
+    protected abstract RDFNode getValue(D2rProcessor processor, ResultResource tuple);
 
     public String getDataType() {
         return this.dataType;

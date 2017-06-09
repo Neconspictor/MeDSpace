@@ -1,20 +1,27 @@
 package de.fuberlin.wiwiss.d2r;
 
+import org.apache.jena.rdf.model.Resource;
+
 import java.util.HashMap;
 
 /**
  * A Utility class for instantiating result instances of a SQL query.
  * This class is package private as it is not intended to be used globally.
  */
-class ResultInstance {
+class ResultResource {
   private HashMap<String, String> table;
+  private Resource resource;
 
-  ResultInstance(int columnCount) {
+  ResultResource(int columnCount) {
     table = new HashMap<>(columnCount);
   }
 
-  ResultInstance() {
+  ResultResource() {
     table = new HashMap<>();
+  }
+
+  Resource getResource() {
+    return resource;
   }
 
   /**
@@ -30,5 +37,9 @@ class ResultInstance {
   void put(String columnName, String value) {
     String key = D2rUtil.getFieldNameUpperCase(columnName);
     table.put(key, value);
+  }
+
+  void setResource(Resource resource) {
+    this.resource = resource;
   }
 }

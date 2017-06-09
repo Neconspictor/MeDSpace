@@ -82,7 +82,7 @@ public class ConfigurationReader {
 
       // sql and groupBy attributes are required
       cMap.setSql(mapElement.getAttribute(D2R.CLASS_MAP_SQL_ATTRIBUTE));
-      cMap.addGroupByFields(mapElement.getAttribute(D2R.CLASS_MAP_GROUPBY_ATTRIBUTE));
+      cMap.addResourceIdColumns(mapElement.getAttribute(D2R.CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE));
 
       if (mapElement.hasAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE))
         cMap.setId(mapElement.getAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE));
@@ -100,9 +100,6 @@ public class ConfigurationReader {
       // Read uriPattern
       if (mapElement.hasAttribute(D2R.CLASS_MAP_URI_PATTERN_ATTRIBUTE))
         cMap.setUriPattern(mapElement.getAttribute(D2R.CLASS_MAP_URI_PATTERN_ATTRIBUTE));
-    // Read uriCoulmn
-      if (mapElement.hasAttribute(D2R.CLASS_MAP_URI_COLUMN_ATTRIBUTE))
-        cMap.setUriColumn(mapElement.getAttribute(D2R.CLASS_MAP_URI_COLUMN_ATTRIBUTE));
 
     // Read datatype property mappings
     NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);

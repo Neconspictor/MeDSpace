@@ -49,7 +49,8 @@ public class ObjectPropertyBridge
   }
 
   @Override
-  protected RDFNode getValue(D2rProcessor processor, Model model, ResultInstance tuple) {
+  protected RDFNode getValue(D2rProcessor processor, ResultResource tuple) {
+    Model model = processor.getModel();
     Resource referredResource = null;
 
     if (getReferredClass() != null) {
@@ -74,7 +75,7 @@ public class ObjectPropertyBridge
     return referredResource;
   }
 
-  private Resource getFromClass(D2rProcessor processor, ResultInstance tuple) {
+  private Resource getFromClass(D2rProcessor processor, ResultResource tuple) {
     D2RMap referredMap = processor.getMapById(getReferredClass());
     if (referredMap == null) {
       log.warn("Warning: (CreateProperties) Couldn't find referred " +
@@ -82,21 +83,21 @@ public class ObjectPropertyBridge
       return null;
     }
     // get referred instance
-    StringBuilder instIDBuilder = new StringBuilder();
+    StringBuilder resourceIDBuilder = new StringBuilder();
     for (String s : getReferredGroupBy()) {
-      instIDBuilder.append(tuple.getValueByColmnName(s));
+      resourceIDBuilder.append(tuple.getValueByColmnName(s));
     }
-    String instID = instIDBuilder.toString();
-    Resource referredResource = referredMap.getInstanceById(
-        instID);
+    String resourceID = resourceIDBuilder.toString();
+    Resource referredResource = referredMap.getResourceById(
+        resourceID);
     if (referredResource == null) {
-      log.warn("Warning: (CreateProperties) Reference to instance " +
-          getReferredClass() + " " + instID + " not found");
+      log.warn("Warning: (CreateProperties) Reference to resource of class " +
+          getReferredClass() + " with resource id " + resourceID + " not found");
     }
     return referredResource;
   }
 
-  private String getFromColumn(D2rProcessor processor, ResultInstance tuple) {
+  private String getFromColumn(D2rProcessor processor, ResultResource tuple) {
     String value = tuple.getValueByColmnName(getColumn());
     if (getTranslation() != null) {
       HashMap<String, TranslationTable> tables = processor.getTranslationTables();
@@ -119,7 +120,7 @@ public class ObjectPropertyBridge
     return value;
   }
 
-  private String getFromPattern(ResultInstance tuple) {
+  private String getFromPattern(ResultResource tuple) {
     return D2rUtil.parsePattern(getPattern(),
         D2R.DELIMINATOR, tuple);
   }
