@@ -2,6 +2,9 @@ import de.fuberlin.wiwiss.d2r.*;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+
 import org.apache.jena.rdf.model.* ;
 
 
@@ -28,9 +31,12 @@ public class TestProcessor {
             System.out.println("D2R processor created ....");
             processor.readMap(D2RMap);
             System.out.println("D2R file read ....");
-            Model output = processor.generateAllInstancesAsModel();
+            Instant startTime = Instant.now();
+            Model output = processor.generateTestAsModel();
+            Instant endTime = Instant.now();
             output.write(System.out, processor.getOutputFormat());
             System.out.println("RDF data exported ....");
+            System.out.println("Time elapsed: " + Duration.between(startTime, endTime));
         } catch (D2RException d2rex) {
             System.out.println("\n*** D2R Exception caught ***\n");
             System.out.println("Message:  " + d2rex.getMessage());

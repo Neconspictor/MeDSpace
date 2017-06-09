@@ -57,22 +57,28 @@ class D2rUtil {
     int startPosition = 0;
     int endPosition = 0;
     try {
-      if (!pattern.contains("@@"))return pattern;
+      if (!pattern.contains(deliminator))return pattern;
+
       StringBuilder resultBuilder = new StringBuilder();
-      while (startPosition < pattern.length() &&
-             pattern.indexOf(deliminator, startPosition) != -1) {
+
+      while (startPosition < pattern.length()
+      && pattern.indexOf(deliminator, startPosition) != -1) {
+
         endPosition = startPosition;
         startPosition = pattern.indexOf(deliminator, startPosition);
+
         // get Text
         if (endPosition < startPosition)
           resultBuilder.append(pattern.substring(endPosition, startPosition).trim());
         startPosition = startPosition + deliminator.length();
         endPosition = pattern.indexOf(deliminator, startPosition);
+
         // get field
         String fieldname = pattern.substring(startPosition, endPosition);
         resultBuilder.append(tuple.getValueByColmnName(fieldname));
         startPosition = endPosition + deliminator.length();
       }
+
       result = resultBuilder.toString();
       if (endPosition + deliminator.length() < pattern.length())
         result += pattern.substring(startPosition, pattern.length()).trim();

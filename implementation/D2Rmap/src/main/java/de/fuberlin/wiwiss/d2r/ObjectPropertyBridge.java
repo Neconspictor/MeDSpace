@@ -85,8 +85,9 @@ public class ObjectPropertyBridge
     Resource referredResource = referredMap.getResourceById(
         resourceID);
     if (referredResource == null) {
+      referredResource = referredMap.createNewResource(processor, resourceID);
       log.warn("Warning: (CreateProperties) Reference to resource of class " +
-          getReferredClass() + " with resource id " + resourceID + " not found");
+          getReferredClass() + " with resource id " + resourceID + " not found. A new one is created");
     }
     return referredResource;
   }

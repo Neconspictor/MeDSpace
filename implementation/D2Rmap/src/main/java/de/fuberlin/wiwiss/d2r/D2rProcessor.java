@@ -324,9 +324,7 @@ public class D2rProcessor {
     }
 
     try {
-      // Clear model
-      this.model = null;
-      this.model = ModelFactory.getInstance().createDefaultModel();
+      clear();
     } catch (FactoryException e) {
       throw new D2RException("Couldn't get default Model from the ModelFactory.", e);
     }
@@ -344,6 +342,54 @@ public class D2rProcessor {
    * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2RMap was read before
    * (see {@link #readMap(File)}, {@link #readMap(String)}, {@link #readMap(Document)})
    */
+  public Model generateTestAsModel() throws D2RException {
+
+    // Check if a map is loaded.
+    if (!this.mapLoaded) {
+      throw new D2RException("A D2R map has to be read before calling generateTestsAsModel().");
+    }
+
+    try {
+      clear();
+    }
+    catch (FactoryException e) {
+      throw new D2RException("Could not get default Model from the ModelFactory.", e);
+    }
+
+    // Generate instances for all maps
+    this.generateTestMaps();
+
+    // add namespaces
+    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
+      this.model.setNsPrefix(ent.getKey(), ent.getValue());
+    }
+
+    //Return model
+    return this.model;
+  }
+
+  private void clear() throws FactoryException {
+    // Clear model
+    this.model = null;
+    this.model = ModelFactory.getInstance().createDefaultModel();
+
+    // clear maps
+    for (D2RMap map : getMaps())
+      map.clear();
+  }
+
+  private void generateTestMaps() throws D2RException {
+    D2RMap map = config.getMaps().elementAt(3);
+      map.generateResources(this, new Vector<>());;
+      map.generateResourceProperties(this);
+  }
+
+  /**
+   * Processes the D2R map and returns a Jena model containing all generated instances.
+   * @return Jena model containing all generated instances.
+   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2RMap was read before
+   * (see {@link #readMap(File)}, {@link #readMap(String)}, {@link #readMap(Document)})
+   */
   public Model generateAllInstancesAsModel() throws D2RException {
 
     // Check if a map is loaded.
@@ -352,9 +398,7 @@ public class D2rProcessor {
     }
 
     try {
-
-      // Clear model
-      this.model = ModelFactory.getInstance().createDefaultModel();
+      clear();
     }
     catch (FactoryException e) {
       throw new D2RException("Could not get default Model from the ModelFactory.", e);

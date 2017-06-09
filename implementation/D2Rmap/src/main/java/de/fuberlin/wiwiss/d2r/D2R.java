@@ -25,7 +25,7 @@ public class D2R {
     static final String CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE = "resourceIdColumns";
     static final String CLASS_MAP_ID_ATTRIBUTE = "id";
     static final String CLASS_MAP_TYPE_ATTRIBUTE = "type";
-    static final String CLASS_MAP_URI_PATTERN_ATTRIBUTE = "uriPattern";
+    static final String CLASS_MAP_BASE_URI_ATTRIBUTE = "baseURI";
 
     // complex type DataTypePropertyBridge
     static final String DATA_TYPE_PROPERTY_BRIDGE_ELEMENT = "DataTypePropertyBridge";

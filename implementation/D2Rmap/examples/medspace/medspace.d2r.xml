@@ -23,9 +23,8 @@
 	<d2r:ClassMap 
 		type="test:language"
 		sql="SELECT * FROM language;"
-
+		baseURI="http://localhost/patient_test_namespace/languages#"
 		resourceIdColumns="language.name"
-		uriPattern="http://localhost/patient_test_namespace/languages#@@language.name@@"
 		id="language">
 		
 		<d2r:DataTypePropertyBridge property="test:languageName" pattern="language.name" dataType="rdf:langString" lang="en"/>
@@ -38,8 +37,8 @@
 	<d2r:ClassMap
 			sql="SELECT m.name AS hello FROM maritalstatus m;"
 			resourceIdColumns="m.name"
+			baseURI="http://localhost/patient_test_namespace/maritalstatus#"
 			type="test:maritalstatus"
-			uriPattern="http://localhost/patient_test_namespace/maritalstatus#@@m.name@@"
 			id="maritalstatus"
 	>
 		<d2r:DataTypePropertyBridge property="test:maritalStatusName" pattern="@@m.name@@" dataType="xsd:string"/>
@@ -48,19 +47,19 @@
 	<d2r:ClassMap
 			sql="SELECT * FROM sex;"
 			resourceIdColumns="sex.name"
+			baseURI="http://localhost/patient_test_namespace/sex#"
 			type="test:sex"
-			uriPattern="http://localhost/patient_test_namespace/sex#@@sex.name@@"
 			id="sex"
 	>
 		<d2r:DataTypePropertyBridge property="test:sexName" pattern="@@sex.name@@" dataType="xsd:string"/>
 	</d2r:ClassMap>
 
 	<d2r:ClassMap
-			sql="SELECT * FROM patient;"
+			sql="SELECT patient.id, patient.dateOfBirth, patient.sex, patient.maritalstatus, patient.language FROM patient;"
 			resourceIdColumns="patient.id"
-			type="test:patient"
-			uriPattern="http://localhost/patient_test_namespace/patient#@@patient.id@@"
+			baseURI="http://localhost/patient_test_namespace/patient#"
 			id="patient"
+			type="test:patient"
 	>
 		<d2r:DataTypePropertyBridge property="test:patientID" pattern="@@patient.id@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="test:date" pattern="@@patient.dateOfBirth@@" dataType="xsd:date"/>

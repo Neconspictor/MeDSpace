@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 public class D2RMap {
   private HashMap<String, ResultResource> resources;
   private Vector<Bridge> bridges;
-  private String uriPattern;
+  private String baseURI;
   private String sql;
   private String id;
   private Vector<String> resourceIdColumns;
@@ -230,8 +230,8 @@ public class D2RMap {
     this.bridges.add(bridge);
   }
 
-  void setUriPattern(String uriPattern) {
-    this.uriPattern = uriPattern;
+  void setBaseURI(String baseURI) {
+    this.baseURI = baseURI;
   }
 
   protected String getSql() {
@@ -298,24 +298,17 @@ public class D2RMap {
 
     Resource resource;
 
-    // define URI and generate instance
-    if (this.uriPattern != null) {
-      String uri = D2rUtil.parsePattern(this.uriPattern, D2R.DELIMINATOR,
-          currentTuple);
-      uri = processor.getNormalizedURI(uri);
-      resource = model.createResource(uri);
-
-    } else {
-      // generate blank node instance
-      resource = model.createResource();
-    }
-
     // set instance id
     StringBuilder resourceIDBuilder = new StringBuilder();
     for (String aGroupBy : this.resourceIdColumns) {
       resourceIDBuilder.append(currentTuple.getValueByColmnName(aGroupBy));
     }
     String resourceID = resourceIDBuilder.toString();
+
+    // define URI and generate instance
+    String uri = baseURI + resourceID;
+    uri = processor.getNormalizedURI(uri);
+    resource = model.createResource(uri);
 
     if (resource != null && !resourceID.equals("")) {
       currentTuple.setResource(resource);
@@ -332,5 +325,38 @@ public class D2RMap {
     ResultResource instance = resources.get(resourceID);
     if (instance != null) return  instance.getResource();
     return null;
+  }
+
+  public Resource createNewResource(D2rProcessor processor, String resourceID) {
+    String uri = baseURI + resourceID;  //TODO parse it properly
+    uri = processor.getNormalizedURI(uri);
+    Model model = processor.getModel();
+    Resource resource = model.createResource(uri);
+    ResultResource result = new ResultResource();
+    result.setResource(resource);
+    resources.put(resourceID, result);
+
+    // TODO decide to export a type property or not
+   /* Bridge bridge = null;
+    for (Bridge b : bridges) {
+      if (b.getProperty().equals("rdf:type")) {
+        bridge = b;
+        break;
+      }
+    }
+
+    assert bridge != null;
+
+    Property prop = bridge.getProperty(processor);
+    RDFNode referredNode = bridge.getValue(processor, result);
+    if (prop != null && referredNode != null) {
+      resource.addProperty(prop, referredNode);
+    }*/
+
+    return resource;
+  }
+
+  public void clear() {
+    resources.clear();
   }
 }

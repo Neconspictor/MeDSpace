@@ -98,8 +98,8 @@ public class ConfigurationReader {
       }
 
       // Read uriPattern
-      if (mapElement.hasAttribute(D2R.CLASS_MAP_URI_PATTERN_ATTRIBUTE))
-        cMap.setUriPattern(mapElement.getAttribute(D2R.CLASS_MAP_URI_PATTERN_ATTRIBUTE));
+      if (mapElement.hasAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE))
+        cMap.setBaseURI(mapElement.getAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE));
 
     // Read datatype property mappings
     NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);
