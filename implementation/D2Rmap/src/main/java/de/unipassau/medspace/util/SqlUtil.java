@@ -11,8 +11,8 @@ import java.sql.*;
 public class SqlUtil {
 
 
-  public static SQLQueryResult executeQuery(Connection connection, String query) throws SQLException {
-    return new SQLQueryResult(connection, query);
+  public static SQLQueryResult executeQuery(Connection connection, String query, int maxRowSize) throws SQLException {
+    return new SQLQueryResult(connection, query, maxRowSize);
   }
 
   /**
@@ -61,8 +61,13 @@ public class SqlUtil {
     private Statement statement;
     private static Logger log = LogManager.getLogger(SQLQueryResult.class);
 
-    SQLQueryResult(Connection connection, String query) throws SQLException {
+    SQLQueryResult(Connection connection, String query, int maxRowSize) throws SQLException {
         statement = connection.createStatement();
+        statement.setMaxRows(maxRowSize);
+        int fetchSize = 10;
+        if (fetchSize > maxRowSize && (maxRowSize != 0))
+          fetchSize = maxRowSize;
+        statement.setFetchSize(fetchSize);
         set = statement.executeQuery(query);
       numColumns = set.getMetaData().getColumnCount();
     }

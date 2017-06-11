@@ -54,6 +54,8 @@ public class D2RMap {
       //get a connection from the processor
       Connection con = processor.getConnection();
 
+      con.setAutoCommit(false); //TODO read about auto commit!
+
       String query = this.sql.trim();
 
       String ucQuery = query.toUpperCase();
@@ -171,7 +173,7 @@ public class D2RMap {
 
     try {
       // Create and execute SQL statement
-      queryResult = SqlUtil.executeQuery(con, query);
+      queryResult = SqlUtil.executeQuery(con, query, 0);
       ResultSet rs = queryResult.getResultSet();
       int numCols = queryResult.getColumnCount();
       boolean more = rs.next();

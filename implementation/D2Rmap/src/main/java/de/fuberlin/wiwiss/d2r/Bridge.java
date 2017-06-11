@@ -14,13 +14,13 @@ import org.apache.log4j.Logger;
  * @version V0.2
  */
 abstract public class Bridge {
-    private String translation;
-    private String dataType;
-    private String pattern;
-    private String xmlLang;
-    private String property;
+    protected String translation;
+    protected String dataType;
+    protected String pattern;
+    protected String xmlLang;
+    protected String property;
 
-    private static Logger log = Logger.getLogger(Bridge.class);
+    protected static Logger log = Logger.getLogger(Bridge.class);
 
     protected String getTranslation() { return translation; }
 
