@@ -178,6 +178,7 @@ public class SelectStatement {
   private static Vector<String> fetchColumnNames(String query, DataSource dataSource) throws SQLException {
     Vector<String> result = new Vector<>();
     try(Connection con = dataSource.getConnection()) {
+      con.setReadOnly(true);
       PreparedStatement stmt = con.prepareStatement(query);
       stmt.setMaxRows(1); // we want fetch only meta data, so we don't bother about the content
       ResultSet set = stmt.executeQuery();
@@ -186,6 +187,7 @@ public class SelectStatement {
         String column = metaData.getColumnName(i);
         result.add(column.toUpperCase());
       }
+      //con.commit();
     }
 
     return result;

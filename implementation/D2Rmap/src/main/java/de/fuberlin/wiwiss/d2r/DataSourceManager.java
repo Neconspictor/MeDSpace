@@ -29,7 +29,7 @@ public class DataSourceManager {
     hikariConfig.setPassword(config.getDatabasePassword());
 
     hikariConfig.setMaximumPoolSize(config.getMaxConnections());
-    hikariConfig.setAutoCommit(false);
+    hikariConfig.setAutoCommit(true);
 
     Vector<Pair<String, String>> properties = config.getDataSourceProperties();
     for (Pair<String, String> property : properties) {

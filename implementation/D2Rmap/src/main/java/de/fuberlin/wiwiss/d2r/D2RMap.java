@@ -51,14 +51,6 @@ public class D2RMap {
    */
   void generateResources(D2rProcessor processor, DataSource dataSource,
                          List<String> conditionList) throws D2RException {
-
-    try {
-
-      //get a connection from the processor
-      Connection con = dataSource.getConnection();
-
-      con.setAutoCommit(false); //TODO read about auto commit!
-
       String query = this.sql.trim();
 
       String ucQuery = query.toUpperCase();
@@ -72,15 +64,6 @@ public class D2RMap {
 
       //generate resources using the Connection
       this.generateResources(processor, dataSource, query);
-
-      //close the connection
-      con.close();
-    }
-    catch (SQLException ex) {
-
-      //an error occurred while closing the connection
-      throw new D2RException("Could not close JDBC Connection.", ex);
-    }
   }
 
   public static String addConditionStatements(String query, List<String> conditionList) {

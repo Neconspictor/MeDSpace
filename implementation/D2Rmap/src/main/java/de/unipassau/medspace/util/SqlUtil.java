@@ -118,6 +118,7 @@ public class SqlUtil {
 
       try {
         connection = dataSource.getConnection();
+        connection.setReadOnly(true);
         statement = connection.createStatement();
         set = statement.executeQuery(query);
         statement.setMaxRows(maxRowSize);
@@ -133,17 +134,27 @@ public class SqlUtil {
 
     public void close() {
       try {
-        if (connection != null) connection.close();
+        if (connection != null) {
+          //connection.commit();
+          connection.close();
+          log.debug("Connection is closed!");
+        }
       } catch (SQLException e) {
         log.warn("Couldn't close statement!", e);
       }
       try {
-        if (statement != null) statement.close();
+        if (statement != null) {
+          statement.close();
+          log.debug("Statement is closed!");
+        }
       } catch (SQLException e) {
         log.warn("Couldn't close statement!", e);
       }
       try {
-        if (set != null) set.close();
+        if (set != null) {
+          set.close();
+          log.debug("Set is closed!");
+        }
       } catch (SQLException e) {
         log.warn("Couldn't close result set!", e);
       }
