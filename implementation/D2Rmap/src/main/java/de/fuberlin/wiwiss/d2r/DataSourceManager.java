@@ -10,10 +10,10 @@ import java.util.Vector;
 /**
  * Created by David Goeth on 12.06.2017.
  */
-public class QueryManager {
+public class DataSourceManager {
   private DataSource dataSource;
 
-  public QueryManager(Configuration config) {
+  public DataSourceManager(Configuration config) {
     dataSource = null;
     init(config);
   }

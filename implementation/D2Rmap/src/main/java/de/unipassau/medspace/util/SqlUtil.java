@@ -6,6 +6,7 @@ import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 /**
@@ -14,8 +15,8 @@ import java.sql.*;
 public class SqlUtil {
 
 
-  public static SQLQueryResult executeQuery(Connection connection, String query, int maxRowSize) throws SQLException {
-    return new SQLQueryResult(connection, query, maxRowSize);
+  public static SQLQueryResult executeQuery(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
+    return new SQLQueryResult(dataSource, query, maxRowSize, fetchSize);
   }
 
   /**
@@ -105,27 +106,44 @@ public class SqlUtil {
     private ResultSet set;
     private int numColumns;
     private Statement statement;
+    private Connection connection;
     private static Logger log = LogManager.getLogger(SQLQueryResult.class);
 
-    SQLQueryResult(Connection connection, String query, int maxRowSize) throws SQLException {
+    SQLQueryResult(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
+      assert fetchSize > 0;
+      statement =null;
+      set = null;
+      if (fetchSize > maxRowSize && (maxRowSize != 0))
+        fetchSize = maxRowSize;
+
+      try {
+        connection = dataSource.getConnection();
         statement = connection.createStatement();
-        statement.setMaxRows(maxRowSize);
-        int fetchSize = 10;
-        if (fetchSize > maxRowSize && (maxRowSize != 0))
-          fetchSize = maxRowSize;
-        statement.setFetchSize(fetchSize);
         set = statement.executeQuery(query);
-      numColumns = set.getMetaData().getColumnCount();
+        statement.setMaxRows(maxRowSize);
+        statement.setFetchSize(fetchSize);
+        numColumns = set.getMetaData().getColumnCount();
+      }catch (SQLException e) {
+        if (statement != null) statement.close();
+        if (set != null) set.close();
+        if (connection != null) connection.close();
+        throw e;
+      }
     }
 
     public void close() {
       try {
-        statement.close();
+        if (connection != null) connection.close();
       } catch (SQLException e) {
         log.warn("Couldn't close statement!", e);
       }
       try {
-        set.close();
+        if (statement != null) statement.close();
+      } catch (SQLException e) {
+        log.warn("Couldn't close statement!", e);
+      }
+      try {
+        if (set != null) set.close();
       } catch (SQLException e) {
         log.warn("Couldn't close result set!", e);
       }

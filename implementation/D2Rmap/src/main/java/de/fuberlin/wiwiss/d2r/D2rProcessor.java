@@ -2,29 +2,15 @@ package de.fuberlin.wiwiss.d2r;
 
 import java.util.*;
 import java.io.*;
-import java.sql.SQLException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
 
-import de.unipassau.medspace.util.SqlUtil;
-import de.unipassau.medspace.util.XmlUtil;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.w3c.dom.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.log4j.Logger;
-import java.net.URL;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.log4j.*;
-import java.sql.*;
+
 import java.util.Map.Entry;
 
 import de.fuberlin.wiwiss.d2r.factory.ModelFactory;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
-import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
 
 /**
  * D2R processor exports data from a RDBMS into an RDF model using a D2R MAP.
@@ -54,18 +40,15 @@ public class D2rProcessor {
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2rProcessor.class);
 
-  /** JDBC Connection used to retrieve data */
-  private Connection connection = null;
-
-  private QueryManager queryManager;
+  private DataSourceManager dataSourceManager;
 
 
-  public D2rProcessor(Configuration config, QueryManager queryManager) {
+  public D2rProcessor(Configuration config, DataSourceManager dataSourceManager) {
     assert config != null;
-    assert queryManager != null;
+    assert dataSourceManager != null;
 
     this.config = config;
-    this.queryManager = queryManager;
+    this.dataSourceManager = dataSourceManager;
   }
 
   /**
@@ -105,7 +88,7 @@ public class D2rProcessor {
 
   private void generateTestMaps() throws D2RException {
     D2RMap map = config.getMaps().elementAt(3);
-      map.generateResources(this, new Vector<>());;
+      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());;
       map.generateResourceProperties(this);
   }
 
@@ -180,7 +163,7 @@ public class D2rProcessor {
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
     for (D2RMap map : config.getMaps())
-      map.generateResources(this, new Vector<>());;
+      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());;
     for (D2RMap map : config.getMaps())
       map.generateResourceProperties(this);
   }
@@ -198,92 +181,6 @@ public class D2rProcessor {
 
       this.model.write(writer, config.getOutputFormat());
       return writer.toString();
-  }
-
-  /**
-   * If a valid Connection has previously been set/created, it will be returned.
-   * Otherwise a new connection will be made and will be cached for the next
-   * call.
-   *
-   * NOTE: It is assumed the connection will be closed (or set to null) when
-   * it is no longer needed (processing is complete).
-   *
-   * @throws D2RException Thrown if the connection to the datasource couldn't be retrieved
-   * @return Connection
-   */
-  Connection getConnection() throws D2RException {
-    Connection con;
-
-    try {
-
-      //early exit when a connection already exists
-      if ( (this.connection != null) && (!this.connection.isClosed())) {
-        log.debug("Retrieving existing connection.");
-        return this.connection;
-      }
-
-      // Connect to database
-      String url = config.getJdbc();
-
-      //make a new connection
-      if (url == null || url.equals("")) {
-        throw new D2RException("Could not connect to database because of missing URL.");
-      }
-
-      //Driver used to establish connection
-      Driver driver = SqlUtil.createDriver(config.getJdbcDriver());
-
-      if (driver == null) {
-        throw new D2RException("Could not establish Connection. Cannot obtain Driver.");
-      }
-
-      log.debug("Creating new connection. URL: " + url);
-
-      //use the Driver to establish a connection
-      Properties connectionProperties = new Properties();
-
-      //add the username and password to the properties
-      String username = "";
-      String password = "";
-      if (config.getDatabaseUsername() != null) {
-        username = config.getDatabaseUsername();
-      }
-      if (config.getDatabasePassword() != null) {
-        password = config.getDatabasePassword();
-      }
-
-      connectionProperties.setProperty("user", username);
-      connectionProperties.setProperty("password", password);
-
-      //connect to the URL using the Driver
-      con = driver.connect(url, connectionProperties);
-
-      //cache connection
-      this.setConnection(con);
-    }
-    catch (SQLException | D2RException ex) {
-      //if (con != null) SqlUtil.closeSilently(con);
-      String message = "Exception caught while trying to connect: ";
-      if (ex instanceof  SQLException) {
-        message += SqlUtil.unwrapMessage((SQLException) ex);
-      } else {
-        message += ex.getMessage();
-      }
-      throw new D2RException(message, ex);
-    }
-
-    log.debug("Returning connection: " + con);
-    return con;
-  }
-
-  /**
-   * Sets the Connection member.
-   *
-   * @param connection Connection
-   */
-  private void setConnection(Connection connection) {
-
-    this.connection = connection;
   }
 
   /**

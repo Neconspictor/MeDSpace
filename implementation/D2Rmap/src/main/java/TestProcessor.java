@@ -28,8 +28,8 @@ public class TestProcessor {
         try {
             System.out.println("D2R test started ....");
             Configuration config = new ConfigurationReader().readConfig(D2RMap);
-            QueryManager queryManager = new QueryManager(config);
-            processor = new D2rProcessor(config, queryManager);
+            DataSourceManager dataSourceManager = new DataSourceManager(config);
+            processor = new D2rProcessor(config, dataSourceManager);
             System.out.println("D2R processor created ....");
             System.out.println("D2R file read ....");
             Instant startTime = Instant.now();

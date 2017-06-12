@@ -1,7 +1,10 @@
 package de.unipassau.medspace.util.sql;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import de.unipassau.medspace.util.SqlUtil;
 
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -22,20 +25,32 @@ public class SelectStatement {
   private static Vector<Clause> querySelectStatementOrder = new Vector(Arrays.asList(Clause.SELECT, FROM,
       WHERE, Clause.GROUP_BY, Clause.HAVING, Clause.UNION, Clause.ORDER_BY));
 
-  public SelectStatement() {
+  public SelectStatement(String query, DataSource dataSource) throws SQLException, D2RException {
     beforeWhereConditionStatement = "";
     columnList = new Vector<>();
     whereConditionList = new Vector<>();
     afterWhereConditionStatement = "";
     orderByList = new Vector<>();
+    parse(query, dataSource);
   }
 
-  public static SelectStatement parse(String query) throws D2RException {
+  public SqlUtil.SQLQueryResult execute(DataSource dataSource) throws SQLException {
+    SqlUtil.SQLQueryResult result = null;
+    try {
+      String query = toString();
+      result = SqlUtil.executeQuery(dataSource, query, 0, 10);
+    } catch (SQLException e) {
+      if (result != null) result.close();
+      throw e;
+    }
+    return result;
+  }
+
+  private void parse(String query, DataSource dataSource) throws D2RException, SQLException {
     if (query.contains(Clause.UNION.toString())) {
       throw new D2RException("UNION clause is not supported by D2RMap for the select statement!");
     }
-
-    SelectStatement result = new SelectStatement();
+    ;
     String whereStr = WHERE.toString();
     Vector<Clause> q = querySelectStatementOrder;
 
@@ -65,18 +80,16 @@ public class SelectStatement {
     whereCondition = whereCondition.trim();
     afterWhereClause = afterWhereClause.trim();
 
-    result.beforeWhereConditionStatement = beforeWhereClause;
-    result.afterWhereConditionStatement = afterWhereClause;
-    result.columnList = parseColumns(query);
-    result.orderByList = parseOrderBy(query, orderByIndex);
+    beforeWhereConditionStatement = beforeWhereClause;
+    afterWhereConditionStatement = afterWhereClause;
+    columnList = parseColumns(query, dataSource);
+    orderByList = parseOrderBy(query, orderByIndex);
 
 
     // save where conditions
     if (whereCondition != null) {
-      result.whereConditionList.add(whereCondition);
+      whereConditionList.add(whereCondition);
     }
-
-    return result;
   }
 
   private static Vector<String> parseOrderBy(String query, int orderByIndex) {
@@ -94,7 +107,7 @@ public class SelectStatement {
     return result;
   }
 
-  private static Vector<String> parseColumns(String query) throws D2RException {
+  private static Vector<String> parseColumns(String query, DataSource dataSource) throws D2RException, SQLException {
     if (!query.contains(SELECT.toString())) {
       throw new D2RException("Query doesn't contain a SELECT clause: " + query);
     }
@@ -112,11 +125,34 @@ public class SelectStatement {
     StringTokenizer tokenizer = new StringTokenizer(selectString, ",");
 
     Vector<String> result = new Vector<>();
+    String firstToken = tokenizer.nextToken().trim();
+    if (firstToken.equals("*")) {
+      return fetchColumnNames(query, dataSource);
+    } else {
+      result.add(firstToken);
+    }
+
     while(tokenizer.hasMoreTokens()) {
       result.add(tokenizer.nextToken().trim());
     }
     return result;
 
+  }
+
+  private static Vector<String> fetchColumnNames(String query, DataSource dataSource) throws SQLException {
+    Vector<String> result = new Vector<>();
+    try(Connection con = dataSource.getConnection()) {
+      PreparedStatement stmt = con.prepareStatement(query);
+      stmt.setMaxRows(1); // we want fetch only meta data, so we don't bother about the content
+      ResultSet set = stmt.executeQuery();
+      ResultSetMetaData metaData = set.getMetaData();
+      for (int i = 1; i <= metaData.getColumnCount(); ++i) {
+        String column = metaData.getColumnName(i);
+        result.add(column.toUpperCase());
+      }
+    }
+
+    return result;
   }
 
   private static int getClauseRangeSplitIndex(String query, int startClauseIndex, int endClauseIndex, boolean getFirst) {

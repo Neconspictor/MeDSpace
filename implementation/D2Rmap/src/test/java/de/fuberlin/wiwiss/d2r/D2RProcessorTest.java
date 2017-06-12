@@ -16,8 +16,6 @@ public class D2RProcessorTest {
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2rProcessor.class);
 
-  private D2rProcessor processor = new D2rProcessor();
-
   @Test//(expected=D2RException.class)
   public void testNeededTagDBConnection() throws Exception {
     Document doc = parseFromFile("/testSchema.xml", true);

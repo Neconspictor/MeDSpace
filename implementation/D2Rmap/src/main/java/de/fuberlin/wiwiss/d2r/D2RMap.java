@@ -11,6 +11,8 @@ import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import javax.sql.DataSource;
+
 /**
  * D2RMap Class. A D2RMap class is created for every d2r:ClassMap element in the mapping file.
  * The D2RMap class contains a Vector with all Bridges and an HashMap with all resources.
@@ -47,12 +49,13 @@ public class D2RMap {
    * Generates all resources for this map.
    * @param  processor Reference to an D2R processor instance.
    */
-  void generateResources(D2rProcessor processor, List<String> conditionList) throws D2RException {
+  void generateResources(D2rProcessor processor, DataSource dataSource,
+                         List<String> conditionList) throws D2RException {
 
     try {
 
       //get a connection from the processor
-      Connection con = processor.getConnection();
+      Connection con = dataSource.getConnection();
 
       con.setAutoCommit(false); //TODO read about auto commit!
 
@@ -68,7 +71,7 @@ public class D2RMap {
       query = addOrderByStatements(query);
 
       //generate resources using the Connection
-      this.generateResources(processor, con, query);
+      this.generateResources(processor, dataSource, query);
 
       //close the connection
       con.close();
@@ -157,10 +160,10 @@ public class D2RMap {
   /**
    * Generates all resources for this map.
    * @param  processor Reference to an D2R processor instance.
-   * @param  con The database connection.
+   * @param  dataSource The database connection.
    */
   private void generateResources(D2rProcessor processor,
-                                 Connection con, String query) throws D2RException {
+                                 DataSource dataSource, String query) throws D2RException {
 
     if (log.isDebugEnabled()) {
       log.debug("Generating resources for D2rProcessor: " + processor);
@@ -173,7 +176,7 @@ public class D2RMap {
 
     try {
       // Create and execute SQL statement
-      queryResult = SqlUtil.executeQuery(con, query, 0);
+      queryResult = SqlUtil.executeQuery(dataSource, query, 0, 10);
       ResultSet rs = queryResult.getResultSet();
       int numCols = queryResult.getColumnCount();
       boolean more = rs.next();
