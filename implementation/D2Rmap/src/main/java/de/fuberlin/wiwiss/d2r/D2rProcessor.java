@@ -3,6 +3,7 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.*;
 import java.io.*;
 
+import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.rdf.model.Model;
 import org.apache.log4j.Logger;
 
@@ -34,7 +35,8 @@ import de.fuberlin.wiwiss.d2r.exception.FactoryException;
  * @version V0.3.1
  */
 public class D2rProcessor {
-  private Configuration config;
+  private Vector<D2RMap> maps;
+  private HashMap<String, String> namespaces;
   private Model model;
 
   /** log4j logger used for this class */
@@ -43,12 +45,52 @@ public class D2rProcessor {
   private DataSourceManager dataSourceManager;
 
 
-  public D2rProcessor(Configuration config, DataSourceManager dataSourceManager) {
+  public D2rProcessor(Configuration config, DataSourceManager dataSourceManager) throws D2RException {
     assert config != null;
     assert dataSourceManager != null;
 
-    this.config = config;
+    maps = config.getMaps();
+    namespaces = config.getNamespaces();
+
+    // we don't want others to change the state of the processor
+    config.setMaps(null);
+    config.setNamespaces(null);
+
     this.dataSourceManager = dataSourceManager;
+
+    for (D2RMap map : maps) {
+      map.init(dataSourceManager.getDataSource());
+    }
+  }
+
+
+  public Model doKeywordSearch(String keyword) throws D2RException {
+    try {
+      clear();
+    }
+    catch (FactoryException e) {
+      throw new D2RException("Could not get default Model from the ModelFactory.", e);
+    }
+
+    final String condition = "LIKE '%" + keyword + "%'";
+
+    // Generate instances for all maps
+    for (D2RMap map : maps) {
+
+      SelectStatement query = map.getQuery();
+      query.addTemporaryColumnCondition(condition);
+      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());
+    }
+    for (D2RMap map : maps)
+      map.generateResourceProperties(this);
+
+    // add namespaces
+    for (Entry<String, String> ent : namespaces.entrySet()) {
+      this.model.setNsPrefix(ent.getKey(), ent.getValue());
+    }
+
+    //Return model
+    return this.model;
   }
 
   /**
@@ -68,7 +110,7 @@ public class D2rProcessor {
     this.generateTestMaps();
 
     // add namespaces
-    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
+    for (Entry<String, String> ent : namespaces.entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
@@ -82,13 +124,13 @@ public class D2rProcessor {
     this.model = ModelFactory.getInstance().createDefaultModel();
 
     // clear maps
-    for (D2RMap map : getMaps())
+    for (D2RMap map : maps)
       map.clear();
   }
 
   private void generateTestMaps() throws D2RException {
-    D2RMap map = config.getMaps().elementAt(3);
-      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());;
+    D2RMap map = maps.elementAt(3);
+      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());
       map.generateResourceProperties(this);
   }
 
@@ -109,7 +151,7 @@ public class D2rProcessor {
     this.generateInstancesForAllMaps();
 
     // add namespaces
-    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
+    for (Entry<String, String> ent : namespaces.entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
@@ -143,7 +185,7 @@ public class D2rProcessor {
     this.generateInstancesForAllMaps();
 
     // add namespaces
-    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
+    for (Entry<String, String> ent : namespaces.entrySet()) {
       this.model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
@@ -151,44 +193,12 @@ public class D2rProcessor {
     this.model = originalModel;
   }
 
-  /** Serializes model to string and includes the content of the d2r:Prepend and d2r:Postpend statements. */
-  public String serialize() throws D2RException {
-    StringBuilder ser = new StringBuilder();
-    if (config.getPrepend() != null) ser.append(config.getPrepend());
-    ser.append(this.modelToString());
-    if (config.getPostpend() != null) ser.append(config.getPostpend());
-    return ser.toString();
-  }
-
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
-    for (D2RMap map : config.getMaps())
-      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());;
-    for (D2RMap map : config.getMaps())
+    for (D2RMap map : maps)
+      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());
+    for (D2RMap map : maps)
       map.generateResourceProperties(this);
-  }
-  /**
-   * Uses a Jena writer to serialize model to RDF, N3 or N-TRIPLES.
-   * @return serialization of model
-   */
-  private String modelToString() {
-      StringWriter writer = new StringWriter();
-    for (Entry<String, String> ent : config.getNamespaces().entrySet()) {
-      this.model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
-
-      log.debug("Converting Model to String. outputFormat: " + config.getOutputFormat());
-
-      this.model.write(writer, config.getOutputFormat());
-      return writer.toString();
-  }
-
-  /**
-   * Returns an vector containing all D2R maps.
-   * @return Vector with all maps.
-   */
-  private Vector<D2RMap> getMaps() {
-    return config.getMaps();
   }
 
   /**
@@ -196,20 +206,12 @@ public class D2rProcessor {
    * @return D2R Map.
    */
   D2RMap getMapById(String id) {
-    for (D2RMap map : this.getMaps()) {
+    for (D2RMap map : maps) {
       if (map.getId().equals(id)) {
         return map;
       }
     }
     return null;
-  }
-
-  /**
-   * Returns an HashMap containing all translation tables.
-   * @return Vector with all maps.
-   */
-  HashMap<String, TranslationTable> getTranslationTables() {
-    return config.getTranslationTables();
   }
 
   /**
@@ -231,7 +233,7 @@ public class D2rProcessor {
   @SuppressWarnings("SpellCheckingInspection")
   String getNormalizedURI(String qName) {
     String prefix = D2rUtil.getNamespacePrefix(qName);
-    String uriPrefix = config.getNamespaces().get(prefix);
+    String uriPrefix = namespaces.get(prefix);
     if (uriPrefix != null) {
       String localName = D2rUtil.getLocalName(qName);
       return uriPrefix + localName;

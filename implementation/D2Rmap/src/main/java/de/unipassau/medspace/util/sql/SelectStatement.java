@@ -18,7 +18,8 @@ import static de.unipassau.medspace.util.sql.SelectStatement.Clause.*;
 public class SelectStatement {
   String beforeWhereConditionStatement;
   Vector<String> columnList;
-  Vector<String> whereConditionList;
+  Vector<String> staticConditionList;
+  Vector<String> temporaryConditionList;
   String afterWhereConditionStatement;
   Vector<String> orderByList;
 
@@ -28,7 +29,8 @@ public class SelectStatement {
   public SelectStatement(String query, DataSource dataSource) throws SQLException, D2RException {
     beforeWhereConditionStatement = "";
     columnList = new Vector<>();
-    whereConditionList = new Vector<>();
+    staticConditionList = new Vector<>();
+    temporaryConditionList = new Vector<>();
     afterWhereConditionStatement = "";
     orderByList = new Vector<>();
     parse(query, dataSource);
@@ -50,28 +52,43 @@ public class SelectStatement {
     StringBuilder builder = new StringBuilder(beforeWhereConditionStatement);
     wrapWithSpaces(builder, WHERE.toString());
     final String and = " AND ";
-    for (String condition : whereConditionList) {
+    boolean available = (staticConditionList.size() > 0) || (temporaryConditionList.size() > 0);
+
+    for (String condition : staticConditionList) {
       builder.append("(");
       builder.append(condition);
       builder.append(")");
       builder.append(and);
     }
 
-    // delete the last and
-    builder.delete(builder.length() - and.length(), builder.length());
+    for (String condition : temporaryConditionList) {
+      builder.append("(");
+      builder.append(condition);
+      builder.append(")");
+      builder.append(and);
+    }
+
+    if (available) {
+      // delete the last and
+      builder.delete(builder.length() - and.length(), builder.length());
+    }
 
     builder.append(" ");
     builder.append(afterWhereConditionStatement);
 
-    wrapWithSpaces(builder, ORDER_BY.toString());
-    final String semi = ", ";
-    for (String elem : orderByList) {
+    available = orderByList.size() > 0;
+
+    if (available) {
+      wrapWithSpaces(builder, ORDER_BY.toString());
+      final String semi = ", ";
+      for (String elem : orderByList) {
         builder.append(elem);
         builder.append(semi);
+      }
+      // delete the last semi
+      builder.delete(builder.length() - semi.length(), builder.length());
     }
 
-    // delete the last semicolon
-    builder.delete(builder.length() - semi.length(), builder.length());
     builder.append(";");
 
     return builder.toString();
@@ -95,7 +112,7 @@ public class SelectStatement {
     query = query.replaceAll("\\s+", " ").toUpperCase();
 
 
-    int beforeWhereIndex = getClauseRangeSplitIndex(query, 0, q.indexOf(GROUP_BY), false);
+    int beforeWhereIndex = getClauseRangeSplitIndex(query, q.indexOf(WHERE), q.indexOf(GROUP_BY), false);
     int afterWhereIndex = getClauseRangeSplitIndex(query, q.indexOf(GROUP_BY), q.size(), true);
     int orderByIndex = getClauseRangeSplitIndex(query, q.indexOf(ORDER_BY), q.size(), true);
 
@@ -103,6 +120,10 @@ public class SelectStatement {
     if (orderByIndex == -1) {
       orderByIndex = query.length();
       afterWhereIndex = query.length();
+    }
+
+    if (beforeWhereIndex == -1) {
+      beforeWhereIndex = query.length();
     }
 
     String beforeWhereClause = query.substring(0, beforeWhereIndex);
@@ -124,8 +145,18 @@ public class SelectStatement {
 
 
     // save where conditions
-    if (whereCondition != null) {
-      whereConditionList.add(whereCondition);
+    if (!whereCondition.equals("")) {
+      staticConditionList.add(whereCondition);
+    }
+
+    if (beforeWhereConditionStatement.endsWith(";")) {
+      beforeWhereConditionStatement = beforeWhereConditionStatement.substring(0,
+          beforeWhereConditionStatement.length() -1);
+    }
+
+    if (afterWhereConditionStatement.endsWith(";")) {
+      afterWhereConditionStatement = afterWhereConditionStatement.substring(0,
+          afterWhereConditionStatement.length() -1);
     }
   }
 
@@ -165,12 +196,16 @@ public class SelectStatement {
     String firstToken = tokenizer.nextToken().trim();
     if (firstToken.equals("*")) {
       return fetchColumnNames(query, dataSource);
-    } else {
-      result.add(firstToken);
     }
 
+
+    firstToken = firstToken.replaceFirst(" .*", "");
+    result.add(firstToken);
+
     while(tokenizer.hasMoreTokens()) {
-      result.add(tokenizer.nextToken().trim());
+      String column = tokenizer.nextToken().trim();
+      column = column.replaceFirst(" .*", "");
+      result.add(column);
     }
     return result;
   }
@@ -185,6 +220,7 @@ public class SelectStatement {
       ResultSetMetaData metaData = set.getMetaData();
       for (int i = 1; i <= metaData.getColumnCount(); ++i) {
         String column = metaData.getColumnName(i);
+        column = column.replaceFirst(" .*", "");
         result.add(column.toUpperCase());
       }
       //con.commit();
@@ -201,10 +237,36 @@ public class SelectStatement {
     int splitIndex = -1;
     for (int currentIndex = startClauseIndex; currentIndex != endClauseIndex; ++currentIndex) {
       String clause = querySelectStatementOrder.get(currentIndex).toString();
-      splitIndex = query.indexOf(clause);
-      if (splitIndex != -1 && getFirst) break;
+      int index = query.indexOf(clause);
+      splitIndex =  index != -1 ? index : splitIndex ;
+      if (splitIndex != -1 && getFirst) {
+        break;
+      }
     }
     return splitIndex;
+  }
+
+  public void addTemporaryColumnCondition(String condition) {
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("(");
+    final String or = " OR ";
+    boolean available = columnList.size() > 0;
+
+    for (String column : columnList) {
+      builder.append(column + " " + condition + or);
+    }
+
+    if (available) {
+      builder.delete(builder.length() - or.length(), builder.length());
+    }
+    builder.append(")");
+
+    temporaryConditionList.add(builder.toString());
+  }
+
+  public void reset() {
+    temporaryConditionList.clear();
   }
 
   protected enum Clause {

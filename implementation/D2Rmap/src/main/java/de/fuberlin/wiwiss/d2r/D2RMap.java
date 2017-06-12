@@ -4,6 +4,7 @@ import java.util.*;
 import java.sql.*;
 
 import de.unipassau.medspace.util.SqlUtil;
+import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.rdf.model.*;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
@@ -30,6 +31,7 @@ public class D2RMap {
   private Vector<Bridge> bridges;
   private String baseURI;
   private String sql;
+  private SelectStatement statement;
   private String id;
   private Vector<String> resourceIdColumns;
 
@@ -62,8 +64,19 @@ public class D2RMap {
       // Add ORDER BY statements to the query
       query = addOrderByStatements(query);
 
+      query = statement.toString();
+
       //generate resources using the Connection
       this.generateResources(processor, dataSource, query);
+  }
+
+  public void init(DataSource dataSource) throws D2RException {
+    try {
+      statement = new SelectStatement(this.sql, dataSource);
+    } catch (SQLException | D2RException e) {
+      log.error(e);
+      throw new D2RException("Couldn't init D2RMap: ");
+    }
   }
 
   public static String addConditionStatements(String query, List<String> conditionList) {
@@ -346,5 +359,10 @@ public class D2RMap {
 
   public void clear() {
     resources.clear();
+    statement.reset();
+  }
+
+  public SelectStatement getQuery() {
+    return statement;
   }
 }
