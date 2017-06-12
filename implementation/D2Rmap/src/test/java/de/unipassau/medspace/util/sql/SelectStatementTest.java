@@ -7,6 +7,7 @@ import de.unipassau.medspace.util.SqlUtil;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -26,7 +27,27 @@ public class SelectStatementTest {
 
     DataSource dataSource = new DataSourceManager(config).getDataSource();
     SelectStatement stmt = new SelectStatement(query, dataSource);
+
     SqlUtil.SQLQueryResult result = stmt.execute(dataSource);
-    result.close();
+    try {
+      printQueryResult(result);
+      result.close();
+      result = stmt.execute(dataSource);
+      printQueryResult(result);
+    } catch(SQLException e) {
+      throw e;
+    } finally {
+      result.close();
+    }
+  }
+
+  private void printQueryResult(SqlUtil.SQLQueryResult result) throws SQLException {
+    ResultSet set = result.getResultSet();
+    while(set.next()) {
+      for (int i = 1; i <= set.getMetaData().getColumnCount(); ++i) {
+        System.out.print(set.getString(i) + " ");
+      }
+      System.out.println();
+    }
   }
 }

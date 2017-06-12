@@ -46,6 +46,43 @@ public class SelectStatement {
     return result;
   }
 
+  public String toString() {
+    StringBuilder builder = new StringBuilder(beforeWhereConditionStatement);
+    wrapWithSpaces(builder, WHERE.toString());
+    final String and = " AND ";
+    for (String condition : whereConditionList) {
+      builder.append("(");
+      builder.append(condition);
+      builder.append(")");
+      builder.append(and);
+    }
+
+    // delete the last and
+    builder.delete(builder.length() - and.length(), builder.length());
+
+    builder.append(" ");
+    builder.append(afterWhereConditionStatement);
+
+    wrapWithSpaces(builder, ORDER_BY.toString());
+    final String semi = ", ";
+    for (String elem : orderByList) {
+        builder.append(elem);
+        builder.append(semi);
+    }
+
+    // delete the last semicolon
+    builder.delete(builder.length() - semi.length(), builder.length());
+    builder.append(";");
+
+    return builder.toString();
+  }
+
+  private void wrapWithSpaces(StringBuilder builder, String str) {
+    builder.append(" ");
+    builder.append(str);
+    builder.append(" ");
+  }
+
   private void parse(String query, DataSource dataSource) throws D2RException, SQLException {
     if (query.contains(Clause.UNION.toString())) {
       throw new D2RException("UNION clause is not supported by D2RMap for the select statement!");
@@ -136,7 +173,6 @@ public class SelectStatement {
       result.add(tokenizer.nextToken().trim());
     }
     return result;
-
   }
 
   private static Vector<String> fetchColumnNames(String query, DataSource dataSource) throws SQLException {
