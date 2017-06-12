@@ -1,5 +1,7 @@
 package de.fuberlin.wiwiss.d2r;
 
+import org.javatuples.Pair;
+
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -18,8 +20,21 @@ public class Configuration {
   private Vector<D2RMap> maps;
   private HashMap<String, TranslationTable> translationTables;
   private HashMap<String, String> namespaces;
+  private Vector<Pair<String, String>> dataSourceProperties;
 
-  public Configuration() {}
+  //Connection configurations
+  private int maxConnections;
+
+  public Configuration() {
+    maps = new Vector<>();
+    namespaces = new HashMap<>();
+    translationTables = new HashMap<>();
+    dataSourceProperties = new Vector<>();
+  }
+
+  public Vector<Pair<String, String>> getDataSourceProperties() {
+    return dataSourceProperties;
+  }
 
   public String getSaveAs() {
     return saveAs;
@@ -107,5 +122,17 @@ public class Configuration {
 
   public void setNamespaces(HashMap<String, String> namespaces) {
     this.namespaces = namespaces;
+  }
+
+  public int getMaxConnections() {
+    return maxConnections;
+  }
+
+  public void setMaxConnections(int maxConnections) {
+    this.maxConnections = maxConnections;
+  }
+
+  public void addDataSourceProperty(String propertyName, String value) {
+    dataSourceProperties.add(new Pair<>(propertyName, value));
   }
 }

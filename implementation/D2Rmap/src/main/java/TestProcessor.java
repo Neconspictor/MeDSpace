@@ -27,14 +27,15 @@ public class TestProcessor {
     public static void main(String[] args) {
         try {
             System.out.println("D2R test started ....");
-            processor = new D2rProcessor();
+            Configuration config = new ConfigurationReader().readConfig(D2RMap);
+            QueryManager queryManager = new QueryManager(config);
+            processor = new D2rProcessor(config, queryManager);
             System.out.println("D2R processor created ....");
-            processor.readMap(D2RMap);
             System.out.println("D2R file read ....");
             Instant startTime = Instant.now();
             Model output = processor.generateTestAsModel();
             Instant endTime = Instant.now();
-            output.write(System.out, processor.getOutputFormat());
+            output.write(System.out, config.getOutputFormat());
             System.out.println("RDF data exported ....");
             System.out.println("Time elapsed: " + Duration.between(startTime, endTime));
         } catch (D2RException d2rex) {

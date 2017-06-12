@@ -1,5 +1,8 @@
 package de.unipassau.medspace.util;
 
+import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import de.fuberlin.wiwiss.d2r.exception.FactoryException;
+import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -53,6 +56,49 @@ public class SqlUtil {
     } catch (SQLException e) {
       // ignore purposely
     }
+  }
+
+
+  /**
+   * Creates a new JDBC Driver from this Object's Connection properties.
+   *
+   * @throws D2RException Thrown if an error occurs while creating the Driver
+   * @return Driver The JDBC driver to the datasource. NOTE: It is guaranteed, that the result is not null
+   */
+  public static Driver createDriver(String jdbcDriverClass) throws D2RException {
+    //value to be returned
+    Driver driver;
+
+    //get required information
+    if (jdbcDriverClass == null) {
+      throw new D2RException("Could not connect to database because of " +
+          "missing Driver.");
+    }
+
+    try {
+      //if there is a classpath supplied, use it to instantiate Driver
+      /*if (getDriverClasspath() != null) {
+
+        //dynamically load and instantiate Driver from the classPath URL
+        driver = DriverFactory.getInstance().getDriverInstance(driverClass,
+            getDriverClasspath());
+      }
+      else {
+      */
+        //attempt to load and instantiate Driver from the current classpath
+        driver = DriverFactory.getInstance().getDriverInstance(jdbcDriverClass);
+      //}
+    }
+    catch (FactoryException factoryException) {
+
+      throw new D2RException("Could not instantiate Driver class.",
+          factoryException);
+    }
+
+    if (driver == null)
+      throw new D2RException("Driver is supposed to be != null! Fix the bug!");
+
+    return driver;
   }
 
   public static class SQLQueryResult {

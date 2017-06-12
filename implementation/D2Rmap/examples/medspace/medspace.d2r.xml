@@ -3,8 +3,23 @@
 		 xmlns:d2r="http://www.medspace.com/D2Rmap"
 		 xsi:schemaLocation="http://www.medspace.com/D2Rmap http://www.medspace.com/D2Rmap/Medspace_D2Rmap.xsd">
 		 
-	<d2r:DBConnection  jdbcDriver="com.mysql.jdbc.Driver" jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false">
+	<d2r:DBConnection
+			jdbcDriver="com.mysql.jdbc.Driver"
+			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
+			maxConnections="10"
+	>
 		<d2r:DBAuthentification username="medspace_client" password="k4N!rT"/>
+		<d2r:DataSourceProperty name="cachePrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSize" value="250"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSqlLimit" value="2048"/>
+		<d2r:DataSourceProperty name="useServerPrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="useLocalSessionState" value="true"/>
+		<d2r:DataSourceProperty name="useLocalTransactionState" value="true"/>
+		<d2r:DataSourceProperty name="rewriteBatchedStatements" value="true"/>
+		<d2r:DataSourceProperty name="cacheResultSetMetadata" value="true"/>
+		<d2r:DataSourceProperty name="cacheServerConfiguration" value="true"/>
+		<d2r:DataSourceProperty name="elideSetAutoCommits" value="true"/>
+		<d2r:DataSourceProperty name="maintainTimeStats" value="false"/>
 	</d2r:DBConnection>
 	<d2r:OutputFormat>N3</d2r:OutputFormat>
 	<d2r:Namespace prefix="test" namespace="http://localhost/patient_test_namespace#"/>

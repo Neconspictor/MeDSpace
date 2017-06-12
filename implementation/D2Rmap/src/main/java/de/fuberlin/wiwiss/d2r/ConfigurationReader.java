@@ -1,10 +1,14 @@
 package de.fuberlin.wiwiss.d2r;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import de.unipassau.medspace.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
+import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
@@ -14,18 +18,49 @@ import java.util.Vector;
  */
 public class ConfigurationReader {
 
+  public ConfigurationReader() {
+
+  }
+
   public static Configuration createDefaultConfig() {
     Configuration config = new Configuration();
-    config.setMaps(new Vector<>());
-    config.setNamespaces(new HashMap<>());
     config.getNamespaces().put(D2R.RDFNS_PREFIX, D2R.RDFNS);
-    config.setTranslationTables(new HashMap<>());
     config.setOutputFormat(D2R.STANDARD_OUTPUT_FORMAT);
     config.setSaveAs("StandardOut");
     return config;
   }
 
-  public static void readConfig(Document document, Configuration config) throws IOException, D2RException {
+  /**
+   * Reads an D2R Map from the filesystem.
+   * @param filename of the D2R Map
+   */
+  public Configuration readConfig(String filename) throws IOException, D2RException {
+    Configuration config = createDefaultConfig();
+    try {
+      // Read document into DOM
+      Schema schema = XmlUtil.createSchema(new String[]{D2R.MEDSPACE_VALIDATION_SCHEMA});
+      Document document = XmlUtil.parseFromFile(filename, schema);
+
+      //read the Document
+      readConfig(document, config);
+    }
+    catch (SAXParseException spe) {
+      throw new D2RException("Error while parsing XML file: " + "line " +
+          spe.getLineNumber() +
+          ", uri: " + spe.getSystemId() + ", reason: " +
+          spe.getMessage(), spe);
+
+    } catch (SAXException sxe) {
+      throw new D2RException("Error while parsing XML file: ", sxe);
+
+    } catch (IOException e) {
+      throw new D2RException("IO Error while parsing the map: ", e);
+    }
+
+    return config;
+  }
+
+  private static void readConfig(Document document, Configuration config) throws IOException, D2RException {
     // Read namespaces
     NodeList list = document.getElementsByTagNameNS(D2R.D2RNS, D2R.NAMESPACE_ELEMENT);
     int numNodes = list.getLength();
@@ -57,7 +92,17 @@ public class ConfigurationReader {
     list = document.getElementsByTagNameNS(D2R.D2RNS, D2R.TRANSLATION_TABLE_ELEMENT);
     for (int i = 0; i < list.getLength(); ++i)
       readTranslationTableElement(config, (Element)list.item(i));
+  }
 
+  private static void parseDataSourceSpecificProperties(Element root, Configuration config) {
+    NodeList list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_SOURCE_PROPERTY_ELEMENT);
+
+    for (int i = 0; i < list.getLength(); ++i) {
+      Element elem = (Element)list.item(i);
+      String propertyName = elem.getAttribute(D2R.DATA_SOURCE_PROPERTY_NAME_ATTRIBUTE);
+      String value = elem.getAttribute(D2R.DATA_SOURCE_PROPERTY_VALUE_ATTRIBUTE);
+      config.addDataSourceProperty(propertyName, value);
+    }
   }
 
   private static void readTranslationTableElement(Configuration config, Element elem) {
@@ -147,6 +192,15 @@ public class ConfigurationReader {
     config.setJdbc(elem.getAttribute(D2R.DBCONNECTION_JDBC_DSN_ATTRIBUTE));
     config.setJdbcDriver(elem.getAttribute(D2R.DBCONNECTION_JDBC_DRIVER_ATTRIBUTE));
 
+    int maxConnections = 5;
+    if (elem.hasAttribute(D2R.DBCONNECTION_MAX_CONNECTIONS_ATTRIBUTE)) {
+      maxConnections = Integer.parseInt(elem.getAttribute(D2R.DBCONNECTION_MAX_CONNECTIONS_ATTRIBUTE));
+    }
+
+    config.setMaxConnections(maxConnections);
+
+    //read datasource config properties being vendor specific
+    parseDataSourceSpecificProperties(elem, config);
   }
 
   private static void readDBAuthentificationElement(Configuration config, Element elem) {

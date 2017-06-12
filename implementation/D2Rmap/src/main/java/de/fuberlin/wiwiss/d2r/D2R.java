@@ -44,6 +44,7 @@ public class D2R {
     static final String DBCONNECTION_ELEMENT = "DBConnection";
     static final String DBCONNECTION_JDBC_DSN_ATTRIBUTE = "jdbcDSN";
     static final String DBCONNECTION_JDBC_DRIVER_ATTRIBUTE = "jdbcDriver";
+    static final String DBCONNECTION_MAX_CONNECTIONS_ATTRIBUTE = "maxConnections";
 
     // complex type Namesapce
     static final String NAMESPACE_ELEMENT = "Namespace";
@@ -69,4 +70,11 @@ public class D2R {
     // complex type TranslationTable
     static final String TRANSLATION_TABLE_ELEMENT = "TranslationTable";
     static final String TRANSLATION_TABLE_ID_ATTRIBUTE = "id";
+
+    // complex type DataSourceProperty
+    static final String DATA_SOURCE_PROPERTY_ELEMENT = "DataSourceProperty";
+    static final String DATA_SOURCE_PROPERTY_NAME_ATTRIBUTE = "name";
+    static final String DATA_SOURCE_PROPERTY_VALUE_ATTRIBUTE = "value";
+
+    static final String MEDSPACE_VALIDATION_SCHEMA = "/Medspace_D2Rmap.xsd";
 }

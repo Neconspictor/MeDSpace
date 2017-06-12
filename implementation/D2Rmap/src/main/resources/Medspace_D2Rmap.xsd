@@ -28,9 +28,11 @@
 	<xsd:complexType name="DBConnection">
 		<xsd:sequence>
 			<xsd:element name="DBAuthentification" type="d2r:DBAuthentification" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="DataSourceProperty" type="d2r:DataSourceProperty" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute name="jdbcDriver" type="xsd:string" use="required"/>
 		<xsd:attribute name="jdbcDSN" type="xsd:string" use="required"/>
+		<xsd:attribute name="maxConnections" type="xsd:integer" use="optional"/>
 	</xsd:complexType>
 
 	
@@ -76,6 +78,11 @@
 	
 	<xsd:complexType name="Translation">
 		<xsd:attribute name="key" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="DataSourceProperty">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
 		<xsd:attribute name="value" type="xsd:string" use="required"/>
 	</xsd:complexType>
 	
