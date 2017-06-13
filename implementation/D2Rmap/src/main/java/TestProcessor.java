@@ -4,6 +4,8 @@ import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import java.io.*;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.jena.rdf.model.* ;
 
@@ -33,7 +35,7 @@ public class TestProcessor {
             System.out.println("D2R processor created ....");
             System.out.println("D2R file read ....");
             Instant startTime = Instant.now();
-            Model output = processor.doKeywordSearch("English");
+            Model output = processor.doKeywordSearch(Arrays.asList("English", "Female"));
             Instant endTime = Instant.now();
             output.write(System.out, config.getOutputFormat());
             System.out.println("RDF data exported ....");

@@ -1,8 +1,8 @@
 package de.fuberlin.wiwiss.d2r;
 
 import java.util.*;
-import java.io.*;
 
+import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.rdf.model.Model;
 import org.apache.log4j.Logger;
@@ -64,7 +64,7 @@ public class D2rProcessor {
   }
 
 
-  public Model doKeywordSearch(String keyword) throws D2RException {
+  public Model doKeywordSearch(List<String> keywords) throws D2RException {
     try {
       clear();
     }
@@ -72,15 +72,17 @@ public class D2rProcessor {
       throw new D2RException("Could not get default Model from the ModelFactory.", e);
     }
 
-    final String condition = "LIKE '%" + keyword + "%'";
-
     // Generate instances for all maps
     for (D2RMap map : maps) {
 
       SelectStatement query = map.getQuery();
-      query.addTemporaryColumnCondition(condition);
+      List<String> columns = query.getColumns();
+
+      String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns);
+      query.addTemporaryCondition(keywordCondition);
       map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());
     }
+
     for (D2RMap map : maps)
       map.generateResourceProperties(this);
 

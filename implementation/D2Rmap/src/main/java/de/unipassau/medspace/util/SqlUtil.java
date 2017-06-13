@@ -8,12 +8,90 @@ import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
 
 /**
  * Utility class for sql statements and result sets
  */
 public class SqlUtil {
 
+  /**
+   * Creates a new JDBC Driver from this Object's Connection properties.
+   *
+   * @throws D2RException Thrown if an error occurs while creating the Driver
+   * @return Driver The JDBC driver to the datasource. NOTE: It is guaranteed, that the result is not null
+   */
+  public static Driver createDriver(String jdbcDriverClass) throws D2RException {
+    //value to be returned
+    Driver driver;
+
+    //get required information
+    if (jdbcDriverClass == null) {
+      throw new D2RException("Could not connect to database because of " +
+          "missing Driver.");
+    }
+
+    try {
+      //if there is a classpath supplied, use it to instantiate Driver
+      /*if (getDriverClasspath() != null) {
+
+        //dynamically load and instantiate Driver from the classPath URL
+        driver = DriverFactory.getInstance().getDriverInstance(driverClass,
+            getDriverClasspath());
+      }
+      else {
+      */
+      //attempt to load and instantiate Driver from the current classpath
+      driver = DriverFactory.getInstance().getDriverInstance(jdbcDriverClass);
+      //}
+    }
+    catch (FactoryException factoryException) {
+
+      throw new D2RException("Could not instantiate Driver class.",
+          factoryException);
+    }
+
+    if (driver == null)
+      throw new D2RException("Driver is supposed to be != null! Fix the bug!");
+
+    return driver;
+  }
+
+  public static String createKeywordCondition(List<String> keywords, List<String> columnNames) {
+    StringBuilder builder = new StringBuilder();
+    final String and = " AND ";
+
+    for (String keyword : keywords) {
+      String condition = createOrColumnCondition("LIKE '%" + keyword + "%'", columnNames);
+      builder.append("(");
+      builder.append(condition);
+      builder.append(")");
+      builder.append(and);
+    }
+
+    if (keywords.size() > 0) {
+      // delete last and
+      builder.delete(builder.length() - and.length(), builder.length());
+    }
+
+    return builder.toString();
+  }
+
+  public static String createOrColumnCondition(String condition, List<String> columnNames) {
+    StringBuilder builder = new StringBuilder();
+    final String or = " OR ";
+    boolean available = columnNames.size() > 0;
+
+    for (String column : columnNames) {
+      builder.append(column + " " + condition + or);
+    }
+
+    if (available) {
+      builder.delete(builder.length() - or.length(), builder.length());
+    }
+
+    return builder.toString();
+  }
 
   public static SQLQueryResult executeQuery(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
     return new SQLQueryResult(dataSource, query, maxRowSize, fetchSize);
@@ -49,57 +127,6 @@ public class SqlUtil {
       e = e.getNextException();
     }
     return message.toString();
-  }
-
-  public static void closeSilently(Connection con) {
-    try {
-      if (!con.isClosed()) con.close();
-    } catch (SQLException e) {
-      // ignore purposely
-    }
-  }
-
-
-  /**
-   * Creates a new JDBC Driver from this Object's Connection properties.
-   *
-   * @throws D2RException Thrown if an error occurs while creating the Driver
-   * @return Driver The JDBC driver to the datasource. NOTE: It is guaranteed, that the result is not null
-   */
-  public static Driver createDriver(String jdbcDriverClass) throws D2RException {
-    //value to be returned
-    Driver driver;
-
-    //get required information
-    if (jdbcDriverClass == null) {
-      throw new D2RException("Could not connect to database because of " +
-          "missing Driver.");
-    }
-
-    try {
-      //if there is a classpath supplied, use it to instantiate Driver
-      /*if (getDriverClasspath() != null) {
-
-        //dynamically load and instantiate Driver from the classPath URL
-        driver = DriverFactory.getInstance().getDriverInstance(driverClass,
-            getDriverClasspath());
-      }
-      else {
-      */
-        //attempt to load and instantiate Driver from the current classpath
-        driver = DriverFactory.getInstance().getDriverInstance(jdbcDriverClass);
-      //}
-    }
-    catch (FactoryException factoryException) {
-
-      throw new D2RException("Could not instantiate Driver class.",
-          factoryException);
-    }
-
-    if (driver == null)
-      throw new D2RException("Driver is supposed to be != null! Fix the bug!");
-
-    return driver;
   }
 
   public static class SQLQueryResult {

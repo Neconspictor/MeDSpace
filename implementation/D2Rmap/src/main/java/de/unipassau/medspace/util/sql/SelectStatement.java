@@ -5,9 +5,7 @@ import de.unipassau.medspace.util.SqlUtil;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Arrays;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import static de.unipassau.medspace.util.sql.SelectStatement.Clause.*;
 
@@ -16,23 +14,23 @@ import static de.unipassau.medspace.util.sql.SelectStatement.Clause.*;
  * Created by David Goeth on 08.06.2017.
  */
 public class SelectStatement {
-  String beforeWhereConditionStatement;
-  Vector<String> columnList;
-  Vector<String> staticConditionList;
-  Vector<String> temporaryConditionList;
-  String afterWhereConditionStatement;
-  Vector<String> orderByList;
+  private String beforeWhereConditionStatement;
+  private ArrayList<String> columnList;
+  private List<String> staticConditionList;
+  private List<String> temporaryConditionList;
+  private String afterWhereConditionStatement;
+  private List<String> orderByList;
 
-  private static Vector<Clause> querySelectStatementOrder = new Vector(Arrays.asList(Clause.SELECT, FROM,
+  private static ArrayList<Clause> querySelectStatementOrder = new ArrayList(Arrays.asList(Clause.SELECT, FROM,
       WHERE, Clause.GROUP_BY, Clause.HAVING, Clause.UNION, Clause.ORDER_BY));
 
   public SelectStatement(String query, DataSource dataSource) throws SQLException, D2RException {
     beforeWhereConditionStatement = "";
-    columnList = new Vector<>();
-    staticConditionList = new Vector<>();
-    temporaryConditionList = new Vector<>();
+    columnList = new ArrayList<>();
+    staticConditionList = new ArrayList<>();
+    temporaryConditionList = new ArrayList<>();
     afterWhereConditionStatement = "";
-    orderByList = new Vector<>();
+    orderByList = new ArrayList<>();
     parse(query, dataSource);
   }
 
@@ -106,7 +104,7 @@ public class SelectStatement {
     }
     ;
     String whereStr = WHERE.toString();
-    Vector<Clause> q = querySelectStatementOrder;
+    List<Clause> q = querySelectStatementOrder;
 
     // At first replace all whitespaces by one space token for easier processing
     query = query.replaceAll("\\s+", " ").toUpperCase();
@@ -175,12 +173,12 @@ public class SelectStatement {
     return result;
   }
 
-  private static Vector<String> parseColumns(String query, DataSource dataSource) throws D2RException, SQLException {
+  private static ArrayList<String> parseColumns(String query, DataSource dataSource) throws D2RException, SQLException {
     if (!query.contains(SELECT.toString())) {
       throw new D2RException("Query doesn't contain a SELECT clause: " + query);
     }
 
-    Vector<Clause> q = querySelectStatementOrder;
+    List<Clause> q = querySelectStatementOrder;
     int beforeSelectIndex = getClauseRangeSplitIndex(query, 0, q.indexOf(FROM), false);
     int afterSelectIndex = getClauseRangeSplitIndex(query, q.indexOf(FROM), q.size(), true);
 
@@ -192,7 +190,7 @@ public class SelectStatement {
 
     StringTokenizer tokenizer = new StringTokenizer(selectString, ",");
 
-    Vector<String> result = new Vector<>();
+    ArrayList<String> result = new ArrayList<>();
     String firstToken = tokenizer.nextToken().trim();
     if (firstToken.equals("*")) {
       return fetchColumnNames(query, dataSource);
@@ -210,8 +208,8 @@ public class SelectStatement {
     return result;
   }
 
-  private static Vector<String> fetchColumnNames(String query, DataSource dataSource) throws SQLException {
-    Vector<String> result = new Vector<>();
+  private static ArrayList<String> fetchColumnNames(String query, DataSource dataSource) throws SQLException {
+    ArrayList<String> result = new ArrayList<>();
     try(Connection con = dataSource.getConnection()) {
       con.setReadOnly(true);
       PreparedStatement stmt = con.prepareStatement(query);
@@ -246,27 +244,16 @@ public class SelectStatement {
     return splitIndex;
   }
 
-  public void addTemporaryColumnCondition(String condition) {
-
-    StringBuilder builder = new StringBuilder();
-    builder.append("(");
-    final String or = " OR ";
-    boolean available = columnList.size() > 0;
-
-    for (String column : columnList) {
-      builder.append(column + " " + condition + or);
-    }
-
-    if (available) {
-      builder.delete(builder.length() - or.length(), builder.length());
-    }
-    builder.append(")");
-
-    temporaryConditionList.add(builder.toString());
+  public void addTemporaryCondition(String condition) {
+    temporaryConditionList.add(condition);
   }
 
   public void reset() {
     temporaryConditionList.clear();
+  }
+
+  public List<String> getColumns() {
+    return Collections.unmodifiableList(columnList);
   }
 
   protected enum Clause {
