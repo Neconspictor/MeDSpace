@@ -35,7 +35,8 @@ public class TestProcessor {
             System.out.println("D2R processor created ....");
             System.out.println("D2R file read ....");
             Instant startTime = Instant.now();
-            Model output = processor.doKeywordSearch(Arrays.asList("English", "Female"));
+            Model output = processor.generateTestAsModel();
+            //Model output = processor.doKeywordSearch(Arrays.asList("English", "Female"));
             Instant endTime = Instant.now();
             output.write(System.out, config.getOutputFormat());
             System.out.println("RDF data exported ....");

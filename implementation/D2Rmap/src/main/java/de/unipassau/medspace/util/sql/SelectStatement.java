@@ -48,9 +48,12 @@ public class SelectStatement {
 
   public String toString() {
     StringBuilder builder = new StringBuilder(beforeWhereConditionStatement);
-    wrapWithSpaces(builder, WHERE.toString());
     final String and = " AND ";
     boolean available = (staticConditionList.size() > 0) || (temporaryConditionList.size() > 0);
+
+    if (available)
+      wrapWithSpaces(builder, WHERE.toString());
+
 
     for (String condition : staticConditionList) {
       builder.append("(");
