@@ -150,7 +150,7 @@ public class D2rProcessor {
     }
 
     // Generate instances for all maps
-    this.generateInstancesForAllMaps();
+    generateInstancesForAllMaps();
 
     // add namespaces
     for (Entry<String, String> ent : namespaces.entrySet()) {
@@ -158,7 +158,7 @@ public class D2rProcessor {
     }
 
     //Return model
-    return this.model;
+    return model;
   }
 
   /**

@@ -2,12 +2,22 @@ import de.fuberlin.wiwiss.d2r.*;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.fuberlin.wiwiss.d2r.factory.*;
+import de.unipassau.medspace.util.FileUtil;
+import org.apache.jena.atlas.web.MediaType;
+import org.apache.jena.atlas.web.TypedInputStream;
+import org.apache.jena.atlas.web.TypedOutputStream;
+import org.apache.jena.datatypes.xsd.impl.RDFLangString;
 import org.apache.jena.rdf.model.* ;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFLanguages;
 
 
 /**
@@ -27,6 +37,10 @@ public class TestProcessor {
     static D2rProcessor processor;
 
     public static void main(String[] args) {
+        FileOutputStream out = null;
+        FileInputStream in = null;
+        FileInputStream in2 = null;
+        String prettyPrintingLang = "N3";
         try {
             System.out.println("D2R test started ....");
             Configuration config = new ConfigurationReader().readConfig(D2RMap);
@@ -35,10 +49,35 @@ public class TestProcessor {
             System.out.println("D2R processor created ....");
             System.out.println("D2R file read ....");
             Instant startTime = Instant.now();
-            Model output = processor.generateTestAsModel();
+            //Model output = processor.generateTestAsModel();
+            Model output = processor.generateAllInstancesAsModel();
             //Model output = processor.doKeywordSearch(Arrays.asList("English", "Female"));
             Instant endTime = Instant.now();
-            output.write(System.out, config.getOutputFormat());
+            //output.write(System.out, config.getOutputFormat());
+            Model newModel = de.fuberlin.wiwiss.d2r.factory.ModelFactory.getInstance().createDefaultModel();
+            out = new FileOutputStream("./modelout.temp");
+
+            Lang lang = RDFLanguages.shortnameToLang(config.getOutputFormat());
+            Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
+            System.out.println("Lang: " + lang);
+            RDFDataMgr.write(out, output, lang);
+
+            in = new FileInputStream("./modelout.temp");
+            System.out.println("Start streaming the model...");
+            RDFDataMgr.read(newModel, in, lang);
+            in.close();
+
+            out.close();
+            out = new FileOutputStream("./myContent.txt");
+            RDFDataMgr.write(out, newModel, prettyLang);
+
+            //FileUtil.write(in, "./myContent.txt");
+
+            //in2 = new FileInputStream("./myContent.txt");
+
+            //newModel.write(System.out, "N3");
+            //newModel.write(System.out, "N3");
+            //RDFDataMgr.write(System.out, output, lang);
             System.out.println("RDF data exported ....");
             System.out.println("Time elapsed: " + Duration.between(startTime, endTime));
         } catch (D2RException d2rex) {
@@ -58,6 +97,11 @@ public class TestProcessor {
             System.out.println("Message:  " + ex.getMessage());
             System.out.println("");
             ex.printStackTrace();
+        } finally {
+            FileUtil.closeSilently(out);
+            FileUtil.closeSilently(in);
+            FileUtil.closeSilently(in2);
+            System.out.println("Closed streams successfully");
         }
     }
 }

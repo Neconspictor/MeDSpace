@@ -59,12 +59,6 @@ public class SQLIndexerTest {
 
     int hitsPerPage = 100000;
     IndexReader reader = DirectoryReader.open(index);
-
-    int numDocs = reader.numDocs();
-    reader.get
-    System.out.println("Num docs: " + numDocs);
-
-
     IndexSearcher searcher = new IndexSearcher(reader);
     TopDocs docs = searcher.search(q, hitsPerPage);
     ScoreDoc[] hits = docs.scoreDocs;

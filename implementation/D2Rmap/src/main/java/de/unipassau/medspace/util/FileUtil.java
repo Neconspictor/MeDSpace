@@ -1,12 +1,23 @@
 package de.unipassau.medspace.util;
 
 
+import java.io.*;
 import java.net.URL;
 
 /**
  * Utility class for handling files and resources.
  */
 public class FileUtil {
+
+  public static void closeSilently(Closeable closeable) {
+    if (closeable == null) return;
+    try {
+      closeable.close();
+      System.out.println("closed...");
+    } catch (IOException e) {
+      // just ignore;
+    }
+  }
 
   /**
    * Checks whether a given string represents a valid resource.
@@ -30,5 +41,21 @@ public class FileUtil {
     if (!isResource(resourceName)) throw new IllegalArgumentException("resourceName describes no valid resource!");
     URL resource = Class.class.getResource(resourceName);
     return resource.getFile();
+  }
+
+  public static void write(InputStream in, String output) throws IOException {
+    FileOutputStream file = new FileOutputStream(output);
+    byte[] buffer = new byte[1024];
+
+    try {
+      while (in.available() > 0) {
+        int currentReadedBytes = in.read(buffer, 0, buffer.length);
+        file.write(buffer, 0, currentReadedBytes);
+      }
+    } catch (IOException e) {
+      throw e;
+    } finally {
+      closeSilently(file);
+    }
   }
 }
