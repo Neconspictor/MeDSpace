@@ -17,8 +17,12 @@
 *.ipr
 *.idea
 
+
 //D2Rmap build and distribution files
 implementation/D2Rmap/build/*
 implementation/D2Rmap/dist/*
 implementation/D2Rmap/.gradle/*
 implementation/D2Rmap/.idea/*
+implementation/D2Rmap/_work/*
+
+*.d2rtmp
