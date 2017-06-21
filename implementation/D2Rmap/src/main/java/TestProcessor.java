@@ -51,14 +51,17 @@ public class TestProcessor {
             Instant startTime = Instant.now();
             //Model output = processor.generateTestAsModel();
             //Model output = processor.generateAllInstancesAsModel();
+
+            Lang lang = config.getOutputFormat();
+            Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
+
+
             Model output = processor.doKeywordSearch(Arrays.asList("English", "Male"));
             Instant endTime = Instant.now();
-            output.write(System.out, config.getOutputFormat());
+            output.write(System.out, prettyLang.getLabel());
             Model newModel = de.fuberlin.wiwiss.d2r.factory.ModelFactory.getInstance().createDefaultModel();
             out = new FileOutputStream("./modelout.d2rtmp");
 
-            Lang lang = RDFLanguages.shortnameToLang(config.getOutputFormat());
-            Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
             System.out.println("Lang: " + lang);
             RDFDataMgr.write(out, output, lang);
 

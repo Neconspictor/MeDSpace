@@ -3,6 +3,8 @@ package de.fuberlin.wiwiss.d2r;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.XmlUtil;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,10 +30,11 @@ public class ConfigurationReader {
 
   }
 
-  public static Configuration createDefaultConfig() {
+  public static Configuration createDefaultConfig() throws D2RException {
     Configuration config = new Configuration();
     config.getNamespaces().put(D2R.RDFNS_PREFIX, D2R.RDFNS);
-    config.setOutputFormat(D2R.STANDARD_OUTPUT_FORMAT);
+
+    config.setOutputFormat(getLangFromString(D2R.STANDARD_OUTPUT_FORMAT));
     config.setSaveAs("StandardOut");
     return config;
   }
@@ -211,8 +214,29 @@ public class ConfigurationReader {
     map.addBridge(bridge);
   }
 
-  private static void readOutputFormatElement(Configuration config, Element elem) {
-      config.setOutputFormat(elem.getTextContent());
+  private static void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
+    String format = elem.getTextContent();
+    Lang lang = null;
+
+    assert format != null;
+
+    try {
+      lang = getLangFromString(format);
+    } catch (D2RException e) {
+      throw new D2RException("Unknown output format: " + format);
+    }
+      config.setOutputFormat(lang);
+  }
+
+  private static Lang getLangFromString(String format) throws D2RException {
+    assert format != null;
+
+    Lang lang = RDFLanguages.shortnameToLang(format);
+
+    if (lang == null)
+      throw new D2RException("Unknown language format: " + format);
+
+    return lang;
   }
 
   private static void readDBConnectionElement(Configuration config, Element elem) {

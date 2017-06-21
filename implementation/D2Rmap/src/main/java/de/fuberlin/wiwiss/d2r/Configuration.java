@@ -1,5 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
+import org.apache.jena.riot.Lang;
 import org.javatuples.Pair;
 
 import java.nio.file.Path;
@@ -22,18 +23,19 @@ public class Configuration {
   private HashMap<String, String> namespaces;
   private String prepend;
   private String postpend;
-  private String outputFormat;
+  private Lang outputFormat;
   private String saveAs;
   private HashMap<String, TranslationTable> translationTables;
   private boolean useIndex;
 
   public Configuration() {
+    dataSourceProperties = new Vector<>();
+    indexDirectory = Paths.get("./");
     maps = new Vector<>();
     namespaces = new HashMap<>();
+    outputFormat = null;
     translationTables = new HashMap<>();
-    dataSourceProperties = new Vector<>();
     useIndex = false;
-    indexDirectory = Paths.get("./");
   }
 
   public void addDataSourceProperty(String propertyName, String value) {
@@ -84,7 +86,7 @@ public class Configuration {
     return prepend;
   }
 
-  public String getOutputFormat() {
+  public Lang getOutputFormat() {
     return outputFormat;
   }
 
@@ -140,7 +142,8 @@ public class Configuration {
     this.postpend = postpend;
   }
 
-  public void setOutputFormat(String outputFormat) {
+  public void setOutputFormat(Lang outputFormat) {
+    assert outputFormat != null;
     this.outputFormat = outputFormat;
   }
 
