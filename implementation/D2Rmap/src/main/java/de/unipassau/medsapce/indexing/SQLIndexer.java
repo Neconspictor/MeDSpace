@@ -42,7 +42,7 @@ public class SQLIndexer implements Closeable {
   }
 
   public void clearIndex() throws D2RException {
-    if (!isOpen) throw new D2RException("Indexer is already closed!");
+    if (!isOpen) throw new D2RException("Indexer is not open!");
     StandardAnalyzer analyzer = new StandardAnalyzer();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -74,8 +74,8 @@ public class SQLIndexer implements Closeable {
     clearIndex();
   }
 
-  public Directory getIndex() {
-    if (!isOpen) return null;
+  public Directory getIndex() throws D2RException {
+    if (!isOpen) throw new D2RException("Indexer is not open!");
     return index;
   }
 
