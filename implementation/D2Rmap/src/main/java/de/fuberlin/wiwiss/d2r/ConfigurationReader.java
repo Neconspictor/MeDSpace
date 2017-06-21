@@ -1,7 +1,9 @@
 package de.fuberlin.wiwiss.d2r;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.XmlUtil;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -10,13 +12,17 @@ import org.xml.sax.SAXParseException;
 
 import javax.xml.validation.Schema;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Vector;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by David Goeth on 30.05.2017.
  */
 public class ConfigurationReader {
+
+  /** log4j logger used for this class */
+  private static Logger log = Logger.getLogger(ConfigurationReader.class);
 
   public ConfigurationReader() {
 
@@ -84,6 +90,11 @@ public class ConfigurationReader {
     list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.OUTPUT_FORMAT_ELEMENT);
     readOutputFormatElement(config, (Element) list.item(0));
 
+    // check if a index is wished and if it is the case, then read ut the index store directory
+    list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.INDEX_ELEMENT);
+    if (list.getLength() > 0)
+    readIndexElement(config, (Element) list.item(0));
+
     list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.CLASS_MAP_ELEMENT);
     for (int i = 0; i < list.getLength(); ++i)
       readClassMapElement(config, (Element)list.item(i));
@@ -92,6 +103,27 @@ public class ConfigurationReader {
     list = document.getElementsByTagNameNS(D2R.D2RNS, D2R.TRANSLATION_TABLE_ELEMENT);
     for (int i = 0; i < list.getLength(); ++i)
       readTranslationTableElement(config, (Element)list.item(i));
+  }
+
+  private static void readIndexElement(Configuration config, Element elem) throws D2RException {
+    String directory = elem.getAttribute(D2R.INDEX_DIRECTORY_ATTRIBUTE);
+
+    if (directory == null) {
+      throw new D2RException("No index directoyr specified!");
+    }
+
+    Path path = null;
+
+    try {
+      path = FileUtil.createDirectory(directory);
+    } catch (IOException e) {
+      log.error(e);
+      throw new D2RException("Couldn't create index directory!");
+    }
+
+
+    config.setUseIndex(true);
+    config.setIndexDirectory(path);
   }
 
   private static void parseDataSourceSpecificProperties(Element root, Configuration config) {

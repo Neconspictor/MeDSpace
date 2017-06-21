@@ -1,11 +1,16 @@
 package de.unipassau.medspace.util;
 
 
+import de.fuberlin.wiwiss.d2r.exception.D2RException;
+
 import java.io.*;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
- * Utility class for handling files and resources.
+ * Utility class for handling files, directories and resources.
  */
 public class FileUtil {
 
@@ -17,6 +22,31 @@ public class FileUtil {
     } catch (IOException e) {
       // just ignore;
     }
+  }
+
+  public static Path createDirectory(String directory) throws IOException {
+    assert directory != null;
+
+    Path path = null;
+
+    try {
+      path = Paths.get(directory);
+    } catch (InvalidPathException e) {
+      throw new IOException("specified directory path isn't a valid path: " + directory);
+    }
+
+    File dir = new File(directory);
+    if (!dir.exists()) {
+      if (!dir.mkdirs()) {
+        throw new IOException("Couldn't create directory from: " + path);
+      }
+    }
+
+    if (!dir.isDirectory()) {
+      throw new IOException("Specified path isn't a directory: " + path);
+    }
+
+    return path;
   }
 
   /**

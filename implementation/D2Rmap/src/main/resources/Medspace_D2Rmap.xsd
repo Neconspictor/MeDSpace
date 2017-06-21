@@ -11,6 +11,7 @@
 			<xsd:sequence>
 				<xsd:element name="DBConnection" type="d2r:DBConnection" minOccurs="1" maxOccurs="1"/>
 				<xsd:element name="OutputFormat" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="Index" type="d2r:Index" minOccurs="0" maxOccurs="1"/>
 				<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="Namespace" type="d2r:Namespace" minOccurs="0" maxOccurs="unbounded"/>
 					<xsd:element name="ClassMap" type="d2r:ClassMap" minOccurs="0" maxOccurs="unbounded"/>
@@ -84,6 +85,10 @@
 	<xsd:complexType name="DataSourceProperty">
 		<xsd:attribute name="name" type="xsd:string" use="required"/>
 		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="Index">
+		<xsd:attribute name="directory" type="xsd:string" use="required"/>
 	</xsd:complexType>
 	
 </xsd:schema> 

@@ -62,6 +62,10 @@ public class D2R {
     // element OutputFormat
     static final String OUTPUT_FORMAT_ELEMENT = "OutputFormat";
 
+    // elemt Index
+    static final String INDEX_ELEMENT = "Index";
+    static final String INDEX_DIRECTORY_ATTRIBUTE = "directory";
+
     // complex type Translation
     static final String TRANSLATION_ELEMENT = "Translation";
     static final String TRANSLATION_KEY_ATTRIBUTE = "key";

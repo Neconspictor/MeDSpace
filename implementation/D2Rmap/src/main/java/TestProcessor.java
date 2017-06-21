@@ -50,25 +50,25 @@ public class TestProcessor {
             System.out.println("D2R file read ....");
             Instant startTime = Instant.now();
             //Model output = processor.generateTestAsModel();
-            Model output = processor.generateAllInstancesAsModel();
-            //Model output = processor.doKeywordSearch(Arrays.asList("English", "Female"));
+            //Model output = processor.generateAllInstancesAsModel();
+            Model output = processor.doKeywordSearch(Arrays.asList("English", "Male"));
             Instant endTime = Instant.now();
-            //output.write(System.out, config.getOutputFormat());
+            output.write(System.out, config.getOutputFormat());
             Model newModel = de.fuberlin.wiwiss.d2r.factory.ModelFactory.getInstance().createDefaultModel();
-            out = new FileOutputStream("./modelout.temp");
+            out = new FileOutputStream("./modelout.d2rtmp");
 
             Lang lang = RDFLanguages.shortnameToLang(config.getOutputFormat());
             Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
             System.out.println("Lang: " + lang);
             RDFDataMgr.write(out, output, lang);
 
-            in = new FileInputStream("./modelout.temp");
+            in = new FileInputStream("./modelout.d2rtmp");
             System.out.println("Start streaming the model...");
             RDFDataMgr.read(newModel, in, lang);
             in.close();
 
             out.close();
-            out = new FileOutputStream("./myContent.txt");
+            out = new FileOutputStream("./myContent.d2rtmp");
             RDFDataMgr.write(out, newModel, prettyLang);
 
             //FileUtil.write(in, "./myContent.txt");
