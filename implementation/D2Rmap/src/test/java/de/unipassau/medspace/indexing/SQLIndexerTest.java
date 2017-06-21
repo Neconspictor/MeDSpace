@@ -1,5 +1,7 @@
 package de.unipassau.medspace.indexing;
 
+import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import de.unipassau.medsapce.indexing.SQLIndexer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -16,11 +18,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -29,7 +28,7 @@ import java.io.IOException;
 public class SQLIndexerTest {
 
   @Test
-  public void indexSQLDatasourceTest() throws IOException, ParseException {
+  public void indexSQLDatasourceTest() throws IOException, ParseException, D2RException {
 
     for (int i = 0; i < 1; ++i) {
       System.out.println(i);
@@ -37,13 +36,15 @@ public class SQLIndexerTest {
     }
   }
 
-  private void testIndex() throws IOException, ParseException {
+  private void testIndex() throws IOException, ParseException, D2RException {
+    SQLIndexer indexer = SQLIndexer.create("./_work/index");
+    indexer.open();
+    indexer.reindex();
+    Directory index = indexer.getIndex();
     StandardAnalyzer analyzer = new StandardAnalyzer();
-    File file = new File("./");
-    Directory index = FSDirectory.open(file.toPath());
 
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
-    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+    config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
 
     IndexWriter w = new IndexWriter(index, config);
 
@@ -71,6 +72,8 @@ public class SQLIndexerTest {
     }
 
     reader.close();
+
+    indexer.close();
   }
 
   private static void addDoc(IndexWriter w, String title, String isbn) throws IOException {

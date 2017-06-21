@@ -1,7 +1,6 @@
 package de.unipassau.medspace.util;
 
-
-import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.URL;
@@ -14,13 +13,21 @@ import java.nio.file.Paths;
  */
 public class FileUtil {
 
+  private static Logger log = Logger.getLogger(FileUtil.class);
+
   public static void closeSilently(Closeable closeable) {
+    closeSilently(closeable, true);
+  }
+
+  public static void closeSilently(Closeable closeable, boolean logErrors) {
     if (closeable == null) return;
     try {
       closeable.close();
       System.out.println("closed...");
     } catch (IOException e) {
       // just ignore;
+      if (logErrors)
+        log.error(e);
     }
   }
 

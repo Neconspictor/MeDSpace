@@ -14,9 +14,7 @@ import org.xml.sax.SAXParseException;
 
 import javax.xml.validation.Schema;
 import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Created by David Goeth on 30.05.2017.
