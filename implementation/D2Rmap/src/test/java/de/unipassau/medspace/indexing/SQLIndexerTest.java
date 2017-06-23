@@ -7,21 +7,16 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.Directory;
+import org.apache.lucene.search.*;
 import org.junit.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -42,15 +37,23 @@ public class SQLIndexerTest {
   private void testIndex() throws IOException, ParseException, D2RException {
     SQLIndexer indexer = SQLIndexer.create("./_work/index");
     ArrayList<Document> docs = new ArrayList<>();
-    addDoc(docs, "Lucene in Action", "193398817");
-    addDoc(docs, "Lucene for Dummies", "55320055Z");
-    addDoc(docs, "Managing Gigabytes", "55063554A");
-    addDoc(docs, "The Art of Computer Science", "9900333X");
+    for (int i = 0; i < 100; ++i) {
+      addDoc(docs, "The Art of Computer Science", "9900333X");
+      addDoc(docs, "Managing Gigabytes", "55063554A");
+      addDoc(docs, "Lucene in Action cool", "193398817");
+      addDoc(docs, "Lucene in Action", "193398817");
+      addDoc(docs, "Lucene cool for Dummies", "55320055Z");
+    }
 
     indexer.open();
     indexer.reindex(docs);
 
-    SearchResult result = doKeywordSearch(new String[]{"lucene"}, indexer, 1);
+    Instant startTime = Instant.now();
+    //SearchResult result = doKeywordSearchWithoutPreCounting(new String[]{"lucene", "Computer"}, indexer, 40);
+    SearchResult result = doKeywordSearchWithPreCounting(new String[]{"\"lucene cool\" OR lucene OR cool"}, indexer);
+    Instant endTime = Instant.now();
+    System.out.println("Time needed for query: " + Duration.between(startTime, endTime));
+
 
     System.out.println("Found " + result.getScoredLength() + " hits.");
     System.out.println("Total hit count: " + result.getTotalLength());
@@ -63,11 +66,36 @@ public class SQLIndexerTest {
     indexer.close();
   }
 
-  private SearchResult doKeywordSearch(String[] keywords, SQLIndexer indexer, int topScore) throws ParseException, IOException {
+  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, SQLIndexer indexer) throws ParseException, IOException {
     StandardAnalyzer analyzer = new StandardAnalyzer();
-    String querystr = "lucene";
-    Query q = new QueryParser("title", analyzer).parse(querystr);
-    return new SearchResult(indexer.createReader(), q, topScore);
+    StringBuilder querystr = new StringBuilder();
+    String and = " AND ";
+    for (String keyword : keywords) {
+      querystr.append(keyword + and);
+    }
+    querystr = querystr.delete(querystr.length() - and.length(), querystr.length());
+    System.out.println("query: " + querystr.toString());
+
+    Query q = new QueryParser("title", analyzer).parse(querystr.toString());
+    return new SearchResult(indexer.createReader(), q);
+  }
+
+  private SearchResult doKeywordSearchWithoutPreCounting(String[] keywords, SQLIndexer indexer, int totalHitCount) throws ParseException, IOException {
+    StandardAnalyzer analyzer = new StandardAnalyzer();
+    StringBuilder querystr = new StringBuilder();
+    String and = " AND ";
+    for (String keyword : keywords) {
+      querystr.append("\"" + keyword + "\"" + and);
+    }
+    querystr = querystr.delete(querystr.length() - and.length(), querystr.length());
+    System.out.println("query: " + querystr.toString());
+    Query q = new QueryParser("field", analyzer).parse(querystr.toString());
+    //MatchAllDocsQuery test = new MatchAllDocsQuery();
+    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+    //builder.add(test, BooleanClause.Occur.MUST);
+    builder.add(q, BooleanClause.Occur.MUST);
+    BooleanQuery bool = builder.build();
+    return new SearchResult(indexer.createReader(), bool, totalHitCount);
   }
 
   private static void addDoc(Collection<Document> coll, String title, String isbn) throws IOException {
@@ -83,10 +111,27 @@ public class SQLIndexerTest {
     private IndexSearcher searcher;
     private TopDocs topDocs;
 
-    public SearchResult(IndexReader reader, Query query, int hitsPerPage) throws IOException {
+    public SearchResult(IndexReader reader, Query query) throws IOException {
+      this(reader, query, false, 0);
+    }
+
+    public SearchResult(IndexReader reader, Query query, int totalHitCount) throws IOException {
+      this(reader, query, true, totalHitCount);
+    }
+
+    private SearchResult(IndexReader reader, Query query, boolean useTotalHitCount, int totalHitCount) throws IOException {
       this.reader = reader;
       searcher = new IndexSearcher(reader);
-      topDocs = searcher.search(query, hitsPerPage);
+      if (!useTotalHitCount) {
+        TotalHitCountCollector hitCollector = new TotalHitCountCollector();
+        searcher.search(query, hitCollector);
+        totalHitCount = hitCollector.getTotalHits();
+      }
+
+      if (totalHitCount <= 0)
+        totalHitCount = 1;
+
+      topDocs = searcher.search(query, totalHitCount);
     }
 
     @Override
