@@ -18,17 +18,17 @@ public class SQLResultTuple {
   private HashMap<String, Integer> indices;
   private int columnCount;
 
-  public  SQLResultTuple(List<Pair<String, String>> tuple) {
+  protected  SQLResultTuple(ArrayList<Pair<String, String>> tuple) {
     columnCount = tuple.size();
     columns = new String[columnCount];
     values = new String[columnCount];
     indices = new HashMap<>(columnCount);
 
-    int index = 0;
-    for (Pair<String, String> pair : tuple) {
-      columns[index] = pair.getKey();
-      values[index] = pair.getValue();
-      indices.put(columns[index], index);
+    for (int i = 0; i < columnCount; ++i) {
+      Pair<String, String> pair = tuple.get(i);
+      columns[i] = pair.getKey();
+      values[i] = pair.getValue();
+      indices.put(columns[i], i);
     }
   }
 
@@ -57,7 +57,7 @@ public class SQLResultTuple {
   public static SQLResultTuple create(ResultSet resultSet) throws SQLException {
     ResultSetMetaData meta = resultSet.getMetaData();
     int numColumns = meta.getColumnCount();
-    List<Pair<String, String>> tuple = new ArrayList<>(numColumns);
+    ArrayList<Pair<String, String>> tuple = new ArrayList<>(numColumns);
 
     for (int i = 1; i <= numColumns; ++i) {
       String columnName = meta.getColumnName(i);

@@ -1,6 +1,7 @@
 package de.unipassau.medsapce.SQL;
 
 import de.unipassau.medspace.util.FileUtil;
+import de.unipassau.medspace.util.LookaheadIterator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -18,9 +19,9 @@ import java.util.function.Consumer;
 /**
  * Created by David Goeth on 26.06.2017.
  */
-public class SQLQueryResultStream implements Closeable {
+public class SQLQueryResultStream implements Closeable, Iterable<SQLResultTuple> {
   private ResultSet resultSet;
-  private ResultSetIterator resultSetIterator;
+  private LookaheadIterator<SQLResultTuple> resultSetIterator;
   private int numColumns;
   private Statement statement;
   private Connection connection;
@@ -62,7 +63,19 @@ public class SQLQueryResultStream implements Closeable {
       throw e;
     }
 
-    resultSetIterator = new ResultSetIterator(resultSet);
+    resultSetIterator = new LookaheadIterator<SQLResultTuple>() {
+      @Override
+      protected SQLResultTuple loadNext() {
+        try {
+          if (!resultSet.next()) {
+            return null;
+          }
+          return SQLResultTuple.create(resultSet);
+        } catch (SQLException e) {
+          throw new IllegalStateException("Error reading from datasource", e);
+        }
+      }
+    };
 
     // now the stream is successfully initialized
     closed = false;
@@ -72,6 +85,7 @@ public class SQLQueryResultStream implements Closeable {
   }
 
   public void close() throws IOException {
+    if (closed) throw new IOException("SQLQueryResultStream already closed!");
     FileUtil.closeSilently(connection, true);
     FileUtil.closeSilently(statement, true);
     FileUtil.closeSilently(resultSet, true);
@@ -88,71 +102,27 @@ public class SQLQueryResultStream implements Closeable {
       log.debug("Closed SQLQueryResultStream.");
   }
 
-  /**
-   * Provides the sql result of this sql result stream
-   * @return The sql result resultSet of the sql query
-   * @throws IllegalStateException thrown if this stream is already closed.
-   */
-  public ResultSet getResultSet() {
-    if (closed) throw new IllegalStateException();
-    return resultSet;
-  }
-
   public int getColumnCount() {
     return numColumns;
   }
 
-  public boolean next() {
-    return resultSetIterator.next();
+
+  @Override
+  public Iterator<SQLResultTuple> iterator() {
+    return resultSetIterator;
   }
 
-  public SQLResultTuple get() {
-    return  resultSetIterator.get();
+  @Override
+  public void forEach(Consumer<? super SQLResultTuple> action) {
+    action.accept(resultSetIterator.next());
   }
 
-  private static class ResultSetIterator {
-
-    private ResultSet resultSet;
-    private boolean hasNext;
-    private SQLResultTuple currentTuple;
-
-    ResultSetIterator(ResultSet resultSet) {
-      assert resultSet != null;
-      this.resultSet = resultSet;
-      hasNext = true;
-    }
-
-    public boolean next() {
-      if (!hasNext) return false;
-      try {
-        if (resultSet.isClosed()) {
-          currentTuple = null;
-          return false;
-        }
-      } catch (SQLException e) {
-        log.error(e);
-        // TODO close result set
-        currentTuple = null;
-        hasNext = false;
-      }
-
-      try {
-        hasNext = resultSet.next();
-        if (hasNext)
-          currentTuple = SQLResultTuple.create(resultSet);
-      } catch (SQLException e) {
-        log.error(e);
-
-        // We assume that something is broken and cut the stream just in case
-        // Additionally we assume there is no result tuple anymore and thus return null
-        hasNext = false;
-      }
-      return hasNext;
-    }
-
-    public SQLResultTuple get() {
-      if (!hasNext) currentTuple = null;
-      return currentTuple;
-    }
+  /**
+   * Not implemented
+   * @throws
+   */
+  @Override
+  public Spliterator<SQLResultTuple> spliterator() {
+    throw new UnsupportedOperationException("This method isn#T supported!");
   }
 }

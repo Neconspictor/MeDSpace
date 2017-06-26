@@ -31,28 +31,20 @@ public class SelectStatementTest {
     DataSource dataSource = new DataSourceManager(config).getDataSource();
     SelectStatement stmt = new SelectStatement(query, dataSource);
 
-    SQLQueryResultStream result = stmt.execute(dataSource);
-    try {
-      printQueryResult(result);
-      result.close();
-      result = stmt.execute(dataSource);
+    try (SQLQueryResultStream result = stmt.execute(dataSource)){
       printQueryResult(result);
     } catch(IOException e) {
       throw e;
-    } finally {
-      FileUtil.closeSilently(result, true);
     }
   }
 
-  private void printQueryResult(SQLQueryResultStream result) throws SQLException {
-    boolean more = result.next();
-    while (more) {
-      SQLResultTuple tuple = result.get();
-      more = result.next();
+  private void printQueryResult(SQLQueryResultStream result) throws SQLException, IOException {
+    for (SQLResultTuple tuple : result) {
       for (int i = 0; i < tuple.getColumnCount(); ++i) {
         System.out.print(tuple.getValue(i) + " ");
       }
     }
-      System.out.println();
+
+    System.out.println();
   }
 }
