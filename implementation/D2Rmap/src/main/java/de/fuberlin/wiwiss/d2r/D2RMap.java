@@ -3,6 +3,8 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.*;
 import java.sql.*;
 
+import de.unipassau.medsapce.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.rdf.model.*;
@@ -168,7 +170,7 @@ public class D2RMap {
     //get model from processor
     Model model = processor.getModel();
 
-    SqlUtil.SQLQueryResult queryResult = null;
+    SQLQueryResultStream queryResult = null;
 
     try {
       // Create and execute SQL statement
@@ -197,7 +199,7 @@ public class D2RMap {
       throw new D2RException("Error: " + ex.toString(), ex);
     } finally {
       // do cleanup stuff
-      if (queryResult != null) queryResult.close();
+      FileUtil.closeSilently(queryResult);
     }
   }
 
@@ -320,6 +322,14 @@ public class D2RMap {
       log.warn("Warning: Couldn't create resource " + resourceID + " in map " + this.getId() +
           ".");
     }
+  }
+
+  /**
+   * Provides a unmodifiable list of the column names of the SQL query used by this class.
+   * @return A unmodifiable list of the column names
+   */
+  public List<String> getColumnNames() {
+    return statement.getColumns();
   }
 
   public Resource getResourceById(String resourceID) {

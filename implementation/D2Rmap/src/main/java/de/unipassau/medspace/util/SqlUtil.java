@@ -3,8 +3,7 @@ package de.unipassau.medspace.util;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
 import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import de.unipassau.medsapce.SQL.SQLQueryResultStream;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -93,8 +92,8 @@ public class SqlUtil {
     return builder.toString();
   }
 
-  public static SQLQueryResult executeQuery(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
-    return new SQLQueryResult(dataSource, query, maxRowSize, fetchSize);
+  public static SQLQueryResultStream executeQuery(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
+    return new SQLQueryResultStream(dataSource, query, maxRowSize, fetchSize);
   }
 
   /**
@@ -127,72 +126,5 @@ public class SqlUtil {
       e = e.getNextException();
     }
     return message.toString();
-  }
-
-  public static class SQLQueryResult {
-    private ResultSet set;
-    private int numColumns;
-    private Statement statement;
-    private Connection connection;
-    private static Logger log = LogManager.getLogger(SQLQueryResult.class);
-
-    SQLQueryResult(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
-      assert fetchSize > 0;
-      statement =null;
-      set = null;
-      if (fetchSize > maxRowSize && (maxRowSize != 0))
-        fetchSize = maxRowSize;
-
-      try {
-        connection = dataSource.getConnection();
-        connection.setReadOnly(true);
-        statement = connection.createStatement();
-        set = statement.executeQuery(query);
-        statement.setMaxRows(maxRowSize);
-        statement.setFetchSize(fetchSize);
-        numColumns = set.getMetaData().getColumnCount();
-      }catch (SQLException e) {
-        if (statement != null) statement.close();
-        if (set != null) set.close();
-        if (connection != null) connection.close();
-        throw e;
-      }
-    }
-
-    public void close() {
-      try {
-        if (connection != null) {
-          //connection.commit();
-          connection.close();
-          log.debug("Connection is closed!");
-        }
-      } catch (SQLException e) {
-        log.warn("Couldn't close statement!", e);
-      }
-      try {
-        if (statement != null) {
-          statement.close();
-          log.debug("Statement is closed!");
-        }
-      } catch (SQLException e) {
-        log.warn("Couldn't close statement!", e);
-      }
-      try {
-        if (set != null) {
-          set.close();
-          log.debug("Set is closed!");
-        }
-      } catch (SQLException e) {
-        log.warn("Couldn't close result set!", e);
-      }
-    }
-
-    public ResultSet getResultSet() {
-      return set;
-    }
-
-    public int getColumnCount() {
-      return numColumns;
-    }
   }
 }

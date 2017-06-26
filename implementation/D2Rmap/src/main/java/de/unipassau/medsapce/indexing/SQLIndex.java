@@ -18,27 +18,27 @@ import java.nio.file.Path;
 /**
  * Created by David Goeth on 13.06.2017.
  */
-public class SQLIndexer implements Closeable {
+public class SQLIndex implements Closeable {
   private Path indexDirectoryPath;
   private FSDirectory index;
   private volatile boolean isOpen;
 
-  private static Logger log = Logger.getLogger(SQLIndexer.class);
+  private static Logger log = Logger.getLogger(SQLIndex.class);
 
-  protected SQLIndexer(Path directory) {
+  protected SQLIndex(Path directory) {
     indexDirectoryPath = directory;
     index = null;
     isOpen = false;
   }
 
-  public static SQLIndexer create(String directory) throws IOException {
+  public static SQLIndex create(String directory) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
       throw new IOException("Couldn't create index directory");
     }
-    SQLIndexer result = new SQLIndexer(path);
+    SQLIndex result = new SQLIndex(path);
 
     return result;
   }

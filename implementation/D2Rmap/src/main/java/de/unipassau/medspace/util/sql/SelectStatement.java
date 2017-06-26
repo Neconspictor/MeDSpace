@@ -1,6 +1,8 @@
 package de.unipassau.medspace.util.sql;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import de.unipassau.medsapce.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.SqlUtil;
 
 import javax.sql.DataSource;
@@ -34,13 +36,13 @@ public class SelectStatement {
     parse(query, dataSource);
   }
 
-  public SqlUtil.SQLQueryResult execute(DataSource dataSource) throws SQLException {
-    SqlUtil.SQLQueryResult result = null;
+  public SQLQueryResultStream execute(DataSource dataSource) throws SQLException {
+    SQLQueryResultStream result = null;
     try {
       String query = toString();
       result = SqlUtil.executeQuery(dataSource, query, 0, 10);
     } catch (SQLException e) {
-      if (result != null) result.close();
+      FileUtil.closeSilently(result);
       throw e;
     }
     return result;
@@ -255,6 +257,10 @@ public class SelectStatement {
     temporaryConditionList.clear();
   }
 
+  /**
+   * Provides a unmodifiable list of the columns used by this select statement.
+   * @return A unmodifiable list of the columns
+   */
   public List<String> getColumns() {
     return Collections.unmodifiableList(columnList);
   }

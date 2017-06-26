@@ -15,16 +15,15 @@ public class FileUtil {
 
   private static Logger log = Logger.getLogger(FileUtil.class);
 
-  public static void closeSilently(Closeable closeable) {
+  public static void closeSilently(AutoCloseable closeable) {
     closeSilently(closeable, true);
   }
 
-  public static void closeSilently(Closeable closeable, boolean logErrors) {
+  public static void closeSilently(AutoCloseable closeable, boolean logErrors) {
     if (closeable == null) return;
     try {
       closeable.close();
-      System.out.println("closed...");
-    } catch (IOException e) {
+    } catch (Exception e) {
       // just ignore;
       if (logErrors)
         log.error(e);

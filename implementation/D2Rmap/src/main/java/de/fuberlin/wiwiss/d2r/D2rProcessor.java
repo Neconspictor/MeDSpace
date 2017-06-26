@@ -1,7 +1,9 @@
 package de.fuberlin.wiwiss.d2r;
 
+import java.io.IOException;
 import java.util.*;
 
+import de.unipassau.medsapce.indexing.SQLIndex;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.rdf.model.Model;
@@ -36,6 +38,7 @@ import de.fuberlin.wiwiss.d2r.exception.FactoryException;
  */
 public class D2rProcessor {
   private Vector<D2RMap> maps;
+  private SQLIndex index;
   private HashMap<String, String> namespaces;
   private Model model;
 
@@ -57,6 +60,17 @@ public class D2rProcessor {
     config.setNamespaces(null);
 
     this.dataSourceManager = dataSourceManager;
+
+    index = null;
+    if (config.isIndexUsed()) {
+     try {
+       String directory = config.getIndexDirectory().toString();
+       index = SQLIndex.create(directory);
+     } catch (IOException e) {
+       log.error(e);
+       throw new D2RException("Couldn't create index!");
+     }
+    }
 
     for (D2RMap map : maps) {
       map.init(dataSourceManager.getDataSource());

@@ -1,15 +1,15 @@
 package de.unipassau.medspace.indexing;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medsapce.indexing.SQLIndexer;
+import de.unipassau.medsapce.indexing.SQLIndex;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.junit.Test;
 
@@ -19,11 +19,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by David Goeth on 13.06.2017.
  */
-public class SQLIndexerTest {
+public class SQLIndexTest {
 
   @Test
   public void indexSQLDatasourceTest() throws IOException, ParseException, D2RException {
@@ -35,9 +36,9 @@ public class SQLIndexerTest {
   }
 
   private void testIndex() throws IOException, ParseException, D2RException {
-    SQLIndexer indexer = SQLIndexer.create("./_work/index");
+    SQLIndex indexer = SQLIndex.create("./_work/index");
     ArrayList<Document> docs = new ArrayList<>();
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 1; ++i) {
       addDoc(docs, "The Art of Computer Science", "9900333X");
       addDoc(docs, "Managing Gigabytes", "55063554A");
       addDoc(docs, "Lucene in Action cool", "193398817");
@@ -49,7 +50,6 @@ public class SQLIndexerTest {
     indexer.reindex(docs);
 
     Instant startTime = Instant.now();
-    //SearchResult result = doKeywordSearchWithoutPreCounting(new String[]{"lucene", "Computer"}, indexer, 40);
     SearchResult result = doKeywordSearchWithPreCounting(new String[]{"\"lucene cool\" OR lucene OR cool"}, indexer);
     Instant endTime = Instant.now();
     System.out.println("Time needed for query: " + Duration.between(startTime, endTime));
@@ -66,7 +66,7 @@ public class SQLIndexerTest {
     indexer.close();
   }
 
-  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, SQLIndexer indexer) throws ParseException, IOException {
+  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, SQLIndex indexer) throws ParseException, IOException {
     StandardAnalyzer analyzer = new StandardAnalyzer();
     StringBuilder querystr = new StringBuilder();
     String and = " AND ";
@@ -76,32 +76,21 @@ public class SQLIndexerTest {
     querystr = querystr.delete(querystr.length() - and.length(), querystr.length());
     System.out.println("query: " + querystr.toString());
 
-    Query q = new QueryParser("title", analyzer).parse(querystr.toString());
-    return new SearchResult(indexer.createReader(), q);
-  }
-
-  private SearchResult doKeywordSearchWithoutPreCounting(String[] keywords, SQLIndexer indexer, int totalHitCount) throws ParseException, IOException {
-    StandardAnalyzer analyzer = new StandardAnalyzer();
-    StringBuilder querystr = new StringBuilder();
-    String and = " AND ";
-    for (String keyword : keywords) {
-      querystr.append("\"" + keyword + "\"" + and);
+    IndexReader reader = indexer.createReader();
+    List<IndexableField> fields = reader.document(0).getFields();
+    ArrayList<String> fieldNames = new ArrayList<>();
+    for (IndexableField field : fields) {
+      fieldNames.add(field.name());
     }
-    querystr = querystr.delete(querystr.length() - and.length(), querystr.length());
-    System.out.println("query: " + querystr.toString());
-    Query q = new QueryParser("field", analyzer).parse(querystr.toString());
-    //MatchAllDocsQuery test = new MatchAllDocsQuery();
-    BooleanQuery.Builder builder = new BooleanQuery.Builder();
-    //builder.add(test, BooleanClause.Occur.MUST);
-    builder.add(q, BooleanClause.Occur.MUST);
-    BooleanQuery bool = builder.build();
-    return new SearchResult(indexer.createReader(), bool, totalHitCount);
+    String[] fieldNameArray = new String[fieldNames.size()];
+    Query q = new MultiFieldQueryParser(fieldNames.toArray(fieldNameArray),analyzer).parse(querystr.toString());
+    return new SearchResult(indexer.createReader(), q);
   }
 
   private static void addDoc(Collection<Document> coll, String title, String isbn) throws IOException {
     Document doc = new Document();
     doc.add(new TextField("title", title, Field.Store.YES));
-    doc.add(new StringField("isbn", isbn, Field.Store.YES));
+    doc.add(new TextField("isbn", isbn, Field.Store.YES));
     coll.add(doc);
   }
 

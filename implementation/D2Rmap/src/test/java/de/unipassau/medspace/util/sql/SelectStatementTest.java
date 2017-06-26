@@ -3,10 +3,13 @@ package de.unipassau.medspace.util.sql;
 import de.fuberlin.wiwiss.d2r.Configuration;
 import de.fuberlin.wiwiss.d2r.DataSourceManager;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medspace.util.SqlUtil;
+import de.unipassau.medsapce.SQL.SQLQueryResultStream;
+import de.unipassau.medsapce.SQL.SQLResultTuple;
+import de.unipassau.medspace.util.FileUtil;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -16,7 +19,7 @@ import java.sql.SQLException;
 public class SelectStatementTest {
 
   @Test
-  public void testParse() throws D2RException, SQLException {
+  public void testParse() throws D2RException, SQLException, IOException {
 
     String query = "SELECT * FROM LANGUAGE WHERE LANGUAGE.name LIKE '%' ORDER BY LANGUAGE.NAME;";
     Configuration config = new Configuration();
@@ -28,26 +31,28 @@ public class SelectStatementTest {
     DataSource dataSource = new DataSourceManager(config).getDataSource();
     SelectStatement stmt = new SelectStatement(query, dataSource);
 
-    SqlUtil.SQLQueryResult result = stmt.execute(dataSource);
+    SQLQueryResultStream result = stmt.execute(dataSource);
     try {
       printQueryResult(result);
       result.close();
       result = stmt.execute(dataSource);
       printQueryResult(result);
-    } catch(SQLException e) {
+    } catch(IOException e) {
       throw e;
     } finally {
-      result.close();
+      FileUtil.closeSilently(result, true);
     }
   }
 
-  private void printQueryResult(SqlUtil.SQLQueryResult result) throws SQLException {
-    ResultSet set = result.getResultSet();
-    while(set.next()) {
-      for (int i = 1; i <= set.getMetaData().getColumnCount(); ++i) {
-        System.out.print(set.getString(i) + " ");
+  private void printQueryResult(SQLQueryResultStream result) throws SQLException {
+    boolean more = result.next();
+    while (more) {
+      SQLResultTuple tuple = result.get();
+      more = result.next();
+      for (int i = 0; i < tuple.getColumnCount(); ++i) {
+        System.out.print(tuple.getValue(i) + " ");
       }
-      System.out.println();
     }
+      System.out.println();
   }
 }

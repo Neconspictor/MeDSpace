@@ -15,6 +15,8 @@ import org.xml.sax.SAXParseException;
 import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by David Goeth on 30.05.2017.
@@ -155,29 +157,32 @@ public class ConfigurationReader {
         elem.getAttribute(D2R.TRANSLATION_VALUE_ATTRIBUTE).trim());
   }
 
-  private static void readClassMapElement(Configuration config, Element mapElement) {
-      D2RMap cMap = new D2RMap();
+  private static void readClassMapElement(Configuration config, Element mapElement) throws D2RException {
+    List<D2RMap> maps = config.getMaps();
+    D2RMap cMap = new D2RMap();
 
-      // sql and groupBy attributes are required
-      cMap.setSql(mapElement.getAttribute(D2R.CLASS_MAP_SQL_ATTRIBUTE));
-      cMap.addResourceIdColumns(mapElement.getAttribute(D2R.CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE));
+    // sql and groupBy attributes are required
+    cMap.setSql(mapElement.getAttribute(D2R.CLASS_MAP_SQL_ATTRIBUTE));
+    cMap.addResourceIdColumns(mapElement.getAttribute(D2R.CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE));
 
-      if (mapElement.hasAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE))
-        cMap.setId(mapElement.getAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE));
+    String id = mapElement.getAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE);
+    validateD2RMapId(id, maps);
 
-      // Read type attribute
-      if (mapElement.hasAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE)) {
-        // add rdf:type bridge
-        String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
-        ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
-        typeBridge.setProperty("rdf:type");
-        typeBridge.setPattern(value);
-        cMap.addBridge(typeBridge);
-      }
+    cMap.setId(id);
 
-      // Read uriPattern
-      if (mapElement.hasAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE))
-        cMap.setBaseURI(mapElement.getAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE));
+    // Read type attribute
+    if (mapElement.hasAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE)) {
+      // add rdf:type bridge
+      String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
+      ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
+      typeBridge.setProperty("rdf:type");
+      typeBridge.setPattern(value);
+      cMap.addBridge(typeBridge);
+    }
+
+    // Read uriPattern
+    if (mapElement.hasAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE))
+      cMap.setBaseURI(mapElement.getAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE));
 
     // Read datatype property mappings
     NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);
@@ -189,7 +194,22 @@ public class ConfigurationReader {
     for (int i = 0; i< propertyList.getLength(); ++i)
       readObjectPropertyElement((Element)propertyList.item(i), cMap);
 
-      config.getMaps().add(cMap);
+    config.getMaps().add(cMap);
+  }
+
+  /**
+   * Validates the value of a DRMap id. If the validation test should fail, a D2RException is thrown
+   * @param id the D2RMap id
+   * @param maps a collection of D2RMaps that have been read so far
+   * @throws D2RException if the validation test fails
+   */
+  private static void validateD2RMapId(String id, Collection<D2RMap> maps) throws D2RException {
+
+    for (D2RMap map : maps) {
+      if (map.getId().equals(id)) {
+        throw new D2RException("D2RMap id is multiple times used in the configuration file: id=" + id);
+      }
+    }
   }
 
   private static void readDataTypePropertyElement(Element elem, D2RMap map) {
