@@ -217,11 +217,6 @@ public class D2RMap {
     if (ucQuery.contains("UNION"))
       throw new D2RException("SQL statement should not contain UNION: " + query);
 
-    query = addConditionStatements(query, conditionList);
-
-    // Add ORDER BY statements to the query
-    query = addOrderByStatements(query);
-
     query = statement.toString();
 
     //generate resources using the Connection
