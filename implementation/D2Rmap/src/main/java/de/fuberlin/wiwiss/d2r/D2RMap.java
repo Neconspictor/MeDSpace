@@ -44,52 +44,14 @@ public class D2RMap {
   private static Vector<String> querySelectStatementOrder = new Vector(Arrays.asList("SELECT", "FROM", "WHERE", "GROUP BY",
   "HAVING", "UNION", "ORDER BY"));
 
-  protected D2RMap() {
+  public D2RMap() {
     resources = new HashMap<>();
     bridges = new Vector<>();
     resourceIdColumns = new Vector<>();
   }
 
-  void addBridge(Bridge bridge) {
+  public void addBridge(Bridge bridge) {
     this.bridges.add(bridge);
-  }
-
-  private String addOrderByStatements(String query) throws D2RException {
-    if (query == null) throw new NullPointerException("query mustn't be null!");
-    if (resourceIdColumns.isEmpty()) return query;
-
-    // Create upper case version for checking for ORDER BY statements
-    String ucQuery = query.toUpperCase();
-    if (ucQuery.contains("ORDER BY"))
-      throw new D2RException("SQL statement should not contain ORDER BY: " + query);
-
-    // Query contains a semicolon at the end?
-    int semicolonIndex = query.indexOf(";");
-    if (semicolonIndex != -1)
-      query = query.substring(0, query.indexOf(";"));
-
-    StringBuilder builder = new StringBuilder(query); // StringBuilder for faster string creation
-    builder.append(" ORDER BY ");
-    for (String aGroupBy : this.resourceIdColumns) {
-      builder.append(aGroupBy);
-      builder.append(", ");
-    }
-
-    // Replace the last two characters (", ") by a ";"
-    builder.delete(builder.length() - 2, builder.length());
-    builder.append(";");
-
-    return builder.toString();
-  }
-
-  /**
-   * Adds GroupBy fields to the map.
-   * @param  fields String containing all GroupBy fields separated be ','.
-   */
-  void addResourceIdColumns(String fields) {
-    StringTokenizer tokenizer = new StringTokenizer(fields, ",");
-    while (tokenizer.hasMoreTokens())
-      this.resourceIdColumns.add(tokenizer.nextToken().trim());
   }
 
   public static String addConditionStatements(String query, List<String> conditionList) {
@@ -135,6 +97,44 @@ public class D2RMap {
 
     // concatenate finally the query pieces
     return beforeWhereClause + builder.toString() + afterWhereClause;
+  }
+
+  private String addOrderByStatements(String query) throws D2RException {
+    if (query == null) throw new NullPointerException("query mustn't be null!");
+    if (resourceIdColumns.isEmpty()) return query;
+
+    // Create upper case version for checking for ORDER BY statements
+    String ucQuery = query.toUpperCase();
+    if (ucQuery.contains("ORDER BY"))
+      throw new D2RException("SQL statement should not contain ORDER BY: " + query);
+
+    // Query contains a semicolon at the end?
+    int semicolonIndex = query.indexOf(";");
+    if (semicolonIndex != -1)
+      query = query.substring(0, query.indexOf(";"));
+
+    StringBuilder builder = new StringBuilder(query); // StringBuilder for faster string creation
+    builder.append(" ORDER BY ");
+    for (String aGroupBy : this.resourceIdColumns) {
+      builder.append(aGroupBy);
+      builder.append(", ");
+    }
+
+    // Replace the last two characters (", ") by a ";"
+    builder.delete(builder.length() - 2, builder.length());
+    builder.append(";");
+
+    return builder.toString();
+  }
+
+  /**
+   * Adds GroupBy fields to the map.
+   * @param  fields String containing all GroupBy fields separated be ','.
+   */
+  public void addResourceIdColumns(String fields) {
+    StringTokenizer tokenizer = new StringTokenizer(fields, ",");
+    while (tokenizer.hasMoreTokens())
+      this.resourceIdColumns.add(tokenizer.nextToken().trim());
   }
 
   public void clear() {
@@ -197,7 +197,7 @@ public class D2RMap {
     if (resource != null && !resourceID.equals("")) {
       currentTuple.setResource(resource);
       if (resources.get(resourceID) != null)
-        log.warn("Resources with suplicate resource id " + resourceID + " in map " + this.getId());
+        log.warn("Resources with the same resource id " + resourceID + " in map " + this.getId());
       resources.put(resourceID, currentTuple);
     } else {
       log.warn("Warning: Couldn't create resource " + resourceID + " in map " + this.getId() +
@@ -286,21 +286,17 @@ public class D2RMap {
     }
   }
 
-  public void init(DataSource dataSource) throws D2RException {
-    try {
-      statement = new SelectStatement(this.sql, dataSource);
-    } catch (SQLException | D2RException e) {
-      log.error(e);
-      throw new D2RException("Couldn't init D2RMap: ");
-    }
-  }
-
   private static String getAfter(String query, int index) {
     if ((index <= -1)
     || (index >= query.length())) {
       return "";
     }
     return query.substring(index, query.length());
+  }
+
+  public SQLQueryResultStream getAllData(DataSource dataSource) throws SQLException {
+    statement.reset();
+    return statement.execute(dataSource);
   }
 
   private static String getBefore(String query, int index) {
@@ -342,7 +338,16 @@ public class D2RMap {
     return sql;
   }
 
-  void setBaseURI(String baseURI) {
+  public void init(DataSource dataSource) throws D2RException {
+    try {
+      statement = new SelectStatement(this.sql, dataSource);
+    } catch (SQLException | D2RException e) {
+      log.error(e);
+      throw new D2RException("Couldn't init D2RMap: ");
+    }
+  }
+
+  public void setBaseURI(String baseURI) {
     this.baseURI = baseURI;
   }
 

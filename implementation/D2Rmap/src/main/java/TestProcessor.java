@@ -56,7 +56,8 @@ public class TestProcessor {
             Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
 
 
-            Model output = processor.doKeywordSearch(Arrays.asList("English", "Male"));
+            //Model output = processor.doKeywordSearch(Arrays.asList("English", "Male"));
+            Model output = processor.generateAllInstancesAsModel();
             Instant endTime = Instant.now();
             output.write(System.out, prettyLang.getLabel());
             Model newModel = de.fuberlin.wiwiss.d2r.factory.ModelFactory.getInstance().createDefaultModel();

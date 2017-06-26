@@ -32,6 +32,19 @@ public class SQLResultTuple {
     }
   }
 
+  public static SQLResultTuple create(ResultSet resultSet) throws SQLException {
+    ResultSetMetaData meta = resultSet.getMetaData();
+    int numColumns = meta.getColumnCount();
+    ArrayList<Pair<String, String>> tuple = new ArrayList<>(numColumns);
+
+    for (int i = 1; i <= numColumns; ++i) {
+      String columnName = meta.getColumnName(i);
+      String value = resultSet.getString(i);
+      tuple.add(new Pair<>(columnName, value));
+    }
+    return new SQLResultTuple(tuple);
+  }
+
   public int getColumnCount() {
     return columnCount;
   }
@@ -54,16 +67,19 @@ public class SQLResultTuple {
     return columns[index];
   }
 
-  public static SQLResultTuple create(ResultSet resultSet) throws SQLException {
-    ResultSetMetaData meta = resultSet.getMetaData();
-    int numColumns = meta.getColumnCount();
-    ArrayList<Pair<String, String>> tuple = new ArrayList<>(numColumns);
-
-    for (int i = 1; i <= numColumns; ++i) {
-      String columnName = meta.getColumnName(i);
-      String value = resultSet.getString(i);
-      tuple.add(new Pair<>(columnName, value));
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    final String semi = ", ";
+    builder.append("(");
+    for (int i = 0; i < columnCount; ++i) {
+      builder.append(columns[i]);
+      builder.append("=");
+      builder.append(values[i]);
+      builder.append(", ");
     }
-    return new SQLResultTuple(tuple);
+    if (columnCount > 0)
+      builder.delete(builder.length() - semi.length(), builder.length());
+    builder.append(")");
+    return builder.toString();
   }
 }
