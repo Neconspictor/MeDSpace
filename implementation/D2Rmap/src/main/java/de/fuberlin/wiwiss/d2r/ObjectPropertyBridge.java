@@ -3,9 +3,9 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -17,24 +17,29 @@ import org.apache.log4j.Logger;
  */
 public class ObjectPropertyBridge
     extends Bridge {
-  private String referredClass;
+  private String referredClassID;
+  private D2RMap referredClass;
   private Vector<String> referredGroupBy;
   private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
 
 
   protected ObjectPropertyBridge() {
     referredGroupBy = new Vector<>();
-    referredClass = null;
+    referredClassID = null;
   }
 
-  protected String getReferredClass() {
-    return referredClass;
+  protected String getReferredClassID() {
+    return referredClassID;
   }
 
-  protected void setReferredClass(String referredClass) {
-    this.referredClass = referredClass.trim();
-    if (this.referredClass.equals(""))
-      this.referredClass = null;
+  protected void setReferredClassID(String referredClass) {
+    this.referredClassID = referredClass.trim();
+    if (this.referredClassID.equals(""))
+      this.referredClassID = null;
+  }
+
+  public void setReferredClass(D2RMap map) {
+    referredClass = map;
   }
 
   protected Vector<String> getReferredGroupBy() {
@@ -52,43 +57,32 @@ public class ObjectPropertyBridge
   }
 
   @Override
-  protected RDFNode getValue(D2rProcessor processor, ResultResource tuple) {
-    Model model = processor.getModel();
+  protected RDFNode getValue(ResultResource tuple, URINormalizer normalizer) {
     Resource referredResource = null;
 
-    if (getReferredClass() != null) {
-      referredResource = getFromClass(processor, tuple);
+    if (getReferredClassID() != null) {
+      referredResource = getFromClass(tuple);
     }
     else if (getPattern() != null) {
       String value = getFromPattern(tuple);
-      value = processor.getNormalizedURI(value);
-      referredResource = model.getResource(value);
+      value = normalizer.normalize(value);
+      referredResource = ResourceFactory.createResource(value);
     }
 
     return referredResource;
   }
 
-  private Resource getFromClass(D2rProcessor processor, ResultResource tuple) {
-    D2RMap referredMap = processor.getMapById(getReferredClass());
-    if (referredMap == null) {
-      log.warn("Warning: (CreateProperties) Couldn't find referred " +
-          "map " + getReferredClass());
-      return null;
-    }
+  private Resource getFromClass(ResultResource tuple) {
+    assert referredClass != null;
+
     // get referred instance
     StringBuilder resourceIDBuilder = new StringBuilder();
     for (String s : getReferredGroupBy()) {
       resourceIDBuilder.append(tuple.getValueByColmnName(s));
     }
     String resourceID = resourceIDBuilder.toString();
-    Resource referredResource = referredMap.getResourceById(
-        resourceID);
-    if (referredResource == null) {
-      referredResource = referredMap.createNewResource(processor, resourceID);
-      log.warn("Warning: (CreateProperties) Reference to resource of class " +
-          getReferredClass() + " with resource id " + resourceID + " not found. A new one is created");
-    }
-    return referredResource;
+    String uri = referredClass.urify(resourceID);
+    return ResourceFactory.createResource(uri);
   }
 
   private String getFromPattern(ResultResource tuple) {

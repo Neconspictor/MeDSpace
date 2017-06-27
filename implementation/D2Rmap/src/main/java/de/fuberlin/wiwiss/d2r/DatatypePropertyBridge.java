@@ -2,9 +2,13 @@ package de.fuberlin.wiwiss.d2r;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
 
 import java.util.*;
 
@@ -18,26 +22,24 @@ import java.util.*;
 public class DatatypePropertyBridge extends Bridge {
 
   @Override
-  protected RDFNode getValue(D2rProcessor processor, ResultResource tuple) {
+  protected RDFNode getValue(ResultResource tuple, URINormalizer normalizer) {
     // Generate property value
-    Object value = null;
     Literal literal = null;
-    Model model = processor.getModel();
-    value = D2rUtil.parsePattern(getPattern(),
+    String value = D2rUtil.parsePattern(getPattern(),
         D2R.DELIMINATOR, tuple);
 
     // The lang tag specifies indirectly the dataType (rdf:langeString)
     // Thus the lang tag has a higher priority than the dataType tag
     if ((value != null) && (getXmlLang() != null)) {
-      literal = model.createLiteral((String) value, getXmlLang());
+      literal = ResourceFactory.createLangLiteral((String) value, getXmlLang());
     } else if ((value != null) && (getDataType() != null)) {
       // if no lang tag is set but the dataType tag create a typed literal
-      String dataType = processor.getNormalizedURI(getDataType());
+      String dataType = normalizer.normalize(getDataType());
       RDFDatatype rdfType = TypeMapper.getInstance().getSafeTypeByName(dataType);
-      literal = model.createTypedLiteral(value, rdfType);
+      literal = ResourceFactory.createTypedLiteral(value, rdfType);
     }  else {
       // no lang tag and dataType set; assume xsd:string is the data type
-      literal = model.createTypedLiteral(value);
+      literal = ResourceFactory.createTypedLiteral(value);
     }
     return literal;
   }

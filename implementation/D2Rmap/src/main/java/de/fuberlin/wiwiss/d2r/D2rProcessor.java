@@ -1,12 +1,27 @@
 package de.fuberlin.wiwiss.d2r;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.*;
 
+import de.unipassau.medsapce.SQL.SQLQueryResultStream;
+import de.unipassau.medsapce.SQL.SQLResultTuple;
 import de.unipassau.medsapce.indexing.SQLIndex;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.system.StreamOps;
+import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.system.StreamRDFWriter;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.log4j.Logger;
 
 import java.util.Map.Entry;
@@ -14,6 +29,8 @@ import java.util.Map.Entry;
 import de.fuberlin.wiwiss.d2r.factory.ModelFactory;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
+
+import javax.sql.DataSource;
 
 /**
  * D2R processor exports data from a RDBMS into an RDF model using a D2R MAP.
@@ -40,7 +57,7 @@ public class D2rProcessor {
   private Vector<D2RMap> maps;
   private SQLIndex index;
   private HashMap<String, String> namespaces;
-  private Model model;
+  private URINormalizer normalizer;
 
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2rProcessor.class);
@@ -75,15 +92,27 @@ public class D2rProcessor {
     for (D2RMap map : maps) {
       map.init(dataSourceManager.getDataSource());
     }
+
+    normalizer = URI -> getNormalizedURI(URI);
   }
 
 
   public Model doKeywordSearch(List<String> keywords) throws D2RException {
+
+    Model model = null;
+
     try {
       clear();
+      model = ModelFactory.getInstance().createDefaultModel();
     }
     catch (FactoryException e) {
       throw new D2RException("Could not get default Model from the ModelFactory.", e);
+    }
+
+
+    // add namespaces
+    for (Entry<String, String> ent : namespaces.entrySet()) {
+      model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
     // Generate instances for all maps
@@ -94,60 +123,100 @@ public class D2rProcessor {
 
       String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns);
       query.addTemporaryCondition(keywordCondition);
-      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());
-    }
-
-    for (D2RMap map : maps)
-      map.generateResourceProperties(this);
-
-    // add namespaces
-    for (Entry<String, String> ent : namespaces.entrySet()) {
-      this.model.setNsPrefix(ent.getKey(), ent.getValue());
+      generateResources(map, dataSourceManager.getDataSource(), new ArrayList<>());
     }
 
     //Return model
-    return this.model;
+    return model;
   }
 
   /**
-   * Processes the D2R map and returns a Jena model containing all generated instances.
-   * @return Jena model containing all generated instances.
-   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2RMap was read before
+   * Generates all resources for the specified map.
    */
-  public Model generateTestAsModel() throws D2RException {
-    try {
-      clear();
-    }
-    catch (FactoryException e) {
-      throw new D2RException("Could not get default Model from the ModelFactory.", e);
-    }
+  public void generateResources(D2RMap map, DataSource dataSource,
+                                List<String> conditionList) throws D2RException {
+    String query = map.getQuery().toString();
+    String ucQuery = query.toUpperCase();
+    if (ucQuery.contains("UNION"))
+      throw new D2RException("SQL statement should not contain UNION: " + query);
 
-    // Generate instances for all maps
-    this.generateTestMaps();
-
-    // add namespaces
-    for (Entry<String, String> ent : namespaces.entrySet()) {
-      this.model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
-
-    //Return model
-    return this.model;
+    //generate resources using the Connection
+    generateResources(map, dataSource, query);
   }
 
-  private void clear() throws FactoryException {
-    // Clear model
-    this.model = null;
-    this.model = ModelFactory.getInstance().createDefaultModel();
+  /**
+   * Generates all resources for the specified map.
+   * @param  dataSource The database connection.
+   */
+  private void generateResources(D2RMap map, DataSource dataSource, String query) throws D2RException {
 
+    if (log.isDebugEnabled()) {
+      log.debug("Generating resources for D2RProcessor: " + this);
+    }
+
+    // Create and execute SQL statement
+    try(SQLQueryResultStream queryResult =
+            SqlUtil.executeQuery(dataSource, query, 0, 10)) {
+
+      for (SQLResultTuple tuple : queryResult) {
+        ResultResource result = createResource(map, tuple);
+      }
+    }
+    catch (SQLException ex) {
+      String message = "SQL Exception caught: ";
+      message += SqlUtil.unwrapMessage(ex);
+      throw new D2RException(message);
+    }
+    catch (D2RException ex) {
+      throw ex;
+    }
+    catch (java.lang.Throwable ex) {
+      // Got some other type of exception.  Dump it.
+      throw new D2RException("Error: " + ex.toString(), ex);
+    }
+  }
+
+  private ResultResource createResource(D2RMap map, SQLResultTuple tuple)
+      throws SQLException, D2RException {
+    ResultResource currentTuple = new ResultResource();
+
+    for (int i = 0; i < tuple.getColumnCount(); i++) {
+      String columnName = tuple.getColumnName(i).toUpperCase();
+      currentTuple.put(columnName, tuple.getValue(i));
+    }
+
+    Resource resource;
+
+    // set instance id
+    StringBuilder resourceIDBuilder = new StringBuilder();
+
+    for (String aGroupBy : map.getResourceIdColumns()) {
+      resourceIDBuilder.append(currentTuple.getValueByColmnName(aGroupBy));
+    }
+    String resourceID = resourceIDBuilder.toString();
+
+    // define URI and generate instance
+    String uri = map.getBaseURI() + resourceID;
+    uri = getNormalizedURI(uri);
+    resource = ResourceFactory.createResource(uri);
+
+    if (resource == null || resourceID.equals("")) {
+      log.warn("Warning: Couldn't create resource " + resourceID + " in map " + map.getId() +
+          ".");
+      return null;
+    }
+
+    currentTuple.setResource(resource);
+    generateTupleProperties(map, currentTuple);
+
+    return currentTuple;
+  }
+
+
+  private void clear() throws FactoryException {
     // clear maps
     for (D2RMap map : maps)
       map.clear();
-  }
-
-  private void generateTestMaps() throws D2RException {
-    D2RMap map = maps.elementAt(3);
-      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());
-      map.generateResourceProperties(this);
   }
 
   /**
@@ -156,8 +225,12 @@ public class D2rProcessor {
    * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2RMap was read before
    */
   public Model generateAllInstancesAsModel() throws D2RException {
+
+    Model model = null;
+
     try {
       clear();
+      model = ModelFactory.getInstance().createDefaultModel();
     }
     catch (FactoryException e) {
       throw new D2RException("Could not get default Model from the ModelFactory.", e);
@@ -168,74 +241,18 @@ public class D2rProcessor {
 
     // add namespaces
     for (Entry<String, String> ent : namespaces.entrySet()) {
-      this.model.setNsPrefix(ent.getKey(), ent.getValue());
+      model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
     //Return model
     return model;
   }
 
-  /**
-   * Processes the D2R map outputting the results to the "model" parameter.
-   * NOTE: A map has to be loaded previously
-   * @param model Model to save instances to. NOTE: The parameter mustn't to be null.
-   * @throws D2RException Thrown if an error occurs
-   * @throws NullPointerException Thrown if <code> model</code> is null
-   */
-  private void outputToModel(Model model) throws
-      D2RException {
-
-    // Backup the Model object (maintains model's state)
-    Model originalModel = this.model;
-
-    log.debug("Processing map to model.");
-
-    if (model == null) {
-      throw new NullPointerException("model mustn't be null");
-    }
-
-    // use model parameter
-    this.model = model;
-
-    // Generate instances for all maps
-    this.generateInstancesForAllMaps();
-
-    // add namespaces
-    for (Entry<String, String> ent : namespaces.entrySet()) {
-      this.model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
-
-    //reset model member
-    this.model = originalModel;
-  }
 
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
     for (D2RMap map : maps)
-      map.generateResources(this, dataSourceManager.getDataSource(), new Vector<>());
-    for (D2RMap map : maps)
-      map.generateResourceProperties(this);
-  }
-
-  /**
-   * Returns the D2R map identified by the id parameter.
-   * @return D2R Map.
-   */
-  D2RMap getMapById(String id) {
-    for (D2RMap map : maps) {
-      if (map.getId().equals(id)) {
-        return map;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Returns a reference to the Jena model.
-   * @return Jena Model.
-   */
-  protected Model getModel() {
-    return this.model;
+      generateResources(map, dataSourceManager.getDataSource(), new ArrayList<>());
   }
 
 
@@ -257,5 +274,46 @@ public class D2rProcessor {
     else {
       return qName;
     }
+  }
+
+  private void generateTupleProperties(D2RMap map, ResultResource tuple) {
+    Resource inst = tuple.getResource();
+    assert inst != null;
+
+    for (Bridge bridge : map.getBridges()) {
+      // generate property
+      Property prop = bridge.createProperty(this);
+      RDFNode value = bridge.getValue(tuple, normalizer);
+      if (prop != null && value != null) {
+        inst.addProperty(prop, value);
+      }
+    }
+  }
+
+  public void someTestStuff(D2RMap map)
+      throws D2RException, FactoryException {
+
+    Model model = ModelFactory.getInstance().createDefaultModel();
+    Graph graph = model.getGraph();
+    PrefixMapping prefixMapping = model.getGraph().getPrefixMapping();
+    Lang lang = Lang.N3;
+    RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
+    if (format == null) {
+      throw new D2RException("No serialization format for language: " + lang.getLabel());
+    }
+    OutputStream out  = System.out;
+    StreamRDF rdfOut = StreamRDFWriter.getWriterStream(out, format);
+    rdfOut.start();
+    if(prefixMapping != null) {
+      StreamOps.sendPrefixesToStream(prefixMapping, rdfOut);
+    }
+
+    Iterator<Triple> iter = graph.find((Node)null, (Node)null, (Node)null);
+    StreamOps.sendTriplesToStream((Iterator)iter, rdfOut);
+    rdfOut.finish();
+
+
+    //NodeFactory
+    //ResourceFactory
   }
 }

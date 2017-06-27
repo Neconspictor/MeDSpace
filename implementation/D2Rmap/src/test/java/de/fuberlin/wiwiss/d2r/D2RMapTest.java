@@ -1,5 +1,9 @@
 package de.fuberlin.wiwiss.d2r;
 
+import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
+import com.mockrunner.jdbc.StatementResultSetHandler;
+import com.mockrunner.mock.jdbc.MockConnection;
+import com.mockrunner.mock.jdbc.MockResultSet;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.unipassau.medsapce.SQL.SQLQueryResultStream;
 import de.unipassau.medsapce.SQL.SQLResultTuple;
@@ -8,7 +12,10 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +23,7 @@ import java.util.List;
 /**
  * Created by David Goeth on 07.06.2017.
  */
-public class D2RMapTest {
+public class D2RMapTest extends BasicJDBCTestCaseAdapter {
 
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2RMapTest.class);
@@ -38,9 +45,7 @@ public class D2RMapTest {
   @Test
   public void getAllDataTest() throws SQLException, IOException, D2RException {
     D2RMap map = createTestMap();
-    Configuration config = createConfig();
-    DataSourceManager manager = new DataSourceManager(config);
-    DataSource dataSource = manager.getDataSource();
+    DataSource dataSource = createDataSource();
     map.init(dataSource);
 
     try (SQLQueryResultStream stream = map.getAllData(dataSource)) {
@@ -49,6 +54,21 @@ public class D2RMapTest {
       }
     }
 
+  }
+
+  private DataSource createDataSource() {
+    MockConnection connection = getJDBCMockObjectFactory().getMockConnection();
+    StatementResultSetHandler statementHandler =
+        connection.getStatementResultSetHandler();
+    MockResultSet result = statementHandler.createResultSet();
+    result.addColumn("name");
+    List<Object> values = Arrays.asList("ENGLISH", "GERMAN", "FRENCH");
+    for (Object obj : values) {
+      result.addRow(Arrays.asList(obj));
+    }
+    //statementHandler.prepareGlobalResultSet(result);
+    statementHandler.prepareResultSet("SELECT * from language", result);
+    return new DataSourceMock(connection);
   }
 
   private Configuration createConfig() {
@@ -98,5 +118,58 @@ public class D2RMapTest {
     map.addBridge(bridge);
 
     return map;
+  }
+
+  private static class DataSourceMock implements DataSource {
+
+    private Connection connection;
+
+    public DataSourceMock(Connection connection) {
+      this.connection = connection;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+      return connection;
+    }
+
+    @Override
+    public Connection getConnection(String username, String password) throws SQLException {
+      return connection;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+      return null;
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+      return false;
+    }
+
+    @Override
+    public PrintWriter getLogWriter() throws SQLException {
+      return null;
+    }
+
+    @Override
+    public void setLogWriter(PrintWriter out) throws SQLException {
+    }
+
+    @Override
+    public void setLoginTimeout(int seconds) throws SQLException {
+
+    }
+
+    @Override
+    public int getLoginTimeout() throws SQLException {
+      return 0;
+    }
+
+    @Override
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+      return null;
+    }
   }
 }

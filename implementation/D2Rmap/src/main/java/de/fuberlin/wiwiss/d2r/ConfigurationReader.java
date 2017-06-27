@@ -227,7 +227,7 @@ public class ConfigurationReader {
     bridge.setProperty(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
     bridge.setTranslation(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE));
-    bridge.setReferredClass(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE));
+    bridge.setReferredClassID(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE));
     bridge.setReferredGroupBy(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE));
     map.addBridge(bridge);
   }

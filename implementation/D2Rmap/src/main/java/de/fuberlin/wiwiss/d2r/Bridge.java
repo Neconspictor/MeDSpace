@@ -1,5 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
+import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 
@@ -76,11 +77,12 @@ abstract public class Bridge {
         }
     }
 
-    protected Property getProperty(D2rProcessor processor) {
+    protected Property createProperty(D2rProcessor processor) {
         Property prop = null;
         try {
-            String propURI = processor.getNormalizedURI(this.getProperty());
-            prop = processor.getModel().getProperty(propURI);
+            String propURI = processor.getNormalizedURI(getProperty());
+            prop = ResourceFactory.createProperty(propURI);
+            //prop = processor.getModel().getProperty(propURI);
         } catch (java.lang.Throwable ex) {
           log.warn("Warning: (getProperty) Property object for property " +
                    this.getProperty() + " not found in model.", ex);
@@ -97,11 +99,10 @@ abstract public class Bridge {
 
     /**
      *
-     * @param processor
      * @param tuple
      * @return
      */
-    protected abstract RDFNode getValue(D2rProcessor processor, ResultResource tuple);
+    protected abstract RDFNode getValue(ResultResource tuple, URINormalizer normalizer);
 
     public String getDataType() {
         return this.dataType;

@@ -30,13 +30,12 @@ import javax.sql.DataSource;
  * @version V0.3
  */
 public class D2RMap {
-  private HashMap<String, ResultResource> resources;
   private Vector<Bridge> bridges;
   private String baseURI;
   private String sql;
   private SelectStatement statement;
   private String id;
-  private Vector<String> resourceIdColumns;
+  private List<String> resourceIdColumns;
 
   /** log4j logger used for this class */
   private static Logger log = LogManager.getLogger(D2RMap.class);
@@ -45,9 +44,8 @@ public class D2RMap {
   "HAVING", "UNION", "ORDER BY"));
 
   public D2RMap() {
-    resources = new HashMap<>();
     bridges = new Vector<>();
-    resourceIdColumns = new Vector<>();
+    resourceIdColumns = new ArrayList<>();
   }
 
   public void addBridge(Bridge bridge) {
@@ -115,7 +113,7 @@ public class D2RMap {
 
     StringBuilder builder = new StringBuilder(query); // StringBuilder for faster string creation
     builder.append(" ORDER BY ");
-    for (String aGroupBy : this.resourceIdColumns) {
+    for (String aGroupBy : resourceIdColumns) {
       builder.append(aGroupBy);
       builder.append(", ");
     }
@@ -134,156 +132,11 @@ public class D2RMap {
   public void addResourceIdColumns(String fields) {
     StringTokenizer tokenizer = new StringTokenizer(fields, ",");
     while (tokenizer.hasMoreTokens())
-      this.resourceIdColumns.add(tokenizer.nextToken().trim());
+      resourceIdColumns.add(tokenizer.nextToken().trim());
   }
 
   public void clear() {
-    resources.clear();
     statement.reset();
-  }
-
-  public Resource createNewResource(D2rProcessor processor, String resourceID) {
-    String uri = baseURI + resourceID;  //TODO parse it properly
-    uri = processor.getNormalizedURI(uri);
-    Model model = processor.getModel();
-    Resource resource = model.createResource(uri);
-    ResultResource result = new ResultResource();
-    result.setResource(resource);
-    resources.put(resourceID, result);
-
-    // TODO decide to export a type property or not
-   /* Bridge bridge = null;
-    for (Bridge b : bridges) {
-      if (b.getProperty().equals("rdf:type")) {
-        bridge = b;
-        break;
-      }
-    }
-
-    assert bridge != null;
-
-    Property prop = bridge.getProperty(processor);
-    RDFNode referredNode = bridge.getValue(processor, result);
-    if (prop != null && referredNode != null) {
-      resource.addProperty(prop, referredNode);
-    }*/
-
-    return resource;
-  }
-
-  private void createResource(D2rProcessor processor, Model model, SQLResultTuple tuple)
-      throws SQLException, D2RException {
-    ResultResource currentTuple = new ResultResource();
-
-    for (int i = 0; i < tuple.getColumnCount(); i++) {
-      String columnName = tuple.getColumnName(i).toUpperCase();
-      currentTuple.put(columnName, tuple.getValue(i));
-    }
-
-    Resource resource;
-
-    // set instance id
-    StringBuilder resourceIDBuilder = new StringBuilder();
-    for (String aGroupBy : this.resourceIdColumns) {
-      resourceIDBuilder.append(currentTuple.getValueByColmnName(aGroupBy));
-    }
-    String resourceID = resourceIDBuilder.toString();
-
-    // define URI and generate instance
-    String uri = baseURI + resourceID;
-    uri = processor.getNormalizedURI(uri);
-    resource = model.createResource(uri);
-
-    if (resource != null && !resourceID.equals("")) {
-      currentTuple.setResource(resource);
-      if (resources.get(resourceID) != null)
-        log.warn("Resources with the same resource id " + resourceID + " in map " + this.getId());
-      resources.put(resourceID, currentTuple);
-    } else {
-      log.warn("Warning: Couldn't create resource " + resourceID + " in map " + this.getId() +
-          ".");
-    }
-  }
-
-  /**
-   * Generates all resources for this map.
-   * @param  processor Reference to an D2R processor instance.
-   */
-  public void generateResources(D2rProcessor processor, DataSource dataSource,
-                                List<String> conditionList) throws D2RException {
-    String query = this.sql.trim();
-
-    String ucQuery = query.toUpperCase();
-    if (ucQuery.contains("UNION"))
-      throw new D2RException("SQL statement should not contain UNION: " + query);
-
-    query = statement.toString();
-
-    //generate resources using the Connection
-    this.generateResources(processor, dataSource, query);
-  }
-
-  /**
-   * Generates all resources for this map.
-   * @param  processor Reference to an D2R processor instance.
-   * @param  dataSource The database connection.
-   */
-  private void generateResources(D2rProcessor processor,
-                                 DataSource dataSource, String query) throws D2RException {
-
-    if (log.isDebugEnabled()) {
-      log.debug("Generating resources for D2rProcessor: " + processor);
-    }
-
-    //get model from processor
-    Model model = processor.getModel();
-
-    // Create and execute SQL statement
-    try(SQLQueryResultStream queryResult =
-            SqlUtil.executeQuery(dataSource, query, 0, 10)) {
-
-      for (SQLResultTuple tuple : queryResult) {
-        createResource(processor, model, tuple);
-      }
-    }
-    catch (SQLException ex) {
-      String message = "SQL Exception caught: ";
-      message += SqlUtil.unwrapMessage(ex);
-      throw new D2RException(message);
-    }
-    catch (D2RException ex) {
-      throw ex;
-    }
-    catch (java.lang.Throwable ex) {
-      // Got some other type of exception.  Dump it.
-      throw new D2RException("Error: " + ex.toString(), ex);
-    }
-  }
-
-  /**
-   * Generates properties for all resources of this map.
-   * @param  processor Reference to an D2R processor instance.
-   */
-  public void generateResourceProperties(D2rProcessor processor)
-      throws D2RException {
-
-    for (ResultResource result : resources.values()) {
-      generateTupleProperties(processor, result);
-    }
-  }
-
-  private void generateTupleProperties(D2rProcessor processor, ResultResource tuple) {
-    Resource inst = tuple.getResource();
-    assert inst != null;
-
-    for (Bridge bridge : this.bridges) {
-      // generate property
-      Property prop = bridge.getProperty(processor);
-      RDFNode referredNode = bridge.getValue(processor, tuple);
-      if (prop != null && referredNode != null) {
-        inst.addProperty(prop, referredNode);
-      }
-    }
   }
 
   private static String getAfter(String query, int index) {
@@ -309,7 +162,7 @@ public class D2RMap {
     }
   }
 
-  private static int getBeforeIndex(String query, Vector<String> querySelectStatementOrder, int index) {
+  private static int getBeforeIndex(String query, List<String> querySelectStatementOrder, int index) {
     assert index != -1;
     int splitIndex = -1;
     for (int currentIndex = index; currentIndex != querySelectStatementOrder.size(); ++currentIndex) {
@@ -326,12 +179,6 @@ public class D2RMap {
 
   public SelectStatement getQuery() {
     return statement;
-  }
-
-  public Resource getResourceById(String resourceID) {
-    ResultResource instance = resources.get(resourceID);
-    if (instance != null) return  instance.getResource();
-    return null;
   }
 
   protected String getSql() {
@@ -357,5 +204,21 @@ public class D2RMap {
 
   protected void setSql(String sql) {
     this.sql = sql;
+  }
+
+  public List<String> getResourceIdColumns() {
+    return Collections.unmodifiableList(resourceIdColumns);
+  }
+
+  public String getBaseURI() {
+    return baseURI;
+  }
+
+  public List<Bridge> getBridges() {
+    return Collections.unmodifiableList(bridges);
+  }
+
+  public String urify(String resourceID) {
+    return baseURI + resourceID;
   }
 }
