@@ -90,7 +90,7 @@ public class D2rProcessor {
     }
 
     for (D2RMap map : maps) {
-      map.init(dataSourceManager.getDataSource());
+      map.init(dataSourceManager.getDataSource(), maps);
     }
 
     normalizer = URI -> getNormalizedURI(URI);
@@ -179,6 +179,7 @@ public class D2rProcessor {
   private ResultResource createResource(D2RMap map, SQLResultTuple tuple)
       throws SQLException, D2RException {
     ResultResource currentTuple = new ResultResource();
+    List<Triple> triples = new ArrayList<>();
 
     for (int i = 0; i < tuple.getColumnCount(); i++) {
       String columnName = tuple.getColumnName(i).toUpperCase();
@@ -207,7 +208,17 @@ public class D2rProcessor {
     }
 
     currentTuple.setResource(resource);
-    generateTupleProperties(map, currentTuple);
+
+    for (Bridge bridge : map.getBridges()) {
+      // generate property
+      Property prop = bridge.createProperty(this);
+      RDFNode value = bridge.getValue(currentTuple, normalizer);
+      if (prop != null && value != null) {
+        Triple triple = Triple.create(resource.asNode(), prop.asNode(), value.asNode());
+        triples.add(triple);
+        System.out.println(triple);
+      }
+    }
 
     return currentTuple;
   }
@@ -273,20 +284,6 @@ public class D2rProcessor {
     }
     else {
       return qName;
-    }
-  }
-
-  private void generateTupleProperties(D2RMap map, ResultResource tuple) {
-    Resource inst = tuple.getResource();
-    assert inst != null;
-
-    for (Bridge bridge : map.getBridges()) {
-      // generate property
-      Property prop = bridge.createProperty(this);
-      RDFNode value = bridge.getValue(tuple, normalizer);
-      if (prop != null && value != null) {
-        inst.addProperty(prop, value);
-      }
     }
   }
 

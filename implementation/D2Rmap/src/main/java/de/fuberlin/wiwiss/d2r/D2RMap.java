@@ -185,12 +185,16 @@ public class D2RMap {
     return sql;
   }
 
-  public void init(DataSource dataSource) throws D2RException {
+  public void init(DataSource dataSource, List<D2RMap> maps) throws D2RException {
     try {
       statement = new SelectStatement(this.sql, dataSource);
     } catch (SQLException | D2RException e) {
       log.error(e);
       throw new D2RException("Couldn't init D2RMap: ");
+    }
+
+    for (Bridge bridge : bridges) {
+      bridge.init(maps);
     }
   }
 

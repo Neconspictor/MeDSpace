@@ -1,5 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
@@ -40,6 +41,23 @@ public class ObjectPropertyBridge
 
   public void setReferredClass(D2RMap map) {
     referredClass = map;
+  }
+
+  public void init(List<D2RMap> maps) {
+
+    if (referredClassID == null) return;
+    referredClass = null;
+    for (D2RMap map : maps) {
+      if (map.getId().equals(referredClassID)) {
+        setReferredClass(map);
+        break;
+      }
+    }
+
+    // referredClass was not set
+    if (referredClass == null) {
+      throw new IllegalStateException("Referred class not found in the specified D2RMap list.");
+    }
   }
 
   protected Vector<String> getReferredGroupBy() {

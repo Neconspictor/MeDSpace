@@ -46,7 +46,7 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
   public void getAllDataTest() throws SQLException, IOException, D2RException {
     D2RMap map = createTestMap();
     DataSource dataSource = createDataSource();
-    map.init(dataSource);
+    map.init(dataSource, Arrays.asList(map));
 
     try (SQLQueryResultStream stream = map.getAllData(dataSource)) {
       for (SQLResultTuple tuple : stream) {

@@ -4,6 +4,8 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 
 /**
  * Abstract class representing an D2R bridge. Extended by the subclasses ObjectPropertyBridge and DatatypePropertyBridge.
@@ -107,4 +109,8 @@ abstract public class Bridge {
     public String getDataType() {
         return this.dataType;
     }
+
+  public void init(List<D2RMap> maps) {
+
+  };
 }
