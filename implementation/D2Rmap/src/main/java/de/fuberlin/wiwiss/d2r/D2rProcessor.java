@@ -158,9 +158,20 @@ public class D2rProcessor {
     try(SQLQueryResultStream queryResult =
             SqlUtil.executeQuery(dataSource, query, 0, 10)) {
 
+      List<Triple> triples = new LinkedList<>();
+
       for (SQLResultTuple tuple : queryResult) {
-        ResultResource result = createResource(map, tuple);
+        triples.addAll(createResource(map, tuple));
       }
+
+      OutputStream out  = System.out;
+      Lang lang = Lang.TURTLE;
+      RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
+      StreamRDF rdfOut = StreamRDFWriter.getWriterStream(out, format);
+      rdfOut.start();
+      for (Triple triple : triples)
+        rdfOut.triple(triple);
+      rdfOut.finish();
     }
     catch (SQLException ex) {
       String message = "SQL Exception caught: ";
@@ -176,23 +187,17 @@ public class D2rProcessor {
     }
   }
 
-  private ResultResource createResource(D2RMap map, SQLResultTuple tuple)
+  private List<Triple> createResource(D2RMap map, SQLResultTuple tuple)
       throws SQLException, D2RException {
-    ResultResource currentTuple = new ResultResource();
     List<Triple> triples = new ArrayList<>();
-
-    for (int i = 0; i < tuple.getColumnCount(); i++) {
-      String columnName = tuple.getColumnName(i).toUpperCase();
-      currentTuple.put(columnName, tuple.getValue(i));
-    }
-
     Resource resource;
 
     // set instance id
     StringBuilder resourceIDBuilder = new StringBuilder();
 
-    for (String aGroupBy : map.getResourceIdColumns()) {
-      resourceIDBuilder.append(currentTuple.getValueByColmnName(aGroupBy));
+    for (String columnName : map.getResourceIdColumns()) {
+      String columnValue = D2rUtil.getColumnValue(columnName, tuple);
+      resourceIDBuilder.append(columnValue);
     }
     String resourceID = resourceIDBuilder.toString();
 
@@ -207,20 +212,17 @@ public class D2rProcessor {
       return null;
     }
 
-    currentTuple.setResource(resource);
-
     for (Bridge bridge : map.getBridges()) {
       // generate property
       Property prop = bridge.createProperty(this);
-      RDFNode value = bridge.getValue(currentTuple, normalizer);
+      RDFNode value = bridge.getValue(tuple, normalizer);
       if (prop != null && value != null) {
         Triple triple = Triple.create(resource.asNode(), prop.asNode(), value.asNode());
         triples.add(triple);
-        System.out.println(triple);
       }
     }
 
-    return currentTuple;
+    return triples;
   }
 
 

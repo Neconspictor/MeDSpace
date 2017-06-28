@@ -131,8 +131,10 @@ public class D2RMap {
    */
   public void addResourceIdColumns(String fields) {
     StringTokenizer tokenizer = new StringTokenizer(fields, ",");
-    while (tokenizer.hasMoreTokens())
-      resourceIdColumns.add(tokenizer.nextToken().trim());
+    while (tokenizer.hasMoreTokens()) {
+      String columnName = tokenizer.nextToken().toUpperCase().trim();
+      resourceIdColumns.add(columnName);
+    }
   }
 
   public void clear() {

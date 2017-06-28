@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
+import de.unipassau.medsapce.SQL.SQLResultTuple;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -70,12 +71,14 @@ public class ObjectPropertyBridge
    */
   protected void setReferredGroupBy(String fields) {
     StringTokenizer tokenizer = new StringTokenizer(fields.trim(), ",");
-    while (tokenizer.hasMoreTokens())
-      this.referredGroupBy.add(tokenizer.nextToken().trim());
+    while (tokenizer.hasMoreTokens()) {
+      String columnName = tokenizer.nextToken().trim().toUpperCase();
+      referredGroupBy.add(columnName);
+    }
   }
 
   @Override
-  protected RDFNode getValue(ResultResource tuple, URINormalizer normalizer) {
+  protected RDFNode getValue(SQLResultTuple tuple, URINormalizer normalizer) {
     Resource referredResource = null;
 
     if (getReferredClassID() != null) {
@@ -90,20 +93,21 @@ public class ObjectPropertyBridge
     return referredResource;
   }
 
-  private Resource getFromClass(ResultResource tuple) {
+  private Resource getFromClass(SQLResultTuple tuple) {
     assert referredClass != null;
 
     // get referred instance
     StringBuilder resourceIDBuilder = new StringBuilder();
-    for (String s : getReferredGroupBy()) {
-      resourceIDBuilder.append(tuple.getValueByColmnName(s));
+    for (String columnName : getReferredGroupBy()) {
+      String columnValue = D2rUtil.getColumnValue(columnName, tuple);
+      resourceIDBuilder.append(columnValue);
     }
     String resourceID = resourceIDBuilder.toString();
     String uri = referredClass.urify(resourceID);
     return ResourceFactory.createResource(uri);
   }
 
-  private String getFromPattern(ResultResource tuple) {
+  private String getFromPattern(SQLResultTuple tuple) {
     return D2rUtil.parsePattern(getPattern(),
         D2R.DELIMINATOR, tuple);
   }

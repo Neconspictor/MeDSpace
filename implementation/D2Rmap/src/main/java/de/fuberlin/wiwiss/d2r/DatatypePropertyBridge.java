@@ -1,5 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
+import de.unipassau.medsapce.SQL.SQLResultTuple;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.graph.Node;
@@ -22,7 +23,7 @@ import java.util.*;
 public class DatatypePropertyBridge extends Bridge {
 
   @Override
-  protected RDFNode getValue(ResultResource tuple, URINormalizer normalizer) {
+  protected RDFNode getValue(SQLResultTuple tuple, URINormalizer normalizer) {
     // Generate property value
     Literal literal = null;
     String value = D2rUtil.parsePattern(getPattern(),

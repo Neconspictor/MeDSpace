@@ -1,5 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
+import de.unipassau.medsapce.SQL.SQLResultTuple;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,6 +35,11 @@ class D2rUtil {
     return "NoLocalnameFound";
   }
 
+  static String getColumnValue(String columnName, SQLResultTuple tuple) {
+    String key = D2rUtil.getFieldNameUpperCase(columnName);
+    return tuple.getValue(key);
+  }
+
   static String getFieldNameUpperCase(String fName) {
     int len = fName.length();
     for (int i = 0; i < len; i++) {
@@ -52,7 +58,7 @@ class D2rUtil {
    * @return String with placeholders replaced.
    */
   static String parsePattern(String pattern, String deliminator,
-                                       ResultResource tuple) {
+                             SQLResultTuple tuple) {
     String result = "";
     int startPosition = 0;
     int endPosition = 0;
@@ -75,7 +81,7 @@ class D2rUtil {
 
         // get field
         String fieldname = pattern.substring(startPosition, endPosition);
-        resultBuilder.append(tuple.getValueByColmnName(fieldname));
+        resultBuilder.append(getColumnValue(fieldname, tuple));
         startPosition = endPosition + deliminator.length();
       }
 

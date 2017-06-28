@@ -1,6 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
-import org.apache.jena.graph.Node;
+import de.unipassau.medsapce.SQL.SQLResultTuple;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 
@@ -104,7 +104,7 @@ abstract public class Bridge {
      * @param tuple
      * @return
      */
-    protected abstract RDFNode getValue(ResultResource tuple, URINormalizer normalizer);
+    protected abstract RDFNode getValue(SQLResultTuple tuple, URINormalizer normalizer);
 
     public String getDataType() {
         return this.dataType;

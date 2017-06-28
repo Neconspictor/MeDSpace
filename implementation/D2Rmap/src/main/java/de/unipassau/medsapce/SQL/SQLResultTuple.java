@@ -38,7 +38,7 @@ public class SQLResultTuple {
     ArrayList<Pair<String, String>> tuple = new ArrayList<>(numColumns);
 
     for (int i = 1; i <= numColumns; ++i) {
-      String columnName = meta.getColumnName(i);
+      String columnName = meta.getColumnName(i).toUpperCase();
       String value = resultSet.getString(i);
       tuple.add(new Pair<>(columnName, value));
     }
