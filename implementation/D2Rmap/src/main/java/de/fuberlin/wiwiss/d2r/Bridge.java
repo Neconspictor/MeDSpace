@@ -79,10 +79,10 @@ abstract public class Bridge {
         }
     }
 
-    protected Property createProperty(D2rProcessor processor) {
+    protected Property createProperty(URINormalizer normalizer) {
         Property prop = null;
         try {
-            String propURI = processor.getNormalizedURI(getProperty());
+            String propURI = normalizer.normalize(property);
             prop = ResourceFactory.createProperty(propURI);
             //prop = processor.getModel().getProperty(propURI);
         } catch (java.lang.Throwable ex) {

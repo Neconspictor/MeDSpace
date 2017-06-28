@@ -8,6 +8,7 @@ import java.util.*;
 import de.unipassau.medsapce.SQL.SQLQueryResultStream;
 import de.unipassau.medsapce.SQL.SQLResultTuple;
 import de.unipassau.medsapce.indexing.SQLIndex;
+import de.unipassau.medsapce.rdf.MappedTripleStream;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.graph.Graph;
@@ -154,22 +155,15 @@ public class D2rProcessor {
       log.debug("Generating resources for D2RProcessor: " + this);
     }
 
-    // Create and execute SQL statement
-    try(SQLQueryResultStream queryResult =
-            SqlUtil.executeQuery(dataSource, query, 0, 10)) {
-
-      List<Triple> triples = new LinkedList<>();
-
-      for (SQLResultTuple tuple : queryResult) {
-        triples.addAll(createResource(map, tuple));
-      }
-
+    List<Triple> triples = new LinkedList<>();
+    try(MappedTripleStream tripleStream = new MappedTripleStream(dataSource, query, 0, 10,
+        map, normalizer)) {
       OutputStream out  = System.out;
       Lang lang = Lang.TURTLE;
       RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
       StreamRDF rdfOut = StreamRDFWriter.getWriterStream(out, format);
       rdfOut.start();
-      for (Triple triple : triples)
+      for (Triple triple : tripleStream)
         rdfOut.triple(triple);
       rdfOut.finish();
     }
@@ -177,9 +171,6 @@ public class D2rProcessor {
       String message = "SQL Exception caught: ";
       message += SqlUtil.unwrapMessage(ex);
       throw new D2RException(message);
-    }
-    catch (D2RException ex) {
-      throw ex;
     }
     catch (java.lang.Throwable ex) {
       // Got some other type of exception.  Dump it.
@@ -214,7 +205,7 @@ public class D2rProcessor {
 
     for (Bridge bridge : map.getBridges()) {
       // generate property
-      Property prop = bridge.createProperty(this);
+      Property prop = bridge.createProperty(normalizer);
       RDFNode value = bridge.getValue(tuple, normalizer);
       if (prop != null && value != null) {
         Triple triple = Triple.create(resource.asNode(), prop.asNode(), value.asNode());

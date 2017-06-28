@@ -8,6 +8,7 @@ import de.unipassau.medsapce.SQL.SQLResultTuple;
 import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
@@ -226,5 +227,42 @@ public class D2RMap {
 
   public String urify(String resourceID) {
     return baseURI + resourceID;
+  }
+
+  public List<Triple> createTriples(SQLResultTuple tuple, URINormalizer normalizer) {
+    List<Triple> triples = new ArrayList<>();
+    Resource resource;
+
+    // set instance id
+    StringBuilder resourceIDBuilder = new StringBuilder();
+
+    for (String columnName : getResourceIdColumns()) {
+      String columnValue = D2rUtil.getColumnValue(columnName, tuple);
+      resourceIDBuilder.append(columnValue);
+    }
+    String resourceID = resourceIDBuilder.toString();
+
+    // define URI and generate instance
+    String uri = getBaseURI() + resourceID;
+    uri = normalizer.normalize(uri);
+    resource = ResourceFactory.createResource(uri);
+
+    if (resource == null || resourceID.equals("")) {
+      log.warn("Warning: Couldn't create resource " + resourceID + " in map " + getId() +
+          ".");
+      return null;
+    }
+
+    for (Bridge bridge : getBridges()) {
+      // generate property
+      Property prop = bridge.createProperty(normalizer);
+      RDFNode value = bridge.getValue(tuple, normalizer);
+      if (prop != null && value != null) {
+        Triple triple = Triple.create(resource.asNode(), prop.asNode(), value.asNode());
+        triples.add(triple);
+      }
+    }
+
+    return triples;
   }
 }
