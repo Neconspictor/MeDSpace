@@ -5,8 +5,8 @@ import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockResultSet;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
-import de.unipassau.medsapce.SQL.SQLResultTuple;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -23,10 +23,10 @@ import java.util.List;
 /**
  * Created by David Goeth on 07.06.2017.
  */
-public class D2RMapTest extends BasicJDBCTestCaseAdapter {
+public class D2rMapTest extends BasicJDBCTestCaseAdapter {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2RMapTest.class);
+  private static Logger log = Logger.getLogger(D2rMapTest.class);
 
   @Test
   public void testAddConditionStatements() {
@@ -34,7 +34,7 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
     String query = "SELECT * FROM languages\nORDER BY languages.name;";
     query = query.toUpperCase();
     List<String> conditionList = new ArrayList<>(Arrays.asList("LANGUAGES.ID = 12", "LANGUAGES.NAME LIKE 'ENGLISH'"));
-    String queryResult = D2RMap.addConditionStatements(query, conditionList);
+    String queryResult = D2rMap.addConditionStatements(query, conditionList);
 
     String expectedResult = "SELECT * FROM LANGUAGES WHERE LANGUAGES.ID = 12 AND LANGUAGES.NAME LIKE 'ENGLISH' ORDER BY LANGUAGES.NAME;";
 
@@ -44,7 +44,7 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
 
   @Test
   public void getAllDataTest() throws SQLException, IOException, D2RException {
-    D2RMap map = createTestMap();
+    D2rMap map = createTestMap();
     DataSource dataSource = createDataSource();
     map.init(dataSource, Arrays.asList(map));
 
@@ -94,8 +94,8 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
     return config;
   }
 
-  private D2RMap createTestMap() {
-    D2RMap map = new D2RMap();
+  private D2rMap createTestMap() {
+    D2rMap map = new D2rMap();
     map.setId("language");
     map.setSql("SELECT * FROM language");
     map.addResourceIdColumns("language.name");

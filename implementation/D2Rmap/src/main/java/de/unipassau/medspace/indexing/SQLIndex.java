@@ -1,4 +1,4 @@
-package de.unipassau.medsapce.indexing;
+package de.unipassau.medspace.indexing;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.unipassau.medspace.util.FileUtil;

@@ -1,9 +1,8 @@
 package de.unipassau.medspace.util.sql;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
 import de.unipassau.medspace.util.FileUtil;
-import de.unipassau.medspace.util.SqlUtil;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -40,7 +39,7 @@ public class SelectStatement {
     SQLQueryResultStream result = null;
     try {
       String query = toString();
-      result = SqlUtil.executeQuery(dataSource, query, 0, 10);
+      result = new SQLQueryResultStream(new SQLQueryResultStream.QueryParams(dataSource, query));
     } catch (SQLException e) {
       FileUtil.closeSilently(result);
       throw e;
@@ -105,7 +104,7 @@ public class SelectStatement {
 
   private void parse(String query, DataSource dataSource) throws D2RException, SQLException {
     if (query.contains(Clause.UNION.toString())) {
-      throw new D2RException("UNION clause is not supported by D2RMap for the select statement!");
+      throw new D2RException("UNION clause is not supported by D2rMap for the select statement!");
     }
     ;
     String whereStr = WHERE.toString();

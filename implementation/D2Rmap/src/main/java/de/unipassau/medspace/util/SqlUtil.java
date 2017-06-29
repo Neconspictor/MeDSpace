@@ -3,9 +3,7 @@ package de.unipassau.medspace.util;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
 import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 
@@ -90,10 +88,6 @@ public class SqlUtil {
     }
 
     return builder.toString();
-  }
-
-  public static SQLQueryResultStream executeQuery(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
-    return new SQLQueryResultStream(dataSource, query, maxRowSize, fetchSize);
   }
 
   /**

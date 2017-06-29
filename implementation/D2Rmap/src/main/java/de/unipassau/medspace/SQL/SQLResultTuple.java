@@ -1,4 +1,4 @@
-package de.unipassau.medsapce.SQL;
+package de.unipassau.medspace.SQL;
 
 import javafx.util.Pair;
 
@@ -7,7 +7,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by David Goeth on 26.06.2017.

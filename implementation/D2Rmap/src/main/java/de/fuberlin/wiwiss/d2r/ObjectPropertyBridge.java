@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
-import de.unipassau.medsapce.SQL.SQLResultTuple;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 public class ObjectPropertyBridge
     extends Bridge {
   private String referredClassID;
-  private D2RMap referredClass;
+  private D2rMap referredClass;
   private Vector<String> referredGroupBy;
   private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
 
@@ -40,15 +40,15 @@ public class ObjectPropertyBridge
       this.referredClassID = null;
   }
 
-  public void setReferredClass(D2RMap map) {
+  public void setReferredClass(D2rMap map) {
     referredClass = map;
   }
 
-  public void init(List<D2RMap> maps) {
+  public void init(List<D2rMap> maps) {
 
     if (referredClassID == null) return;
     referredClass = null;
-    for (D2RMap map : maps) {
+    for (D2rMap map : maps) {
       if (map.getId().equals(referredClassID)) {
         setReferredClass(map);
         break;
@@ -57,7 +57,7 @@ public class ObjectPropertyBridge
 
     // referredClass was not set
     if (referredClass == null) {
-      throw new IllegalStateException("Referred class not found in the specified D2RMap list.");
+      throw new IllegalStateException("Referred class not found in the specified D2rMap list.");
     }
   }
 

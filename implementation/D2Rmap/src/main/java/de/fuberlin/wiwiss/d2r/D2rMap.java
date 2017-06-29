@@ -3,10 +3,8 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.*;
 import java.sql.*;
 
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
-import de.unipassau.medsapce.SQL.SQLResultTuple;
-import de.unipassau.medspace.util.FileUtil;
-import de.unipassau.medspace.util.SqlUtil;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
@@ -19,8 +17,8 @@ import org.apache.log4j.Logger;
 import javax.sql.DataSource;
 
 /**
- * D2RMap Class. A D2RMap class is created for every d2r:ClassMap element in the mapping file.
- * The D2RMap class contains a Vector with all Bridges and an HashMap with all resources.
+ * D2rMap Class. A D2rMap class is created for every d2r:ClassMap element in the mapping file.
+ * The D2rMap class contains a Vector with all Bridges and an HashMap with all resources.
  * <BR><BR>History:
  * <BR>18-05-2017   : Updated for Java 8; removed unsafe operations
  * <BR>07-21-2004   : Error handling changed to Log4J.
@@ -30,7 +28,7 @@ import javax.sql.DataSource;
  * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
  * @version V0.3
  */
-public class D2RMap {
+public class D2rMap {
   private Vector<Bridge> bridges;
   private String baseURI;
   private String sql;
@@ -39,12 +37,12 @@ public class D2RMap {
   private List<String> resourceIdColumns;
 
   /** log4j logger used for this class */
-  private static Logger log = LogManager.getLogger(D2RMap.class);
+  private static Logger log = LogManager.getLogger(D2rMap.class);
 
   private static Vector<String> querySelectStatementOrder = new Vector(Arrays.asList("SELECT", "FROM", "WHERE", "GROUP BY",
   "HAVING", "UNION", "ORDER BY"));
 
-  public D2RMap() {
+  public D2rMap() {
     bridges = new Vector<>();
     resourceIdColumns = new ArrayList<>();
   }
@@ -188,12 +186,12 @@ public class D2RMap {
     return sql;
   }
 
-  public void init(DataSource dataSource, List<D2RMap> maps) throws D2RException {
+  public void init(DataSource dataSource, List<D2rMap> maps) throws D2RException {
     try {
       statement = new SelectStatement(this.sql, dataSource);
     } catch (SQLException | D2RException e) {
       log.error(e);
-      throw new D2RException("Couldn't init D2RMap: ");
+      throw new D2RException("Couldn't init D2rMap: ");
     }
 
     for (Bridge bridge : bridges) {
