@@ -129,7 +129,7 @@ public class D2rProcessor {
    * @return
    * @throws D2RException
    */
-  public TripleStream doKeywordSearch(List<String> keywords) throws D2RException {
+  public MultiTripleStream doKeywordSearch(List<String> keywords) throws D2RException {
 
     Model model = null;
 

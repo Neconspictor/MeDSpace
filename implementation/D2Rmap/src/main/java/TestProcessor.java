@@ -53,17 +53,16 @@ public class TestProcessor {
             processor = new D2rProcessor(config, dataSourceManager);
             System.out.println("D2R processor created ....");
             System.out.println("D2R file read ....");
-            //Model output = processor.generateTestAsModel();
-            //Model output = processor.generateAllInstancesAsModel();
+
             Lang lang = Lang.TURTLE;
             Instant startTime = Instant.now();
-            try (MultiTripleStream tripleStream = processor.getAllTriples()) {
+            try (MultiTripleStream tripleStream = processor.doKeywordSearch(Arrays.asList("English", "Male"))) {
                 tripleStream.start();
                 RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
                 StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
                 rdfOut.start();
                 for (Triple triple : tripleStream) {
-                    //rdfOut.triple(triple);
+                    rdfOut.triple(triple);
                 }
                 rdfOut.finish();
             }
