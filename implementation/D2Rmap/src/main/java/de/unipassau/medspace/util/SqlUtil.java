@@ -92,10 +92,6 @@ public class SqlUtil {
     return builder.toString();
   }
 
-  public static SQLQueryResultStream executeQuery(DataSource dataSource, String query, int maxRowSize, int fetchSize) throws SQLException {
-    return new SQLQueryResultStream(dataSource, query, maxRowSize, fetchSize);
-  }
-
   /**
    * Provides the column name of a given result set at a specific index.
    * @param index the index to get the column name from

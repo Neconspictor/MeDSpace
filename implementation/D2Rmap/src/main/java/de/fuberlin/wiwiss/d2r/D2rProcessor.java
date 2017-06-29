@@ -8,12 +8,11 @@ import java.util.*;
 import de.unipassau.medsapce.SQL.SQLQueryResultStream;
 import de.unipassau.medsapce.SQL.SQLResultTuple;
 import de.unipassau.medsapce.indexing.SQLIndex;
-import de.unipassau.medsapce.rdf.MappedTripleStream;
+import de.unipassau.medsapce.rdf.D2rMapTripleStream;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
@@ -22,7 +21,6 @@ import org.apache.jena.riot.system.StreamOps;
 import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.system.StreamRDFWriter;
 import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.log4j.Logger;
 
 import java.util.Map.Entry;
@@ -55,7 +53,7 @@ import javax.sql.DataSource;
  * @version V0.3.1
  */
 public class D2rProcessor {
-  private Vector<D2RMap> maps;
+  private Vector<D2rMap> maps;
   private SQLIndex index;
   private HashMap<String, String> namespaces;
   private URINormalizer normalizer;
@@ -90,7 +88,7 @@ public class D2rProcessor {
      }
     }
 
-    for (D2RMap map : maps) {
+    for (D2rMap map : maps) {
       map.init(dataSourceManager.getDataSource(), maps);
     }
 
@@ -117,7 +115,7 @@ public class D2rProcessor {
     }
 
     // Generate instances for all maps
-    for (D2RMap map : maps) {
+    for (D2rMap map : maps) {
 
       SelectStatement query = map.getQuery();
       List<String> columns = query.getColumns();
@@ -134,7 +132,7 @@ public class D2rProcessor {
   /**
    * Generates all resources for the specified map.
    */
-  public void generateResources(D2RMap map, DataSource dataSource,
+  public void generateResources(D2rMap map, DataSource dataSource,
                                 List<String> conditionList) throws D2RException {
     String query = map.getQuery().toString();
     String ucQuery = query.toUpperCase();
@@ -149,15 +147,15 @@ public class D2rProcessor {
    * Generates all resources for the specified map.
    * @param  dataSource The database connection.
    */
-  private void generateResources(D2RMap map, DataSource dataSource, String query) throws D2RException {
+  private void generateResources(D2rMap map, DataSource dataSource, String query) throws D2RException {
 
     if (log.isDebugEnabled()) {
       log.debug("Generating resources for D2RProcessor: " + this);
     }
 
-    List<Triple> triples = new LinkedList<>();
-    try(MappedTripleStream tripleStream = new MappedTripleStream(dataSource, query, 0, 10,
-        map, normalizer)) {
+    SQLQueryResultStream.QueryParams queryParams = new SQLQueryResultStream.QueryParams(dataSource, query);
+    try(D2rMapTripleStream tripleStream = new D2rMapTripleStream(queryParams, map, normalizer)) {
+      tripleStream.start();
       OutputStream out  = System.out;
       Lang lang = Lang.TURTLE;
       RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
@@ -167,18 +165,12 @@ public class D2rProcessor {
         rdfOut.triple(triple);
       rdfOut.finish();
     }
-    catch (SQLException ex) {
-      String message = "SQL Exception caught: ";
-      message += SqlUtil.unwrapMessage(ex);
-      throw new D2RException(message);
-    }
-    catch (java.lang.Throwable ex) {
-      // Got some other type of exception.  Dump it.
-      throw new D2RException("Error: " + ex.toString(), ex);
+    catch (IOException ex) {
+      throw new D2RException("Error while generating triples", ex);
     }
   }
 
-  private List<Triple> createResource(D2RMap map, SQLResultTuple tuple)
+  private List<Triple> createResource(D2rMap map, SQLResultTuple tuple)
       throws SQLException, D2RException {
     List<Triple> triples = new ArrayList<>();
     Resource resource;
@@ -219,14 +211,14 @@ public class D2rProcessor {
 
   private void clear() throws FactoryException {
     // clear maps
-    for (D2RMap map : maps)
+    for (D2rMap map : maps)
       map.clear();
   }
 
   /**
    * Processes the D2R map and returns a Jena model containing all generated instances.
    * @return Jena model containing all generated instances.
-   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2RMap was read before
+   * @throws D2RException Thrown if an error occurs while generating the RDF instances or if no D2rMap was read before
    */
   public Model generateAllInstancesAsModel() throws D2RException {
 
@@ -255,7 +247,7 @@ public class D2rProcessor {
 
   /** Generated instances for all D2R maps. */
   private void generateInstancesForAllMaps() throws D2RException {
-    for (D2RMap map : maps)
+    for (D2rMap map : maps)
       generateResources(map, dataSourceManager.getDataSource(), new ArrayList<>());
   }
 
@@ -280,7 +272,7 @@ public class D2rProcessor {
     }
   }
 
-  public void someTestStuff(D2RMap map)
+  public void someTestStuff(D2rMap map)
       throws D2RException, FactoryException {
 
     Model model = ModelFactory.getInstance().createDefaultModel();
