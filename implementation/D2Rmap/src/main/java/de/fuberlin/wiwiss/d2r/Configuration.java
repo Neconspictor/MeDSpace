@@ -18,7 +18,7 @@ public class Configuration {
   private String jdbc;
   private String jdbcDriver;
   private Path indexDirectory;
-  private Vector<D2rMap> maps;
+  private Vector<D2rMapper> maps;
   private int maxConnections; //Connection configurations
   private HashMap<String, String> namespaces;
   private String prepend;
@@ -66,7 +66,7 @@ public class Configuration {
     return jdbcDriver;
   }
 
-  public Vector<D2rMap> getMaps() {
+  public Vector<D2rMapper> getMaps() {
     return maps;
   }
 
@@ -122,7 +122,7 @@ public class Configuration {
     this.indexDirectory = indexDirectory;
   }
 
-  public void setMaps(Vector<D2rMap> maps) {
+  public void setMaps(Vector<D2rMapper> maps) {
     this.maps = maps;
   }
 

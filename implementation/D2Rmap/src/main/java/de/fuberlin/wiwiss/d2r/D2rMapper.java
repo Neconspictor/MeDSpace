@@ -17,8 +17,8 @@ import org.apache.log4j.Logger;
 import javax.sql.DataSource;
 
 /**
- * D2rMap Class. A D2rMap class is created for every d2r:ClassMap element in the mapping file.
- * The D2rMap class contains a Vector with all Bridges and an HashMap with all resources.
+ * D2rMapper Class. A D2rMapper class is created for every d2r:ClassMap element in the mapping file.
+ * The D2rMapper class contains a Vector with all Bridges and an HashMap with all resources.
  * <BR><BR>History:
  * <BR>18-05-2017   : Updated for Java 8; removed unsafe operations
  * <BR>07-21-2004   : Error handling changed to Log4J.
@@ -28,7 +28,7 @@ import javax.sql.DataSource;
  * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
  * @version V0.3
  */
-public class D2rMap {
+public class D2rMapper {
   private Vector<Bridge> bridges;
   private String baseURI;
   private String sql;
@@ -37,18 +37,14 @@ public class D2rMap {
   private List<String> resourceIdColumns;
 
   /** log4j logger used for this class */
-  private static Logger log = LogManager.getLogger(D2rMap.class);
+  private static Logger log = LogManager.getLogger(D2rMapper.class);
 
   private static Vector<String> querySelectStatementOrder = new Vector(Arrays.asList("SELECT", "FROM", "WHERE", "GROUP BY",
   "HAVING", "UNION", "ORDER BY"));
 
-  public D2rMap() {
+  public D2rMapper() {
     bridges = new Vector<>();
     resourceIdColumns = new ArrayList<>();
-  }
-
-  public void addBridge(Bridge bridge) {
-    this.bridges.add(bridge);
   }
 
   public static String addConditionStatements(String query, List<String> conditionList) {
@@ -96,32 +92,10 @@ public class D2rMap {
     return beforeWhereClause + builder.toString() + afterWhereClause;
   }
 
-  private String addOrderByStatements(String query) throws D2RException {
-    if (query == null) throw new NullPointerException("query mustn't be null!");
-    if (resourceIdColumns.isEmpty()) return query;
 
-    // Create upper case version for checking for ORDER BY statements
-    String ucQuery = query.toUpperCase();
-    if (ucQuery.contains("ORDER BY"))
-      throw new D2RException("SQL statement should not contain ORDER BY: " + query);
 
-    // Query contains a semicolon at the end?
-    int semicolonIndex = query.indexOf(";");
-    if (semicolonIndex != -1)
-      query = query.substring(0, query.indexOf(";"));
-
-    StringBuilder builder = new StringBuilder(query); // StringBuilder for faster string creation
-    builder.append(" ORDER BY ");
-    for (String aGroupBy : resourceIdColumns) {
-      builder.append(aGroupBy);
-      builder.append(", ");
-    }
-
-    // Replace the last two characters (", ") by a ";"
-    builder.delete(builder.length() - 2, builder.length());
-    builder.append(";");
-
-    return builder.toString();
+  public void addBridge(Bridge bridge) {
+    this.bridges.add(bridge);
   }
 
   /**
@@ -138,93 +112,6 @@ public class D2rMap {
 
   public void clear() {
     statement.reset();
-  }
-
-  private static String getAfter(String query, int index) {
-    if ((index <= -1)
-    || (index >= query.length())) {
-      return "";
-    }
-    return query.substring(index, query.length());
-  }
-
-  public SQLQueryResultStream getAllData(DataSource dataSource) throws SQLException {
-    statement.reset();
-    return statement.execute(dataSource);
-  }
-
-  private static String getBefore(String query, int index) {
-    if (index == -1) {
-      return query;
-    } else {
-      if (index > query.length())
-        index = query.length();
-      return query.substring(0, index);
-    }
-  }
-
-  private static int getBeforeIndex(String query, List<String> querySelectStatementOrder, int index) {
-    assert index != -1;
-    int splitIndex = -1;
-    for (int currentIndex = index; currentIndex != querySelectStatementOrder.size(); ++currentIndex) {
-      String clause = querySelectStatementOrder.get(currentIndex);
-        splitIndex = query.indexOf(clause);
-        if (splitIndex != -1) break;
-    }
-    return splitIndex;
-  }
-
-  protected String getId() {
-    return this.id;
-  }
-
-  public SelectStatement getQuery() {
-    return statement;
-  }
-
-  protected String getSql() {
-    return sql;
-  }
-
-  public void init(DataSource dataSource, List<D2rMap> maps) throws D2RException {
-    try {
-      statement = new SelectStatement(this.sql, dataSource);
-    } catch (SQLException | D2RException e) {
-      log.error(e);
-      throw new D2RException("Couldn't init D2rMap: ");
-    }
-
-    for (Bridge bridge : bridges) {
-      bridge.init(maps);
-    }
-  }
-
-  public void setBaseURI(String baseURI) {
-    this.baseURI = baseURI;
-  }
-
-  protected void setId(String id) {
-    this.id = id.trim();
-  }
-
-  protected void setSql(String sql) {
-    this.sql = sql;
-  }
-
-  public List<String> getResourceIdColumns() {
-    return Collections.unmodifiableList(resourceIdColumns);
-  }
-
-  public String getBaseURI() {
-    return baseURI;
-  }
-
-  public List<Bridge> getBridges() {
-    return Collections.unmodifiableList(bridges);
-  }
-
-  public String urify(String resourceID) {
-    return baseURI + resourceID;
   }
 
   public List<Triple> createTriples(SQLResultTuple tuple, URINormalizer normalizer) {
@@ -262,5 +149,125 @@ public class D2rMap {
     }
 
     return triples;
+  }
+
+  public SQLQueryResultStream getAllData(DataSource dataSource) throws SQLException {
+    statement.reset();
+    return statement.execute(dataSource);
+  }
+
+  public String getBaseURI() {
+    return baseURI;
+  }
+
+  public List<Bridge> getBridges() {
+    return Collections.unmodifiableList(bridges);
+  }
+
+  public SelectStatement getQuery() {
+    return statement;
+  }
+
+  public List<String> getResourceIdColumns() {
+    return Collections.unmodifiableList(resourceIdColumns);
+  }
+
+  public void init(DataSource dataSource, List<D2rMapper> maps) throws D2RException {
+    try {
+      statement = new SelectStatement(this.sql, dataSource);
+    } catch (SQLException | D2RException e) {
+      log.error(e);
+      throw new D2RException("Couldn't init D2rMapper: ");
+    }
+
+    for (Bridge bridge : bridges) {
+      bridge.init(maps);
+    }
+  }
+
+  public void setBaseURI(String baseURI) {
+    this.baseURI = baseURI;
+  }
+
+  public String urify(String resourceID) {
+    return baseURI + resourceID;
+  }
+
+
+  protected String getId() {
+    return this.id;
+  }
+
+  protected String getSql() {
+    return sql;
+  }
+
+  protected void setId(String id) {
+    this.id = id.trim();
+  }
+
+  protected void setSql(String sql) {
+    this.sql = sql;
+  }
+
+
+
+  private static String getAfter(String query, int index) {
+    if ((index <= -1)
+        || (index >= query.length())) {
+      return "";
+    }
+    return query.substring(index, query.length());
+  }
+
+  private static String getBefore(String query, int index) {
+    if (index == -1) {
+      return query;
+    } else {
+      if (index > query.length())
+        index = query.length();
+      return query.substring(0, index);
+    }
+  }
+
+  private static int getBeforeIndex(String query, List<String> querySelectStatementOrder, int index) {
+    assert index != -1;
+    int splitIndex = -1;
+    for (int currentIndex = index; currentIndex != querySelectStatementOrder.size(); ++currentIndex) {
+      String clause = querySelectStatementOrder.get(currentIndex);
+      splitIndex = query.indexOf(clause);
+      if (splitIndex != -1) break;
+    }
+    return splitIndex;
+  }
+
+
+
+  private String addOrderByStatements(String query) throws D2RException {
+    if (query == null) throw new NullPointerException("query mustn't be null!");
+    if (resourceIdColumns.isEmpty()) return query;
+
+    // Create upper case version for checking for ORDER BY statements
+    String ucQuery = query.toUpperCase();
+    if (ucQuery.contains("ORDER BY"))
+      throw new D2RException("SQL statement should not contain ORDER BY: " + query);
+
+    // Query contains a semicolon at the end?
+    int semicolonIndex = query.indexOf(";");
+    if (semicolonIndex != -1)
+      query = query.substring(0, query.indexOf(";"));
+
+    StringBuilder builder = new StringBuilder(query); // StringBuilder for faster string creation
+    builder.append(" ORDER BY ");
+    for (String aGroupBy : resourceIdColumns) {
+      builder.append(aGroupBy);
+      builder.append(", ");
+    }
+
+    // Replace the last two characters (", ") by a ";"
+    builder.delete(builder.length() - 2, builder.length());
+    builder.append(";");
+
+    return builder.toString();
   }
 }

@@ -1,6 +1,6 @@
 package de.unipassau.medspace.rdf;
 
-import de.fuberlin.wiwiss.d2r.D2rMap;
+import de.fuberlin.wiwiss.d2r.D2rMapper;
 import de.fuberlin.wiwiss.d2r.URINormalizer;
 import de.unipassau.medspace.SQL.SQLQueryResultStream;
 import de.unipassau.medspace.SQL.SQLResultTuple;
@@ -22,11 +22,11 @@ public class D2rMapTripleStream extends  AbstractTripleStream {
 
   private SQLQueryResultStream queryStream;
   private SQLQueryResultStream.QueryParams startParams;
-  private D2rMap map;
+  private D2rMapper map;
   private Queue<Triple> tripleCache;
   private URINormalizer normalizer;
 
-  public D2rMapTripleStream(SQLQueryResultStream.QueryParams queryParams, D2rMap map, URINormalizer normalizer) {
+  public D2rMapTripleStream(SQLQueryResultStream.QueryParams queryParams, D2rMapper map, URINormalizer normalizer) {
     super();
 
     assert  queryParams != null;
@@ -47,6 +47,7 @@ public class D2rMapTripleStream extends  AbstractTripleStream {
     isClosed = true;
     tripleCache.clear();
     queryStream.close();
+    log.debug("Successfully closed.");
   }
 
   @Override

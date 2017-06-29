@@ -9,15 +9,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.fuberlin.wiwiss.d2r.factory.*;
+import de.unipassau.medspace.rdf.MultiTripleStream;
 import de.unipassau.medspace.util.FileUtil;
 import org.apache.jena.atlas.web.MediaType;
 import org.apache.jena.atlas.web.TypedInputStream;
 import org.apache.jena.atlas.web.TypedOutputStream;
 import org.apache.jena.datatypes.xsd.impl.RDFLangString;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.* ;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.system.StreamRDFWriter;
 
 
 /**
@@ -48,23 +53,34 @@ public class TestProcessor {
             processor = new D2rProcessor(config, dataSourceManager);
             System.out.println("D2R processor created ....");
             System.out.println("D2R file read ....");
-            Instant startTime = Instant.now();
             //Model output = processor.generateTestAsModel();
             //Model output = processor.generateAllInstancesAsModel();
+            Lang lang = Lang.TURTLE;
+            Instant startTime = Instant.now();
+            try (MultiTripleStream tripleStream = processor.getAllTriples()) {
+                tripleStream.start();
+                RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
+                StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
+                rdfOut.start();
+                for (Triple triple : tripleStream) {
+                    //rdfOut.triple(triple);
+                }
+                rdfOut.finish();
+            }
 
-            Lang lang = config.getOutputFormat();
+            Instant endTime = Instant.now();
+            //Lang lang = config.getOutputFormat();
             Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
 
 
             //Model output = processor.doKeywordSearch(Arrays.asList("English", "Male"));
-            Model output = processor.generateAllInstancesAsModel();
-            Instant endTime = Instant.now();
-            output.write(System.out, prettyLang.getLabel());
+           // Model output = processor.generateAllInstancesAsModel();
+            //output.write(System.out, prettyLang.getLabel());
             Model newModel = de.fuberlin.wiwiss.d2r.factory.ModelFactory.getInstance().createDefaultModel();
             out = new FileOutputStream("./modelout.d2rtmp");
 
             System.out.println("Lang: " + lang);
-            RDFDataMgr.write(out, output, lang);
+            //RDFDataMgr.write(out, output, lang);
 
             in = new FileInputStream("./modelout.d2rtmp");
             System.out.println("Start streaming the model...");

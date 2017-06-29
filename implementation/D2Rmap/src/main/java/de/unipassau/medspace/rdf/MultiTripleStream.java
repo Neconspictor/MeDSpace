@@ -14,7 +14,7 @@ import java.util.Queue;
  */
 public class MultiTripleStream extends AbstractTripleStream {
 
-  private static Logger log = Logger.getLogger(AbstractTripleStream.class);
+  private static Logger log = Logger.getLogger(MultiTripleStream.class);
 
   private Queue<TripleStream> streams;
 
@@ -53,18 +53,19 @@ public class MultiTripleStream extends AbstractTripleStream {
 
     // we don't need anymore the TripleStreams, so release them
     streams.clear();
+    log.debug("Successfully closed.");
   }
 
   @Override
   public boolean hasNext() {
-    if (isClosed) throw new IllegalStateException("MultiTripleStream is already closed!");
+    if (!isOpen()) throw new IllegalStateException("MultiTripleStream is not open!");
     TripleStream activeStream = getActiveStream();
     return activeStream != null;
   }
 
   @Override
   public Triple next() {
-    if (isClosed) throw new IllegalStateException("MultiTripleStream is already closed!");
+    if (!isOpen()) throw new IllegalStateException("MultiTripleStream is not open!");
     TripleStream activeStream = getActiveStream();
     if (activeStream == null) throw new IllegalStateException("No next Triple available!");
     return activeStream.next();

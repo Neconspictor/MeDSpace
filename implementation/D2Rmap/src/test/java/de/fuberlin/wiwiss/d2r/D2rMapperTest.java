@@ -23,10 +23,10 @@ import java.util.List;
 /**
  * Created by David Goeth on 07.06.2017.
  */
-public class D2rMapTest extends BasicJDBCTestCaseAdapter {
+public class D2rMapperTest extends BasicJDBCTestCaseAdapter {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rMapTest.class);
+  private static Logger log = Logger.getLogger(D2rMapperTest.class);
 
   @Test
   public void testAddConditionStatements() {
@@ -34,7 +34,7 @@ public class D2rMapTest extends BasicJDBCTestCaseAdapter {
     String query = "SELECT * FROM languages\nORDER BY languages.name;";
     query = query.toUpperCase();
     List<String> conditionList = new ArrayList<>(Arrays.asList("LANGUAGES.ID = 12", "LANGUAGES.NAME LIKE 'ENGLISH'"));
-    String queryResult = D2rMap.addConditionStatements(query, conditionList);
+    String queryResult = D2rMapper.addConditionStatements(query, conditionList);
 
     String expectedResult = "SELECT * FROM LANGUAGES WHERE LANGUAGES.ID = 12 AND LANGUAGES.NAME LIKE 'ENGLISH' ORDER BY LANGUAGES.NAME;";
 
@@ -44,7 +44,7 @@ public class D2rMapTest extends BasicJDBCTestCaseAdapter {
 
   @Test
   public void getAllDataTest() throws SQLException, IOException, D2RException {
-    D2rMap map = createTestMap();
+    D2rMapper map = createTestMap();
     DataSource dataSource = createDataSource();
     map.init(dataSource, Arrays.asList(map));
 
@@ -94,8 +94,8 @@ public class D2rMapTest extends BasicJDBCTestCaseAdapter {
     return config;
   }
 
-  private D2rMap createTestMap() {
-    D2rMap map = new D2rMap();
+  private D2rMapper createTestMap() {
+    D2rMapper map = new D2rMapper();
     map.setId("language");
     map.setSql("SELECT * FROM language");
     map.addResourceIdColumns("language.name");

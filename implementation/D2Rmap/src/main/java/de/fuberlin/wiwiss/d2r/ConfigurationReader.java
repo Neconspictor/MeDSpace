@@ -158,8 +158,8 @@ public class ConfigurationReader {
   }
 
   private static void readClassMapElement(Configuration config, Element mapElement) throws D2RException {
-    List<D2rMap> maps = config.getMaps();
-    D2rMap cMap = new D2rMap();
+    List<D2rMapper> maps = config.getMaps();
+    D2rMapper cMap = new D2rMapper();
 
     // sql and groupBy attributes are required
     cMap.setSql(mapElement.getAttribute(D2R.CLASS_MAP_SQL_ATTRIBUTE));
@@ -199,20 +199,20 @@ public class ConfigurationReader {
 
   /**
    * Validates the value of a DRMap id. If the validation test should fail, a D2RException is thrown
-   * @param id the D2rMap id
+   * @param id the D2rMapper id
    * @param maps a collection of D2RMaps that have been read so far
    * @throws D2RException if the validation test fails
    */
-  private static void validateD2RMapId(String id, Collection<D2rMap> maps) throws D2RException {
+  private static void validateD2RMapId(String id, Collection<D2rMapper> maps) throws D2RException {
 
-    for (D2rMap map : maps) {
+    for (D2rMapper map : maps) {
       if (map.getId().equals(id)) {
-        throw new D2RException("D2rMap id is multiple times used in the configuration file: id=" + id);
+        throw new D2RException("D2rMapper id is multiple times used in the configuration file: id=" + id);
       }
     }
   }
 
-  private static void readDataTypePropertyElement(Element elem, D2rMap map) {
+  private static void readDataTypePropertyElement(Element elem, D2rMapper map) {
     DatatypePropertyBridge bridge = new DatatypePropertyBridge();
     bridge.setProperty(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
@@ -222,7 +222,7 @@ public class ConfigurationReader {
     map.addBridge(bridge);
   }
 
-  private static void readObjectPropertyElement(Element elem, D2rMap map) {
+  private static void readObjectPropertyElement(Element elem, D2rMapper map) {
     ObjectPropertyBridge bridge = new ObjectPropertyBridge();
     bridge.setProperty(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
