@@ -3,8 +3,8 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.*;
 import java.sql.*;
 
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
-import de.unipassau.medsapce.SQL.SQLResultTuple;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;

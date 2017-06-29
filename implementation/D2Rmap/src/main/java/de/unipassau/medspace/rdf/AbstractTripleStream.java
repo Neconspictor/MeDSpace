@@ -1,4 +1,4 @@
-package de.unipassau.medsapce.rdf;
+package de.unipassau.medspace.rdf;
 
 import org.apache.jena.graph.Triple;
 import java.util.Iterator;

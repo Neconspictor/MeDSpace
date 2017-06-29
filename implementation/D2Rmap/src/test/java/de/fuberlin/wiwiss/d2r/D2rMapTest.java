@@ -5,8 +5,8 @@ import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockResultSet;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
-import de.unipassau.medsapce.SQL.SQLResultTuple;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 

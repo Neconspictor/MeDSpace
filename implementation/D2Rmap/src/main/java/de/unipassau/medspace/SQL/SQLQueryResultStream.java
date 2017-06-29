@@ -1,6 +1,5 @@
-package de.unipassau.medsapce.SQL;
+package de.unipassau.medspace.SQL;
 
-import de.fuberlin.wiwiss.d2r.URINormalizer;
 import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.LookaheadIterator;
 import org.apache.log4j.LogManager;

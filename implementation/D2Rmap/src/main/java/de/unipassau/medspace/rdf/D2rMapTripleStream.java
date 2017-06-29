@@ -1,9 +1,9 @@
-package de.unipassau.medsapce.rdf;
+package de.unipassau.medspace.rdf;
 
 import de.fuberlin.wiwiss.d2r.D2rMap;
 import de.fuberlin.wiwiss.d2r.URINormalizer;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
-import de.unipassau.medsapce.SQL.SQLResultTuple;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.apache.jena.graph.Triple;
 import org.apache.log4j.Logger;
 

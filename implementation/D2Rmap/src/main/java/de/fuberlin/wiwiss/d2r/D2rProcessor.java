@@ -5,10 +5,10 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.*;
 
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
-import de.unipassau.medsapce.SQL.SQLResultTuple;
-import de.unipassau.medsapce.indexing.SQLIndex;
-import de.unipassau.medsapce.rdf.D2rMapTripleStream;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
+import de.unipassau.medspace.indexing.SQLIndex;
+import de.unipassau.medspace.rdf.D2rMapTripleStream;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.graph.Graph;

@@ -1,6 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
-import de.unipassau.medsapce.SQL.SQLResultTuple;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 

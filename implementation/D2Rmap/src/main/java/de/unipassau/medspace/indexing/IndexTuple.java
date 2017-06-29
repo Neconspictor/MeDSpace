@@ -1,4 +1,4 @@
-package de.unipassau.medsapce.indexing;
+package de.unipassau.medspace.indexing;
 
 /**
  * Created by David Goeth on 22.06.2017.

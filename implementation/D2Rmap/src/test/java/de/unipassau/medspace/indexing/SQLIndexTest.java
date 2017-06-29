@@ -1,7 +1,6 @@
 package de.unipassau.medspace.indexing;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medsapce.indexing.SQLIndex;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

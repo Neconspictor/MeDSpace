@@ -3,9 +3,7 @@ package de.unipassau.medspace.util;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
 import de.fuberlin.wiwiss.d2r.factory.DriverFactory;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 

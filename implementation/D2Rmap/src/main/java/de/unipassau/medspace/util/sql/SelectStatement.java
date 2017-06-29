@@ -1,12 +1,10 @@
 package de.unipassau.medspace.util.sql;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
 import de.unipassau.medspace.util.FileUtil;
-import de.unipassau.medspace.util.SqlUtil;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 

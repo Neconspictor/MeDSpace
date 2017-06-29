@@ -3,14 +3,12 @@ package de.unipassau.medspace.util.sql;
 import de.fuberlin.wiwiss.d2r.Configuration;
 import de.fuberlin.wiwiss.d2r.DataSourceManager;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medsapce.SQL.SQLQueryResultStream;
-import de.unipassau.medsapce.SQL.SQLResultTuple;
-import de.unipassau.medspace.util.FileUtil;
+import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
