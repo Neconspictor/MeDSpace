@@ -3,7 +3,7 @@ package de.unipassau.medspace.util.sql;
 import de.fuberlin.wiwiss.d2r.Configuration;
 import de.fuberlin.wiwiss.d2r.DataSourceManager;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SqlStream;
 import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.junit.Test;
 
@@ -29,14 +29,14 @@ public class SelectStatementTest {
     DataSource dataSource = new DataSourceManager(config).getDataSource();
     SelectStatement stmt = new SelectStatement(query, dataSource);
 
-    try (SQLQueryResultStream result = stmt.execute(dataSource)){
+    try (SqlStream result = stmt.execute(dataSource)){
       printQueryResult(result);
     } catch(IOException e) {
       throw e;
     }
   }
 
-  private void printQueryResult(SQLQueryResultStream result) throws SQLException, IOException {
+  private void printQueryResult(SqlStream result) throws SQLException, IOException {
     for (SQLResultTuple tuple : result) {
       for (int i = 0; i < tuple.getColumnCount(); ++i) {
         System.out.print(tuple.getValue(i) + " ");

@@ -3,8 +3,9 @@ package de.fuberlin.wiwiss.d2r;
 import java.util.*;
 import java.sql.*;
 
-import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SqlStream;
 import de.unipassau.medspace.SQL.SQLResultTuple;
+import de.unipassau.medspace.common.URINormalizer;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
@@ -151,7 +152,7 @@ public class D2rMapper {
     return triples;
   }
 
-  public SQLQueryResultStream getAllData(DataSource dataSource) throws SQLException {
+  public SqlStream getAllData(DataSource dataSource) throws SQLException {
     statement.reset();
     return statement.execute(dataSource);
   }

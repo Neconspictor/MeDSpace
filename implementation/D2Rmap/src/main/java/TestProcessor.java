@@ -2,19 +2,12 @@ import de.fuberlin.wiwiss.d2r.*;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import de.fuberlin.wiwiss.d2r.factory.*;
-import de.unipassau.medspace.rdf.MultiTripleStream;
+import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.util.FileUtil;
-import org.apache.jena.atlas.web.MediaType;
-import org.apache.jena.atlas.web.TypedInputStream;
-import org.apache.jena.atlas.web.TypedOutputStream;
-import org.apache.jena.datatypes.xsd.impl.RDFLangString;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.* ;
 import org.apache.jena.riot.Lang;
@@ -55,8 +48,14 @@ public class TestProcessor {
             System.out.println("D2R file read ....");
 
             Lang lang = Lang.TURTLE;
+
+
+            processor.reindex();
+
             Instant startTime = Instant.now();
-            try (MultiTripleStream tripleStream = processor.doKeywordSearch(Arrays.asList("English", "Male"))) {
+            processor.doLuceneKeywordSearch(Arrays.asList("Male"));
+
+            /*try (StreamCollection<Triple> tripleStream = processor.doKeywordSearch(Arrays.asList(""))) {
                 tripleStream.start();
                 RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
                 StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
@@ -65,7 +64,7 @@ public class TestProcessor {
                     rdfOut.triple(triple);
                 }
                 rdfOut.finish();
-            }
+            }*/
 
             Instant endTime = Instant.now();
             //Lang lang = config.getOutputFormat();

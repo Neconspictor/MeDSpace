@@ -2,13 +2,20 @@ package de.fuberlin.wiwiss.d2r;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.*;
 
-import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SQLResultTuple;
+import de.unipassau.medspace.SQL.SqlStream;
+import de.unipassau.medspace.common.URINormalizer;
+import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.indexing.SQLIndex;
-import de.unipassau.medspace.rdf.D2rMapTripleStream;
-import de.unipassau.medspace.rdf.MultiTripleStream;
-import de.unipassau.medspace.rdf.TripleStream;
+import de.unipassau.medspace.common.stream.StreamCollection;
+import de.unipassau.medspace.indexing.SearchResult;
+import de.unipassau.medspace.indexing.SqlToDocumentStream;
+import de.unipassau.medspace.rdf.SqlTripleStream;
+import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
 import org.apache.jena.graph.Graph;
@@ -28,8 +35,20 @@ import java.util.Map.Entry;
 import de.fuberlin.wiwiss.d2r.factory.ModelFactory;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RegexpQuery;
 
 import javax.sql.DataSource;
+
+import static org.apache.lucene.index.ReaderSlice.EMPTY_ARRAY;
 
 /**
  * D2R processor exports data from a RDBMS into an RDF model using a D2R MAP.
@@ -97,15 +116,17 @@ public class D2rProcessor {
 
 
   /**
-   * TODO
-   * @param map
-   * @param dataSource
-   * @param conditionList
-   * @return
-   * @throws D2RException
+   * Creates a rdf triple stream from the specified datasource. For the rdf sql to rdf
+   * mapping the specified D2rMapper is used. The triple stream will be resticted by the given conditionList
+   * argument.<p/>
+   *
+   * NOTE: The returned TripleStream won't be started, so no connection to the datasource will be established yet.
+   * @param map The sql to rdf mapper
+   * @param  dataSource The sql datasource.
+   * @param conditionList The query that should be executed on the datasource
    */
-  public TripleStream createStream(D2rMapper map, DataSource dataSource,
-                                   List<String> conditionList) throws D2RException {
+  public StreamFactory<Triple> createTripleStreamFactory(D2rMapper map, DataSource dataSource,
+                                                         List<String> conditionList) throws D2RException {
 
     SelectStatement statement = map.getQuery();
     for (String condition : conditionList) {
@@ -119,7 +140,46 @@ public class D2rProcessor {
       throw new D2RException("SQL statement should not contain UNION: " + query);
 
     //generate resources using the Connection
-    return createStream(map, dataSource, query);
+    return () -> {
+      SqlStream.QueryParams queryParams = new SqlStream.QueryParams(dataSource, query);
+      return new SqlTripleStream(queryParams, map, normalizer);
+    };
+  }
+
+  /**
+   * TODO
+   * @param map
+   * @param dataSource
+   * @param conditionList
+   * @return
+   * @throws D2RException
+   */
+  public StreamFactory<Document> createLuceneDocStreamFactory(D2rMapper map, DataSource dataSource,
+                                                              List<String> conditionList) throws D2RException {
+
+    SelectStatement statement = map.getQuery();
+    for (String condition : conditionList) {
+      statement.addTemporaryCondition(condition);
+    }
+
+    String query = statement.toString();
+    statement.reset();
+    String ucQuery = query.toUpperCase();
+    if (ucQuery.contains("UNION"))
+      throw new D2RException("SQL statement should not contain UNION: " + query);
+
+
+    SqlStream.QueryParams queryParams = new SqlStream.QueryParams(dataSource, query);
+    StreamFactory<SQLResultTuple> factory = () -> {
+      try {
+        return new SqlStream(queryParams);
+      } catch (SQLException e) {
+        throw new IOException("Couldn't create stream to the sql datasource", e);
+      }
+    };
+
+    //generate resources using the Connection
+    return () -> new SqlToDocumentStream(factory);
   }
 
 
@@ -129,7 +189,7 @@ public class D2rProcessor {
    * @return
    * @throws D2RException
    */
-  public MultiTripleStream doKeywordSearch(List<String> keywords) throws D2RException {
+  public StreamCollection<Triple> doKeywordSearch(List<String> keywords) throws D2RException {
 
     Model model = null;
 
@@ -147,7 +207,7 @@ public class D2rProcessor {
       model.setNsPrefix(ent.getKey(), ent.getValue());
     }
 
-    MultiTripleStream result = new MultiTripleStream();
+    StreamCollection<Triple> result = new StreamCollection<>();
 
     // Generate instances for all maps
     for (D2rMapper map : maps) {
@@ -157,18 +217,93 @@ public class D2rProcessor {
 
       String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns);
       query.addTemporaryCondition(keywordCondition);
-      TripleStream stream = createStream(map, dataSourceManager.getDataSource(), new ArrayList<>());
+      StreamFactory<Triple> stream = createTripleStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>());
       result.add(stream);
     }
 
     return result;
   }
 
+  public void doLuceneKeywordSearch(List<String> keywords) throws IOException, ParseException {
+
+    index.open();
+    SearchResult result = doLuceneKeywordSearch(new String[] {"NAME", "ID", "DATEOFBIRTH", "SEX",
+        "MARITALSTATUS", "LANGUAGE"}, keywords);
+
+    for(int i=0;i<result.getScoredLength();++i) {
+      Document d = result.getResult(i);
+      //System.out.println(d);
+      //System.out.println((i + 1) + ". " + d.get("NAME"));
+    }
+
+    result.close();
+    index.close();
+  }
+
+  private SearchResult doLuceneKeywordSearch(String[] fieldNameArray , List<String> keywords) throws IOException, ParseException {
+    Analyzer analyzer = new StandardAnalyzer();
+    StringBuilder querystr = new StringBuilder();
+    String and = " AND ";
+    for (String keyword : keywords) {
+      querystr.append("/.*" + keyword + ".*/" + and);
+    }
+    querystr = querystr.delete(querystr.length() - and.length(), querystr.length());
+    String q = querystr.toString().toLowerCase();
+    //System.out.println("query: " + q);
+
+
+    QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
+    Query query = parser.parse(q);
+
+
+    return new SearchResult(index.createReader(), query);
+  }
+
   /** Generated instances for all D2R maps. */
-  public MultiTripleStream getAllTriples() throws D2RException {
-    MultiTripleStream result = new MultiTripleStream();
+  public StreamCollection<Document> getAllAsLuceneDocs() throws D2RException {
+    Model model = null;
+
+    try {
+      clear();
+      model = ModelFactory.getInstance().createDefaultModel();
+    }
+    catch (FactoryException e) {
+      throw new D2RException("Could not get default Model from the ModelFactory.", e);
+    }
+
+    // add namespaces
+    for (Entry<String, String> ent : namespaces.entrySet()) {
+      model.setNsPrefix(ent.getKey(), ent.getValue());
+    }
+
+    StreamCollection<Document> result = new StreamCollection();
+    for (D2rMapper map : maps) {
+      result.add(createLuceneDocStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
+    }
+
+    return result;
+  }
+
+  /** Generated instances for all D2R maps. */
+  public StreamCollection<Triple> getAllAsTriples() throws D2RException {
+    Model model = null;
+
+    try {
+      clear();
+      model = ModelFactory.getInstance().createDefaultModel();
+    }
+    catch (FactoryException e) {
+      throw new D2RException("Could not get default Model from the ModelFactory.", e);
+    }
+
+    // add namespaces
+    for (Entry<String, String> ent : namespaces.entrySet()) {
+      model.setNsPrefix(ent.getKey(), ent.getValue());
+    }
+
+    StreamCollection<Triple> result = new StreamCollection<>();
     for (D2rMapper map : maps)
-      result.add(createStream(map, dataSourceManager.getDataSource(), new ArrayList<>()));
+      result.add(createTripleStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
 
     return result;
   }
@@ -192,31 +327,30 @@ public class D2rProcessor {
     }
   }
 
+  public void reindex() throws D2RException {
+    StreamCollection<Document> docStream = getAllAsLuceneDocs();
+
+    try {
+      index.open();
+      docStream.start();
+      index.reindex(docStream);
+      // for (Document doc : docStream) {System.out.println(doc.toString());}
+
+
+    } catch (IOException e) {
+      throw new D2RException("Error while reindexing", e);
+    } finally {
+      index.close();
+      FileUtil.closeSilently(docStream, true);
+    }
+
+  }
+
+
   private void clear() throws FactoryException {
     // clear maps
     for (D2rMapper map : maps)
       map.clear();
-  }
-
-  /**
-   * Creates a rdf triple stream from the specified query, that is executed on the specified datasource. For the rdf sql to rdf
-   * mapping the specified D2rMapper is used. <p/>
-   *
-   * NOTE: The returned TripleStream won't be started, so no connection to the datasource will be established yet.
-   * @param map The sql to rdf mapper
-   * @param  dataSource The sql datasource.
-   * @param query The query that should be executed on the datasource
-   */
-  private TripleStream createStream(D2rMapper map, DataSource dataSource, String query) {
-
-    if (log.isDebugEnabled()) {
-      log.debug("Create triple stream for map: " + map);
-    }
-
-    SQLQueryResultStream.QueryParams queryParams = new SQLQueryResultStream.QueryParams(dataSource, query);
-    D2rMapTripleStream tripleStream = new D2rMapTripleStream(queryParams, map, normalizer);
-
-    return tripleStream;
   }
 
   private void someTestStuff(D2rMapper map)
@@ -245,12 +379,12 @@ public class D2rProcessor {
     //NodeFactory
     //ResourceFactory
 
-        /*tripleStream.start();
+        /*tripleStream.validateStart();
       OutputStream out  = System.out;
       Lang lang = Lang.TURTLE;
       RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
       StreamRDF rdfOut = StreamRDFWriter.getWriterStream(out, format);
-      rdfOut.start();
+      rdfOut.validateStart();
       for (Triple triple : tripleStream)
         rdfOut.triple(triple);
       rdfOut.finish();*/

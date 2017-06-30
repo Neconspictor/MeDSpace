@@ -1,4 +1,4 @@
-package de.unipassau.medspace.util;
+package de.unipassau.medspace.common.iterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -7,11 +7,11 @@ import java.util.NoSuchElementException;
  * @author Ian Pojman <pojman@gmail.com>
  */
 public abstract class LookaheadIterator<T> implements Iterator<T> {
-  /** The predetermined "next" object retrieved from the wrapped iterator, can be null. */
+  /** The predetermined "validateNext" object retrieved from the wrapped iterator, can be null. */
   protected T next;
 
   /**
-   * Implement the hasNext policy of this iterator.
+   * Implement the validateHasNext policy of this iterator.
    * Returns true of the getNext() policy returns a new item.
    */
   public boolean hasNext()
@@ -21,7 +21,7 @@ public abstract class LookaheadIterator<T> implements Iterator<T> {
       return true;
     }
 
-    // we havent done it already, so go find the next thing...
+    // we havent done it already, so go find the validateNext thing...
     if (!doesHaveNext())
     {
       return false;
@@ -30,14 +30,14 @@ public abstract class LookaheadIterator<T> implements Iterator<T> {
     return getNext();
   }
 
-  /** by default we can return true, since our logic does not rely on hasNext() - it prefetches the next */
+  /** by default we can return true, since our logic does not rely on validateHasNext() - it prefetches the validateNext */
   protected boolean doesHaveNext() {
     return true;
   }
 
   /**
-   * Fetch the next item
-   * @return false if the next item is null.
+   * Fetch the validateNext item
+   * @return false if the validateNext item is null.
    */
   protected boolean getNext()
   {
@@ -47,13 +47,13 @@ public abstract class LookaheadIterator<T> implements Iterator<T> {
   }
 
   /**
-   * Subclasses implement the 'get next item' functionality by implementing this method. Implementations return null when they have no more.
-   * @return Null if there is no next.
+   * Subclasses implement the 'get validateNext item' functionality by implementing this method. Implementations return null when they have no more.
+   * @return Null if there is no validateNext.
    */
   protected abstract T loadNext();
 
   /**
-   * Return the next item from the wrapped iterator.
+   * Return the validateNext item from the wrapped iterator.
    */
   public T next()
   {

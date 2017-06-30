@@ -1,4 +1,4 @@
-package de.fuberlin.wiwiss.d2r;
+package de.unipassau.medspace.common;
 
 /**
  * Created by David Goeth on 27.06.2017.

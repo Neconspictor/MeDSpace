@@ -5,7 +5,7 @@ import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockResultSet;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SqlStream;
 import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class D2rMapperTest extends BasicJDBCTestCaseAdapter {
     DataSource dataSource = createDataSource();
     map.init(dataSource, Arrays.asList(map));
 
-    try (SQLQueryResultStream stream = map.getAllData(dataSource)) {
+    try (SqlStream stream = map.getAllData(dataSource)) {
       for (SQLResultTuple tuple : stream) {
         System.out.println(tuple.toString());
       }

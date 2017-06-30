@@ -1,6 +1,7 @@
 package de.fuberlin.wiwiss.d2r;
 
 import de.unipassau.medspace.SQL.SQLResultTuple;
+import de.unipassau.medspace.common.URINormalizer;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.rdf.model.Literal;

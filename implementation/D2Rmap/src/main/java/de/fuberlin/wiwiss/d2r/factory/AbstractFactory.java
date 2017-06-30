@@ -121,7 +121,7 @@ public class AbstractFactory
 
         try {
 
-          // Try to close the stream if it is not null
+          // Try to validateClose the stream if it is not null
           inputStream.close();
         }
         catch (IOException ioException) {

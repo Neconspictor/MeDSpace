@@ -1,8 +1,8 @@
 package de.unipassau.medspace.rdf;
 
 import de.fuberlin.wiwiss.d2r.D2rMapper;
-import de.fuberlin.wiwiss.d2r.URINormalizer;
-import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SqlStream;
+import de.unipassau.medspace.common.URINormalizer;
 import de.unipassau.medspace.SQL.SQLResultTuple;
 import org.apache.jena.graph.Triple;
 import org.apache.log4j.Logger;
@@ -16,17 +16,17 @@ import java.util.Queue;
 /**
  * Created by David Goeth on 28.06.2017.
  */
-public class D2rMapTripleStream extends  AbstractTripleStream {
+public class SqlTripleStream implements TripleStream {
 
-  private static Logger log = Logger.getLogger(D2rMapTripleStream.class);
+  private static Logger log = Logger.getLogger(SqlTripleStream.class);
 
-  private SQLQueryResultStream queryStream;
-  private SQLQueryResultStream.QueryParams startParams;
+  private SqlStream queryStream;
+  private SqlStream.QueryParams startParams;
   private D2rMapper map;
   private Queue<Triple> tripleCache;
   private URINormalizer normalizer;
 
-  public D2rMapTripleStream(SQLQueryResultStream.QueryParams queryParams, D2rMapper map, URINormalizer normalizer) {
+  public SqlTripleStream(SqlStream.QueryParams queryParams, D2rMapper map, URINormalizer normalizer) throws IOException {
     super();
 
     assert  queryParams != null;
@@ -38,13 +38,16 @@ public class D2rMapTripleStream extends  AbstractTripleStream {
     this.map = map;
     this.normalizer = normalizer;
     tripleCache = new LinkedList<>();
+
+    try {
+      queryStream = new SqlStream(startParams);
+    } catch (SQLException e) {
+      throw new IOException("Couldn't create stream to the sql datasource", e);
+    }
   }
 
   @Override
   public void close() throws IOException {
-    if (!started) throw new IllegalStateException("D2rMapTripleStream hasn't started yet!");
-    if (isClosed) throw new IllegalStateException("D2rMapTripleStream is already closed!");
-    isClosed = true;
     tripleCache.clear();
     queryStream.close();
     log.debug("Successfully closed.");
@@ -52,31 +55,17 @@ public class D2rMapTripleStream extends  AbstractTripleStream {
 
   @Override
   public boolean hasNext() {
-    if (!started) throw new IllegalStateException("D2rMapTripleStream is closed!");
     if (!tripleCache.isEmpty()) return true;
     return queryStream.iterator().hasNext();
   }
 
   @Override
   public Triple next() {
-    if (!started) throw new IllegalStateException("D2rMapTripleStream is closed!");
     if (tripleCache.isEmpty()) {
       SQLResultTuple tuple = queryStream.iterator().next();
       List<Triple> tupleTriples = map.createTriples(tuple, normalizer);
       tripleCache.addAll(tupleTriples);
     }
     return tripleCache.poll();
-  }
-
-  @Override
-  public void start() throws IOException {
-    if (isClosed) throw new IllegalStateException("D2rMapTripleStream is already closed!");
-    if(started) throw new IllegalStateException("D2rMapTripleStream has already started!");
-    started = true;
-    try {
-      queryStream = new SQLQueryResultStream(startParams);
-    } catch (SQLException e) {
-      throw new IOException("Couldn't start SQLQueryResultStream", e);
-    }
   }
 }

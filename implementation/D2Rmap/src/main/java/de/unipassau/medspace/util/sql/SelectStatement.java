@@ -1,7 +1,7 @@
 package de.unipassau.medspace.util.sql;
 
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
-import de.unipassau.medspace.SQL.SQLQueryResultStream;
+import de.unipassau.medspace.SQL.SqlStream;
 import de.unipassau.medspace.util.FileUtil;
 
 import javax.sql.DataSource;
@@ -35,11 +35,11 @@ public class SelectStatement {
     parse(query, dataSource);
   }
 
-  public SQLQueryResultStream execute(DataSource dataSource) throws SQLException {
-    SQLQueryResultStream result = null;
+  public SqlStream execute(DataSource dataSource) throws SQLException {
+    SqlStream result = null;
     try {
       String query = toString();
-      result = new SQLQueryResultStream(new SQLQueryResultStream.QueryParams(dataSource, query));
+      result = new SqlStream(new SqlStream.QueryParams(dataSource, query));
     } catch (SQLException e) {
       FileUtil.closeSilently(result);
       throw e;

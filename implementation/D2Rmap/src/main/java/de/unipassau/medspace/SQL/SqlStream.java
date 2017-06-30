@@ -1,31 +1,29 @@
 package de.unipassau.medspace.SQL;
 
+import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.util.FileUtil;
-import de.unipassau.medspace.util.LookaheadIterator;
+import de.unipassau.medspace.common.iterator.LookaheadIterator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
-import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
 /**
- * Represents a Stream of SQL tuples created from a SQL query.
+ * Represents a StartableIterable of SQL tuples created from a SQL query.
  */
-public class SQLQueryResultStream implements Closeable, Iterable<SQLResultTuple> {
+public class SqlStream implements DataSourceStream<SQLResultTuple> {
   private ResultSet resultSet;
   private LookaheadIterator<SQLResultTuple> resultSetIterator;
   private int numColumns;
   private Statement statement;
   private Connection connection;
-  private static Logger log = LogManager.getLogger(SQLQueryResultStream.class);
+  private static Logger log = LogManager.getLogger(SqlStream.class);
   private volatile boolean closed;
 
   /**
@@ -33,7 +31,7 @@ public class SQLQueryResultStream implements Closeable, Iterable<SQLResultTuple>
    * @param params The parameter for initializing the sql query stream.
    * @throws IOException thrown if an error occurs while quering the datasource
    */
-  public SQLQueryResultStream(QueryParams params) throws SQLException {
+  public SqlStream(QueryParams params) throws SQLException {
     statement =null;
     resultSet = null;
     int fetchSize = params.fetchSize;
@@ -77,7 +75,7 @@ public class SQLQueryResultStream implements Closeable, Iterable<SQLResultTuple>
     closed = false;
 
     if (log.isDebugEnabled())
-      log.debug("Opened SQLQueryResultStream.");
+      log.debug("Opened SqlStream.");
   }
 
   public static QueryParams createDefault(DataSource dataSource, String query) {
@@ -85,7 +83,7 @@ public class SQLQueryResultStream implements Closeable, Iterable<SQLResultTuple>
   }
 
   public void close() throws IOException {
-    if (closed) throw new IOException("SQLQueryResultStream already closed!");
+    if (closed) throw new IOException("SqlStream already closed!");
     FileUtil.closeSilently(connection, true);
     FileUtil.closeSilently(statement, true);
     FileUtil.closeSilently(resultSet, true);
@@ -99,13 +97,17 @@ public class SQLQueryResultStream implements Closeable, Iterable<SQLResultTuple>
     closed = true;
 
     if (log.isDebugEnabled())
-      log.debug("Closed SQLQueryResultStream.");
+      log.debug("Closed SqlStream.");
   }
 
   public int getColumnCount() {
     return numColumns;
   }
 
+  @Override
+  public boolean hasNext() {
+    return resultSetIterator.hasNext();
+  }
 
   @Override
   public Iterator<SQLResultTuple> iterator() {
@@ -113,21 +115,13 @@ public class SQLQueryResultStream implements Closeable, Iterable<SQLResultTuple>
   }
 
   @Override
-  public void forEach(Consumer<? super SQLResultTuple> action) {
-    action.accept(resultSetIterator.next());
+  public SQLResultTuple next() {
+    return resultSetIterator.next();
   }
 
-  /**
-   * Not implemented
-   * @throws
-   */
-  @Override
-  public Spliterator<SQLResultTuple> spliterator() {
-    throw new UnsupportedOperationException("This method isn#T supported!");
-  }
 
   /**
-   * QueryParams holds all params that can be given to a SQLQueryResultStream object.
+   * QueryParams holds all params that can be given to a SqlStream object.
    *
    * Currently it holds the following parameters: <br>
    * The datasource: See {@link QueryParams#dataSource} <br>
