@@ -5,7 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.javatuples.Pair;
 
 import javax.sql.DataSource;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Created by David Goeth on 12.06.2017.
@@ -31,7 +31,7 @@ public class DataSourceManager {
     hikariConfig.setMaximumPoolSize(config.getMaxConnections());
     hikariConfig.setAutoCommit(true);
 
-    Vector<Pair<String, String>> properties = config.getDataSourceProperties();
+    List<Pair<String, String>> properties = config.getDataSourceProperties();
     for (Pair<String, String> property : properties) {
       hikariConfig.addDataSourceProperty(property.getValue0(), property.getValue1());
     }

@@ -5,20 +5,21 @@ import org.javatuples.Pair;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Created by David Goeth on 30.05.2017.
  */
 public class Configuration {
   private String databasePassword;
-  private Vector<Pair<String, String>> dataSourceProperties;
+  private List<Pair<String, String>> dataSourceProperties;
   private String databaseUsername;
   private String jdbc;
   private String jdbcDriver;
   private Path indexDirectory;
-  private Vector<D2rMapper> maps;
+  private List<D2rMapper> maps;
   private int maxConnections; //Connection configurations
   private HashMap<String, String> namespaces;
   private String prepend;
@@ -29,9 +30,9 @@ public class Configuration {
   private boolean useIndex;
 
   public Configuration() {
-    dataSourceProperties = new Vector<>();
+    dataSourceProperties = new ArrayList<>();
     indexDirectory = Paths.get("./");
-    maps = new Vector<>();
+    maps = new ArrayList<>();
     namespaces = new HashMap<>();
     outputFormat = null;
     translationTables = new HashMap<>();
@@ -50,7 +51,7 @@ public class Configuration {
     return databaseUsername;
   }
 
-  public Vector<Pair<String, String>> getDataSourceProperties() {
+  public List<Pair<String, String>> getDataSourceProperties() {
     return dataSourceProperties;
   }
 
@@ -66,7 +67,7 @@ public class Configuration {
     return jdbcDriver;
   }
 
-  public Vector<D2rMapper> getMaps() {
+  public List<D2rMapper> getMaps() {
     return maps;
   }
 
@@ -122,7 +123,7 @@ public class Configuration {
     this.indexDirectory = indexDirectory;
   }
 
-  public void setMaps(Vector<D2rMapper> maps) {
+  public void setMaps(List<D2rMapper> maps) {
     this.maps = maps;
   }
 

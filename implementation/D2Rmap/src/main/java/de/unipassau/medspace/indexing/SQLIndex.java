@@ -78,12 +78,12 @@ public class SQLIndex implements Closeable {
     config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
 
     try(IndexWriter w = new IndexWriter(index, config)) {
-      //w.addDocuments(data);
-      for (Document doc : data) { // TODO test performance and memory consumption!!!
+      w.addDocuments(data);
+      /*for (Document doc : data) { // TODO test performance and memory consumption!!!
         System.out.println(doc);
         w.addDocument(doc);
         w.flush();
-      }
+      }*/
       w.flush();
       w.commit();
     }

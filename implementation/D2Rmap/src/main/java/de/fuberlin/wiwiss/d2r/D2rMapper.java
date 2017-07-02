@@ -165,6 +165,10 @@ public class D2rMapper {
     return Collections.unmodifiableList(bridges);
   }
 
+  public String getId() {
+    return this.id;
+  }
+
   public SelectStatement getQuery() {
     return statement;
   }
@@ -194,17 +198,12 @@ public class D2rMapper {
     return baseURI + resourceID;
   }
 
-
-  protected String getId() {
-    return this.id;
-  }
-
   protected String getSql() {
     return sql;
   }
 
   protected void setId(String id) {
-    this.id = id.trim();
+    this.id = id.trim().toUpperCase();
   }
 
   protected void setSql(String sql) {

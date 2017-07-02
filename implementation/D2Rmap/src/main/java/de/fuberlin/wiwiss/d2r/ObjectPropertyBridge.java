@@ -1,7 +1,7 @@
 package de.fuberlin.wiwiss.d2r;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.StringTokenizer;
 
 import de.unipassau.medspace.SQL.SQLResultTuple;
@@ -22,12 +22,12 @@ public class ObjectPropertyBridge
     extends Bridge {
   private String referredClassID;
   private D2rMapper referredClass;
-  private Vector<String> referredGroupBy;
+  private List<String> referredGroupBy;
   private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
 
 
   protected ObjectPropertyBridge() {
-    referredGroupBy = new Vector<>();
+    referredGroupBy = new ArrayList<>();
     referredClassID = null;
   }
 
@@ -36,7 +36,7 @@ public class ObjectPropertyBridge
   }
 
   protected void setReferredClassID(String referredClass) {
-    this.referredClassID = referredClass.trim();
+    this.referredClassID = referredClass.trim().toUpperCase();
     if (this.referredClassID.equals(""))
       this.referredClassID = null;
   }
@@ -62,7 +62,7 @@ public class ObjectPropertyBridge
     }
   }
 
-  protected Vector<String> getReferredGroupBy() {
+  protected List<String> getReferredGroupBy() {
     return referredGroupBy;
   }
 

@@ -8,13 +8,13 @@ import java.util.*;
 import de.unipassau.medspace.SQL.SQLResultTuple;
 import de.unipassau.medspace.SQL.SqlStream;
 import de.unipassau.medspace.common.URINormalizer;
-import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.indexing.SQLIndex;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.indexing.SearchResult;
 import de.unipassau.medspace.indexing.SqlToDocumentStream;
 import de.unipassau.medspace.rdf.SqlTripleStream;
+import de.unipassau.medspace.rdf.TripleStream;
 import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
@@ -36,19 +36,14 @@ import de.fuberlin.wiwiss.d2r.factory.ModelFactory;
 import de.fuberlin.wiwiss.d2r.exception.D2RException;
 import de.fuberlin.wiwiss.d2r.exception.FactoryException;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RegexpQuery;
 
 import javax.sql.DataSource;
-
-import static org.apache.lucene.index.ReaderSlice.EMPTY_ARRAY;
 
 /**
  * D2R processor exports data from a RDBMS into an RDF model using a D2R MAP.
@@ -72,10 +67,11 @@ import static org.apache.lucene.index.ReaderSlice.EMPTY_ARRAY;
  * @version V0.3.1
  */
 public class D2rProcessor {
-  private Vector<D2rMapper> maps;
+  private List<D2rMapper> maps;
   private SQLIndex index;
   private HashMap<String, String> namespaces;
   private URINormalizer normalizer;
+  private HashMap<String, D2rMapper> idToMap;
 
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2rProcessor.class);
@@ -101,6 +97,7 @@ public class D2rProcessor {
      try {
        String directory = config.getIndexDirectory().toString();
        index = SQLIndex.create(directory);
+       index.open();
      } catch (IOException e) {
        log.error(e);
        throw new D2RException("Couldn't create index!");
@@ -112,6 +109,11 @@ public class D2rProcessor {
     }
 
     normalizer = URI -> getNormalizedURI(URI);
+
+    idToMap = new HashMap<>();
+    for (D2rMapper map : maps) {
+      idToMap.put(map.getId(), map);
+    }
   }
 
 
@@ -179,7 +181,7 @@ public class D2rProcessor {
     };
 
     //generate resources using the Connection
-    return () -> new SqlToDocumentStream(factory);
+    return () -> new SqlToDocumentStream(factory, map);
   }
 
 
@@ -225,19 +227,63 @@ public class D2rProcessor {
   }
 
   public void doLuceneKeywordSearch(List<String> keywords) throws IOException, ParseException {
+    List<String> fieldList = new ArrayList<>();
+    for (D2rMapper map : maps) {
 
-    index.open();
-    SearchResult result = doLuceneKeywordSearch(new String[] {"NAME", "ID", "DATEOFBIRTH", "SEX",
-        "MARITALSTATUS", "LANGUAGE"}, keywords);
+      String id = map.getId();
+      SelectStatement query = map.getQuery();
+      for (String column : query.getColumns()) {
+        String col = D2rUtil.getFieldNameUpperCase(column);
+        fieldList.add((id  + "_" + col).toUpperCase());
+      }
+    }
+
+    String[] fields = new String[fieldList.size()];
+    fieldList.toArray(fields);
+
+    SearchResult result = doLuceneKeywordSearch(fields, keywords);
 
     for(int i=0;i<result.getScoredLength();++i) {
       Document d = result.getResult(i);
-      //System.out.println(d);
-      //System.out.println((i + 1) + ". " + d.get("NAME"));
+      D2rMapper map = getMapForDoc(d);
+      System.out.println("map: " + map.getId());
+      System.out.println(d);
     }
 
-    result.close();
-    index.close();
+    TripleStream triples = new TripleStream() {
+
+      private int counter = 0;
+
+      @Override
+      public void close() throws IOException {
+        FileUtil.closeSilently(result);
+      }
+
+      @Override
+      public boolean hasNext() {
+        return counter < result.getScoredLength();
+      }
+
+      @Override
+      public Triple next() {
+        counter++;
+        Triple triple = null;
+        try {
+          Document d = result.getResult(counter);
+        } catch (IOException e) {
+          throw new NullPointerException("next is null!");
+        }
+
+        return triple;
+      }
+    };
+
+    triples.close();
+  }
+
+  private D2rMapper getMapForDoc(Document d) {
+    String name = d.getField("MAP").stringValue();
+    return idToMap.get(name);
   }
 
   private SearchResult doLuceneKeywordSearch(String[] fieldNameArray , List<String> keywords) throws IOException, ParseException {
@@ -340,10 +386,13 @@ public class D2rProcessor {
     } catch (IOException e) {
       throw new D2RException("Error while reindexing", e);
     } finally {
-      index.close();
       FileUtil.closeSilently(docStream, true);
     }
 
+  }
+
+  public void shutdown() {
+    FileUtil.closeSilently(index, true);
   }
 
 
