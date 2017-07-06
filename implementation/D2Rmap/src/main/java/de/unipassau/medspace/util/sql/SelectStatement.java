@@ -104,7 +104,7 @@ public class SelectStatement {
 
   private void parse(String query, DataSource dataSource) throws D2RException, SQLException {
     if (query.contains(Clause.UNION.toString())) {
-      throw new D2RException("UNION clause is not supported by D2rMapper for the select statement!");
+      throw new D2RException("UNION clause is not supported by D2rMap for the select statement!");
     }
     ;
     String whereStr = WHERE.toString();

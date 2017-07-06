@@ -1,7 +1,6 @@
 package de.fuberlin.wiwiss.d2r;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -13,21 +12,14 @@ import de.unipassau.medspace.indexing.SQLIndex;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.indexing.SearchResult;
 import de.unipassau.medspace.indexing.SqlToDocumentStream;
-import de.unipassau.medspace.rdf.SqlTripleStream;
+import de.unipassau.medspace.rdf.DocToTripleStream;
+import de.unipassau.medspace.rdf.SqlToTripleStream;
 import de.unipassau.medspace.rdf.TripleStream;
 import de.unipassau.medspace.util.FileUtil;
 import de.unipassau.medspace.util.SqlUtil;
 import de.unipassau.medspace.util.sql.SelectStatement;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.system.StreamOps;
-import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.system.StreamRDFWriter;
-import org.apache.jena.shared.PrefixMapping;
 import org.apache.log4j.Logger;
 
 import java.util.Map.Entry;
@@ -41,7 +33,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.*;
 
 import javax.sql.DataSource;
 
@@ -67,11 +59,11 @@ import javax.sql.DataSource;
  * @version V0.3.1
  */
 public class D2rProcessor {
-  private List<D2rMapper> maps;
+  private List<D2rMap> maps;
   private SQLIndex index;
   private HashMap<String, String> namespaces;
   private URINormalizer normalizer;
-  private HashMap<String, D2rMapper> idToMap;
+  private HashMap<String, D2rMap> idToMap;
 
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2rProcessor.class);
@@ -104,14 +96,14 @@ public class D2rProcessor {
      }
     }
 
-    for (D2rMapper map : maps) {
+    for (D2rMap map : maps) {
       map.init(dataSourceManager.getDataSource(), maps);
     }
 
     normalizer = URI -> getNormalizedURI(URI);
 
     idToMap = new HashMap<>();
-    for (D2rMapper map : maps) {
+    for (D2rMap map : maps) {
       idToMap.put(map.getId(), map);
     }
   }
@@ -119,7 +111,7 @@ public class D2rProcessor {
 
   /**
    * Creates a rdf triple stream from the specified datasource. For the rdf sql to rdf
-   * mapping the specified D2rMapper is used. The triple stream will be resticted by the given conditionList
+   * mapping the specified D2rMap is used. The triple stream will be resticted by the given conditionList
    * argument.<p/>
    *
    * NOTE: The returned TripleStream won't be started, so no connection to the datasource will be established yet.
@@ -127,7 +119,7 @@ public class D2rProcessor {
    * @param  dataSource The sql datasource.
    * @param conditionList The query that should be executed on the datasource
    */
-  public StreamFactory<Triple> createTripleStreamFactory(D2rMapper map, DataSource dataSource,
+  public StreamFactory<Triple> createTripleStreamFactory(D2rMap map, DataSource dataSource,
                                                          List<String> conditionList) throws D2RException {
 
     SelectStatement statement = map.getQuery();
@@ -137,14 +129,11 @@ public class D2rProcessor {
 
     String query = statement.toString();
     statement.reset();
-    String ucQuery = query.toUpperCase();
-    if (ucQuery.contains("UNION"))
-      throw new D2RException("SQL statement should not contain UNION: " + query);
 
     //generate resources using the Connection
     return () -> {
       SqlStream.QueryParams queryParams = new SqlStream.QueryParams(dataSource, query);
-      return new SqlTripleStream(queryParams, map, normalizer);
+      return new SqlToTripleStream(queryParams, map, normalizer);
     };
   }
 
@@ -156,7 +145,7 @@ public class D2rProcessor {
    * @return
    * @throws D2RException
    */
-  public StreamFactory<Document> createLuceneDocStreamFactory(D2rMapper map, DataSource dataSource,
+  public StreamFactory<Document> createLuceneDocStreamFactory(D2rMap map, DataSource dataSource,
                                                               List<String> conditionList) throws D2RException {
 
     SelectStatement statement = map.getQuery();
@@ -182,6 +171,51 @@ public class D2rProcessor {
 
     //generate resources using the Connection
     return () -> new SqlToDocumentStream(factory, map);
+  }
+
+
+  public TripleStream doLuceneKeywordSearch(List<String> keywords) throws IOException, ParseException {
+    List<String> fieldList = new ArrayList<>();
+    for (D2rMap map : maps) {
+
+      String id = map.getId();
+      SelectStatement query = map.getQuery();
+      for (String column : query.getColumns()) {
+        String col = D2rUtil.getFieldNameUpperCase(column);
+        fieldList.add((id  + "_" + col).toUpperCase());
+      }
+    }
+
+    String[] fields = new String[fieldList.size()];
+    fieldList.toArray(fields);
+    SearchResult result = doLuceneKeywordSearch(fields, keywords);
+
+    return new DocToTripleStream(result, this);
+  }
+
+  /** Generated instances for all D2R maps. */
+  public StreamCollection<Document> getAllAsLuceneDocs() throws D2RException {
+    Model model = null;
+
+    try {
+      clear();
+      model = ModelFactory.getInstance().createDefaultModel();
+    }
+    catch (FactoryException e) {
+      throw new D2RException("Could not get default Model from the ModelFactory.", e);
+    }
+
+    // add namespaces
+    for (Entry<String, String> ent : namespaces.entrySet()) {
+      model.setNsPrefix(ent.getKey(), ent.getValue());
+    }
+
+    StreamCollection<Document> result = new StreamCollection();
+    for (D2rMap map : maps) {
+      result.add(createLuceneDocStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
+    }
+
+    return result;
   }
 
 
@@ -212,7 +246,7 @@ public class D2rProcessor {
     StreamCollection<Triple> result = new StreamCollection<>();
 
     // Generate instances for all maps
-    for (D2rMapper map : maps) {
+    for (D2rMap map : maps) {
 
       SelectStatement query = map.getQuery();
       List<String> columns = query.getColumns();
@@ -221,110 +255,6 @@ public class D2rProcessor {
       query.addTemporaryCondition(keywordCondition);
       StreamFactory<Triple> stream = createTripleStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>());
       result.add(stream);
-    }
-
-    return result;
-  }
-
-  public void doLuceneKeywordSearch(List<String> keywords) throws IOException, ParseException {
-    List<String> fieldList = new ArrayList<>();
-    for (D2rMapper map : maps) {
-
-      String id = map.getId();
-      SelectStatement query = map.getQuery();
-      for (String column : query.getColumns()) {
-        String col = D2rUtil.getFieldNameUpperCase(column);
-        fieldList.add((id  + "_" + col).toUpperCase());
-      }
-    }
-
-    String[] fields = new String[fieldList.size()];
-    fieldList.toArray(fields);
-
-    SearchResult result = doLuceneKeywordSearch(fields, keywords);
-
-    for(int i=0;i<result.getScoredLength();++i) {
-      Document d = result.getResult(i);
-      D2rMapper map = getMapForDoc(d);
-      System.out.println("map: " + map.getId());
-      System.out.println(d);
-    }
-
-    TripleStream triples = new TripleStream() {
-
-      private int counter = 0;
-
-      @Override
-      public void close() throws IOException {
-        FileUtil.closeSilently(result);
-      }
-
-      @Override
-      public boolean hasNext() {
-        return counter < result.getScoredLength();
-      }
-
-      @Override
-      public Triple next() {
-        counter++;
-        Triple triple = null;
-        try {
-          Document d = result.getResult(counter);
-        } catch (IOException e) {
-          throw new NullPointerException("next is null!");
-        }
-
-        return triple;
-      }
-    };
-
-    triples.close();
-  }
-
-  private D2rMapper getMapForDoc(Document d) {
-    String name = d.getField("MAP").stringValue();
-    return idToMap.get(name);
-  }
-
-  private SearchResult doLuceneKeywordSearch(String[] fieldNameArray , List<String> keywords) throws IOException, ParseException {
-    Analyzer analyzer = new StandardAnalyzer();
-    StringBuilder querystr = new StringBuilder();
-    String and = " AND ";
-    for (String keyword : keywords) {
-      querystr.append("/.*" + keyword + ".*/" + and);
-    }
-    querystr = querystr.delete(querystr.length() - and.length(), querystr.length());
-    String q = querystr.toString().toLowerCase();
-    //System.out.println("query: " + q);
-
-
-    QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
-    Query query = parser.parse(q);
-
-
-    return new SearchResult(index.createReader(), query);
-  }
-
-  /** Generated instances for all D2R maps. */
-  public StreamCollection<Document> getAllAsLuceneDocs() throws D2RException {
-    Model model = null;
-
-    try {
-      clear();
-      model = ModelFactory.getInstance().createDefaultModel();
-    }
-    catch (FactoryException e) {
-      throw new D2RException("Could not get default Model from the ModelFactory.", e);
-    }
-
-    // add namespaces
-    for (Entry<String, String> ent : namespaces.entrySet()) {
-      model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
-
-    StreamCollection<Document> result = new StreamCollection();
-    for (D2rMapper map : maps) {
-      result.add(createLuceneDocStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
     }
 
     return result;
@@ -348,7 +278,7 @@ public class D2rProcessor {
     }
 
     StreamCollection<Triple> result = new StreamCollection<>();
-    for (D2rMapper map : maps)
+    for (D2rMap map : maps)
       result.add(createTripleStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
 
     return result;
@@ -371,6 +301,14 @@ public class D2rProcessor {
     else {
       return qName;
     }
+  }
+
+  public D2rMap getMapById(String id) {
+    return idToMap.get(id);
+  }
+
+  public URINormalizer getNormalizer() {
+    return normalizer;
   }
 
   public void reindex() throws D2RException {
@@ -398,44 +336,39 @@ public class D2rProcessor {
 
   private void clear() throws FactoryException {
     // clear maps
-    for (D2rMapper map : maps)
+    for (D2rMap map : maps)
       map.clear();
   }
 
-  private void someTestStuff(D2rMapper map)
-      throws D2RException, FactoryException {
+  private SearchResult doLuceneKeywordSearch(String[] fieldNameArray , List<String> keywords) throws IOException, ParseException {
+    Analyzer analyzer = new StandardAnalyzer();
+    QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
 
-    Model model = ModelFactory.getInstance().createDefaultModel();
-    Graph graph = model.getGraph();
-    PrefixMapping prefixMapping = model.getGraph().getPrefixMapping();
-    Lang lang = Lang.N3;
-    RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
-    if (format == null) {
-      throw new D2RException("No serialization format for language: " + lang.getLabel());
-    }
-    OutputStream out  = System.out;
-    StreamRDF rdfOut = StreamRDFWriter.getWriterStream(out, format);
-    rdfOut.start();
-    if(prefixMapping != null) {
-      StreamOps.sendPrefixesToStream(prefixMapping, rdfOut);
+    StringBuilder keywordsConcat = new StringBuilder();
+    for (String keyword : keywords) {
+      keywordsConcat.append(keyword);
+      keywordsConcat.append(" ");
     }
 
-    Iterator<Triple> iter = graph.find((Node)null, (Node)null, (Node)null);
-    StreamOps.sendTriplesToStream((Iterator)iter, rdfOut);
-    rdfOut.finish();
+    /*
+    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+    for (String keyword : keywords) {
+      Query query = parser.parse(keyword);
+      if (keyword.startsWith("+"))
+        builder.add(query, BooleanClause.Occur.MUST);
+      else
+        builder.add(query, BooleanClause.Occur.SHOULD);
+    }
+
+    Query query = builder.build();
+    */
+
+    Query query = parser.parse(keywordsConcat.toString());
+
+    if (log.isDebugEnabled())
+      log.debug("Constructed query: " + query);
 
 
-    //NodeFactory
-    //ResourceFactory
-
-        /*tripleStream.validateStart();
-      OutputStream out  = System.out;
-      Lang lang = Lang.TURTLE;
-      RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
-      StreamRDF rdfOut = StreamRDFWriter.getWriterStream(out, format);
-      rdfOut.validateStart();
-      for (Triple triple : tripleStream)
-        rdfOut.triple(triple);
-      rdfOut.finish();*/
+    return new SearchResult(index.createReader(), query);
   }
 }

@@ -1,6 +1,6 @@
 package de.unipassau.medspace.SQL;
 
-import javafx.util.Pair;
+import org.javatuples.Pair;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -17,7 +17,7 @@ public class SQLResultTuple {
   private HashMap<String, Integer> indices;
   private int columnCount;
 
-  protected  SQLResultTuple(ArrayList<Pair<String, String>> tuple) {
+  public  SQLResultTuple(ArrayList<Pair<String, String>> tuple) {
     columnCount = tuple.size();
     columns = new String[columnCount];
     values = new String[columnCount];
@@ -25,8 +25,8 @@ public class SQLResultTuple {
 
     for (int i = 0; i < columnCount; ++i) {
       Pair<String, String> pair = tuple.get(i);
-      columns[i] = pair.getKey();
-      values[i] = pair.getValue();
+      columns[i] = pair.getValue0();
+      values[i] = pair.getValue1();
       indices.put(columns[i], i);
     }
   }

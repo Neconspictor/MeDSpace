@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 public class ObjectPropertyBridge
     extends Bridge {
   private String referredClassID;
-  private D2rMapper referredClass;
+  private D2rMap referredClass;
   private List<String> referredGroupBy;
   private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
 
@@ -41,15 +41,15 @@ public class ObjectPropertyBridge
       this.referredClassID = null;
   }
 
-  public void setReferredClass(D2rMapper map) {
+  public void setReferredClass(D2rMap map) {
     referredClass = map;
   }
 
-  public void init(List<D2rMapper> maps) {
+  public void init(List<D2rMap> maps) {
 
     if (referredClassID == null) return;
     referredClass = null;
-    for (D2rMapper map : maps) {
+    for (D2rMap map : maps) {
       if (map.getId().equals(referredClassID)) {
         setReferredClass(map);
         break;
@@ -58,7 +58,7 @@ public class ObjectPropertyBridge
 
     // referredClass was not set
     if (referredClass == null) {
-      throw new IllegalStateException("Referred class not found in the specified D2rMapper list.");
+      throw new IllegalStateException("Referred class not found in the specified D2rMap list.");
     }
   }
 

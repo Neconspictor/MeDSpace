@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.Arrays;
 
 import de.unipassau.medspace.common.stream.StreamCollection;
+import de.unipassau.medspace.rdf.TripleStream;
 import de.unipassau.medspace.util.FileUtil;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.* ;
@@ -53,49 +54,23 @@ public class TestProcessor {
             processor.reindex();
 
             Instant startTime = Instant.now();
-            processor.doLuceneKeywordSearch(Arrays.asList("Male"));
+            TripleStream triples = processor.doLuceneKeywordSearch(Arrays.asList("male"));
 
-            /*try (StreamCollection<Triple> tripleStream = processor.doKeywordSearch(Arrays.asList(""))) {
-                tripleStream.start();
-                RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
-                StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
-                rdfOut.start();
-                for (Triple triple : tripleStream) {
-                    rdfOut.triple(triple);
-                }
-                rdfOut.finish();
-            }*/
+            RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
+            StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
+            rdfOut.start();
+            for (Triple triple : triples) {
+                rdfOut.triple(triple);
+            }
+            rdfOut.finish();
+
+            triples.close();
+
 
             Instant endTime = Instant.now();
             //Lang lang = config.getOutputFormat();
             Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
 
-
-            //Model output = processor.doKeywordSearch(Arrays.asList("English", "Male"));
-           // Model output = processor.generateAllInstancesAsModel();
-            //output.write(System.out, prettyLang.getLabel());
-            Model newModel = de.fuberlin.wiwiss.d2r.factory.ModelFactory.getInstance().createDefaultModel();
-            out = new FileOutputStream("./modelout.d2rtmp");
-
-            System.out.println("Lang: " + lang);
-            //RDFDataMgr.write(out, output, lang);
-
-            in = new FileInputStream("./modelout.d2rtmp");
-            System.out.println("Start streaming the model...");
-            RDFDataMgr.read(newModel, in, lang);
-            in.close();
-
-            out.close();
-            out = new FileOutputStream("./myContent.d2rtmp");
-            RDFDataMgr.write(out, newModel, prettyLang);
-
-            //FileUtil.write(in, "./myContent.txt");
-
-            //in2 = new FileInputStream("./myContent.txt");
-
-            //newModel.write(System.out, "N3");
-            //newModel.write(System.out, "N3");
-            //RDFDataMgr.write(System.out, output, lang);
             System.out.println("RDF data exported ....");
             System.out.println("Time elapsed: " + Duration.between(startTime, endTime));
         } catch (D2RException d2rex) {

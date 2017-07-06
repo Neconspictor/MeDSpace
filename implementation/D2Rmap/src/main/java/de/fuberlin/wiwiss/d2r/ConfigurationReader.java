@@ -40,6 +40,24 @@ public class ConfigurationReader {
   }
 
   /**
+   * Reads a namespace element and adds it to the provided Configuration.
+   * @param config the Configuration the namespace element should be added to
+   * @param elem The namesapce element
+   */
+  public  static void readComplexTypeNamespace(Configuration config, Element elem) {
+    String prefix = elem.getAttribute(D2R.NAMESPACE_PREFIX_ATTRIBUTE);
+    String namespace = elem.getAttribute(D2R.NAMESPACE_NAMESPACE_ATTRIBUTE);
+
+    if (prefix.equals(""))
+      throw new IllegalStateException("prefix not set or empty.");
+    if (namespace.equals(""))
+      throw new IllegalStateException("namespace not set or empty.");
+
+    config.getNamespaces().put(elem.getAttribute(D2R.NAMESPACE_PREFIX_ATTRIBUTE),
+        elem.getAttribute(D2R.NAMESPACE_NAMESPACE_ATTRIBUTE));
+  }
+
+  /**
    * Reads an D2R Map from the filesystem.
    * @param filename of the D2R Map
    */
@@ -67,6 +85,70 @@ public class ConfigurationReader {
     }
 
     return config;
+  }
+
+  private static Lang getLangFromString(String format) throws D2RException {
+    assert format != null;
+
+    Lang lang = RDFLanguages.shortnameToLang(format);
+
+    if (lang == null)
+      throw new D2RException("Unknown language format: " + format);
+
+    return lang;
+  }
+
+  private static void parseDataSourceSpecificProperties(Element root, Configuration config) {
+    NodeList list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_SOURCE_PROPERTY_ELEMENT);
+
+    for (int i = 0; i < list.getLength(); ++i) {
+      Element elem = (Element)list.item(i);
+      String propertyName = elem.getAttribute(D2R.DATA_SOURCE_PROPERTY_NAME_ATTRIBUTE);
+      String value = elem.getAttribute(D2R.DATA_SOURCE_PROPERTY_VALUE_ATTRIBUTE);
+      config.addDataSourceProperty(propertyName, value);
+    }
+  }
+
+  private static void readClassMapElement(Configuration config, Element mapElement) throws D2RException {
+    List<D2rMap> maps = config.getMaps();
+    D2rMap cMap = new D2rMap();
+
+    // sql and groupBy attributes are required
+    String sqlQuery = mapElement.getAttribute(D2R.CLASS_MAP_SQL_ATTRIBUTE);
+    validateSqlQuery(sqlQuery);
+    cMap.setSql(sqlQuery);
+    cMap.addResourceIdColumns(mapElement.getAttribute(D2R.CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE));
+
+    String id = mapElement.getAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE);
+    validateD2RMapId(id, maps);
+
+    cMap.setId(id);
+
+    // Read type attribute
+    if (mapElement.hasAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE)) {
+      // add rdf:type bridge
+      String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
+      ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
+      typeBridge.setProperty("rdf:type");
+      typeBridge.setPattern(value);
+      cMap.addBridge(typeBridge);
+    }
+
+    // Read uriPattern
+    if (mapElement.hasAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE))
+      cMap.setBaseURI(mapElement.getAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE));
+
+    // Read datatype property mappings
+    NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);
+    for (int i = 0; i< propertyList.getLength(); ++i)
+      readDataTypePropertyElement((Element)propertyList.item(i), cMap);
+
+    // Read object property mappings
+    propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.OBJECT_PROPERTY_BRIDGE_ELEMENT);
+    for (int i = 0; i< propertyList.getLength(); ++i)
+      readObjectPropertyElement((Element)propertyList.item(i), cMap);
+
+    config.getMaps().add(cMap);
   }
 
   private static void readConfig(Document document, Configuration config) throws IOException, D2RException {
@@ -108,111 +190,7 @@ public class ConfigurationReader {
       readTranslationTableElement(config, (Element)list.item(i));
   }
 
-  private static void readIndexElement(Configuration config, Element elem) throws D2RException {
-    String directory = elem.getAttribute(D2R.INDEX_DIRECTORY_ATTRIBUTE);
-
-    if (directory == null) {
-      throw new D2RException("No index directoyr specified!");
-    }
-
-    Path path = null;
-
-    try {
-      path = FileUtil.createDirectory(directory);
-    } catch (IOException e) {
-      log.error(e);
-      throw new D2RException("Couldn't create index directory!");
-    }
-
-
-    config.setUseIndex(true);
-    config.setIndexDirectory(path);
-  }
-
-  private static void parseDataSourceSpecificProperties(Element root, Configuration config) {
-    NodeList list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_SOURCE_PROPERTY_ELEMENT);
-
-    for (int i = 0; i < list.getLength(); ++i) {
-      Element elem = (Element)list.item(i);
-      String propertyName = elem.getAttribute(D2R.DATA_SOURCE_PROPERTY_NAME_ATTRIBUTE);
-      String value = elem.getAttribute(D2R.DATA_SOURCE_PROPERTY_VALUE_ATTRIBUTE);
-      config.addDataSourceProperty(propertyName, value);
-    }
-  }
-
-  private static void readTranslationTableElement(Configuration config, Element elem) {
-    String tableId = elem.getAttribute(D2R.TRANSLATION_TABLE_ID_ATTRIBUTE).trim();
-    TranslationTable table = new TranslationTable();
-
-    // Read Translations
-    NodeList list = elem.getElementsByTagNameNS(D2R.D2RNS, D2R.TRANSLATION_ELEMENT);
-    for (int i = 0; i < list.getLength(); i++) {
-      readTranslationElement(table, (Element)list.item(0));
-    }
-    config.getTranslationTables().put(tableId, table);
-  }
-
-  private static void readTranslationElement(TranslationTable table, Element elem) {
-    table.put(elem.getAttribute(D2R.TRANSLATION_KEY_ATTRIBUTE).trim(),
-        elem.getAttribute(D2R.TRANSLATION_VALUE_ATTRIBUTE).trim());
-  }
-
-  private static void readClassMapElement(Configuration config, Element mapElement) throws D2RException {
-    List<D2rMapper> maps = config.getMaps();
-    D2rMapper cMap = new D2rMapper();
-
-    // sql and groupBy attributes are required
-    cMap.setSql(mapElement.getAttribute(D2R.CLASS_MAP_SQL_ATTRIBUTE));
-    cMap.addResourceIdColumns(mapElement.getAttribute(D2R.CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE));
-
-    String id = mapElement.getAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE);
-    validateD2RMapId(id, maps);
-
-    cMap.setId(id);
-
-    // Read type attribute
-    if (mapElement.hasAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE)) {
-      // add rdf:type bridge
-      String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
-      ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
-      typeBridge.setProperty("rdf:type");
-      typeBridge.setPattern(value);
-      cMap.addBridge(typeBridge);
-    }
-
-    // Read uriPattern
-    if (mapElement.hasAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE))
-      cMap.setBaseURI(mapElement.getAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE));
-
-    // Read datatype property mappings
-    NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);
-    for (int i = 0; i< propertyList.getLength(); ++i)
-      readDataTypePropertyElement((Element)propertyList.item(i), cMap);
-
-    // Read object property mappings
-    propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.OBJECT_PROPERTY_BRIDGE_ELEMENT);
-    for (int i = 0; i< propertyList.getLength(); ++i)
-      readObjectPropertyElement((Element)propertyList.item(i), cMap);
-
-    config.getMaps().add(cMap);
-  }
-
-  /**
-   * Validates the value of a DRMap id. If the validation test should fail, a D2RException is thrown
-   * @param id the D2rMapper id
-   * @param maps a collection of D2RMaps that have been read so far
-   * @throws D2RException if the validation test fails
-   */
-  private static void validateD2RMapId(String id, Collection<D2rMapper> maps) throws D2RException {
-
-    for (D2rMapper map : maps) {
-      if (map.getId().equals(id)) {
-        throw new D2RException("D2rMapper id is multiple times used in the configuration file: id=" + id);
-      }
-    }
-  }
-
-  private static void readDataTypePropertyElement(Element elem, D2rMapper map) {
+  private static void readDataTypePropertyElement(Element elem, D2rMap map) {
     DatatypePropertyBridge bridge = new DatatypePropertyBridge();
     bridge.setProperty(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
@@ -222,39 +200,11 @@ public class ConfigurationReader {
     map.addBridge(bridge);
   }
 
-  private static void readObjectPropertyElement(Element elem, D2rMapper map) {
-    ObjectPropertyBridge bridge = new ObjectPropertyBridge();
-    bridge.setProperty(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
-    bridge.setPattern(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
-    bridge.setTranslation(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE));
-    bridge.setReferredClassID(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE));
-    bridge.setReferredGroupBy(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE));
-    map.addBridge(bridge);
-  }
-
-  private static void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
-    String format = elem.getTextContent();
-    Lang lang = null;
-
-    assert format != null;
-
-    try {
-      lang = getLangFromString(format);
-    } catch (D2RException e) {
-      throw new D2RException("Unknown output format: " + format);
-    }
-      config.setOutputFormat(lang);
-  }
-
-  private static Lang getLangFromString(String format) throws D2RException {
-    assert format != null;
-
-    Lang lang = RDFLanguages.shortnameToLang(format);
-
-    if (lang == null)
-      throw new D2RException("Unknown language format: " + format);
-
-    return lang;
+  private static void readDBAuthentificationElement(Configuration config, Element elem) {
+    config.setDatabaseUsername(elem.getAttribute(D2R.DBAUTHENTIFICATION_USERNAME_ATTRIBUTE));
+    String password = elem.getAttribute(D2R.DBAUTHENTIFICATION_PASSWORD_ATTRIBUTE);
+    if (password == null) password = "";
+    config.setDatabasePassword(password);
   }
 
   private static void readDBConnectionElement(Configuration config, Element elem) {
@@ -277,28 +227,86 @@ public class ConfigurationReader {
     parseDataSourceSpecificProperties(elem, config);
   }
 
-  private static void readDBAuthentificationElement(Configuration config, Element elem) {
-    config.setDatabaseUsername(elem.getAttribute(D2R.DBAUTHENTIFICATION_USERNAME_ATTRIBUTE));
-    String password = elem.getAttribute(D2R.DBAUTHENTIFICATION_PASSWORD_ATTRIBUTE);
-    if (password == null) password = "";
-    config.setDatabasePassword(password);
+  private static void readIndexElement(Configuration config, Element elem) throws D2RException {
+    String directory = elem.getAttribute(D2R.INDEX_DIRECTORY_ATTRIBUTE);
+
+    if (directory == null) {
+      throw new D2RException("No index directoyr specified!");
+    }
+
+    Path path = null;
+
+    try {
+      path = FileUtil.createDirectory(directory);
+    } catch (IOException e) {
+      log.error(e);
+      throw new D2RException("Couldn't create index directory!");
+    }
+
+
+    config.setUseIndex(true);
+    config.setIndexDirectory(path);
+  }
+
+  private static void readObjectPropertyElement(Element elem, D2rMap map) {
+    ObjectPropertyBridge bridge = new ObjectPropertyBridge();
+    bridge.setProperty(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
+    bridge.setPattern(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
+    bridge.setTranslation(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_TRANSLATE_ATTRIBUTE));
+    bridge.setReferredClassID(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE));
+    bridge.setReferredGroupBy(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE));
+    map.addBridge(bridge);
+  }
+
+  private static void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
+    String format = elem.getTextContent();
+    Lang lang = null;
+
+    assert format != null;
+
+    try {
+      lang = getLangFromString(format);
+    } catch (D2RException e) {
+      throw new D2RException("Unknown output format: " + format);
+    }
+    config.setOutputFormat(lang);
+  }
+
+  private static void readTranslationElement(TranslationTable table, Element elem) {
+    table.put(elem.getAttribute(D2R.TRANSLATION_KEY_ATTRIBUTE).trim(),
+        elem.getAttribute(D2R.TRANSLATION_VALUE_ATTRIBUTE).trim());
+  }
+
+  private static void readTranslationTableElement(Configuration config, Element elem) {
+    String tableId = elem.getAttribute(D2R.TRANSLATION_TABLE_ID_ATTRIBUTE).trim();
+    TranslationTable table = new TranslationTable();
+
+    // Read Translations
+    NodeList list = elem.getElementsByTagNameNS(D2R.D2RNS, D2R.TRANSLATION_ELEMENT);
+    for (int i = 0; i < list.getLength(); i++) {
+      readTranslationElement(table, (Element)list.item(0));
+    }
+    config.getTranslationTables().put(tableId, table);
   }
 
   /**
-   * Reads a namespace element and adds it to the provided Configuration.
-   * @param config the Configuration the namespace element should be added to
-   * @param elem The namesapce element
+   * Validates the value of a DRMap id. If the validation test should fail, a D2RException is thrown
+   * @param id the D2rMap id
+   * @param maps a collection of D2RMaps that have been read so far
+   * @throws D2RException if the validation test fails
    */
-  public  static void readComplexTypeNamespace(Configuration config, Element elem) {
-    String prefix = elem.getAttribute(D2R.NAMESPACE_PREFIX_ATTRIBUTE);
-    String namespace = elem.getAttribute(D2R.NAMESPACE_NAMESPACE_ATTRIBUTE);
+  private static void validateD2RMapId(String id, Collection<D2rMap> maps) throws D2RException {
 
-    if (prefix.equals(""))
-      throw new IllegalStateException("prefix not set or empty.");
-    if (namespace.equals(""))
-      throw new IllegalStateException("namespace not set or empty.");
+    for (D2rMap map : maps) {
+      if (map.getId().equals(id)) {
+        throw new D2RException("D2rMap id is multiple times used in the configuration file: id=" + id);
+      }
+    }
+  }
 
-    config.getNamespaces().put(elem.getAttribute(D2R.NAMESPACE_PREFIX_ATTRIBUTE),
-        elem.getAttribute(D2R.NAMESPACE_NAMESPACE_ATTRIBUTE));
+  private static void validateSqlQuery(String sqlQuery) throws D2RException {
+    String ucQuery = sqlQuery.toUpperCase();
+    if (ucQuery.contains("UNION"))
+      throw new D2RException("SQL statement should not contain UNION: " + sqlQuery);
   }
 }

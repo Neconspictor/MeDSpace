@@ -19,7 +19,7 @@ public class Configuration {
   private String jdbc;
   private String jdbcDriver;
   private Path indexDirectory;
-  private List<D2rMapper> maps;
+  private List<D2rMap> maps;
   private int maxConnections; //Connection configurations
   private HashMap<String, String> namespaces;
   private String prepend;
@@ -67,7 +67,7 @@ public class Configuration {
     return jdbcDriver;
   }
 
-  public List<D2rMapper> getMaps() {
+  public List<D2rMap> getMaps() {
     return maps;
   }
 
@@ -123,7 +123,7 @@ public class Configuration {
     this.indexDirectory = indexDirectory;
   }
 
-  public void setMaps(List<D2rMapper> maps) {
+  public void setMaps(List<D2rMap> maps) {
     this.maps = maps;
   }
 

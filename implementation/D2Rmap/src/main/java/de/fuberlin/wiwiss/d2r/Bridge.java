@@ -111,7 +111,7 @@ abstract public class Bridge {
         return this.dataType;
     }
 
-  public void init(List<D2rMapper> maps) {
+  public void init(List<D2rMap> maps) {
 
   };
 }
