@@ -15,8 +15,7 @@
 				<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="Namespace" type="d2r:Namespace" minOccurs="0" maxOccurs="unbounded"/>
 					<xsd:element name="ClassMap" type="d2r:ClassMap" minOccurs="0" maxOccurs="unbounded"/>
-				<xsd:element name="TranslationTable" type="d2r:TranslationTable" minOccurs="0" maxOccurs="unbounded"/>
-			</xsd:choice>
+				</xsd:choice>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -68,18 +67,6 @@
 		<xsd:attribute name="translate" type="xsd:string" use="optional"/>
 		<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
 		<xsd:attribute name="referredColumns" type="xsd:string" use="optional"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="TranslationTable">
-		<xsd:choice maxOccurs="unbounded">
-			<xsd:element name="Translation" type="d2r:Translation" minOccurs="1" maxOccurs="unbounded"/>
-		</xsd:choice>
-		<xsd:attribute name="id" type="xsd:string" use="required"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="Translation">
-		<xsd:attribute name="key" type="xsd:string" use="required"/>
-		<xsd:attribute name="value" type="xsd:string" use="required"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="DataSourceProperty">

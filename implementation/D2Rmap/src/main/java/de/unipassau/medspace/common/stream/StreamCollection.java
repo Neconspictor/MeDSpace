@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.stream;
 
-import de.unipassau.medspace.util.FileUtil;
+import de.unipassau.medspace.common.util.FileUtil;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -58,14 +58,25 @@ public class StreamCollection<E> implements StartableStream<E> {
 
   @Override
   public boolean hasNext() {
-    validator.validateHasNext();
+    try {
+      validator.validateHasNext();
+    } catch (IOException e) {
+      log.error(e);
+      return false;
+    }
     StreamProxy<E> activeStream = getActiveStream();
     return activeStream != null;
   }
 
   @Override
   public E next() {
-    validator.validateNext();
+    try {
+      validator.validateNext();
+    } catch (IOException e) {
+      log.error(e);
+      return null;
+    }
+
     StreamProxy<E> activeStream = getActiveStream();
     if (activeStream == null) throw new IllegalStateException("No valid next object available!");
     return activeStream.iterator().next();

@@ -1,18 +1,17 @@
-import de.fuberlin.wiwiss.d2r.*;
-import de.fuberlin.wiwiss.d2r.exception.D2RException;
+import de.unipassau.medspace.d2r.config.Configuration;
+import de.unipassau.medspace.d2r.config.ConfigurationReader;
+import de.unipassau.medspace.d2r.D2rProcessor;
+import de.unipassau.medspace.d2r.DataSourceManager;
+import de.unipassau.medspace.d2r.exception.D2RException;
 
 import java.io.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 
-import de.unipassau.medspace.common.stream.StreamCollection;
-import de.unipassau.medspace.rdf.TripleStream;
-import de.unipassau.medspace.util.FileUtil;
+import de.unipassau.medspace.common.rdf.TripleStream;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.* ;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.system.StreamRDF;
@@ -32,13 +31,9 @@ import org.apache.jena.riot.system.StreamRDFWriter;
  */
 public class TestProcessor {
     private final static String D2RMap = "./examples/medspace/medspace.d2r.xml";
-    private final static String Outputfile = "./examples/medspace/output/output.rdf.xml";
     static D2rProcessor processor;
 
     public static void main(String[] args) {
-        FileOutputStream out = null;
-        FileInputStream in = null;
-        FileInputStream in2 = null;
         String prettyPrintingLang = "N3";
         try {
             System.out.println("D2R test started ....");
@@ -91,9 +86,6 @@ public class TestProcessor {
             System.out.println("");
             ex.printStackTrace();
         } finally {
-            FileUtil.closeSilently(out);
-            FileUtil.closeSilently(in);
-            FileUtil.closeSilently(in2);
             System.out.println("Closed streams successfully");
         }
     }

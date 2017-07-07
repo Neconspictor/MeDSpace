@@ -61,7 +61,7 @@ command line parameters:
 
 You can start the processor with: 
 
-java de.fuberlin.wiwiss.d2r.D2rProcessor -parameter [-parameter]
+java D2rProcessor -parameter [-parameter]
 
 
 ------------------------------------------------------------------
@@ -74,7 +74,7 @@ Testing your installation
 
 Start the D2R Map processor with:
 
-java de.fuberlin.wiwiss.d2r.D2rProcessor
+java D2rProcessor
 
 If the processor is installed correct and because you have not specified
 a map to process, this should case the following error message: 
@@ -100,7 +100,7 @@ On Windows Systems:
 
 2. Start the D2R Map processor with:
    
-   java de.fuberlin.wiwiss.d2r.D2rProcessor -map:D2RROOT/examples/ISWC/ISWCMap.d2r.xml
+   java D2rProcessor -map:D2RROOT/examples/ISWC/ISWCMap.d2r.xml
 
    The processor is now exporting data from the Access database and 
    you should get the same RDF output as stored in the file
@@ -117,7 +117,7 @@ On Non-Windows Systems:
 
 3. Start the D2R Map processor with:
    
-   java de.fuberlin.wiwiss.d2r.D2rProcessor -map:D2RROOT/examples/ISWC/ISWCMap.d2r.xml
+   java D2rProcessor -map:D2RROOT/examples/ISWC/ISWCMap.d2r.xml
 
    The processor is now exporting data from the Access database and 
    you should get the same RDF output as stored in the file

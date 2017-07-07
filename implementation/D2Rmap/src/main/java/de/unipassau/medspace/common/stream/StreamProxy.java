@@ -1,11 +1,15 @@
 package de.unipassau.medspace.common.stream;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 
 /**
  * Created by David Goeth on 30.06.2017.
  */
 public class StreamProxy<E> implements StartableStream<E> {
+
+  private static Logger log = Logger.getLogger(StreamProxy.class);
 
   protected StreamFactory<E> factory;
   protected DataSourceStream<E> impl;
@@ -27,7 +31,12 @@ public class StreamProxy<E> implements StartableStream<E> {
 
   @Override
   public boolean hasNext() {
-    validator.validateHasNext();
+    try {
+      validator.validateHasNext();
+    } catch (IOException e) {
+      log.error(e);
+      return false;
+    }
     return impl.iterator().hasNext();
   }
 
@@ -41,7 +50,12 @@ public class StreamProxy<E> implements StartableStream<E> {
 
   @Override
   public E next() {
-    validator.validateNext();
+    try {
+      validator.validateNext();
+    } catch (IOException e) {
+      log.error(e);
+      return null;
+    }
     return impl.iterator().next();
   }
 

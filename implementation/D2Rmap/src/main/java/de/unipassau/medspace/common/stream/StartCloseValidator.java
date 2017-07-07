@@ -24,22 +24,22 @@ public class StartCloseValidator {
   }
 
   public void validateClose() throws IOException {
-    if (!started) throw new IllegalStateException("StartCloseValidator hasn't started yet!");
-    if (isClosed) throw new IllegalStateException("StartCloseValidator is already closed!");
+    if (!started) throw new IOException("StartCloseValidator hasn't started yet!");
+    if (isClosed) throw new IOException("StartCloseValidator is already closed!");
     isClosed = true;
   }
 
-  public void validateHasNext() {
-    if (!started) throw new IllegalStateException("StartCloseValidator is closed!");
+  public void validateHasNext() throws IOException {
+    if (!started) throw new IOException("StartCloseValidator is closed!");
   }
 
-  public void validateNext() {
-    if (!isOpen()) throw new IllegalStateException("StartCloseValidator isn't open!");
+  public void validateNext() throws IOException {
+    if (!isOpen()) throw new IOException("StartCloseValidator isn't open!");
   }
 
   public void validateStart() throws IOException {
-    if (isClosed) throw new IllegalStateException("StartCloseValidator is already closed!");
-    if(started) throw new IllegalStateException("StartCloseValidator has already started!");
+    if (isClosed) throw new IOException("StartCloseValidator is already closed!");
+    if(started) throw new IOException("StartCloseValidator has already started!");
     started = true;
   }
 }
