@@ -1,15 +1,18 @@
+import de.unipassau.medspace.common.SQL.DataSourceManager;
+import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
 import de.unipassau.medspace.d2r.D2rProcessor;
-import de.unipassau.medspace.d2r.DataSourceManager;
+import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
 import de.unipassau.medspace.d2r.exception.D2RException;
 
 import java.io.*;
+import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 
-import de.unipassau.medspace.common.rdf.TripleStream;
+import de.unipassau.medspace.d2r.query.D2rKeywordSearcher;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFFormat;
@@ -38,7 +41,15 @@ public class TestProcessor {
         try {
             System.out.println("D2R test started ....");
             Configuration config = new ConfigurationReader().readConfig(D2RMap);
-            DataSourceManager dataSourceManager = new DataSourceManager(config);
+            URI jdbcURI = new URI(config.getJdbc());
+
+            DataSourceManager dataSourceManager = new HikariDataSourceManager(
+                jdbcURI,
+                config.getDatabaseUsername(),
+                config.getDatabasePassword(),
+                config.getMaxConnections(),
+                config.getDataSourceProperties());
+
             processor = new D2rProcessor(config, dataSourceManager);
             System.out.println("D2R processor created ....");
             System.out.println("D2R file read ....");
@@ -47,9 +58,11 @@ public class TestProcessor {
 
 
             processor.reindex();
+            D2rKeywordSearcher searcher = new D2rKeywordSearcher(processor);
+            searcher.useLucene(true);
 
             Instant startTime = Instant.now();
-            TripleStream triples = processor.doLuceneKeywordSearch(Arrays.asList("male"));
+            DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
 
             RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
             StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
@@ -65,6 +78,8 @@ public class TestProcessor {
             Instant endTime = Instant.now();
             //Lang lang = config.getOutputFormat();
             Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
+
+            processor.shutdown();
 
             System.out.println("RDF data exported ....");
             System.out.println("Time elapsed: " + Duration.between(startTime, endTime));

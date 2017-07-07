@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
+import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.rdf.URINormalizer;
@@ -11,29 +12,17 @@ import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.exception.FactoryException;
-import de.unipassau.medspace.d2r.stream.DocToTripleStream;
-import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
 import de.unipassau.medspace.common.indexing.SQLIndex;
 import de.unipassau.medspace.common.stream.StreamCollection;
-import de.unipassau.medspace.common.indexing.SearchResult;
 import de.unipassau.medspace.d2r.indexing.SqlToDocumentStream;
-import de.unipassau.medspace.common.rdf.TripleStream;
 import de.unipassau.medspace.common.util.FileUtil;
-import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.common.SQL.SelectStatement;
-import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 
 import java.util.Map.Entry;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.*;
 
 import javax.sql.DataSource;
 
@@ -108,35 +97,6 @@ public class D2rProcessor {
     }
   }
 
-
-  /**
-   * Creates a rdf triple stream from the specified datasource. For the rdf sql to rdf
-   * mapping the specified D2rMap is used. The triple stream will be resticted by the given conditionList
-   * argument.<p/>
-   *
-   * NOTE: The returned TripleStream won't be started, so no connection to the datasource will be established yet.
-   * @param map The sql to rdf mapper
-   * @param  dataSource The sql datasource.
-   * @param conditionList The query that should be executed on the datasource
-   */
-  public StreamFactory<Triple> createTripleStreamFactory(D2rMap map, DataSource dataSource,
-                                                         List<String> conditionList) throws D2RException {
-
-    SelectStatement statement = map.getQuery();
-    for (String condition : conditionList) {
-      statement.addTemporaryCondition(condition);
-    }
-
-    String query = statement.toString();
-    statement.reset();
-
-    //generate resources using the Connection
-    return () -> {
-      SqlStream.QueryParams queryParams = new SqlStream.QueryParams(dataSource, query);
-      return new SqlToTripleStream(queryParams, map, normalizer);
-    };
-  }
-
   /**
    * TODO
    * @param map
@@ -174,26 +134,6 @@ public class D2rProcessor {
   }
 
 
-  public TripleStream doLuceneKeywordSearch(List<String> keywords) throws IOException, ParseException {
-    List<String> fieldList = new ArrayList<>();
-    for (D2rMap map : maps) {
-
-      String id = map.getId();
-      SelectStatement query = map.getQuery();
-      for (String column : query.getColumns()) {
-        String col = D2rUtil.getFieldNameUpperCase(column);
-        fieldList.add((id  + "_" + col).toUpperCase());
-      }
-    }
-
-    String[] fields = new String[fieldList.size()];
-    fieldList.toArray(fields);
-    SearchResult result = doLuceneKeywordSearch(fields, keywords);
-
-    return new DocToTripleStream(result, this);
-  }
-
-  /** Generated instances for all D2R maps. */
   public StreamCollection<Document> getAllAsLuceneDocs() throws D2RException {
     Model model = null;
 
@@ -214,72 +154,6 @@ public class D2rProcessor {
     for (D2rMap map : maps) {
       result.add(createLuceneDocStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
     }
-
-    return result;
-  }
-
-
-  /**
-   * TODO
-   * @param keywords
-   * @return
-   * @throws D2RException
-   */
-  public StreamCollection<Triple> doKeywordSearch(List<String> keywords) throws D2RException {
-
-    Model model = null;
-
-    try {
-      clear();
-      model = de.unipassau.medspace.d2r.factory.ModelFactory.getInstance().createDefaultModel();
-    }
-    catch (FactoryException e) {
-      throw new D2RException("Could not get default Model from the ModelFactory.", e);
-    }
-
-
-    // add namespaces
-    for (Entry<String, String> ent : namespaces.entrySet()) {
-      model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
-
-    StreamCollection<Triple> result = new StreamCollection<>();
-
-    // Generate instances for all maps
-    for (D2rMap map : maps) {
-
-      SelectStatement query = map.getQuery();
-      List<String> columns = query.getColumns();
-
-      String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns);
-      query.addTemporaryCondition(keywordCondition);
-      StreamFactory<Triple> stream = createTripleStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>());
-      result.add(stream);
-    }
-
-    return result;
-  }
-
-  /** Generated instances for all D2R maps. */
-  public StreamCollection<Triple> getAllAsTriples() throws D2RException {
-    Model model = null;
-
-    try {
-      clear();
-      model = de.unipassau.medspace.d2r.factory.ModelFactory.getInstance().createDefaultModel();
-    }
-    catch (FactoryException e) {
-      throw new D2RException("Could not get default Model from the ModelFactory.", e);
-    }
-
-    // add namespaces
-    for (Entry<String, String> ent : namespaces.entrySet()) {
-      model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
-
-    StreamCollection<Triple> result = new StreamCollection<>();
-    for (D2rMap map : maps)
-      result.add(createTripleStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
 
     return result;
   }
@@ -340,22 +214,19 @@ public class D2rProcessor {
       map.clear();
   }
 
-  private SearchResult doLuceneKeywordSearch(String[] fieldNameArray , List<String> keywords) throws IOException, ParseException {
-    Analyzer analyzer = new StandardAnalyzer();
-    QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
+  public List<D2rMap> getMaps() {
+    return maps;
+  }
 
-    StringBuilder keywordsConcat = new StringBuilder();
-    for (String keyword : keywords) {
-      keywordsConcat.append(keyword);
-      keywordsConcat.append(" ");
-    }
+  public SQLIndex getIndex() {
+    return index;
+  }
 
-    Query query = parser.parse(keywordsConcat.toString());
+  public HashMap<String, String> getNamespaces() {
+    return namespaces;
+  }
 
-    if (log.isDebugEnabled())
-      log.debug("Constructed query: " + query);
-
-
-    return new SearchResult(index.createReader(), query);
+  public DataSourceManager getDataSourceManager() {
+    return dataSourceManager;
   }
 }

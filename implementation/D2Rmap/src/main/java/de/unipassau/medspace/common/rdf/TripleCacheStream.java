@@ -11,7 +11,7 @@ import java.util.Queue;
 /**
  * Created by David Goeth on 03.07.2017.
  */
-public abstract class TripleCacheStream<E> implements TripleStream {
+public abstract class TripleCacheStream<E> implements DataSourceStream<Triple> {
 
   protected Queue<Triple> tripleCache;
   protected DataSourceStream<E> stream;

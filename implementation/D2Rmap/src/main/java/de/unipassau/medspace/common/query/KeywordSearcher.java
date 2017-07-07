@@ -2,6 +2,7 @@ package de.unipassau.medspace.common.query;
 
 import de.unipassau.medspace.common.stream.DataSourceStream;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -9,5 +10,5 @@ import java.util.List;
  */
 public interface KeywordSearcher<E> {
 
-  DataSourceStream<E> searchForKeywords(List<String> keywords);
+  DataSourceStream<E> searchForKeywords(List<String> keywords) throws IOException;
 }

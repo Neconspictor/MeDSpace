@@ -22,7 +22,6 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
   private static Logger log = Logger.getLogger(SqlToTripleStream.class);
   private SqlStream.QueryParams startParams;
   private D2rMap map;
-  private Queue<Triple> tripleCache;
   private URINormalizer normalizer;
 
   public SqlToTripleStream(SqlStream.QueryParams queryParams, D2rMap map, URINormalizer normalizer) throws IOException {
@@ -35,7 +34,6 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
     startParams =queryParams;
     this.map = map;
     this.normalizer = normalizer;
-    tripleCache = new LinkedList<>();
 
     try {
       stream = new SqlStream(startParams);

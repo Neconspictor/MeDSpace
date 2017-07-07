@@ -1,15 +1,19 @@
 package de.unipassau.medspace.d2r.indexing;
 
+import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.indexing.LuceneDocMapper;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProcessor;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
+import de.unipassau.medspace.d2r.D2rUtil;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by David Goeth on 06.07.2017.
@@ -71,5 +75,18 @@ public class SqlMapFactory extends LuceneDocMapper {
     });
 
     return new SQLResultTuple(columnValuePairs);
+  }
+
+  public static List<String> getMappedColumns(D2rMap map) {
+    List<String> result = new LinkedList<>();
+    String mapid = map.getId() + "_";
+    SelectStatement query = map.getQuery();
+
+    for (String column : query.getColumns()) {
+      String col = D2rUtil.getFieldNameUpperCase(column);
+      result.add(mapid + col);
+    }
+
+    return result;
   }
 }
