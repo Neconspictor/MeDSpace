@@ -1,7 +1,7 @@
 package de.unipassau.medspace.d2r.indexing;
 
 import de.unipassau.medspace.common.SQL.SelectStatement;
-import de.unipassau.medspace.common.indexing.LuceneDocMapper;
+import de.unipassau.medspace.common.indexing.DocumentMapper;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProcessor;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by David Goeth on 06.07.2017.
  */
-public class SqlMapFactory extends LuceneDocMapper {
+public class SqlMapFactory extends DocumentMapper {
 
   /**
    * Protected default constructor as this class is intended to be used
@@ -53,7 +53,7 @@ public class SqlMapFactory extends LuceneDocMapper {
   public static SQLResultTuple create(Document doc, D2rProcessor processor) {
     assert isMapped(doc);
 
-    String mapId = LuceneDocMapper.getMap(doc);
+    String mapId = DocumentMapper.getMap(doc);
     ArrayList<Pair<String, String>> columnValuePairs = new ArrayList<>();
 
     D2rMap map = processor.getMapById(mapId);

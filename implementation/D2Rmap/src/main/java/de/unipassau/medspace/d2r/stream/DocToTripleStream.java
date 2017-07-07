@@ -5,7 +5,7 @@ import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProcessor;
-import de.unipassau.medspace.common.indexing.LuceneDocMapper;
+import de.unipassau.medspace.common.indexing.DocumentMapper;
 import de.unipassau.medspace.common.indexing.SearchResult;
 
 import de.unipassau.medspace.d2r.indexing.SqlMapFactory;
@@ -33,7 +33,7 @@ public class DocToTripleStream extends TripleCacheStream<Document> {
   protected List<Triple> createTriples(Document elem) {
 
     SQLResultTuple tuple = SqlMapFactory.create(elem, processor);
-    D2rMap map = processor.getMapById(LuceneDocMapper.getMap(elem));
+    D2rMap map = processor.getMapById(DocumentMapper.getMap(elem));
     return map.createTriples(tuple, processor.getNormalizer());
   }
 

@@ -7,7 +7,7 @@ import org.apache.lucene.document.StringField;
 /**
  * Holds utility methods for assigning lucene index document a D2rMap id.
  */
-public class LuceneDocMapper {
+public class DocumentMapper {
 
   /**
    * This constant is used as the field name for the map id
@@ -18,7 +18,7 @@ public class LuceneDocMapper {
    * Protected default constructor as this class is intended to be used
    * as a singleton. Only subclasses should be have access
    */
-  protected LuceneDocMapper() {
+  protected DocumentMapper() {
 
   }
 

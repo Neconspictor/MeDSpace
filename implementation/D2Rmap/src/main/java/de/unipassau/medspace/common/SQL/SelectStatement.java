@@ -87,6 +87,8 @@ public class SelectStatement {
       FileUtil.closeSilently(result);
       throw e;
     }
+
+    reset();
     return result;
   }
 

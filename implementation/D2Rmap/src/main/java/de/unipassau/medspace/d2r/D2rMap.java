@@ -103,11 +103,6 @@ public class D2rMap {
     return triples;
   }
 
-  public SqlStream getAllData(DataSource dataSource) throws SQLException {
-    statement.reset();
-    return statement.execute(dataSource);
-  }
-
   public String getBaseURI() {
     return baseURI;
   }

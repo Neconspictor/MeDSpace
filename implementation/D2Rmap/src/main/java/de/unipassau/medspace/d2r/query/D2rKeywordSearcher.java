@@ -3,7 +3,7 @@ package de.unipassau.medspace.d2r.query;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.indexing.SQLIndex;
+import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.indexing.SearchResult;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
@@ -12,7 +12,6 @@ import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProcessor;
-import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.exception.FactoryException;
 import de.unipassau.medspace.d2r.indexing.SqlMapFactory;
 import de.unipassau.medspace.d2r.stream.DocToTripleStream;
@@ -161,7 +160,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
     if (log.isDebugEnabled())
       log.debug("Constructed query: " + query);
 
-    SQLIndex index = processor.getIndex();
+    Index index = processor.getIndex();
     return new SearchResult(index.createReader(), query);
   }
 }

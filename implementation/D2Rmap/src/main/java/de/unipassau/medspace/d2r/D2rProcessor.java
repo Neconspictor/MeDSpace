@@ -7,20 +7,19 @@ import java.util.*;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SqlStream;
+import de.unipassau.medspace.common.indexing.IndexImpl;
 import de.unipassau.medspace.common.rdf.URINormalizer;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.exception.FactoryException;
-import de.unipassau.medspace.common.indexing.SQLIndex;
+import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.d2r.indexing.SqlToDocumentStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.SQL.SelectStatement;
-import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 
-import java.util.Map.Entry;
 
 import org.apache.lucene.document.Document;
 
@@ -49,7 +48,7 @@ import javax.sql.DataSource;
  */
 public class D2rProcessor {
   private List<D2rMap> maps;
-  private SQLIndex index;
+  private Index index;
   private HashMap<String, String> namespaces;
   private URINormalizer normalizer;
   private HashMap<String, D2rMap> idToMap;
@@ -77,7 +76,7 @@ public class D2rProcessor {
     if (config.isIndexUsed()) {
      try {
        String directory = config.getIndexDirectory().toString();
-       index = SQLIndex.create(directory);
+       index = IndexImpl.create(directory);
        index.open();
      } catch (IOException e) {
        log.error(e);
@@ -135,21 +134,6 @@ public class D2rProcessor {
 
 
   public StreamCollection<Document> getAllAsLuceneDocs() throws D2RException {
-    Model model = null;
-
-    try {
-      clear();
-      model = de.unipassau.medspace.d2r.factory.ModelFactory.getInstance().createDefaultModel();
-    }
-    catch (FactoryException e) {
-      throw new D2RException("Could not get default Model from the ModelFactory.", e);
-    }
-
-    // add namespaces
-    for (Entry<String, String> ent : namespaces.entrySet()) {
-      model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
-
     StreamCollection<Document> result = new StreamCollection();
     for (D2rMap map : maps) {
       result.add(createLuceneDocStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
@@ -218,7 +202,7 @@ public class D2rProcessor {
     return maps;
   }
 
-  public SQLIndex getIndex() {
+  public Index getIndex() {
     return index;
   }
 

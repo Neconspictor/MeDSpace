@@ -10,34 +10,34 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Created by David Goeth on 13.06.2017.
+ * Created by David Goeth on 07.07.2017.
  */
-public class SQLIndex implements Closeable {
+public class IndexImpl implements Index {
+
   private Path indexDirectoryPath;
   private FSDirectory index;
   private volatile boolean isOpen;
 
-  private static Logger log = Logger.getLogger(SQLIndex.class);
+  private static Logger log = Logger.getLogger(Index.class);
 
-  protected SQLIndex(Path directory) {
+  protected IndexImpl(Path directory) {
     indexDirectoryPath = directory;
     index = null;
     isOpen = false;
   }
 
-  public static SQLIndex create(String directory) throws IOException {
+  public static Index create(String directory) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
       throw new IOException("Couldn't create index directory");
     }
-    SQLIndex result = new SQLIndex(path);
+    Index result = new IndexImpl(path);
 
     return result;
   }

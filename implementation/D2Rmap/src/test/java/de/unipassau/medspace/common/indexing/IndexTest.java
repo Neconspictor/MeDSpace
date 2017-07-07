@@ -1,7 +1,5 @@
 package de.unipassau.medspace.common.indexing;
 
-import de.unipassau.medspace.common.indexing.SQLIndex;
-import de.unipassau.medspace.common.indexing.SearchResult;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -24,7 +22,7 @@ import java.util.List;
 /**
  * Created by David Goeth on 13.06.2017.
  */
-public class SQLIndexTest {
+public class IndexTest {
 
   @Test
   public void indexSQLDatasourceTest() throws IOException, ParseException, D2RException {
@@ -36,7 +34,7 @@ public class SQLIndexTest {
   }
 
   private void testIndex() throws IOException, ParseException, D2RException {
-    SQLIndex indexer = SQLIndex.create("./_work/index");
+    Index indexer = Index.create("./_work/index");
     ArrayList<Document> docs = new ArrayList<>();
     for (int i = 0; i < 1; ++i) {
       addDoc(docs, "The Art of Computer Science", "9900333X");
@@ -66,7 +64,7 @@ public class SQLIndexTest {
     indexer.close();
   }
 
-  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, SQLIndex indexer) throws ParseException, IOException {
+  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, Index indexer) throws ParseException, IOException {
     StandardAnalyzer analyzer = new StandardAnalyzer();
     StringBuilder querystr = new StringBuilder();
     String and = " AND ";
