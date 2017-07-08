@@ -3,9 +3,8 @@ package de.unipassau.medspace.d2r;
 import java.util.*;
 import java.sql.*;
 
-import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import de.unipassau.medspace.common.rdf.URINormalizer;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.d2r.bridge.Bridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.SQL.SelectStatement;
@@ -66,7 +65,7 @@ public class D2rMap {
     statement.reset();
   }
 
-  public List<Triple> createTriples(SQLResultTuple tuple, URINormalizer normalizer) {
+  public List<Triple> createTriples(SQLResultTuple tuple, QNameNormalizer normalizer) {
     List<Triple> triples = new ArrayList<>();
     Resource resource;
 

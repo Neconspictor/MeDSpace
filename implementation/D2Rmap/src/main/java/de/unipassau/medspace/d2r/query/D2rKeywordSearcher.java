@@ -3,8 +3,8 @@ package de.unipassau.medspace.d2r.query;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.indexing.Index;
-import de.unipassau.medspace.common.indexing.SearchResult;
+import de.unipassau.medspace.common.indexing.lucene.FullTextSearchIndexWrapperImpl;
+import de.unipassau.medspace.common.indexing.lucene.SearchResult;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.StreamCollection;
@@ -30,7 +30,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by David Goeth on 07.07.2017.
@@ -74,9 +73,9 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
 
     // add namespaces
-    for (Map.Entry<String, String> ent : processor.getNamespaces().entrySet()) {
+   /* for (Map.Entry<String, String> ent : processor.getNamespaces().entrySet()) {
       model.setNsPrefix(ent.getKey(), ent.getValue());
-    }
+    }*/
 
     StreamCollection<Triple> result = new StreamCollection<>();
 
@@ -160,7 +159,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
     if (log.isDebugEnabled())
       log.debug("Constructed query: " + query);
 
-    Index index = processor.getIndex();
+    FullTextSearchIndexWrapperImpl index = (FullTextSearchIndexWrapperImpl) processor.getIndex();
     return new SearchResult(index.createReader(), query);
   }
 }

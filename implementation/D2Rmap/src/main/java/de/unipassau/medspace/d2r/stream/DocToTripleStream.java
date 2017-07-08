@@ -5,8 +5,8 @@ import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProcessor;
-import de.unipassau.medspace.common.indexing.DocumentMapper;
-import de.unipassau.medspace.common.indexing.SearchResult;
+import de.unipassau.medspace.common.indexing.lucene.DocumentMapper;
+import de.unipassau.medspace.common.indexing.lucene.SearchResult;
 
 import de.unipassau.medspace.d2r.indexing.SqlMapFactory;
 import org.apache.jena.graph.Triple;

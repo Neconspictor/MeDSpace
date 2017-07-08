@@ -1,7 +1,7 @@
 package de.unipassau.medspace.d2r.stream;
 
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
-import de.unipassau.medspace.common.rdf.URINormalizer;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.d2r.D2rMap;
@@ -20,9 +20,9 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
   private static Logger log = Logger.getLogger(SqlToTripleStream.class);
   private SqlStream.QueryParams startParams;
   private D2rMap map;
-  private URINormalizer normalizer;
+  private QNameNormalizer normalizer;
 
-  public SqlToTripleStream(SqlStream.QueryParams queryParams, D2rMap map, URINormalizer normalizer) throws IOException {
+  public SqlToTripleStream(SqlStream.QueryParams queryParams, D2rMap map, QNameNormalizer normalizer) throws IOException {
     super();
 
     assert  queryParams != null;

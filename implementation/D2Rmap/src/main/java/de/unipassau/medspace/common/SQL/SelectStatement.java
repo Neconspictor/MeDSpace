@@ -20,7 +20,7 @@ public class SelectStatement {
   private String afterWhereConditionStatement;
   private List<String> orderByList;
 
-  private static ArrayList<Clause> querySelectStatementOrder = new ArrayList(Arrays.asList(Clause.SELECT, FROM,
+  private static ArrayList<Clause> querySelectStatementOrder = new ArrayList<>(Arrays.asList(Clause.SELECT, FROM,
       WHERE, Clause.GROUP_BY, Clause.HAVING, Clause.UNION, Clause.ORDER_BY));
 
   public SelectStatement(String query, DataSource dataSource) throws SQLException {

@@ -1,5 +1,6 @@
 package de.unipassau.medspace.d2r.config;
 
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.d2r.D2rMap;
 import org.apache.jena.riot.Lang;
 import org.javatuples.Pair;
@@ -22,7 +23,7 @@ public class Configuration {
   private Path indexDirectory;
   private List<D2rMap> maps;
   private int maxConnections; //Connection configurations
-  private HashMap<String, String> namespaces;
+  private HashMap<String, Namespace> namespaces;
   private Lang outputFormat;
   private boolean useIndex;
 
@@ -71,7 +72,7 @@ public class Configuration {
     return maxConnections;
   }
 
-  public HashMap<String, String> getNamespaces() {
+  public HashMap<String, Namespace> getNamespaces() {
     return namespaces;
   }
 
@@ -107,7 +108,7 @@ public class Configuration {
     this.maps = maps;
   }
 
-  public void setNamespaces(HashMap<String, String> namespaces) {
+  public void setNamespaces(HashMap<String, Namespace> namespaces) {
     this.namespaces = namespaces;
   }
 

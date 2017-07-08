@@ -1,7 +1,7 @@
 package de.unipassau.medspace.d2r.bridge;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import de.unipassau.medspace.common.rdf.URINormalizer;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rUtil;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -20,7 +20,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 public class DatatypePropertyBridge extends Bridge {
 
   @Override
-  public RDFNode getValue(SQLResultTuple tuple, URINormalizer normalizer) {
+  public RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer) {
     // Generate property value
     Literal literal = null;
     String value = D2rUtil.parsePattern(getPattern(),

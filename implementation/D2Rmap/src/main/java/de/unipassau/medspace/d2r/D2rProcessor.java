@@ -7,13 +7,14 @@ import java.util.*;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.indexing.IndexImpl;
-import de.unipassau.medspace.common.rdf.URINormalizer;
+import de.unipassau.medspace.common.indexing.lucene.FullTextSearchIndexWrapperImpl;
+import de.unipassau.medspace.common.indexing.FullTextSearchIndexWrapper;
+import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.exception.FactoryException;
-import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.d2r.indexing.SqlToDocumentStream;
 import de.unipassau.medspace.common.util.FileUtil;
@@ -48,9 +49,9 @@ import javax.sql.DataSource;
  */
 public class D2rProcessor {
   private List<D2rMap> maps;
-  private Index index;
-  private HashMap<String, String> namespaces;
-  private URINormalizer normalizer;
+  private FullTextSearchIndexWrapper<Document> index;
+  private HashMap<String, Namespace> namespaces;
+  private QNameNormalizer normalizer;
   private HashMap<String, D2rMap> idToMap;
 
   /** log4j logger used for this class */
@@ -76,7 +77,7 @@ public class D2rProcessor {
     if (config.isIndexUsed()) {
      try {
        String directory = config.getIndexDirectory().toString();
-       index = IndexImpl.create(directory);
+       index = FullTextSearchIndexWrapperImpl.create(directory);
        index.open();
      } catch (IOException e) {
        log.error(e);
@@ -88,7 +89,24 @@ public class D2rProcessor {
       map.init(dataSourceManager.getDataSource(), maps);
     }
 
-    normalizer = URI -> getNormalizedURI(URI);
+    normalizer = new QNameNormalizer() {
+      @Override
+      public Namespace getNamespaceByPrefix(String prefix) {
+        return namespaces.get(prefix);
+      }
+
+      @Override
+      public List<Namespace> getNamespaces() {
+        Collection<Namespace> coll = namespaces.values();
+        List<Namespace> list = new ArrayList<>(coll);
+        return Collections.unmodifiableList(list);
+      }
+
+      @Override
+      public String normalize(String qName) {
+        return getNormalizedURI(qName);
+      }
+    };
 
     idToMap = new HashMap<>();
     for (D2rMap map : maps) {
@@ -134,7 +152,7 @@ public class D2rProcessor {
 
 
   public StreamCollection<Document> getAllAsLuceneDocs() throws D2RException {
-    StreamCollection<Document> result = new StreamCollection();
+    StreamCollection<Document> result = new StreamCollection<>();
     for (D2rMap map : maps) {
       result.add(createLuceneDocStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
     }
@@ -151,10 +169,10 @@ public class D2rProcessor {
   @SuppressWarnings("SpellCheckingInspection")
   public String getNormalizedURI(String qName) {
     String prefix = D2rUtil.getNamespacePrefix(qName);
-    String uriPrefix = namespaces.get(prefix);
-    if (uriPrefix != null) {
+    Namespace namespace = namespaces.get(prefix);
+    if (namespace != null) {
       String localName = D2rUtil.getLocalName(qName);
-      return uriPrefix + localName;
+      return namespace.getPrefix() + localName;
     }
     else {
       return qName;
@@ -165,7 +183,7 @@ public class D2rProcessor {
     return idToMap.get(id);
   }
 
-  public URINormalizer getNormalizer() {
+  public QNameNormalizer getNormalizer() {
     return normalizer;
   }
 
@@ -202,11 +220,11 @@ public class D2rProcessor {
     return maps;
   }
 
-  public Index getIndex() {
+  public FullTextSearchIndexWrapper getIndex() {
     return index;
   }
 
-  public HashMap<String, String> getNamespaces() {
+  public HashMap<String, Namespace> getNamespaces() {
     return namespaces;
   }
 

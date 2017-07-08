@@ -1,15 +1,12 @@
 package de.unipassau.medspace.common.indexing;
 
+import de.unipassau.medspace.common.indexing.lucene.FullTextSearchIndexWrapperImpl;
+import de.unipassau.medspace.common.indexing.lucene.SearchResult;
 import de.unipassau.medspace.d2r.exception.D2RException;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.*;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -17,12 +14,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by David Goeth on 13.06.2017.
  */
-public class IndexTest {
+public class FullTextSearchIndexTest {
 
   @Test
   public void indexSQLDatasourceTest() throws IOException, ParseException, D2RException {
@@ -34,7 +30,7 @@ public class IndexTest {
   }
 
   private void testIndex() throws IOException, ParseException, D2RException {
-    Index indexer = Index.create("./_work/index");
+    FullTextSearchIndexWrapper<Document> indexer = FullTextSearchIndexWrapperImpl.create("./_work/index");
     ArrayList<Document> docs = new ArrayList<>();
     for (int i = 0; i < 1; ++i) {
       addDoc(docs, "The Art of Computer Science", "9900333X");
@@ -53,19 +49,19 @@ public class IndexTest {
     System.out.println("Time needed for query: " + Duration.between(startTime, endTime));
 
 
-    System.out.println("Found " + result.getScoredLength() + " hits.");
+    /*System.out.println("Found " + result.getScoredLength() + " hits.");
     System.out.println("Total hit count: " + result.getTotalLength());
     for(int i=0;i<result.getScoredLength();++i) {
       Document d = result.getResult(i);
       System.out.println((i + 1) + ". " + d.get("isbn") + "\t" + d.get("title"));
-    }
+    }*/
 
-    result.close();
+    //result.close();
     indexer.close();
   }
 
-  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, Index indexer) throws ParseException, IOException {
-    StandardAnalyzer analyzer = new StandardAnalyzer();
+  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, FullTextSearchIndexWrapper indexer) throws ParseException, IOException {
+    /*StandardAnalyzer analyzer = new StandardAnalyzer();
     StringBuilder querystr = new StringBuilder();
     String and = " AND ";
     for (String keyword : keywords) {
@@ -82,7 +78,8 @@ public class IndexTest {
     }
     String[] fieldNameArray = new String[fieldNames.size()];
     Query q = new MultiFieldQueryParser(fieldNames.toArray(fieldNameArray),analyzer).parse(querystr.toString());
-    return new SearchResult(indexer.createReader(), q);
+    return new SearchResult(indexer.createReader(), q);*/
+    return null;
   }
 
   private static void addDoc(Collection<Document> coll, String title, String isbn) throws IOException {

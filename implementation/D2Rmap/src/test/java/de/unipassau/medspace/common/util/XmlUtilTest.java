@@ -149,14 +149,14 @@ public class XmlUtilTest {
   @Test
   public void parseFromFileTestValidFileNoSchema() throws SAXException {
     Document doc = XmlUtil.parseFromFile(VALID_INPUT_SOURCE, null);
-    Assert.assertNotNull("The returned Document musnt'nt ne null!", doc);
+    Assert.assertNotNull("The returned DocumentWrapper musnt'nt ne null!", doc);
   }
 
   @Test
   public void parseFromFileTestValidFileValidSchema() throws SAXException, D2RException {
     SourceSchema tuple = new SourceSchema(null, VALID_SCHEMA);
     Document doc = XmlUtil.parseFromFile(VALID_INPUT_SOURCE, tuple.getSchema());
-    Assert.assertNotNull("The returned Document musnt'nt ne null!", doc);
+    Assert.assertNotNull("The returned DocumentWrapper musnt'nt ne null!", doc);
   }
 
   /*
@@ -206,14 +206,14 @@ public class XmlUtilTest {
   @Test
   public void parseFromStringTestValidStringNoSchema() throws SAXException {
     Document doc = XmlUtil.parseFromString("<test></test>", null);
-    Assert.assertNotNull("The returned Document musnt'nt ne null!", doc);
+    Assert.assertNotNull("The returned DocumentWrapper musnt'nt ne null!", doc);
   }
 
   @Test
   public void parseFromStringTestValidStringValidSchema() throws SAXException, D2RException {
     SourceSchema tuple = new SourceSchema(null, VALID_SCHEMA);
     Document doc = XmlUtil.parseFromString("<TestElement></TestElement>", tuple.getSchema());
-    Assert.assertNotNull("The returned Document musnt'nt ne null!", doc);
+    Assert.assertNotNull("The returned DocumentWrapper musnt'nt ne null!", doc);
   }
 
   private class SourceSchema {

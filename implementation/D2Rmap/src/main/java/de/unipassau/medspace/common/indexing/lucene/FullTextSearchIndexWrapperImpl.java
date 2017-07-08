@@ -1,5 +1,7 @@
-package de.unipassau.medspace.common.indexing;
+package de.unipassau.medspace.common.indexing.lucene;
 
+import de.unipassau.medspace.common.indexing.FullTextSearchIndexWrapper;
+import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.util.FileUtil;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -16,28 +18,28 @@ import java.nio.file.Path;
 /**
  * Created by David Goeth on 07.07.2017.
  */
-public class IndexImpl implements Index {
+public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrapper<Document> {
 
   private Path indexDirectoryPath;
   private FSDirectory index;
   private volatile boolean isOpen;
 
-  private static Logger log = Logger.getLogger(Index.class);
+  private static Logger log = Logger.getLogger(FullTextSearchIndexWrapper.class);
 
-  protected IndexImpl(Path directory) {
+  protected FullTextSearchIndexWrapperImpl(Path directory) {
     indexDirectoryPath = directory;
     index = null;
     isOpen = false;
   }
 
-  public static Index create(String directory) throws IOException {
+  public static FullTextSearchIndexWrapper<Document> create(String directory) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
       throw new IOException("Couldn't create index directory");
     }
-    Index result = new IndexImpl(path);
+    FullTextSearchIndexWrapper<Document> result = new FullTextSearchIndexWrapperImpl(path);
 
     return result;
   }
@@ -57,6 +59,11 @@ public class IndexImpl implements Index {
     } finally {
       FileUtil.closeSilently(w, true);
     }
+  }
+
+  @Override
+  public KeywordSearcher<Document> createKeywordSearcher() throws IOException {
+    return null;
   }
 
   public void close() {

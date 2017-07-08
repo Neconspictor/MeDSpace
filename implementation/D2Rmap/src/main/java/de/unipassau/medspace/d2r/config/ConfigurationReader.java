@@ -1,5 +1,6 @@
 package de.unipassau.medspace.d2r.config;
 
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.bridge.DatatypePropertyBridge;
@@ -36,7 +37,7 @@ public class ConfigurationReader {
 
   public static Configuration createDefaultConfig() throws D2RException {
     Configuration config = new Configuration();
-    config.getNamespaces().put(D2R.RDFNS_PREFIX, D2R.RDFNS);
+    config.getNamespaces().put(D2R.RDFNS_PREFIX, new Namespace(D2R.RDFNS_PREFIX, D2R.RDFNS));
 
     config.setOutputFormat(getLangFromString(D2R.STANDARD_OUTPUT_FORMAT));
     return config;
@@ -56,8 +57,7 @@ public class ConfigurationReader {
     if (namespace.equals(""))
       throw new IllegalStateException("namespace not set or empty.");
 
-    config.getNamespaces().put(elem.getAttribute(D2R.NAMESPACE_PREFIX_ATTRIBUTE),
-        elem.getAttribute(D2R.NAMESPACE_NAMESPACE_ATTRIBUTE));
+    config.getNamespaces().put(prefix, new Namespace(prefix, namespace));
   }
 
   /**

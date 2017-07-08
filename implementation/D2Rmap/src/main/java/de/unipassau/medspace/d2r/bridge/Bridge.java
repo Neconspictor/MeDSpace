@@ -1,7 +1,7 @@
 package de.unipassau.medspace.d2r.bridge;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import de.unipassau.medspace.common.rdf.URINormalizer;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.d2r.D2rMap;
 import org.apache.jena.rdf.model.*;
 import org.apache.log4j.Logger;
@@ -66,7 +66,7 @@ abstract public class Bridge {
         }
     }
 
-    public Property createProperty(URINormalizer normalizer) {
+    public Property createProperty(QNameNormalizer normalizer) {
         String propURI = normalizer.normalize(property);
         Property prop = ResourceFactory.createProperty(propURI);
         return prop;
@@ -84,7 +84,7 @@ abstract public class Bridge {
      * @param tuple
      * @return
      */
-    public abstract RDFNode getValue(SQLResultTuple tuple, URINormalizer normalizer);
+    public abstract RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
 
     public String getDataType() {
         return this.dataType;

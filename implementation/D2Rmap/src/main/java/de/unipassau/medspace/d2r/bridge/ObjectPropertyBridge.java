@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import de.unipassau.medspace.common.rdf.URINormalizer;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rUtil;
@@ -82,7 +82,7 @@ public class ObjectPropertyBridge
   }
 
   @Override
-  public RDFNode getValue(SQLResultTuple tuple, URINormalizer normalizer) {
+  public RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer) {
     Resource referredResource = null;
 
     if (getReferredClassID() != null) {
