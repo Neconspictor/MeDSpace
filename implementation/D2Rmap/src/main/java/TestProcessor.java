@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 
-import de.unipassau.medspace.d2r.query.D2rKeywordSearcher;
+import de.unipassau.medspace.d2r.lucene.D2rKeywordSearcher;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFFormat;

@@ -1,4 +1,4 @@
-package de.unipassau.medspace.common.indexing.lucene;
+package de.unipassau.medspace.common.lucene;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

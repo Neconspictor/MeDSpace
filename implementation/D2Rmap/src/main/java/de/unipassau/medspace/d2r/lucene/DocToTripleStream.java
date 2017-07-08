@@ -1,14 +1,13 @@
-package de.unipassau.medspace.d2r.stream;
+package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProcessor;
-import de.unipassau.medspace.common.indexing.lucene.DocumentMapper;
-import de.unipassau.medspace.common.indexing.lucene.SearchResult;
+import de.unipassau.medspace.common.lucene.DocumentMapper;
+import de.unipassau.medspace.common.lucene.SearchResult;
 
-import de.unipassau.medspace.d2r.indexing.SqlMapFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;

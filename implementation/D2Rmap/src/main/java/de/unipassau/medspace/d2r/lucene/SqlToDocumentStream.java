@@ -1,4 +1,4 @@
-package de.unipassau.medspace.d2r.indexing;
+package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;

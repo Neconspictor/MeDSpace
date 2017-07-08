@@ -1,7 +1,7 @@
 package de.unipassau.medspace.common.indexing;
 
-import de.unipassau.medspace.common.indexing.lucene.FullTextSearchIndexWrapperImpl;
-import de.unipassau.medspace.common.indexing.lucene.SearchResult;
+import de.unipassau.medspace.common.lucene.FullTextSearchIndexWrapperImpl;
+import de.unipassau.medspace.common.lucene.SearchResult;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

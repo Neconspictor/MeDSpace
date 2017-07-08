@@ -1,10 +1,10 @@
-package de.unipassau.medspace.d2r.query;
+package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.indexing.lucene.FullTextSearchIndexWrapperImpl;
-import de.unipassau.medspace.common.indexing.lucene.SearchResult;
+import de.unipassau.medspace.common.lucene.FullTextSearchIndexWrapperImpl;
+import de.unipassau.medspace.common.lucene.SearchResult;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.StreamCollection;
@@ -13,8 +13,6 @@ import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProcessor;
 import de.unipassau.medspace.d2r.exception.FactoryException;
-import de.unipassau.medspace.d2r.indexing.SqlMapFactory;
-import de.unipassau.medspace.d2r.stream.DocToTripleStream;
 import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Model;

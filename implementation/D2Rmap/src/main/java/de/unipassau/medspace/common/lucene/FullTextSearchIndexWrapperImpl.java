@@ -1,4 +1,4 @@
-package de.unipassau.medspace.common.indexing.lucene;
+package de.unipassau.medspace.common.lucene;
 
 import de.unipassau.medspace.common.indexing.FullTextSearchIndexWrapper;
 import de.unipassau.medspace.common.query.KeywordSearcher;
