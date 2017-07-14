@@ -19,7 +19,7 @@ public class Configuration {
   private List<Pair<String, String>> dataSourceProperties;
   private String databaseUsername;
   private String jdbc;
-  private String jdbcDriver;
+  private Class jdbcDriver;
   private Path indexDirectory;
   private List<D2rMap> maps;
   private int maxConnections; //Connection configurations
@@ -60,7 +60,7 @@ public class Configuration {
     return jdbc;
   }
 
-  public String getJdbcDriver() {
+  public Class getJdbcDriver() {
     return jdbcDriver;
   }
 
@@ -96,7 +96,7 @@ public class Configuration {
     this.jdbc = jdbc;
   }
 
-  public void setJdbcDriver(String jdbcDriver) {
+  public void setJdbcDriver(Class jdbcDriver) {
     this.jdbcDriver = jdbcDriver;
   }
 

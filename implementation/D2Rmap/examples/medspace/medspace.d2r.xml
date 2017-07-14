@@ -3,8 +3,11 @@
 		 xmlns:d2r="http://www.medspace.com/D2Rmap"
 		 xsi:schemaLocation="http://www.medspace.com/D2Rmap http://www.medspace.com/D2Rmap/Medspace_D2Rmap.xsd">
 		 
+	<!-->com.mysql.jdbc.Driver</-->	 
+		 
 	<d2r:DBConnection
 			jdbcDriver="com.mysql.jdbc.Driver"
+			
 			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
 			maxConnections="10"
 	>

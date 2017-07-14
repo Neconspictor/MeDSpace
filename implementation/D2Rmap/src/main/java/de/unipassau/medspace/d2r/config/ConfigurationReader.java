@@ -80,11 +80,8 @@ public class ConfigurationReader {
           ", uri: " + spe.getSystemId() + ", reason: " +
           spe.getMessage(), spe);
 
-    } catch (SAXException sxe) {
-      throw new D2RException("Error while parsing XML file: ", sxe);
-
-    } catch (IOException e) {
-      throw new D2RException("IO Error while parsing the map: ", e);
+    } catch (ClassNotFoundException  | IOException | SAXException e) {
+      throw new D2RException("Error while parsing XML file: ", e);
     }
 
     return config;
@@ -154,7 +151,7 @@ public class ConfigurationReader {
     config.getMaps().add(cMap);
   }
 
-  private static void readConfig(Document document, Configuration config) throws IOException, D2RException {
+  private static void readConfig(Document document, Configuration config) throws IOException, D2RException, ClassNotFoundException {
     // Read namespaces
     NodeList list = document.getElementsByTagNameNS(D2R.D2RNS, D2R.NAMESPACE_ELEMENT);
     int numNodes = list.getLength();
@@ -204,14 +201,15 @@ public class ConfigurationReader {
     config.setDatabasePassword(password);
   }
 
-  private static void readDBConnectionElement(Configuration config, Element elem) {
+  private static void readDBConnectionElement(Configuration config, Element elem) throws ClassNotFoundException {
     NodeList authentifications = elem.getElementsByTagNameNS(D2R.D2RNS, D2R.DBAUTHENTIFICATION_ELEMENT);
     if (authentifications.getLength() > 0)
       readDBAuthentificationElement(config, (Element)authentifications.item(0));
 
     // jdbcDSN and jdbcDriver are required attributes
     config.setJdbc(elem.getAttribute(D2R.DBCONNECTION_JDBC_DSN_ATTRIBUTE));
-    config.setJdbcDriver(elem.getAttribute(D2R.DBCONNECTION_JDBC_DRIVER_ATTRIBUTE));
+    Class driver = Class.forName(elem.getAttribute(D2R.DBCONNECTION_JDBC_DRIVER_ATTRIBUTE));
+    config.setJdbcDriver(driver);
 
     int maxConnections = 5;
     if (elem.hasAttribute(D2R.DBCONNECTION_MAX_CONNECTIONS_ATTRIBUTE)) {

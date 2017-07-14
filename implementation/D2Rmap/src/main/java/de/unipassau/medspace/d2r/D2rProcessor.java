@@ -201,7 +201,7 @@ public class D2rProcessor {
     Namespace namespace = namespaces.get(prefix);
     if (namespace != null) {
       String localName = D2rUtil.getLocalName(qName);
-      return namespace.getPrefix() + localName;
+      return namespace.getFullURI() + localName;
     }
     else {
       return qName;

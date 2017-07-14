@@ -1,5 +1,6 @@
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
 import de.unipassau.medspace.d2r.D2rProcessor;
@@ -38,13 +39,15 @@ public class TestProcessor {
 
     public static void main(String[] args) {
         String prettyPrintingLang = "N3";
+        DataSourceManager dataSourceManager = null;
         try {
             System.out.println("D2R test started ....");
             Configuration config = new ConfigurationReader().readConfig(D2RMap);
             URI jdbcURI = new URI(config.getJdbc());
 
-            DataSourceManager dataSourceManager = new HikariDataSourceManager(
+            dataSourceManager = new HikariDataSourceManager(
                 jdbcURI,
+                config.getJdbcDriver(),
                 config.getDatabaseUsername(),
                 config.getDatabasePassword(),
                 config.getMaxConnections(),
@@ -79,8 +82,6 @@ public class TestProcessor {
             //Lang lang = config.getOutputFormat();
             Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
 
-            processor.shutdown();
-
             System.out.println("RDF data exported ....");
             System.out.println("Time elapsed: " + Duration.between(startTime, endTime));
         } catch (D2RException d2rex) {
@@ -101,6 +102,8 @@ public class TestProcessor {
             System.out.println("");
             ex.printStackTrace();
         } finally {
+            if (processor != null) processor.shutdown();
+            FileUtil.closeSilently(dataSourceManager);
             System.out.println("Closed streams successfully");
         }
     }
