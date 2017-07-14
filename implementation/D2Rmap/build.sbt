@@ -24,8 +24,11 @@ libraryDependencies ++= Seq(
 	"mysql" % "mysql-connector-java" % "5.1.42",
 
 	// Jena
-	"org.apache.jena" % "jena-osgi" % "3.3.0",
-
+	"org.apache.jena" % "jena-arq" % "3.3.0",
+	"org.apache.jena" % "jena-core" % "3.3.0",
+	"org.apache.jena" % "jena-iri" % "3.3.0",
+	"org.apache.jena" % "jena-tdb" % "3.3.0",
+	
 	// Logging
 	// We only want to use one logging instance but some libs are using slf4j
 	// while others use log4j -> we use log4j and bridge slf4j to it
@@ -53,3 +56,5 @@ libraryDependencies ++= Seq(
 	// Mockrunner JDBC
 	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2"
 )
+
+mainClass in (Compile,run) := Some("TestProcessor")

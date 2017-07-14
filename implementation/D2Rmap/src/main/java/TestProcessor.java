@@ -12,6 +12,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Map;
 
 import de.unipassau.medspace.d2r.lucene.D2rKeywordSearcher;
 import org.apache.jena.graph.Triple;
@@ -20,6 +21,7 @@ import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.system.StreamRDFWriter;
+import org.apache.jena.shared.PrefixMapping;
 
 
 /**
@@ -69,6 +71,10 @@ public class TestProcessor {
 
             RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
             StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
+            PrefixMapping mapping = processor.getNamespacePrefixMapper();
+            for (Map.Entry<String, String> map : mapping.getNsPrefixMap().entrySet()) {
+                rdfOut.prefix(map.getKey(), map.getValue());
+            }
             rdfOut.start();
             for (Triple triple : triples) {
                 rdfOut.triple(triple);

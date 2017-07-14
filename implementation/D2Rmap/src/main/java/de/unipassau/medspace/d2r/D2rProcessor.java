@@ -20,6 +20,8 @@ import de.unipassau.medspace.d2r.lucene.SqlMapFactory;
 import de.unipassau.medspace.d2r.lucene.SqlToDocumentStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.SQL.SelectStatement;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.shared.impl.PrefixMappingImpl;
 import org.apache.log4j.Logger;
 
 
@@ -52,6 +54,7 @@ public class D2rProcessor {
   private List<D2rMap> maps;
   private FullTextSearchIndexWrapperImpl index;
   private HashMap<String, Namespace> namespaces;
+  private PrefixMapping namespacePrefixMapper;
   private QNameNormalizer normalizer;
   private HashMap<String, D2rMap> idToMap;
 
@@ -77,6 +80,12 @@ public class D2rProcessor {
 
     for (D2rMap map : maps) {
       map.init(dataSourceManager.getDataSource(), maps);
+    }
+
+    namespacePrefixMapper = new PrefixMappingImpl();
+
+    for (Namespace namespace : namespaces.values()) {
+      namespacePrefixMapper.setNsPrefix(namespace.getPrefix(), namespace.getFullURI());
     }
 
     normalizer = new QNameNormalizer() {
@@ -183,6 +192,10 @@ public class D2rProcessor {
 
   public List<D2rMap> getMaps() {
     return maps;
+  }
+
+  public PrefixMapping getNamespacePrefixMapper() {
+    return namespacePrefixMapper;
   }
 
   public HashMap<String, Namespace> getNamespaces() {
