@@ -14,12 +14,14 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Created by David Goeth on 07.07.2017.
  */
 public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrapper<Document> {
 
+  private List<String> fields;
   private Path indexDirectoryPath;
   private FSDirectory index;
   private volatile boolean isOpen;
@@ -32,14 +34,14 @@ public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrappe
     isOpen = false;
   }
 
-  public static FullTextSearchIndexWrapper<Document> create(String directory) throws IOException {
+  public static FullTextSearchIndexWrapperImpl create(String directory) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
       throw new IOException("Couldn't create index directory");
     }
-    FullTextSearchIndexWrapper<Document> result = new FullTextSearchIndexWrapperImpl(path);
+    FullTextSearchIndexWrapperImpl result = new FullTextSearchIndexWrapperImpl(path);
 
     return result;
   }
@@ -63,7 +65,7 @@ public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrappe
 
   @Override
   public KeywordSearcher<Document> createKeywordSearcher() throws IOException {
-    return null;
+    return new LuceneKeywordSearcher(fields, this);
   }
 
   public void close() {
@@ -76,6 +78,10 @@ public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrappe
 
   public IndexReader createReader() throws IOException {
     return DirectoryReader.open(index);
+  }
+
+  public List<String> getSearchableFields() {
+    return fields;
   }
 
   public void index(Iterable<Document> data) throws IOException {
@@ -114,5 +120,9 @@ public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrappe
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
     index(data);
+  }
+
+  public void setSearchableFields(List<String> fields) {
+    this.fields = fields;
   }
 }

@@ -16,6 +16,7 @@ import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.exception.FactoryException;
 import de.unipassau.medspace.common.stream.StreamCollection;
+import de.unipassau.medspace.d2r.lucene.SqlMapFactory;
 import de.unipassau.medspace.d2r.lucene.SqlToDocumentStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.SQL.SelectStatement;
@@ -49,7 +50,7 @@ import javax.sql.DataSource;
  */
 public class D2rProcessor {
   private List<D2rMap> maps;
-  private FullTextSearchIndexWrapper<Document> index;
+  private FullTextSearchIndexWrapperImpl index;
   private HashMap<String, Namespace> namespaces;
   private QNameNormalizer normalizer;
   private HashMap<String, D2rMap> idToMap;
@@ -58,6 +59,7 @@ public class D2rProcessor {
   private static Logger log = Logger.getLogger(D2rProcessor.class);
 
   private DataSourceManager dataSourceManager;
+  private List<String> fields;
 
 
   public D2rProcessor(Configuration config, DataSourceManager dataSourceManager) throws D2RException {
@@ -72,18 +74,6 @@ public class D2rProcessor {
     config.setNamespaces(null);
 
     this.dataSourceManager = dataSourceManager;
-
-    index = null;
-    if (config.isIndexUsed()) {
-     try {
-       String directory = config.getIndexDirectory().toString();
-       index = FullTextSearchIndexWrapperImpl.create(directory);
-       index.open();
-     } catch (IOException e) {
-       log.error(e);
-       throw new D2RException("Couldn't create index!");
-     }
-    }
 
     for (D2rMap map : maps) {
       map.init(dataSourceManager.getDataSource(), maps);
@@ -111,6 +101,21 @@ public class D2rProcessor {
     idToMap = new HashMap<>();
     for (D2rMap map : maps) {
       idToMap.put(map.getId(), map);
+    }
+
+
+    index = null;
+    if (config.isIndexUsed()) {
+     try {
+       String directory = config.getIndexDirectory().toString();
+       index = FullTextSearchIndexWrapperImpl.create(directory);
+       List<String> fields =  createFields(maps);
+       index.setSearchableFields(fields);
+       index.open();
+     } catch (IOException e) {
+       log.error(e);
+       throw new D2RException("Couldn't create index!");
+     }
     }
   }
 
@@ -160,6 +165,30 @@ public class D2rProcessor {
     return result;
   }
 
+  public DataSourceManager getDataSourceManager() {
+    return dataSourceManager;
+  }
+
+  public List<String> getFields() {
+    return fields;
+  }
+
+  public FullTextSearchIndexWrapper<Document> getIndex() {
+    return index;
+  }
+
+  public D2rMap getMapById(String id) {
+    return idToMap.get(id);
+  }
+
+  public List<D2rMap> getMaps() {
+    return maps;
+  }
+
+  public HashMap<String, Namespace> getNamespaces() {
+    return namespaces;
+  }
+
   /**
    * Translates a qName to an URI using the namespace mapping of the D2R map.
    * @param qName Qualified name to be translated. See <a href="https://www.w3.org/TR/REC-xml-names/#dt-qualname">
@@ -177,10 +206,6 @@ public class D2rProcessor {
     else {
       return qName;
     }
-  }
-
-  public D2rMap getMapById(String id) {
-    return idToMap.get(id);
   }
 
   public QNameNormalizer getNormalizer() {
@@ -209,26 +234,18 @@ public class D2rProcessor {
     FileUtil.closeSilently(index, true);
   }
 
-
   private void clear() throws FactoryException {
     // clear maps
     for (D2rMap map : maps)
       map.clear();
   }
 
-  public List<D2rMap> getMaps() {
-    return maps;
-  }
-
-  public FullTextSearchIndexWrapper getIndex() {
-    return index;
-  }
-
-  public HashMap<String, Namespace> getNamespaces() {
-    return namespaces;
-  }
-
-  public DataSourceManager getDataSourceManager() {
-    return dataSourceManager;
+  private List<String> createFields(List<D2rMap> maps) {
+    List<String> fields = new ArrayList<>();
+    for (D2rMap map : maps) {
+      List<String> mappedColumns = SqlMapFactory.getMappedColumns(map);
+      fields.addAll(mappedColumns);
+    }
+    return fields;
   }
 }

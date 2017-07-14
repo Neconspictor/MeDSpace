@@ -20,12 +20,11 @@ import java.util.List;
  */
 public class DocToTripleStream extends TripleCacheStream<Document> {
 
-  private static Logger log = Logger.getLogger(DocToTripleStream.class);
   private D2rProcessor processor;
 
-  public DocToTripleStream (SearchResult result, D2rProcessor processor) {
+  public DocToTripleStream (DataSourceStream<Document> source, D2rProcessor processor) {
     this.processor = processor;
-    stream = new DocStream(result);
+    stream = source;
   }
 
   @Override
@@ -34,39 +33,5 @@ public class DocToTripleStream extends TripleCacheStream<Document> {
     SQLResultTuple tuple = SqlMapFactory.create(elem, processor);
     D2rMap map = processor.getMapById(DocumentMapper.getMap(elem));
     return map.createTriples(tuple, processor.getNormalizer());
-  }
-
-  private static class DocStream implements DataSourceStream<Document> {
-
-    private int index;
-    private SearchResult result;
-
-    public DocStream(SearchResult result) {
-      index = 0;
-      this.result = result;
-    }
-
-    @Override
-    public void close() throws IOException {
-      result.close();
-    }
-
-    @Override
-    public boolean hasNext() {
-      return index < result.getScoredLength();
-    }
-
-    @Override
-    public Document next() {
-      Document doc = null;
-      try {
-        doc = result.getResult(index);
-      } catch (IOException e) {
-        log.error("IOException retrived while trying to access a lucene search result document: ", e);
-      }
-
-      ++index;
-      return doc;
-    }
   }
 }

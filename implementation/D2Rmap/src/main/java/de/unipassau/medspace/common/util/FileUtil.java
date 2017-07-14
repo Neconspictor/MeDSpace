@@ -55,6 +55,10 @@ public class FileUtil {
     return path;
   }
 
+  public static URL getResource(String filename) {
+    return FileUtil.class.getResource(filename);
+  }
+
   /**
    * Checks whether a given string represents a valid resource.
    * @param resourceName the path to the resource
@@ -62,7 +66,10 @@ public class FileUtil {
    */
   public static boolean isResource(String resourceName) {
     if (resourceName == null) throw new NullPointerException("Null isn't allowed for resourceName");
-     return  Class.class.getResource(resourceName) != null;
+    URL url = getResource(resourceName);
+    if (url == null) return false;
+    File file = new File(url.getFile());
+    return !file.isDirectory();
   }
 
   /**
@@ -75,7 +82,7 @@ public class FileUtil {
   public static String getAbsoluteFilePathFromResource(String resourceName) {
     if (resourceName == null) throw new NullPointerException("resourceName isn't allowed to be null");
     if (!isResource(resourceName)) throw new IllegalArgumentException("resourceName describes no valid resource!");
-    URL resource = Class.class.getResource(resourceName);
+    URL resource = FileUtil.class.getResource(resourceName);
     return resource.getFile();
   }
 

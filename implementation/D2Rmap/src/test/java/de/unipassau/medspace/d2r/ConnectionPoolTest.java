@@ -18,7 +18,7 @@ public class ConnectionPoolTest {
   @Test
   public void testConnectionPool() throws SQLException {
 
-    DataSource dataSource;
+   /* DataSource dataSource;
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl("jdbc:mysql://localhost:3306/medspace?useSSL=false");
     config.setUsername("medspace_client");
@@ -44,6 +44,6 @@ public class ConnectionPoolTest {
       if (connection != null)
         connection.rollback();
       throw e;
-    }
+    }*/
   }
 }

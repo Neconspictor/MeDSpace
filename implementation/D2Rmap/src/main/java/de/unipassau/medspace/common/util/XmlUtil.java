@@ -132,7 +132,8 @@ public class XmlUtil {
   public static InputSource getFromFile(String filename) throws FileNotFoundException {
     if (filename == null) throw new NullPointerException("filename mustn't be null!");
     if (FileUtil.isResource(filename)) {
-      URL resource = Class.class.getResource(filename);
+
+      URL resource = FileUtil.getResource(filename);
       filename = resource.getFile();
     }
     return new InputSource(new FileReader(filename));

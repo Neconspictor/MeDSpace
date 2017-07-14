@@ -22,7 +22,7 @@ public class SelectStatementTest {
   @Test
   public void testParse() throws D2RException, SQLException, IOException, URISyntaxException {
 
-    String query = "SELECT * FROM LANGUAGE WHERE LANGUAGE.name LIKE '%' ORDER BY LANGUAGE.NAME;";
+    /*String query = "SELECT * FROM LANGUAGE WHERE LANGUAGE.name LIKE '%' ORDER BY LANGUAGE.NAME;";
     URI jdbcURI = new URI("jdbc:mysql://localhost:3306/medspace?useSSL=false");
 
     DataSource dataSource = new HikariDataSourceManager(
@@ -38,7 +38,7 @@ public class SelectStatementTest {
       printQueryResult(result);
     } catch(IOException e) {
       throw e;
-    }
+    }*/
   }
 
   private void printQueryResult(SqlStream result) throws SQLException, IOException {
