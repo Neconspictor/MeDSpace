@@ -7,16 +7,16 @@ import java.util.*;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.lucene.FullTextSearchIndexWrapperImpl;
-import de.unipassau.medspace.common.indexing.FullTextSearchIndexWrapper;
+import de.unipassau.medspace.common.lucene.FullTextSearchIndexImpl;
+import de.unipassau.medspace.common.indexing.FullTextSearchIndex;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
-import de.unipassau.medspace.d2r.exception.FactoryException;
 import de.unipassau.medspace.common.stream.StreamCollection;
-import de.unipassau.medspace.d2r.lucene.SqlMapFactory;
+import de.unipassau.medspace.d2r.lucene.SqlIndex;
+import de.unipassau.medspace.d2r.lucene.SqlResultFactory;
 import de.unipassau.medspace.d2r.lucene.SqlToDocumentStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.SQL.SelectStatement;
@@ -50,22 +50,21 @@ import javax.sql.DataSource;
  * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
  * @version V0.3.1
  */
-public class D2rProcessor {
+public class D2rProxy {
   private List<D2rMap> maps;
-  private FullTextSearchIndexWrapperImpl index;
   private HashMap<String, Namespace> namespaces;
   private PrefixMapping namespacePrefixMapper;
   private QNameNormalizer normalizer;
   private HashMap<String, D2rMap> idToMap;
+  private SqlResultFactory resultFactory;
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rProcessor.class);
+  private static Logger log = Logger.getLogger(D2rProxy.class);
 
   private DataSourceManager dataSourceManager;
-  private List<String> fields;
 
 
-  public D2rProcessor(Configuration config, DataSourceManager dataSourceManager) throws D2RException {
+  public D2rProxy(Configuration config, DataSourceManager dataSourceManager) throws D2RException {
     assert config != null;
     assert dataSourceManager != null;
 
@@ -77,54 +76,20 @@ public class D2rProcessor {
     config.setNamespaces(null);
 
     this.dataSourceManager = dataSourceManager;
+    normalizer = qName -> getNormalizedURI(qName);
+    idToMap = new HashMap<>();
+    resultFactory = new SqlResultFactory(D2R.MAP_FIELD, this);
 
     for (D2rMap map : maps) {
-      map.init(dataSourceManager.getDataSource(), maps);
+      idToMap.put(map.getId(), map);
+      map.setNormalizer(normalizer);
+      map.init(dataSourceManager.getDataSource());
     }
 
     namespacePrefixMapper = new PrefixMappingImpl();
 
     for (Namespace namespace : namespaces.values()) {
       namespacePrefixMapper.setNsPrefix(namespace.getPrefix(), namespace.getFullURI());
-    }
-
-    normalizer = new QNameNormalizer() {
-      @Override
-      public Namespace getNamespaceByPrefix(String prefix) {
-        return namespaces.get(prefix);
-      }
-
-      @Override
-      public List<Namespace> getNamespaces() {
-        Collection<Namespace> coll = namespaces.values();
-        List<Namespace> list = new ArrayList<>(coll);
-        return Collections.unmodifiableList(list);
-      }
-
-      @Override
-      public String normalize(String qName) {
-        return getNormalizedURI(qName);
-      }
-    };
-
-    idToMap = new HashMap<>();
-    for (D2rMap map : maps) {
-      idToMap.put(map.getId(), map);
-    }
-
-
-    index = null;
-    if (config.isIndexUsed()) {
-     try {
-       String directory = config.getIndexDirectory().toString();
-       index = FullTextSearchIndexWrapperImpl.create(directory);
-       List<String> fields =  createFields(maps);
-       index.setSearchableFields(fields);
-       index.open();
-     } catch (IOException e) {
-       log.error(e);
-       throw new D2RException("Couldn't create index!");
-     }
     }
   }
 
@@ -145,7 +110,6 @@ public class D2rProcessor {
     }
 
     String query = statement.toString();
-    statement.reset();
     String ucQuery = query.toUpperCase();
     if (ucQuery.contains("UNION"))
       throw new D2RException("SQL statement should not contain UNION: " + query);
@@ -161,7 +125,7 @@ public class D2rProcessor {
     };
 
     //generate resources using the Connection
-    return () -> new SqlToDocumentStream(factory, map);
+    return () -> new SqlToDocumentStream(factory, resultFactory, map);
   }
 
 
@@ -178,16 +142,12 @@ public class D2rProcessor {
     return dataSourceManager;
   }
 
-  public List<String> getFields() {
-    return fields;
-  }
-
-  public FullTextSearchIndexWrapper<Document> getIndex() {
-    return index;
-  }
-
   public D2rMap getMapById(String id) {
     return idToMap.get(id);
+  }
+
+  public SqlResultFactory getSqlResultFactory() {
+    return resultFactory;
   }
 
   public List<D2rMap> getMaps() {
@@ -219,46 +179,5 @@ public class D2rProcessor {
     else {
       return qName;
     }
-  }
-
-  public QNameNormalizer getNormalizer() {
-    return normalizer;
-  }
-
-  public void reindex() throws D2RException {
-    StreamCollection<Document> docStream = getAllAsLuceneDocs();
-
-    try {
-      index.open();
-      docStream.start();
-      index.reindex(docStream);
-      // for (Document doc : docStream) {System.out.println(doc.toString());}
-
-
-    } catch (IOException e) {
-      throw new D2RException("Error while reindexing", e);
-    } finally {
-      FileUtil.closeSilently(docStream, true);
-    }
-
-  }
-
-  public void shutdown() {
-    FileUtil.closeSilently(index, true);
-  }
-
-  private void clear() throws FactoryException {
-    // clear maps
-    for (D2rMap map : maps)
-      map.clear();
-  }
-
-  private List<String> createFields(List<D2rMap> maps) {
-    List<String> fields = new ArrayList<>();
-    for (D2rMap map : maps) {
-      List<String> mappedColumns = SqlMapFactory.getMappedColumns(map);
-      fields.addAll(mappedColumns);
-    }
-    return fields;
   }
 }

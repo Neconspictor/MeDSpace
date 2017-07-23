@@ -3,19 +3,15 @@ package de.unipassau.medspace.d2r.lucene;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.indexing.FullTextSearchIndexWrapper;
-import de.unipassau.medspace.common.lucene.FullTextSearchIndexWrapperImpl;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.d2r.D2rMap;
-import de.unipassau.medspace.d2r.D2rProcessor;
-import de.unipassau.medspace.d2r.exception.FactoryException;
+import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.Model;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 
@@ -31,16 +27,13 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
   private static Logger log = Logger.getLogger(D2rKeywordSearcher.class);
 
-  private List<String> fields;
   private KeywordSearcher<Document> keywordSearcher;
   private boolean useLucene;
-  private D2rProcessor processor;
+  private D2rProxy proxy;
 
-  public D2rKeywordSearcher(D2rProcessor processor) throws IOException {
-
-    fields = processor.getFields();
-    keywordSearcher = processor.getIndex().createKeywordSearcher();
-    this.processor = processor;
+  public D2rKeywordSearcher(D2rProxy proxy, KeywordSearcher<Document> keywordSearcher) throws IOException {
+    this.keywordSearcher = keywordSearcher;
+    this.proxy = proxy;
     useLucene = true;
   }
 
@@ -57,38 +50,24 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
   public DataSourceStream<Triple> searchForKeywords(List<String> keywords) throws IOException {
     if (useLucene) {
       DataSourceStream<Document> result =  keywordSearcher.searchForKeywords(keywords);
-      return new DocToTripleStream(result, processor);
+      return new DocToTripleStream(result, proxy.getSqlResultFactory());
     }
     return searchByDatasource(keywords);
   }
 
   private DataSourceStream<Triple> searchByDatasource(List<String> keywords) throws IOException {
-    Model model = null;
-
-    try {
-      model = de.unipassau.medspace.d2r.factory.ModelFactory.getInstance().createDefaultModel();
-    }
-    catch (FactoryException e) {
-      throw new IOException("Could not get default Model from the ModelFactory.", e);
-    }
-
-
-    // add namespaces
-   /* for (Map.Entry<String, String> ent : processor.getNamespaces().entrySet()) {
-      model.setNsPrefix(ent.getKey(), ent.getValue());
-    }*/
 
     StreamCollection<Triple> result = new StreamCollection<>();
 
     // Generate instances for all maps
-    for (D2rMap map : processor.getMaps()) {
+    for (D2rMap map : proxy.getMaps()) {
 
       SelectStatement query = map.getQuery();
       List<String> columns = query.getColumns();
 
       String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns);
       query.addTemporaryCondition(keywordCondition);
-      DataSourceManager manager = processor.getDataSourceManager();
+      DataSourceManager manager = proxy.getDataSourceManager();
       StreamFactory<Triple> stream = createTripleStreamFactory(map, manager.getDataSource(), new ArrayList<>());
       result.add(stream);
     }
@@ -117,12 +96,11 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
     }
 
     String query = statement.toString();
-    statement.reset();
 
     //generate resources using the Connection
     return () -> {
       SqlStream.QueryParams queryParams = new SqlStream.QueryParams(dataSource, query);
-      return new SqlToTripleStream(queryParams, map, processor.getNormalizer());
+      return new SqlToTripleStream(queryParams, map);
     };
   }
 }

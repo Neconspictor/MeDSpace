@@ -92,8 +92,8 @@ joseki:ImplQueryOperationSPO
 ## Modules for operation processors
 
 ## This is the operation that takes queries which are models and
-## indirects them to the specific query processor based on language.
-## It is not itself a query processor.
+## indirects them to the specific query proxy based on language.
+## It is not itself a query proxy.
 
 joseki:BindingQueryModel
     a   joseki:OperationBinding ;

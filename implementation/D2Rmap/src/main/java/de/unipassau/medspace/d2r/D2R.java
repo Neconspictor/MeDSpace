@@ -62,7 +62,7 @@ public class D2R {
     // element OutputFormat
     public static final String OUTPUT_FORMAT_ELEMENT = "OutputFormat";
 
-    // elemt FullTextSearchIndexWrapper
+    // elemt FullTextSearchIndex
     public static final String INDEX_ELEMENT = "Index";
     public static final String INDEX_DIRECTORY_ATTRIBUTE = "directory";
 
@@ -72,4 +72,10 @@ public class D2R {
     public static final String DATA_SOURCE_PROPERTY_VALUE_ATTRIBUTE = "value";
 
     public static final String MEDSPACE_VALIDATION_SCHEMA = "/Medspace_D2Rmap.xsd";
+
+
+    /**
+     * This constant is used as the field name for the map id
+     */
+    public static final String MAP_FIELD = "MAP";
 }

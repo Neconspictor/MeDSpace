@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.indexing;
 
-import de.unipassau.medspace.common.lucene.FullTextSearchIndexWrapperImpl;
+import de.unipassau.medspace.common.lucene.FullTextSearchIndexImpl;
 import de.unipassau.medspace.common.lucene.SearchResult;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.lucene.document.Document;
@@ -30,7 +30,7 @@ public class FullTextSearchIndexTest {
   }
 
   private void testIndex() throws IOException, ParseException, D2RException {
-    FullTextSearchIndexWrapper<Document> indexer = FullTextSearchIndexWrapperImpl.create("./_work/index");
+    FullTextSearchIndex<Document> indexer = FullTextSearchIndexImpl.create("./_work/index");
     ArrayList<Document> docs = new ArrayList<>();
     for (int i = 0; i < 1; ++i) {
       addDoc(docs, "The Art of Computer Science", "9900333X");
@@ -60,7 +60,7 @@ public class FullTextSearchIndexTest {
     indexer.close();
   }
 
-  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, FullTextSearchIndexWrapper indexer) throws ParseException, IOException {
+  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, FullTextSearchIndex indexer) throws ParseException, IOException {
     /*StandardAnalyzer analyzer = new StandardAnalyzer();
     StringBuilder querystr = new StringBuilder();
     String and = " AND ";

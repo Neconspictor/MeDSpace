@@ -13,12 +13,17 @@ import java.io.IOException;
  */
 public class SqlToDocumentStream implements DataSourceStream<Document> {
 
-  private DataSourceStream<SQLResultTuple> stream;
-  private String mapId;
+  private final DataSourceStream<SQLResultTuple> stream;
+  private final String mapId;
+  private final SqlResultFactory factory;
 
-  public SqlToDocumentStream(StreamFactory<SQLResultTuple> factory, D2rMap map) throws IOException {
-    stream = factory.create();
+  public SqlToDocumentStream(StreamFactory<SQLResultTuple> streamFactory,
+                             SqlResultFactory resultFactory,
+                             D2rMap map) throws IOException {
+
+    stream = streamFactory.create();
     mapId = map.getId();
+    this.factory = resultFactory;
   }
 
   @Override
@@ -34,6 +39,6 @@ public class SqlToDocumentStream implements DataSourceStream<Document> {
   @Override
   public Document next() {
     SQLResultTuple tuple = stream.next();
-    return SqlMapFactory.create(tuple, mapId);
+    return factory.create(tuple, mapId);
   }
 }

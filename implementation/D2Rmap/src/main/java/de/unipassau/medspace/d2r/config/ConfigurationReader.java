@@ -109,6 +109,44 @@ public class ConfigurationReader {
     }
   }
 
+  private static void readClassMapBridges(Configuration config, Element mapElement) throws D2RException {
+
+    String id = mapElement.getAttribute(D2R.CLASS_MAP_ID_ATTRIBUTE);
+    id = id.trim().toUpperCase();
+    final List<D2rMap> maps = config.getMaps();
+    D2rMap map = null;
+
+    for (D2rMap m : maps) {
+      if (m.getId().equals(id)) {
+        map = m;
+        break;
+      }
+    }
+
+    if (map == null) throw new D2RException("Couldn't find D2rMap with id = " + id);
+
+
+    // Read type attribute
+    if (mapElement.hasAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE)) {
+      // add rdf:type bridge
+      String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
+      ObjectPropertyBridge typeBridge = new ObjectPropertyBridge(null, maps);
+      typeBridge.setProperty("rdf:type");
+      typeBridge.setPattern(value);
+      map.addBridge(typeBridge);
+    }
+
+    // Read datatype property mappings
+    NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);
+    for (int i = 0; i< propertyList.getLength(); ++i)
+      readDataTypePropertyElement((Element)propertyList.item(i), map);
+
+    // Read object property mappings
+    propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.OBJECT_PROPERTY_BRIDGE_ELEMENT);
+    for (int i = 0; i< propertyList.getLength(); ++i)
+      readObjectPropertyElement((Element)propertyList.item(i), map, maps);
+  }
+
   private static void readClassMapElement(Configuration config, Element mapElement) throws D2RException {
     List<D2rMap> maps = config.getMaps();
     D2rMap cMap = new D2rMap();
@@ -124,29 +162,10 @@ public class ConfigurationReader {
 
     cMap.setId(id);
 
-    // Read type attribute
-    if (mapElement.hasAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE)) {
-      // add rdf:type bridge
-      String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
-      ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
-      typeBridge.setProperty("rdf:type");
-      typeBridge.setPattern(value);
-      cMap.addBridge(typeBridge);
-    }
-
     // Read uriPattern
     if (mapElement.hasAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE))
       cMap.setBaseURI(mapElement.getAttribute(D2R.CLASS_MAP_BASE_URI_ATTRIBUTE));
 
-    // Read datatype property mappings
-    NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);
-    for (int i = 0; i< propertyList.getLength(); ++i)
-      readDataTypePropertyElement((Element)propertyList.item(i), cMap);
-
-    // Read object property mappings
-    propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.OBJECT_PROPERTY_BRIDGE_ELEMENT);
-    for (int i = 0; i< propertyList.getLength(); ++i)
-      readObjectPropertyElement((Element)propertyList.item(i), cMap);
 
     config.getMaps().add(cMap);
   }
@@ -183,6 +202,10 @@ public class ConfigurationReader {
     list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.CLASS_MAP_ELEMENT);
     for (int i = 0; i < list.getLength(); ++i)
       readClassMapElement(config, (Element)list.item(i));
+
+    // after reading all D2rMaps we can read the bridges
+    for (int i = 0; i < list.getLength(); ++i)
+      readClassMapBridges(config, (Element)list.item(i));
   }
 
   private static void readDataTypePropertyElement(Element elem, D2rMap map) {
@@ -243,11 +266,13 @@ public class ConfigurationReader {
     config.setIndexDirectory(path);
   }
 
-  private static void readObjectPropertyElement(Element elem, D2rMap map) {
-    ObjectPropertyBridge bridge = new ObjectPropertyBridge();
+  private static void readObjectPropertyElement(Element elem, D2rMap map, List<D2rMap> maps) throws D2RException {
+
+    final String referredClassID = elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE);
+
+    ObjectPropertyBridge bridge = new ObjectPropertyBridge(referredClassID, maps);
     bridge.setProperty(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
-    bridge.setReferredClassID(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE));
     bridge.setReferredGroupBy(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE));
     map.addBridge(bridge);
   }

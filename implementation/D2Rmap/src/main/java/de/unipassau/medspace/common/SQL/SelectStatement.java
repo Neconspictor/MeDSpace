@@ -41,7 +41,9 @@ public class SelectStatement {
     String ucQuery = query.toUpperCase();
     String startClause = "WHERE";
 
-    int beforeWhereClauseIndex = getBeforeIndex(ucQuery, querySelectStatementOrder, querySelectStatementOrder.indexOf(startClause));
+    int beforeWhereClauseIndex = getBeforeIndex(ucQuery, querySelectStatementOrder,
+        querySelectStatementOrder.indexOf(startClause));
+
     int afterWhereClauseIndex = beforeWhereClauseIndex + startClause.length();
     boolean containsStartClause = ucQuery.contains(startClause);
     if (!containsStartClause) {
@@ -321,16 +323,16 @@ public class SelectStatement {
     temporaryConditionList.add(condition);
   }
 
-  public void reset() {
-    temporaryConditionList.clear();
-  }
-
   /**
    * Provides a unmodifiable list of the columns used by this select statement.
    * @return A unmodifiable list of the columns
    */
   public List<String> getColumns() {
     return Collections.unmodifiableList(columnList);
+  }
+
+  protected void reset() {
+    temporaryConditionList.clear();
   }
 
   protected enum Clause {

@@ -89,8 +89,4 @@ abstract public class Bridge {
     public String getDataType() {
         return this.dataType;
     }
-
-  public void init(List<D2rMap> maps) {
-
-  };
 }

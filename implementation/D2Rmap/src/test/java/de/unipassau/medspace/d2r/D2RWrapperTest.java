@@ -11,10 +11,10 @@ import javax.xml.validation.Schema;
 /**
  * Created by necon on 09.05.2017.
  */
-public class D2rProcessorTest {
+public class D2RWrapperTest {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rProcessor.class);
+  private static Logger log = Logger.getLogger(D2rProxy.class);
 
   @Test//(expected=D2RException.class)
   public void testNeededTagDBConnection() throws Exception {

@@ -7,13 +7,13 @@
 D2R MAP is a declarative language to describe mappings between 
 relational database schemata and OWL ontologies.
 
-The mappings are used by the D2R processor to export data from 
+The mappings are used by the D2R proxy to export data from
 a relational database to RDF. For details about the D2R mapping
 language see: 
 
 http://www.wiwiss.fu-berlin.de/suhl/bizer/d2rmap/D2Rmap.htm
 
-This processor prototype is implemented in Java and is based 
+This proxy prototype is implemented in Java and is based
 on the Jena API. It exports data as RDF, N3, N-TRIPLES 
 and Jena models. 
 
@@ -23,8 +23,8 @@ Changes in version 0.3:
 1. Model factory added to support other Jena model implementations like 
    the Tucana Knowledge Server.
 2. Driver factory added.
-3. Process map methods added to D2R processor. 
-4. Connection and driver accessors added to D2R processor. 
+3. Process map methods added to D2R proxy.
+4. Connection and driver accessors added to D2R proxy.
 5. Error handling changed to Log4J.
 6. All nesseary jars have been included into the distribution.
 7. Ant build script added.
@@ -48,10 +48,10 @@ Installation
 
 
 ------------------------------------------------------------------
-Using the processor from the command line
+Using the proxy from the command line
 ------------------------------------------------------------------
 
-The processor can be used from the command line. There are three
+The proxy can be used from the command line. There are three
 command line parameters:
 
 -map:filename  	  : path/filename of the D2R mapping file.
@@ -59,7 +59,7 @@ command line parameters:
 -format:name 	  : Output format. Possible values are RDF/XML, 
 		    RDF/XML-ABBREV, N-TRIPLES and N3.
 
-You can start the processor with: 
+You can start the proxy with:
 
 java D2rProcessor -parameter [-parameter]
 
@@ -72,11 +72,11 @@ Testing your installation
 1. Test
 ------------------------------------------------------------------
 
-Start the D2R Map processor with:
+Start the D2R Map proxy with:
 
 java D2rProcessor
 
-If the processor is installed correct and because you have not specified
+If the proxy is installed correct and because you have not specified
 a map to process, this should case the following error message: 
 
 "D2R Exeption caught: A D2R map has to be specified with the command 
@@ -90,7 +90,7 @@ jar-files are correctly included in your classpath.
 2. Test
 -------------------------------------------------------------------
 
-To run the D2R processor you need a database with the data to be
+To run the D2R proxy you need a database with the data to be
 exported and a D2R MAP to describe the mapping process. 
 
 On Windows Systems: 
@@ -98,11 +98,11 @@ On Windows Systems:
 1. Create a new ODBC system datasource named IswcDB and link it to the
    Microsoft Access example database D2RROOT/examples/ISWC/ISWC.mdb  
 
-2. Start the D2R Map processor with:
+2. Start the D2R Map proxy with:
    
    java D2rProcessor -map:D2RROOT/examples/ISWC/ISWCMap.d2r.xml
 
-   The processor is now exporting data from the Access database and 
+   The proxy is now exporting data from the Access database and
    you should get the same RDF output as stored in the file
    D2RROOT/examples/ISWC/output/output-RDF-XML.rdf.xml
 
@@ -115,11 +115,11 @@ On Non-Windows Systems:
    according to your RDBMS. You must use the jdbcDriver and jdbcDSN attributes in
    the <d2r:DBConnection> element. See D2R language specification for details.
 
-3. Start the D2R Map processor with:
+3. Start the D2R Map proxy with:
    
    java D2rProcessor -map:D2RROOT/examples/ISWC/ISWCMap.d2r.xml
 
-   The processor is now exporting data from the Access database and 
+   The proxy is now exporting data from the Access database and
    you should get the same RDF output as stored in the file
    D2RROOT/examples/ISWC/output/output-RDF-XML.rdf.xml
 

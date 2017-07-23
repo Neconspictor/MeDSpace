@@ -4,6 +4,7 @@ import java.util.*;
 import java.sql.*;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.d2r.bridge.Bridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
@@ -35,6 +36,7 @@ public class D2rMap {
   private SelectStatement statement;
   private String id;
   private List<String> resourceIdColumns;
+  private QNameNormalizer normalizer;
 
   /** log4j logger used for this class */
   private static Logger log = LogManager.getLogger(D2rMap.class);
@@ -42,6 +44,7 @@ public class D2rMap {
   public D2rMap() {
     bridges = new Vector<>();
     resourceIdColumns = new ArrayList<>();
+    normalizer = qName -> qName;
   }
 
 
@@ -61,11 +64,7 @@ public class D2rMap {
     }
   }
 
-  public void clear() {
-    statement.reset();
-  }
-
-  public List<Triple> createTriples(SQLResultTuple tuple, QNameNormalizer normalizer) {
+  public List<Triple> createTriples(SQLResultTuple tuple) {
     List<Triple> triples = new ArrayList<>();
     Resource resource;
 
@@ -114,6 +113,10 @@ public class D2rMap {
     return this.id;
   }
 
+  public QNameNormalizer getNormalizer() {
+    return normalizer;
+  }
+
   public SelectStatement getQuery() {
     return statement;
   }
@@ -122,16 +125,12 @@ public class D2rMap {
     return Collections.unmodifiableList(resourceIdColumns);
   }
 
-  public void init(DataSource dataSource, List<D2rMap> maps) throws D2RException {
+  public void init(DataSource dataSource) throws D2RException {
     try {
       statement = new SelectStatement(this.sql, dataSource);
     } catch (SQLException e) {
       log.error(e);
       throw new D2RException("Couldn't init D2rMap: ", e);
-    }
-
-    for (Bridge bridge : bridges) {
-      bridge.init(maps);
     }
   }
 
@@ -151,8 +150,11 @@ public class D2rMap {
     this.id = id.trim().toUpperCase();
   }
 
+  public void setNormalizer(QNameNormalizer normalizer) {
+    this.normalizer = normalizer;
+  }
+
   public void setSql(String sql) {
     this.sql = sql;
   }
-
 }

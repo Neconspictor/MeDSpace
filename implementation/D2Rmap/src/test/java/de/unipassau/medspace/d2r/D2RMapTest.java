@@ -51,7 +51,7 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
   public void getAllDataTest() throws SQLException, IOException, D2RException {
     D2rMap map = createTestMap();
     DataSource dataSource = createDataSource();
-    map.init(dataSource, Arrays.asList(map));
+    map.init(dataSource);
 
     SelectStatement statement = map.getQuery();
 
@@ -101,14 +101,14 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
     return config;
   }
 
-  private D2rMap createTestMap() {
+  private D2rMap createTestMap() throws D2RException {
     D2rMap map = new D2rMap();
     map.setId("language");
     map.setSql("SELECT * FROM language");
     map.addResourceIdColumns("language.name");
 
     // rdf type
-    ObjectPropertyBridge typeBridge = new ObjectPropertyBridge();
+    ObjectPropertyBridge typeBridge = new ObjectPropertyBridge(null, Arrays.asList(map));
     typeBridge.setProperty("rdf:type");
     typeBridge.setPattern("test:language");
     map.addBridge(typeBridge);

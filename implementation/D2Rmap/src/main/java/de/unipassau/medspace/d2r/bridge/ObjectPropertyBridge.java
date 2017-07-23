@@ -9,6 +9,7 @@ import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rUtil;
+import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -29,17 +30,24 @@ public class ObjectPropertyBridge
   private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
 
 
-  public ObjectPropertyBridge() {
+  public ObjectPropertyBridge(String referredClassID, List<D2rMap> maps) throws D2RException {
     referredGroupBy = new ArrayList<>();
-    referredClassID = null;
+    setReferredClassID(referredClassID);
+    init(maps);
   }
 
   public String getReferredClassID() {
     return referredClassID;
   }
 
-  public void setReferredClassID(String referredClass) {
-    this.referredClassID = referredClass.trim().toUpperCase();
+  public void setReferredClassID(String id) {
+
+    if (id == null) {
+      this.referredClassID = null;
+      return;
+    }
+
+    this.referredClassID = id.trim().toUpperCase();
     if (this.referredClassID.equals(""))
       this.referredClassID = null;
   }
@@ -48,22 +56,6 @@ public class ObjectPropertyBridge
     referredClass = map;
   }
 
-  public void init(List<D2rMap> maps) {
-
-    if (referredClassID == null) return;
-    referredClass = null;
-    for (D2rMap map : maps) {
-      if (map.getId().equals(referredClassID)) {
-        setReferredClass(map);
-        break;
-      }
-    }
-
-    // referredClass was not set
-    if (referredClass == null) {
-      throw new IllegalStateException("Referred class not found in the specified D2rMap list.");
-    }
-  }
 
   public List<String> getReferredGroupBy() {
     return referredGroupBy;
@@ -95,6 +87,23 @@ public class ObjectPropertyBridge
     }
 
     return referredResource;
+  }
+
+  protected void init(List<D2rMap> maps) throws D2RException {
+
+    if (referredClassID == null) return;
+    referredClass = null;
+    for (D2rMap map : maps) {
+      if (map.getId().equals(referredClassID)) {
+        setReferredClass(map);
+        break;
+      }
+    }
+
+    // referredClass was not set
+    if (referredClass == null) {
+      throw new D2RException("Referred class not found in the specified D2rMap list.");
+    }
   }
 
   private Resource getFromClass(SQLResultTuple tuple) {

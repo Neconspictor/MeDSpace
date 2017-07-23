@@ -22,9 +22,9 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
   private static Logger log = Logger.getLogger(LuceneKeywordSearcher.class);
 
   private String[] fields;
-  private FullTextSearchIndexWrapperImpl index;
+  private FullTextSearchIndexImpl index;
 
-  public LuceneKeywordSearcher(List<String> fields, FullTextSearchIndexWrapperImpl index) {
+  public LuceneKeywordSearcher(List<String> fields, FullTextSearchIndexImpl index) {
     this.fields = new String[fields.size()];
     fields.toArray(this.fields);
     this.index = index;

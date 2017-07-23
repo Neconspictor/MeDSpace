@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.lucene;
 
-import de.unipassau.medspace.common.indexing.FullTextSearchIndexWrapper;
+import de.unipassau.medspace.common.indexing.FullTextSearchIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.util.FileUtil;
 import org.apache.log4j.Logger;
@@ -19,29 +19,29 @@ import java.util.List;
 /**
  * Created by David Goeth on 07.07.2017.
  */
-public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrapper<Document> {
+public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
 
   private List<String> fields;
   private Path indexDirectoryPath;
   private FSDirectory index;
   private volatile boolean isOpen;
 
-  private static Logger log = Logger.getLogger(FullTextSearchIndexWrapper.class);
+  private static Logger log = Logger.getLogger(FullTextSearchIndex.class);
 
-  protected FullTextSearchIndexWrapperImpl(Path directory) {
+  protected FullTextSearchIndexImpl(Path directory) {
     indexDirectoryPath = directory;
     index = null;
     isOpen = false;
   }
 
-  public static FullTextSearchIndexWrapperImpl create(String directory) throws IOException {
+  public static FullTextSearchIndexImpl create(String directory) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
       throw new IOException("Couldn't create index directory");
     }
-    FullTextSearchIndexWrapperImpl result = new FullTextSearchIndexWrapperImpl(path);
+    FullTextSearchIndexImpl result = new FullTextSearchIndexImpl(path);
 
     return result;
   }
@@ -68,6 +68,7 @@ public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrappe
     return new LuceneKeywordSearcher(fields, this);
   }
 
+  @Override
   public void close() {
     if (!isOpen) return;
 
@@ -76,12 +77,37 @@ public class FullTextSearchIndexWrapperImpl implements FullTextSearchIndexWrappe
     isOpen = false;
   }
 
+  /**
+   * Creates a new IndexReader.
+   * @return A reader alloing to query this index
+   * @throws IOException Will be thrown if the FSDirectory couldn't be opened, doesn't exists or another low level I/O
+   * Error occurs
+   */
   public IndexReader createReader() throws IOException {
     return DirectoryReader.open(index);
   }
 
   public List<String> getSearchableFields() {
     return fields;
+  }
+
+  @Override
+  public boolean hasIndexedData() throws IOException {
+    if (!isOpen) throw new IOException("Index has to be successfully opened before calling this function!");
+
+    try {
+      if (!DirectoryReader.indexExists(index)) {
+          // early exit as trying to create an index reader of a non existing
+          // index Directory would rise an IOException
+          return false;
+      }
+
+      IndexReader reader = createReader();
+      return reader.numDocs() > 0;
+    } catch (IOException e) {
+      log.error("Error while retrieving document count: ", e);
+      throw new IOException("Couldn't query indexed data");
+    }
   }
 
   public void index(Iterable<Document> data) throws IOException {

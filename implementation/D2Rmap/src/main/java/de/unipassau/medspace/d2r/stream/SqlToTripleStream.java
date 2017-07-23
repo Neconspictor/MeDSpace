@@ -20,18 +20,15 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
   private static Logger log = Logger.getLogger(SqlToTripleStream.class);
   private SqlStream.QueryParams startParams;
   private D2rMap map;
-  private QNameNormalizer normalizer;
 
-  public SqlToTripleStream(SqlStream.QueryParams queryParams, D2rMap map, QNameNormalizer normalizer) throws IOException {
+  public SqlToTripleStream(SqlStream.QueryParams queryParams, D2rMap map) throws IOException {
     super();
 
     assert  queryParams != null;
     assert map != null;
-    assert normalizer != null;
 
     startParams =queryParams;
     this.map = map;
-    this.normalizer = normalizer;
 
     try {
       stream = new SqlStream(startParams);
@@ -48,6 +45,6 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
 
   @Override
   protected List<Triple> createTriples(SQLResultTuple elem) {
-    return map.createTriples(elem, normalizer);
+    return map.createTriples(elem);
   }
 }

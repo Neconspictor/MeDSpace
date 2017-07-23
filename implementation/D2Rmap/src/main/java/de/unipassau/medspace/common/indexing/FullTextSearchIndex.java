@@ -10,7 +10,7 @@ import java.io.IOException;
  * A full-text search index is intended to be used for full-text and keyword searches.
  * This interface is intended to be used as a wrapper for a full-text search engine implementation.
  */
-public interface FullTextSearchIndexWrapper<DocumentType> extends Closeable {
+public interface FullTextSearchIndex<DocumentType> extends Closeable {
 
   /**
    * Deletes all the indexed data.
@@ -24,6 +24,14 @@ public interface FullTextSearchIndexWrapper<DocumentType> extends Closeable {
    * @throws IOException If an error occurs.
    */
   KeywordSearcher<DocumentType> createKeywordSearcher() throws IOException;
+
+  /**
+   * Checks if this index as indexed data.
+   *
+   * @return true if this index has at least one indexed document.
+   * @throws IOException if the index isn't opened or an error occurs.
+   */
+  boolean hasIndexedData() throws IOException;
 
   /**
    * Indexes a list of data.
