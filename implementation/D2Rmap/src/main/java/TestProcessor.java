@@ -74,16 +74,14 @@ public class TestProcessor {
           DataSourceIndex index = wrapper.getIndex();
 
           boolean exists = index.exists();
-          System.out.println("Before indexing hasIndexedData = " + exists);
 
-          index.reindex();
-          //proxy.getIndex().clearIndex();
+          if (!exists) {
+            System.out.println("Indexing data...");
+            index.reindex();
+            System.out.println("Indexing done.");
+          }
 
-        exists = index.exists();
-
-          System.out.println("And after indexing hasIndexedData = " + exists);
-
-        KeywordSearcher<Triple> searcher = wrapper.getKeywordSearcher();
+        KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher();
 
           Instant startTime = Instant.now();
           DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));

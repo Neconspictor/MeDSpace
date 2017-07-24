@@ -3,7 +3,7 @@ package de.unipassau.medspace.d2r.lucene;
 import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.indexing.FullTextSearchIndex;
 import de.unipassau.medspace.common.lucene.FullTextSearchIndexImpl;
-import de.unipassau.medspace.common.stream.StreamCollection;
+import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProxy;
@@ -25,10 +25,12 @@ public class SqlIndex implements DataSourceIndex {
 
   private FullTextSearchIndexImpl index;
   private D2rProxy proxy;
+  private SqlResultFactory factory;
 
-  public SqlIndex(Path directory, D2rProxy proxy) throws D2RException {
+  public SqlIndex(Path directory, D2rProxy proxy, SqlResultFactory factory) throws D2RException {
 
     this.proxy = proxy;
+    this.factory = factory;
 
     try {
       index = FullTextSearchIndexImpl.create(directory.toString());
@@ -62,14 +64,13 @@ public class SqlIndex implements DataSourceIndex {
 
   @Override
   public void reindex() throws IOException {
-    StreamCollection<Document> docStream = null;
+    DataSourceStream<Document> docStream = null;
     try {
-      docStream = proxy.getAllAsLuceneDocs();
+      docStream = new SqlToDocStream(proxy.getAllData(), factory);
       index.open();
-      docStream.start();
       index.reindex(docStream);
 
-    } catch (D2RException | IOException e) {
+    } catch (IOException e) {
       throw new IOException("Error while reindexing", e);
     } finally {
       FileUtil.closeSilently(docStream, true);

@@ -12,14 +12,6 @@ import org.apache.jena.graph.Triple;
 public interface DataSourceProxy<E> {
 
   /**
-   * Provides a search object for initiating a keyword search onto the
-   * datasource's data set.
-   * @return A KeywordSearcher for searching the proxied datasource's data set
-   *         based on keywords.
-   */
-  KeywordSearcher<Triple> createKeywordSearcher();
-
-  /**
    * Provides a TripleConverter to convert objects of type 'E' into rdf triples.
    * @return
    */

@@ -21,10 +21,4 @@ public interface TripleConverter<E> {
    * @throws IllegalArgumentException if 'elem' is null
    */
   List<Triple> convert(E elem);
-
-  /**
-   *
-   * @return
-   */
-  QNameNormalizer getNormalizer();
 }

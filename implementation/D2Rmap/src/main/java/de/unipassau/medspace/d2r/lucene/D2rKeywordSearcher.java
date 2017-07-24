@@ -10,6 +10,7 @@ import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProxy;
+import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
 import org.apache.jena.graph.Triple;
 import org.apache.log4j.Logger;
@@ -30,10 +31,12 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
   private KeywordSearcher<Document> keywordSearcher;
   private boolean useLucene;
   private D2rProxy proxy;
+  private SqlResultFactory factory;
 
-  public D2rKeywordSearcher(D2rProxy proxy, KeywordSearcher<Document> keywordSearcher) throws IOException {
+  public D2rKeywordSearcher(D2rWrapper wrapper, KeywordSearcher<Document> keywordSearcher) throws IOException {
     this.keywordSearcher = keywordSearcher;
-    this.proxy = proxy;
+    this.proxy = wrapper.getProxy();
+    factory = wrapper.getResultFactory();
     useLucene = true;
   }
 
@@ -50,7 +53,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
   public DataSourceStream<Triple> searchForKeywords(List<String> keywords) throws IOException {
     if (useLucene) {
       DataSourceStream<Document> result =  keywordSearcher.searchForKeywords(keywords);
-      return new DocToTripleStream(result, proxy.getSqlResultFactory());
+      return new DocToTripleStream(result, factory);
     }
     return searchByDatasource(keywords);
   }

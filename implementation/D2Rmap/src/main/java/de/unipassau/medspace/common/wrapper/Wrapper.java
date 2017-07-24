@@ -11,5 +11,11 @@ import java.io.IOException;
  */
 public interface Wrapper extends Closeable {
 
-  KeywordSearcher<Triple> getKeywordSearcher() throws IOException;
+  /**
+   * Provides a search object for initiating a keyword search onto the
+   * datasource's data set.
+   * @return A KeywordSearcher for searching the proxied datasource's data set
+   *         based on keywords.
+   */
+  KeywordSearcher<Triple> createKeywordSearcher() throws IOException;
 }

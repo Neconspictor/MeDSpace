@@ -6,6 +6,7 @@ import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.lucene.D2rKeywordSearcher;
 import de.unipassau.medspace.d2r.lucene.SqlIndex;
+import de.unipassau.medspace.d2r.lucene.SqlResultFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.log4j.Logger;
 
@@ -21,10 +22,12 @@ public class D2rWrapper implements Wrapper {
 
   private D2rProxy proxy;
   private SqlIndex index;
+  private SqlResultFactory resultFactory;
 
   public D2rWrapper(D2rProxy proxy, Path indexDirectory) throws D2RException {
     this.proxy = proxy;
-    index  = new SqlIndex(indexDirectory, proxy);
+    resultFactory = new SqlResultFactory(D2R.MAP_FIELD, proxy);
+    index  = new SqlIndex(indexDirectory, proxy, resultFactory);
   }
 
   @Override
@@ -32,17 +35,13 @@ public class D2rWrapper implements Wrapper {
     index.close();
   }
 
-  public DataSourceIndex getIndex() {
-    return index;
-  }
-
   @Override
-  public KeywordSearcher<Triple> getKeywordSearcher() throws IOException {
+  public KeywordSearcher<Triple> createKeywordSearcher() throws IOException {
 
     D2rKeywordSearcher searcher = null;
 
     try {
-      searcher = new D2rKeywordSearcher(proxy, index.getFtsIndex().createKeywordSearcher());
+      searcher = new D2rKeywordSearcher(this, index.getFtsIndex().createKeywordSearcher());
     } catch (IOException e) {
       log.error(e);
       throw new IOException("Couldn't create keyword searcher!");
@@ -50,5 +49,17 @@ public class D2rWrapper implements Wrapper {
 
     searcher.useLucene(true);
     return searcher;
+  }
+
+  public DataSourceIndex getIndex() {
+    return index;
+  }
+
+  public D2rProxy getProxy() {
+    return proxy;
+  }
+
+  public SqlResultFactory getResultFactory() {
+    return resultFactory;
   }
 }

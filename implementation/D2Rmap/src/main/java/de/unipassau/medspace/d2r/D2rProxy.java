@@ -7,18 +7,14 @@ import java.util.*;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.lucene.FullTextSearchIndexImpl;
-import de.unipassau.medspace.common.indexing.FullTextSearchIndex;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
+import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.stream.StreamCollection;
-import de.unipassau.medspace.d2r.lucene.SqlIndex;
 import de.unipassau.medspace.d2r.lucene.SqlResultFactory;
-import de.unipassau.medspace.d2r.lucene.SqlToDocumentStream;
-import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.shared.impl.PrefixMappingImpl;
@@ -56,7 +52,6 @@ public class D2rProxy {
   private PrefixMapping namespacePrefixMapper;
   private QNameNormalizer normalizer;
   private HashMap<String, D2rMap> idToMap;
-  private SqlResultFactory resultFactory;
 
   /** log4j logger used for this class */
   private static Logger log = Logger.getLogger(D2rProxy.class);
@@ -78,7 +73,6 @@ public class D2rProxy {
     this.dataSourceManager = dataSourceManager;
     normalizer = qName -> getNormalizedURI(qName);
     idToMap = new HashMap<>();
-    resultFactory = new SqlResultFactory(D2R.MAP_FIELD, this);
 
     for (D2rMap map : maps) {
       idToMap.put(map.getId(), map);
@@ -101,8 +95,8 @@ public class D2rProxy {
    * @return
    * @throws D2RException
    */
-  public StreamFactory<Document> createLuceneDocStreamFactory(D2rMap map, DataSource dataSource,
-                                                              List<String> conditionList) throws D2RException {
+  public StreamFactory<MappedSqlTuple> createStreamFactory(D2rMap map, DataSource dataSource,
+                                                           List<String> conditionList) throws IOException {
 
     SelectStatement statement = map.getQuery();
     for (String condition : conditionList) {
@@ -110,13 +104,9 @@ public class D2rProxy {
     }
 
     String query = statement.toString();
-    String ucQuery = query.toUpperCase();
-    if (ucQuery.contains("UNION"))
-      throw new D2RException("SQL statement should not contain UNION: " + query);
-
 
     SqlStream.QueryParams queryParams = new SqlStream.QueryParams(dataSource, query);
-    StreamFactory<SQLResultTuple> factory = () -> {
+    StreamFactory<SQLResultTuple> resultTupleFactory = () -> {
       try {
         return new SqlStream(queryParams);
       } catch (SQLException e) {
@@ -124,17 +114,35 @@ public class D2rProxy {
       }
     };
 
+    return () -> new DataSourceStream<MappedSqlTuple>() {
+      private DataSourceStream<SQLResultTuple> source = resultTupleFactory.create();
+      @Override
+      public void close() throws IOException {
+        source.close();
+      }
+
+      @Override
+      public boolean hasNext() {
+        return source.hasNext();
+      }
+
+      @Override
+      public MappedSqlTuple next() {
+        return new MappedSqlTuple(source.next(), map);
+      }
+    };
+
     //generate resources using the Connection
-    return () -> new SqlToDocumentStream(factory, resultFactory, map);
+    //return () -> new SqlToDocStream(factory, resultFactory, map);
   }
 
 
-  public StreamCollection<Document> getAllAsLuceneDocs() throws D2RException {
-    StreamCollection<Document> result = new StreamCollection<>();
+  public DataSourceStream<MappedSqlTuple> getAllData() throws IOException {
+    StreamCollection<MappedSqlTuple> result = new StreamCollection<>();
     for (D2rMap map : maps) {
-      result.add(createLuceneDocStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
+      result.add(createStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
     }
-
+    result.start();
     return result;
   }
 
@@ -144,10 +152,6 @@ public class D2rProxy {
 
   public D2rMap getMapById(String id) {
     return idToMap.get(id);
-  }
-
-  public SqlResultFactory getSqlResultFactory() {
-    return resultFactory;
   }
 
   public List<D2rMap> getMaps() {
