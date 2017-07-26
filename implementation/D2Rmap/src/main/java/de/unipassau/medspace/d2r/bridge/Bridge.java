@@ -2,11 +2,9 @@ package de.unipassau.medspace.d2r.bridge;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
-import de.unipassau.medspace.d2r.D2rMap;
 import org.apache.jena.rdf.model.*;
-import org.apache.log4j.Logger;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -24,7 +22,7 @@ abstract public class Bridge {
     protected String xmlLang;
     protected String property;
 
-    protected static Logger log = Logger.getLogger(Bridge.class);
+    protected static Logger log = LoggerFactory.getLogger(Bridge.class);
 
     public void setDataType(String dataType) {
         if (dataType == null) {
@@ -80,9 +78,10 @@ abstract public class Bridge {
     }
 
     /**
-     *
-     * @param tuple
-     * @return
+     * TODO
+     * @param tuple TODO
+     * @param normalizer TODO
+     * @return  TODO
      */
     public abstract RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
 

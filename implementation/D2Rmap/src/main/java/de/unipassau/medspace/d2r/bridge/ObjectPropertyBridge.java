@@ -13,7 +13,8 @@ import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * D2R bridge for ObjectProperties (References to other instances).
@@ -27,7 +28,7 @@ public class ObjectPropertyBridge
   private String referredClassID;
   private D2rMap referredClass;
   private List<String> referredGroupBy;
-  private static Logger log = Logger.getLogger(ObjectPropertyBridge.class);
+  private static Logger log = LoggerFactory.getLogger(ObjectPropertyBridge.class);
 
 
   public ObjectPropertyBridge(String referredClassID, List<D2rMap> maps) throws D2RException {

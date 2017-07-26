@@ -7,12 +7,13 @@ import java.io.IOException;
  * method is called. <br><br>
  * A StartableStream should allocate resources not during the constructor call/object creation but within the
  * forementioned validateStart method. Therefore, the constructor of a {@code StartableStream} usually shouldn't throw
- * any Exception. The constructor should perform fast and shouldn't perform any blocking operations. <p/>
+ * any Exception. The constructor should perform fast and shouldn't perform any blocking operations. <br>
  */
 public interface StartableStream<E> extends DataSourceStream<E>{
 
   /**
    * Starts this stream
+   * @throws IOException If the stream couldn't be started properly
    */
   void start() throws IOException;
 }

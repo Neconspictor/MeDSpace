@@ -1,12 +1,12 @@
 package de.unipassau.medspace.d2r.stream;
 
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
-import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.d2r.D2rMap;
 import org.apache.jena.graph.Triple;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
 
-  private static Logger log = Logger.getLogger(SqlToTripleStream.class);
+  private static Logger log = LoggerFactory.getLogger(SqlToTripleStream.class);
   private SqlStream.QueryParams startParams;
   private D2rMap map;
 

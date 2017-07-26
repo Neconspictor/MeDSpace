@@ -69,7 +69,7 @@ Testing your installation
 ------------------------------------------------------------------
 
 ------------------------------------------------------------------
-1. Test
+1. GlobalModule
 ------------------------------------------------------------------
 
 Start the D2R Map proxy with:
@@ -87,7 +87,7 @@ jar-files are correctly included in your classpath.
 
 
 -------------------------------------------------------------------
-2. Test
+2. GlobalModule
 -------------------------------------------------------------------
 
 To run the D2R proxy you need a database with the data to be

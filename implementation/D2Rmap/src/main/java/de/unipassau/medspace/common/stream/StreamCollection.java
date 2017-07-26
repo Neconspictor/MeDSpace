@@ -1,7 +1,8 @@
 package de.unipassau.medspace.common.stream;
 
 import de.unipassau.medspace.common.util.FileUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.Queue;
  */
 public class StreamCollection<E> implements StartableStream<E> {
 
-  private static Logger log = Logger.getLogger(StreamCollection.class);
+  private static Logger log = LoggerFactory.getLogger(StreamCollection.class);
 
   private Queue<StreamProxy<E>> streams;
   private StartCloseValidator validator;
@@ -61,7 +62,7 @@ public class StreamCollection<E> implements StartableStream<E> {
     try {
       validator.validateHasNext();
     } catch (IOException e) {
-      log.error(e);
+      log.error("Error while validation", e);
       return false;
     }
     StreamProxy<E> activeStream = getActiveStream();
@@ -73,7 +74,7 @@ public class StreamCollection<E> implements StartableStream<E> {
     try {
       validator.validateNext();
     } catch (IOException e) {
-      log.error(e);
+      log.error("Error while validation", e);
       return null;
     }
 

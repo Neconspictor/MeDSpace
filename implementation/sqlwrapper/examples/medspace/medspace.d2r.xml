@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<d2r:Map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns:d2r="http://www.medspace.com/D2Rmap"
+		 xsi:schemaLocation="http://www.medspace.com/D2Rmap http://www.medspace.com/D2Rmap/Medspace_D2Rmap.xsd">
+		 
+	<!-->com.mysql.jdbc.Driver</-->	 
+		 
+	<d2r:DBConnection
+			jdbcDriver="com.mysql.jdbc.Driver"
+			
+			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
+			maxConnections="10"
+	>
+		<d2r:DBAuthentification username="medspace_client" password="k4N!rT"/>
+		<d2r:DataSourceProperty name="cachePrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSize" value="250"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSqlLimit" value="2048"/>
+		<d2r:DataSourceProperty name="useServerPrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="useLocalSessionState" value="true"/>
+		<d2r:DataSourceProperty name="useLocalTransactionState" value="true"/>
+		<d2r:DataSourceProperty name="rewriteBatchedStatements" value="true"/>
+		<d2r:DataSourceProperty name="cacheResultSetMetadata" value="true"/>
+		<d2r:DataSourceProperty name="cacheServerConfiguration" value="true"/>
+		<d2r:DataSourceProperty name="elideSetAutoCommits" value="true"/>
+		<d2r:DataSourceProperty name="maintainTimeStats" value="false"/>
+	</d2r:DBConnection>
+	<d2r:OutputFormat>RDF/THRIFT</d2r:OutputFormat>
+	<d2r:Index directory="_work/medspace/index"/>
+	<d2r:Namespace prefix="test" namespace="http://localhost/patient_test_namespace#"/>
+	<d2r:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>
+	<d2r:Namespace prefix="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+	<d2r:Namespace prefix="dc" namespace="http://purl.org/dc/elements/1.1/"/>
+	<d2r:Namespace prefix="xsd" namespace="http://www.w3.org/2001/XMLSchema#"/>
+	<d2r:Namespace prefix="language" namespace="http://localhost/patient_test_namespace/languages#"/>
+	<d2r:Namespace prefix="maritalStatus" namespace="http://localhost/patient_test_namespace/maritalstatus#"/>
+	<d2r:Namespace prefix="sex" namespace="http://localhost/patient_test_namespace/sex#"/>
+	<d2r:Namespace prefix="patient" namespace="http://localhost/patient_test_namespace/patient#"/>
+
+	
+	<!-- D2R GroupMap: Organization, University, Institut, Department -->
+	<!--d2r:type="rdf:PlainLiteral"-->
+	<d2r:ClassMap 
+		type="test:language"
+		sql="SELECT * FROM language;"
+		baseURI="http://localhost/patient_test_namespace/languages#"
+		resourceIdColumns="language.name"
+		id="language">
+		
+		<d2r:DataTypePropertyBridge property="test:languageName" pattern="@@language.name@@" dataType="rdf:langString" lang="en"/>
+		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:homepage" d2r:column="Organizations.Homepage"/>-->
+		<!--<d2r:ObjectPropertyBridge d2r:property="rdf:type" d2r:pattern="http://localhost/languages#@@language.name@@"/>-->
+		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:homepage" d2r:column="Organizations.Homepage"/>-->
+		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:has_affiliate" d2r:referredClass="PersonsGroupMap" d2r:referredGroupBy="Rel_Person_Organization.PersonID"/>-->
+	</d2r:ClassMap>
+
+	<d2r:ClassMap
+			sql="SELECT m.name AS hello FROM maritalstatus m;"
+			resourceIdColumns="m.name"
+			baseURI="http://localhost/patient_test_namespace/maritalstatus#"
+			type="test:maritalstatus"
+			id="maritalstatus"
+	>
+		<d2r:DataTypePropertyBridge property="test:maritalStatusName" pattern="@@m.name@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+	<d2r:ClassMap
+			sql="SELECT * FROM sex;"
+			resourceIdColumns="sex.name"
+			baseURI="http://localhost/patient_test_namespace/sex#"
+			type="test:sex"
+			id="sex"
+	>
+		<d2r:DataTypePropertyBridge property="test:sexName" pattern="@@sex.name@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+	<d2r:ClassMap
+			sql="SELECT patient.id, patient.dateOfBirth, patient.sex, patient.maritalstatus, patient.language FROM patient;"
+			resourceIdColumns="patient.id"
+			baseURI="http://localhost/patient_test_namespace/patient#"
+			id="patient"
+			type="test:patient"
+	>
+		<d2r:DataTypePropertyBridge property="test:patientID" pattern="@@patient.id@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="test:date" pattern="@@patient.dateOfBirth@@" dataType="xsd:date"/>
+		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex" />
+		<d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus" referredColumns="patient.maritalstatus"/>
+		<d2r:ObjectPropertyBridge property="test:language" referredClass="language" referredColumns="patient.language"/>
+		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:homepage" d2r:column="Organizations.Homepage"/>-->
+		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:has_affiliate" d2r:referredClass="PersonsGroupMap" d2r:referredGroupBy="Rel_Person_Organization.PersonID"/>-->
+	</d2r:ClassMap>
+</d2r:Map>

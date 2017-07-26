@@ -1,7 +1,8 @@
 package de.unipassau.medspace.d2r;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Some utility methods used in the mapping process.
@@ -13,7 +14,7 @@ import org.apache.log4j.Logger;
  * @version V0.3.1
  */
 public class D2rUtil {
-  private static Logger log = Logger.getLogger(D2rUtil.class);
+  private static Logger log = LoggerFactory.getLogger(D2rUtil.class);
 
   public static String getNamespacePrefix(String qualifiedName) {
     int len = qualifiedName.length();

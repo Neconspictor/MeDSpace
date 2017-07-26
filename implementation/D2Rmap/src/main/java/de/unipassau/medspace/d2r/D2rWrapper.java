@@ -3,12 +3,12 @@ package de.unipassau.medspace.d2r;
 import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.wrapper.Wrapper;
-import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.lucene.D2rKeywordSearcher;
 import de.unipassau.medspace.d2r.lucene.SqlIndex;
 import de.unipassau.medspace.d2r.lucene.SqlResultFactory;
 import org.apache.jena.graph.Triple;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,16 +18,20 @@ import java.nio.file.Path;
  */
 public class D2rWrapper implements Wrapper {
 
-  private static Logger log = Logger.getLogger(D2rWrapper.class);
+  private static Logger log = LoggerFactory.getLogger(D2rWrapper.class);
 
   private D2rProxy proxy;
   private SqlIndex index;
   private SqlResultFactory resultFactory;
 
-  public D2rWrapper(D2rProxy proxy, Path indexDirectory) throws D2RException {
+  public D2rWrapper(D2rProxy proxy, Path indexDirectory) throws IOException {
     this.proxy = proxy;
     resultFactory = new SqlResultFactory(D2R.MAP_FIELD, proxy);
-    index  = new SqlIndex(indexDirectory, proxy, resultFactory);
+    try {
+      index  = new SqlIndex(indexDirectory, proxy, resultFactory);
+    } catch (IOException e) {
+      throw new IOException("Couldn't create Index", e);
+    }
   }
 
   @Override
@@ -43,8 +47,7 @@ public class D2rWrapper implements Wrapper {
     try {
       searcher = new D2rKeywordSearcher(this, index.getFtsIndex().createKeywordSearcher());
     } catch (IOException e) {
-      log.error(e);
-      throw new IOException("Couldn't create keyword searcher!");
+      throw new IOException("Error while trying to create a keyword searcher", e);
     }
 
     searcher.useLucene(true);

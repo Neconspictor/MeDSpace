@@ -1,6 +1,7 @@
 package de.unipassau.medspace.common.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -15,18 +16,19 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static de.unipassau.medspace.common.util.FileUtil.closeSilently;
 
 /**
  * Utility class for parsing XML and XSD files.
  */
 public class XmlUtil {
 
-  private static Logger log = Logger.getLogger(XmlUtil.class.getName());
+  private static Logger log = LoggerFactory.getLogger(XmlUtil.class.getName());
 
   /**
    * Creates a document builder for parsing xml files using a given schema.
@@ -66,7 +68,7 @@ public class XmlUtil {
     builder.setErrorHandler(new ErrorHandler() {
       @Override
       public void warning(SAXParseException exception) throws SAXException {
-        log.warn(exception);
+        log.warn("", exception);
       }
 
       @Override
@@ -90,32 +92,42 @@ public class XmlUtil {
    * @throws NullPointerException If <b>schemaFilenames</b> is <b>null</b>
    * @throws SAXException If no compound XSD schema could be created.
    */
-  public static Schema createSchema(String[] schemaFilenames) throws SAXException{
+  public static Schema createSchema(String[] schemaFilenames) throws SAXException, IOException {
 
     if (schemaFilenames == null) throw new NullPointerException("schemaFilenames is null!");
 
     final Source[] schemaSources = new Source[schemaFilenames.length];
 
+    List<TempFile> tempFiles = new ArrayList<>();
+
     // create for each schema file name a source
     for (int i = 0; i < schemaFilenames.length; ++i) {
       String filename = schemaFilenames[i];
       if (FileUtil.isResource(filename)) {
-        filename = FileUtil.getAbsoluteFilePathFromResource(filename);
+        TempFile tempFile = FileUtil.createTempFileFromResource(filename,
+                                                    filename + "TEMP");
+        File file = tempFile.get();
+        filename = file.getAbsolutePath();
+        tempFiles.add(tempFile);
       }
       schemaSources[i] = new StreamSource(filename);
     }
 
-    // Init schema factory; Note  - we only use XML schemas (XSD)
-    final SchemaFactory schemaFactory = SchemaFactory
-        .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
     // create the schema as the compound of the schema sources
-    Schema schema;
+    Schema schema = null;
 
     try {
+      // Init schema factory; Note  - we only use XML schemas (XSD)
+      final SchemaFactory schemaFactory = SchemaFactory
+          .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
       schema = schemaFactory.newSchema(schemaSources);
     } catch(SAXException e) {
       throw new SAXException("Couldn't create compound schema!", e);
+    } finally {
+      tempFiles.stream().forEach((TempFile file)-> {
+        FileUtil.closeSilently(file, true);
+      });
     }
 
     return schema;

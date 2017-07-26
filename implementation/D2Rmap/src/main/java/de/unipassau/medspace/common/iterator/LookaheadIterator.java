@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * @author Ian Pojman <pojman@gmail.com>
+ * @author Ian Pojman (pojman@gmail.com)
  */
 public abstract class LookaheadIterator<T> implements Iterator<T> {
   /** The predetermined "validateNext" object retrieved from the wrapped iterator, can be null. */
@@ -30,7 +30,10 @@ public abstract class LookaheadIterator<T> implements Iterator<T> {
     return getNext();
   }
 
-  /** by default we can return true, since our logic does not rely on validateHasNext() - it prefetches the validateNext */
+  /** by default we can return true, since our logic does not rely on validateHasNext() -
+   * it prefetches the validateNext
+   * @return true
+   * */
   protected boolean doesHaveNext() {
     return true;
   }
@@ -71,7 +74,7 @@ public abstract class LookaheadIterator<T> implements Iterator<T> {
 
   /**
    * Not implemented.
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   public void remove()
   {

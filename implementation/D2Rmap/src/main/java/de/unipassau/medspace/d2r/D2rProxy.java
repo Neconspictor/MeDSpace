@@ -14,11 +14,11 @@ import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.stream.StreamCollection;
-import de.unipassau.medspace.d2r.lucene.SqlResultFactory;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.shared.impl.PrefixMappingImpl;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import org.apache.lucene.document.Document;
@@ -54,7 +54,7 @@ public class D2rProxy {
   private HashMap<String, D2rMap> idToMap;
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rProxy.class);
+  private static Logger log = LoggerFactory.getLogger(D2rProxy.class);
 
   private DataSourceManager dataSourceManager;
 
@@ -89,11 +89,11 @@ public class D2rProxy {
 
   /**
    * TODO
-   * @param map
-   * @param dataSource
-   * @param conditionList
-   * @return
-   * @throws D2RException
+   * @param map TODO
+   * @param dataSource TODO
+   * @param conditionList TODO
+   * @return TODO
+   * @throws IOException TODO
    */
   public StreamFactory<MappedSqlTuple> createStreamFactory(D2rMap map, DataSource dataSource,
                                                            List<String> conditionList) throws IOException {

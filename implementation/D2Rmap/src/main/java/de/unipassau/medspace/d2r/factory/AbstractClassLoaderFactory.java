@@ -34,7 +34,9 @@ import java.net.URLClassLoader;
 
 //Log4J Libraries
 import de.unipassau.medspace.d2r.exception.FactoryException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.net.URL;
 
@@ -44,17 +46,17 @@ import java.net.URL;
  * are defined in the factory properties file. Implementations can also be
  * instantiated using the class name and the implementation's classpath.
  *
- * @created 2004-05-26
+ * created at 2004-05-26
  *
  * @author <a href="mailto:robert.turner@tucanatech.com">Robert Turner</a>
  *
  * @version $Revision: 1.7 $
  *
- * @modified $Date: 2004/05/21 04:51:54 $ by $Author: turnerrx $
+ * modified at $Date: 2004/05/21 04:51:54 $ by $Author: turnerrx $
  *
- * @company: <a href="http://www.tucanatech.com/">Tucana Technologies</a>
+ * company: <a href="http://www.tucanatech.com/">Tucana Technologies</a>
  *
- * @copyright &copy;2002-2003
+ * copyright &copy;2002-2003
  *   <a href="http://www.pisoftware.com/">Plugged In Software Pty Ltd</a>
  *
  */
@@ -62,7 +64,7 @@ public class AbstractClassLoaderFactory
     extends URLClassLoader {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(AbstractClassLoaderFactory.class);
+  private static Logger log = LoggerFactory.getLogger(AbstractClassLoaderFactory.class);
 
   /** The properties determining which implementation to use */
   protected static Properties properties;
@@ -70,6 +72,7 @@ public class AbstractClassLoaderFactory
 
   /**
    * Constructor.  Creates and initialises the factory.
+   * @throws FactoryException TODO
    */
   protected AbstractClassLoaderFactory() throws FactoryException {
 
@@ -83,8 +86,8 @@ public class AbstractClassLoaderFactory
 
   /**
    * Initializes the factory. Reads the properties file.
-   *
-   * @throws FactoryException
+   * @param propertiesFilename TODO
+   * @throws FactoryException TODO
    */
   protected void initializeFactory(String propertiesFilename) throws
       FactoryException {
@@ -200,10 +203,10 @@ public class AbstractClassLoaderFactory
    * Creates an instance of the specified class (className) from the classpath
    * supplied (classPath).
    *
-   * @param className String
-   * @param classPath String
-   * @throws FactoryException
-   * @return Object
+   * @param className TODO
+   * @param classPath TODO
+   * @throws FactoryException TODO
+   * @return TODO
    */
   public Object getInstance(String className, URL classPath) throws
       FactoryException {
@@ -280,10 +283,10 @@ public class AbstractClassLoaderFactory
    * Loads the class (className) from the path URL (classPathURL) and returns an
    * instance of the Class.
    *
-   * @param classPath URL
-   * @param className String
-   * @throws FactoryException
-   * @return Object
+   * @param classPath TODO
+   * @param className TODO
+   * @throws FactoryException TODO
+   * @return TODO
    */
   protected Class getClassFromURL(URL classPath, String className) throws
       FactoryException {
@@ -318,10 +321,10 @@ public class AbstractClassLoaderFactory
    * Loads the class (className) from the path URL (classPathURL) and returns an
    * instance of the Class.
    *
-   * @param classPath URL
-   * @param className String
-   * @throws FactoryException
-   * @return Object
+   * @param classPath TODO
+   * @param className TODO
+   * @throws FactoryException TODO
+   * @return TODO
    */
   protected Object getInstanceFromURL(URL classPath, String className) throws
       FactoryException {

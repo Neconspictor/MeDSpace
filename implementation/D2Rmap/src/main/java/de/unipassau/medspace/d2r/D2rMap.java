@@ -4,7 +4,6 @@ import java.util.*;
 import java.sql.*;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.d2r.bridge.Bridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
@@ -12,8 +11,8 @@ import de.unipassau.medspace.common.SQL.SelectStatement;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
@@ -39,7 +38,7 @@ public class D2rMap {
   private QNameNormalizer normalizer;
 
   /** log4j logger used for this class */
-  private static Logger log = LogManager.getLogger(D2rMap.class);
+  private static Logger log = LoggerFactory.getLogger(D2rMap.class);
 
   public D2rMap() {
     bridges = new Vector<>();
@@ -129,7 +128,6 @@ public class D2rMap {
     try {
       statement = new SelectStatement(this.sql, dataSource);
     } catch (SQLException e) {
-      log.error(e);
       throw new D2RException("Couldn't init D2rMap: ", e);
     }
   }

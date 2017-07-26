@@ -3,7 +3,6 @@ package de.unipassau.medspace.common.lucene;
 import de.unipassau.medspace.common.indexing.FullTextSearchIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.util.FileUtil;
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -11,6 +10,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
   private FSDirectory index;
   private volatile boolean isOpen;
 
-  private static Logger log = Logger.getLogger(FullTextSearchIndex.class);
+  private static Logger log = LoggerFactory.getLogger(FullTextSearchIndex.class);
 
   protected FullTextSearchIndexImpl(Path directory) {
     indexDirectoryPath = directory;
@@ -57,7 +58,7 @@ public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
       w = new IndexWriter(index, config);
       w.deleteAll();
     } catch (IOException e) {
-      log.error(e);
+      log.error("Error while clearing the index", e);
     } finally {
       FileUtil.closeSilently(w, true);
     }
@@ -132,8 +133,7 @@ public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
     try {
       index = FSDirectory.open(indexDirectoryPath);
     } catch (IOException e) {
-      log.error(e);
-      throw new IOException("Couldn't open index in directory: " + indexDirectoryPath);
+      throw new IOException("Couldn't open index in directory path: " + indexDirectoryPath, e);
     }
 
     isOpen = true;

@@ -13,7 +13,7 @@ public interface DataSourceProxy<E> {
 
   /**
    * Provides a TripleConverter to convert objects of type 'E' into rdf triples.
-   * @return
+   * @return TODO
    */
   TripleConverter<E> getConverter();
 

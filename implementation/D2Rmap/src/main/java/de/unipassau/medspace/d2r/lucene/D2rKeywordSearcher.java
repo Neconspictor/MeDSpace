@@ -13,7 +13,8 @@ import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
 import org.apache.jena.graph.Triple;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.lucene.document.Document;
 
 import javax.sql.DataSource;
@@ -22,11 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by David Goeth on 07.07.2017.
+ * A keyword searcher for a D2rWrapper
  */
 public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
-  private static Logger log = Logger.getLogger(D2rKeywordSearcher.class);
+  private static Logger log = LoggerFactory.getLogger(D2rKeywordSearcher.class);
 
   private KeywordSearcher<Document> keywordSearcher;
   private boolean useLucene;
@@ -83,12 +84,14 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
   /**
    * Creates a rdf triple stream from the specified datasource. For the rdf sql to rdf
    * mapping the specified D2rMap is used. The triple stream will be resticted by the given conditionList
-   * argument.<p/>
+   * argument.<br>
    *
    * NOTE: The returned TripleStream won't be started, so no connection to the datasource will be established yet.
    * @param map The sql to rdf mapper
    * @param  dataSource The sql datasource.
    * @param conditionList The query that should be executed on the datasource
+   * @return TODO
+   * @throws IOException TODO
    */
   public StreamFactory<Triple> createTripleStreamFactory(D2rMap map, DataSource dataSource,
                                                          List<String> conditionList) throws IOException {

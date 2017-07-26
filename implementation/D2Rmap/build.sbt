@@ -32,9 +32,12 @@ libraryDependencies ++= Seq(
 	// Logging
 	// We only want to use one logging instance but some libs are using slf4j
 	// while others use log4j -> we use log4j and bridge slf4j to it
-	"log4j" % "log4j" % "1.2.17",
-	"org.slf4j" % "slf4j-log4j12" % "1.7.25",
-	"org.slf4j" % "slf4j-api" % "1.7.25",
+
+	// https://mvnrepository.com/artifact/ch.qos.logback/logback-core
+	"ch.qos.logback" % "logback-classic" % "1.2.3",
+	//"log4j" % "log4j" % "1.2.17",
+	//"org.slf4j" % "slf4j-log4j12" % "1.7.25",
+	//"org.slf4j" % "slf4j-api" % "1.7.25",
 
 	// XML Parser
 	"xerces" % "xercesImpl" % "2.11.0",
@@ -57,4 +60,4 @@ libraryDependencies ++= Seq(
 	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2"
 )
 
-mainClass in (Compile,run) := Some("TestProcessor")
+mainClass in (Compile,run) := Some("de.unipassau.medspace.TestProcessor")

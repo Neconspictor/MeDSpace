@@ -11,7 +11,8 @@ import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -30,7 +31,7 @@ import java.util.List;
 public class D2RMapTest extends BasicJDBCTestCaseAdapter {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2RMapTest.class);
+  private static Logger log = LoggerFactory.getLogger(D2RMapTest.class);
 
   @Test
   public void testAddConditionStatements() {

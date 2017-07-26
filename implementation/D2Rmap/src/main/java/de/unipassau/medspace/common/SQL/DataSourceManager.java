@@ -10,7 +10,7 @@ public interface DataSourceManager extends Closeable {
 
   /**
    * TODO
-   * @return
+   * @return TODO
    */
   DataSource getDataSource();
 }

@@ -30,17 +30,17 @@ package de.unipassau.medspace.d2r.exception;
 /**
  * Exception used to indicate that there was an Exception raised in a Factory.
  *
- * @created 2004-05-26
+ * created 2004-05-26
  *
  * @author <a href="mailto:robert.turner@tucanatech.com">Robert Turner</a>
  *
  * @version $Revision: 1.7 $
  *
- * @modified $Date: 2004/05/21 04:51:54 $ by $Author: turnerrx $
+ * modified $Date: 2004/05/21 04:51:54 $ by $Author: turnerrx $
  *
- * @company: <a href="http://www.tucanatech.com/">Tucana Technologies</a>
+ * company: <a href="http://www.tucanatech.com/">Tucana Technologies</a>
  *
- * @copyright &copy;2002-2003
+ * copyright &copy;2002-2003
  *   <a href="http://www.pisoftware.com/">Plugged In Software Pty Ltd</a>
  *
  */
@@ -48,6 +48,7 @@ public class FactoryException extends Exception {
 
   /**
    * Constructor, sets the message for the Exception
+   * @param message TODO
    */
   public FactoryException(String message) {
 
@@ -56,6 +57,8 @@ public class FactoryException extends Exception {
 
   /**
    * Constructor, sets the message for the Exception and it's root cause.
+   * @param message TODO
+   * @param cause TODO
    */
   public FactoryException(String message, Throwable cause) {
 

@@ -16,6 +16,7 @@ public interface Wrapper extends Closeable {
    * datasource's data set.
    * @return A KeywordSearcher for searching the proxied datasource's data set
    *         based on keywords.
+   * @throws IOException If an error occurs while trying to create a keyword searcher
    */
   KeywordSearcher<Triple> createKeywordSearcher() throws IOException;
 }

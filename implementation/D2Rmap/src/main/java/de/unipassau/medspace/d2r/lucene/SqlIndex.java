@@ -8,8 +8,9 @@ import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.exception.D2RException;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,13 +22,13 @@ import java.util.List;
  */
 public class SqlIndex implements DataSourceIndex {
 
-  private static Logger log = Logger.getLogger(SqlIndex.class);
+  private static Logger log = LoggerFactory.getLogger(SqlIndex.class);
 
   private FullTextSearchIndexImpl index;
   private D2rProxy proxy;
   private SqlResultFactory factory;
 
-  public SqlIndex(Path directory, D2rProxy proxy, SqlResultFactory factory) throws D2RException {
+  public SqlIndex(Path directory, D2rProxy proxy, SqlResultFactory factory) throws IOException {
 
     this.proxy = proxy;
     this.factory = factory;
@@ -38,8 +39,7 @@ public class SqlIndex implements DataSourceIndex {
       index.setSearchableFields(fields);
       index.open();
     } catch (IOException e) {
-      log.error(e);
-      throw new D2RException("Couldn't create index!");
+      throw new IOException("Error while trying to create index: ", e);
     }
   }
 
@@ -53,7 +53,7 @@ public class SqlIndex implements DataSourceIndex {
     try {
       return index.hasIndexedData();
     } catch (IOException e) {
-      log.error(e);
+      log.error("Error while trying to query indexed data: ", e);
       return false;
     }
   }

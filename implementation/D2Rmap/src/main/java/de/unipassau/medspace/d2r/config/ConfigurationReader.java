@@ -10,7 +10,8 @@ import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.util.XmlUtil;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -29,17 +30,25 @@ import java.util.List;
 public class ConfigurationReader {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(ConfigurationReader.class);
+  private static Logger log = LoggerFactory.getLogger(ConfigurationReader.class);
 
   public ConfigurationReader() {
 
   }
 
-  public static Configuration createDefaultConfig() throws D2RException {
+  public static Configuration createDefaultConfig() {
     Configuration config = new Configuration();
     config.getNamespaces().put(D2R.RDFNS_PREFIX, new Namespace(D2R.RDFNS_PREFIX, D2R.RDFNS));
 
-    config.setOutputFormat(getLangFromString(D2R.STANDARD_OUTPUT_FORMAT));
+    Lang lang = null;
+
+    try {
+      lang = getLangFromString(D2R.STANDARD_OUTPUT_FORMAT);
+    } catch (D2RException e) {
+      throw new IllegalStateException("Default output language couldn't be mapped to a Lang object!");
+    }
+
+    config.setOutputFormat(lang);
     return config;
   }
 
@@ -63,8 +72,10 @@ public class ConfigurationReader {
   /**
    * Reads an D2R Map from the filesystem.
    * @param filename of the D2R Map
+   * @return The configuration file
+   * @throws IOException if an error occurs
    */
-  public Configuration readConfig(String filename) throws IOException, D2RException {
+  public Configuration readConfig(String filename) throws IOException {
     Configuration config = createDefaultConfig();
     try {
       // Read document into DOM
@@ -75,13 +86,13 @@ public class ConfigurationReader {
       readConfig(document, config);
     }
     catch (SAXParseException spe) {
-      throw new D2RException("Error while parsing XML file: " + "line " +
+      throw new IOException("Error while parsing XML file: " + "line " +
           spe.getLineNumber() +
           ", uri: " + spe.getSystemId() + ", reason: " +
           spe.getMessage(), spe);
 
-    } catch (ClassNotFoundException  | IOException | SAXException e) {
-      throw new D2RException("Error while parsing XML file: ", e);
+    } catch (ClassNotFoundException  | D2RException | IOException | SAXException e) {
+      throw new IOException("Error while parsing XML file: ", e);
     }
 
     return config;
@@ -147,7 +158,7 @@ public class ConfigurationReader {
       readObjectPropertyElement((Element)propertyList.item(i), map, maps);
   }
 
-  private static void readClassMapElement(Configuration config, Element mapElement) throws D2RException {
+  private static void readClassMapElement(Configuration config, Element mapElement) throws IOException, D2RException {
     List<D2rMap> maps = config.getMaps();
     D2rMap cMap = new D2rMap();
 
@@ -170,7 +181,9 @@ public class ConfigurationReader {
     config.getMaps().add(cMap);
   }
 
-  private static void readConfig(Document document, Configuration config) throws IOException, D2RException, ClassNotFoundException {
+  private static void readConfig(Document document, Configuration config) throws IOException,
+                                                                                 ClassNotFoundException,
+                                                                                 D2RException {
     // Read namespaces
     NodeList list = document.getElementsByTagNameNS(D2R.D2RNS, D2R.NAMESPACE_ELEMENT);
     int numNodes = list.getLength();
@@ -184,7 +197,7 @@ public class ConfigurationReader {
     Element root = (Element) list.item(0);
 
     if (root == null)
-      throw new D2RException("No root element was specified in the mapping");
+      throw new IOException("No root element was specified in the mapping");
 
     // DBConnection is a required element that exists exact one time
     list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.DBCONNECTION_ELEMENT);
@@ -245,11 +258,11 @@ public class ConfigurationReader {
     parseDataSourceSpecificProperties(elem, config);
   }
 
-  private static void readIndexElement(Configuration config, Element elem) throws D2RException {
+  private static void readIndexElement(Configuration config, Element elem) throws IOException {
     String directory = elem.getAttribute(D2R.INDEX_DIRECTORY_ATTRIBUTE);
 
     if (directory == null) {
-      throw new D2RException("No index directoyr specified!");
+      throw new IllegalArgumentException("index directory doesn't be null!");
     }
 
     Path path = null;
@@ -257,8 +270,7 @@ public class ConfigurationReader {
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
-      log.error(e);
-      throw new D2RException("Couldn't create index directory!");
+      throw new IOException("Error while trying to create index directory path", e);
     }
 
 
@@ -286,7 +298,7 @@ public class ConfigurationReader {
     try {
       lang = getLangFromString(format);
     } catch (D2RException e) {
-      throw new D2RException("Unknown output format: " + format);
+      throw new D2RException("Error while retrieving language format", e);
     }
     config.setOutputFormat(lang);
   }

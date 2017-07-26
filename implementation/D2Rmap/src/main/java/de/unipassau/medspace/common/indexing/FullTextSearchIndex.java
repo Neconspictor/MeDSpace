@@ -54,6 +54,8 @@ public interface FullTextSearchIndex<DocumentType> extends Closeable {
 
   /**
    * Clears the index and indexes the sql data.
+   * @param data TODO
+   * @throws IOException TODO
    */
   default void reindex(Iterable<DocumentType> data) throws IOException {
     clearIndex();

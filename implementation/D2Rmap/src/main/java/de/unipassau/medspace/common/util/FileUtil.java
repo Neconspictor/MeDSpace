@@ -1,19 +1,21 @@
 package de.unipassau.medspace.common.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 /**
  * Utility class for handling files, directories and resources.
  */
 public class FileUtil {
 
-  private static Logger log = Logger.getLogger(FileUtil.class);
+  private static Logger log = LoggerFactory.getLogger(FileUtil.class);
 
   public static void closeSilently(AutoCloseable closeable) {
     closeSilently(closeable, true);
@@ -26,7 +28,7 @@ public class FileUtil {
     } catch (Exception e) {
       // just ignore;
       if (logErrors)
-        log.error(e);
+        log.error("Error while closing Closable", e);
     }
   }
 
@@ -83,6 +85,7 @@ public class FileUtil {
     if (resourceName == null) throw new NullPointerException("resourceName isn't allowed to be null");
     if (!isResource(resourceName)) throw new IllegalArgumentException("resourceName describes no valid resource!");
     URL resource = FileUtil.class.getResource(resourceName);
+    FileUtil.class.getResource(resourceName);
     return resource.getFile();
   }
 
@@ -100,5 +103,41 @@ public class FileUtil {
     } finally {
       closeSilently(file);
     }
+  }
+
+  public static TempFile createTempFileFromResource(String resourceName, String tempFileName)
+      throws IOException {
+
+    TempFile file = null;
+    URL res = FileUtil.class.getResource(resourceName);
+
+    InputStream input = null;
+    OutputStream out = null;
+
+    try {
+      if (res.toString().startsWith("jar:")) {
+        input = FileUtil.class.getResourceAsStream(resourceName);
+        file = new TempFile(new Date().getTime() + " " + tempFileName, "tmp");
+        out = new FileOutputStream(file.get());
+        int read;
+        byte[] bytes = new byte[1024];
+
+        while ((read = input.read(bytes)) != -1) {
+          out.write(bytes, 0, read);
+        }
+        out.flush();
+
+      } else {
+        //this will probably work in your IDE, but not from a JAR
+        file = new TempFile(res.getFile(), "tmp");
+      }
+    } catch (IOException ex) {
+      throw new IOException("Couldn't create temporary file from resource: " + resourceName, ex);
+    } finally {
+      closeSilently(out);
+      closeSilently(input);
+    }
+
+    return file;
   }
 }

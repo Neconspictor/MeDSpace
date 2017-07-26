@@ -2,7 +2,8 @@ package de.unipassau.medspace.d2r.config;
 
 import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.common.util.XmlUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 public class ConfigurationReaderTest {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(D2rProxy.class);
+  private static Logger log = LoggerFactory.getLogger(D2rProxy.class);
 
   @Test
   public void testReadComplexTypeNamespace() throws SAXException {

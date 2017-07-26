@@ -31,8 +31,8 @@ package de.unipassau.medspace.d2r.factory;
 import java.net.*;
 import java.sql.*;
 
-//Log4J Libraries
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //D2R Libraries
 import de.unipassau.medspace.d2r.exception.FactoryException;
@@ -44,24 +44,24 @@ import de.unipassau.medspace.d2r.exception.FactoryException;
  * Implementations can also be instantiated using the class name and the
  * implementation's classpath.
  *
- * @created 2004-05-26
+ * created at 2004-05-26
  *
  * @author <a href="mailto:robert.turner@tucanatech.com">Robert Turner</a>
  *
  * @version $Revision: 1.7 $
  *
- * @modified $Date: 2004/05/21 04:51:54 $ by $Author: turnerrx $
+ * modified $Date: 2004/05/21 04:51:54 $ by $Author: turnerrx $
  *
- * @company: <a href="http://www.tucanatech.com/">Tucana Technologies</a>
+ * company: <a href="http://www.tucanatech.com/">Tucana Technologies</a>
  *
- * @copyright &copy;2002-2003
+ * copyright &copy;2002-2003
  *   <a href="http://www.pisoftware.com/">Plugged In Software Pty Ltd</a>
  *
  */
 public class DriverFactory extends AbstractClassLoaderFactory {
 
   /** log4j logger used for this class */
-  private static Logger log = Logger.getLogger(DriverFactory.class);
+  private static Logger log = LoggerFactory.getLogger(DriverFactory.class);
 
   /** The singleton instance of this class */
   private static DriverFactory instance = null;
@@ -69,6 +69,7 @@ public class DriverFactory extends AbstractClassLoaderFactory {
 
   /**
    * Constructor.  Creates and initialises the factory.
+   * @throws FactoryException TODO
    */
   protected DriverFactory() throws FactoryException {
 
@@ -79,7 +80,7 @@ public class DriverFactory extends AbstractClassLoaderFactory {
    *
    * @return The Factory singleton instance.
    *
-   * @throws FactoryException
+   * @throws FactoryException TODO
    */
   public static DriverFactory getInstance() throws FactoryException {
 
@@ -105,9 +106,9 @@ public class DriverFactory extends AbstractClassLoaderFactory {
    * Creates a JDBC Driver instance of the specified class name. Loads and
    * instantiates the class with the System Class Loader.
    *
-   * @param className String
-   * @throws FactoryException
-   * @return Driver
+   * @param className TODO
+   * @throws FactoryException TODO
+   * @return TODO
    */
   public Driver getDriverInstance(String className)
       throws FactoryException {
@@ -158,10 +159,10 @@ public class DriverFactory extends AbstractClassLoaderFactory {
    * Creates a JDBC Driver instance of the specified class name from the
    * supplied classpath.
    *
-   * @param className String
-   * @param classPath URL
-   * @throws FactoryException
-   * @return Driver
+   * @param className TODO
+   * @param classPath TODO
+   * @throws FactoryException TODO
+   * @return TODO
    */
   public Driver getDriverInstance(String className, URL classPath)
       throws FactoryException {

@@ -2,7 +2,6 @@ package de.unipassau.medspace.common.lucene;
 
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -10,6 +9,8 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
 
-  private static Logger log = Logger.getLogger(LuceneKeywordSearcher.class);
+  private static Logger log = LoggerFactory.getLogger(LuceneKeywordSearcher.class);
 
   private String[] fields;
   private FullTextSearchIndexImpl index;
@@ -86,7 +87,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
       try {
         doc = searchResult.getResult(index);
       } catch (IOException e) {
-        log.error(e);
+        log.error("Error while retrieving next search result", e);
       }
       ++index;
       return doc;

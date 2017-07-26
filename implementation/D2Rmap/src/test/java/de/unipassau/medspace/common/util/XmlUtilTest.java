@@ -8,6 +8,7 @@ import org.xml.sax.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -50,23 +51,23 @@ public class XmlUtilTest {
    * */
 
   @Test
-  public void createSchemaTestEmptySchemaArray() throws SAXException {
+  public void createSchemaTestEmptySchemaArray() throws SAXException, IOException {
     Schema schema = XmlUtil.createSchema(new String[]{});
     Assert.assertNotNull("The returned schema shouldn't be null", schema);
   }
 
   @Test (expected=SAXException.class)
-  public void createSchemaTestNotValidSchemaFiles() throws SAXException {
+  public void createSchemaTestNotValidSchemaFiles() throws SAXException, IOException {
     Schema schema = XmlUtil.createSchema(new String[]{""});
   }
 
   @Test (expected=NullPointerException.class)
-  public void createSchemaTestNull() throws SAXException {
+  public void createSchemaTestNull() throws SAXException, IOException {
       Schema schema = XmlUtil.createSchema(null);
   }
 
   @Test
-  public void createSchemaTestValidSchemaFiles() throws SAXException {
+  public void createSchemaTestValidSchemaFiles() throws SAXException, IOException {
     Schema schema = XmlUtil.createSchema(new String[]{"/test_validSchema.xsd"});
     Assert.assertNotNull("The returned schema is specified to be not null!", schema);
 

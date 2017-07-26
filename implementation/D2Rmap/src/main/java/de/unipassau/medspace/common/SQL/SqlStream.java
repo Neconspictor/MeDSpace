@@ -3,8 +3,8 @@ package de.unipassau.medspace.common.SQL;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.iterator.LookaheadIterator;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -18,18 +18,20 @@ import java.util.Iterator;
  * Represents a StartableIterable of SQL tuples created from a SQL query.
  */
 public class SqlStream implements DataSourceStream<SQLResultTuple> {
+
+  private static Logger log = LoggerFactory.getLogger(SqlStream.class);
+
   private ResultSet resultSet;
   private LookaheadIterator<SQLResultTuple> resultSetIterator;
   private int numColumns;
   private Statement statement;
   private Connection connection;
-  private static Logger log = LogManager.getLogger(SqlStream.class);
   private volatile boolean closed;
 
   /**
    * Creates a new query result stream to a sql datasource.
    * @param params The parameter for initializing the sql query stream.
-   * @throws IOException thrown if an error occurs while quering the datasource
+   * @throws SQLException thrown if an error occurs while quering the datasource
    */
   public SqlStream(QueryParams params) throws SQLException {
     statement =null;
@@ -181,6 +183,7 @@ public class SqlStream implements DataSourceStream<SQLResultTuple> {
     /**
      * Creates a copy of the given QueryParams object. All members are deep copied, except {@link QueryParams#dataSource}
      * which is shallow copied.
+     * @param other TODO
      */
     public QueryParams(QueryParams other) {
       dataSource = other.dataSource;
