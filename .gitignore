@@ -22,7 +22,9 @@
 implementation/D2Rmap/.idea/*
 implementation/D2Rmap/_work/*
 implementation/D2Rmap/target/*
+implementation/D2Rmap/project/target/*
 implementation/sqlwrapper/target/*
 implementation/sqlwrapper/logs/*
 implementation/sqlwrapper/.idea/*
+implementation/sqlwrapper/project/target/*
 *.d2rtmp
