@@ -1,5 +1,5 @@
 import com.google.inject.AbstractModule;
-import de.unipassau.medspace.Startup;
+import de.unipassau.medspace.SQLWrapperService;
 import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.D2rWrapper;
 
@@ -32,9 +32,9 @@ public class GlobalModule extends AbstractModule {
   protected void configure() {
     if (environment.asJava().isTest()) return;
     log.info("GlobuleModule configures dependencies...");
-    bind(ClassLoader.class).toInstance(environment.classLoader());
-    bind(Startup.class).asEagerSingleton();
-    bind(MyApplicationLifeCycle.class).asEagerSingleton();
+    //bind(ClassLoader.class).toInstance(environment.classLoader());
+    //bind(Startup.class).asEagerSingleton();
+    bind(SQLWrapperService.class).asEagerSingleton();
     log.info("done.");
 
     //throw new IllegalStateException("Couldn't initialize");

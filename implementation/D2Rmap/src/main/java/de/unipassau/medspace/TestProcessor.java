@@ -41,22 +41,6 @@ public class TestProcessor {
     DataSourceManager dataSourceManager = null;
     D2rWrapper wrapper = null;
 
-    TempFile temp = new TempFile("MyCoolTempFile", ".tmp");
-    if (temp.get().exists()) {
-      log.info("Temp file exists");
-    }
-
-    FileOutputStream stream = new FileOutputStream(temp.get());
-    String content = "My cool content!";
-    stream.write(content.getBytes());
-    stream.flush();
-    stream.close();
-
-    log.info(temp.get().getAbsolutePath());
-    if (true) {
-      throw new Error("Oh my god!");
-    }
-
     try {
       log.info("D2R test started ....");
 

@@ -1,0 +1,10 @@
+@(isConnected: Boolean)
+
+@main("SQL Wrapper Connection Test") {
+    Wrapper is connected to the datasource:
+    @if(isConnected) {
+        <b>Yes</b>
+    } else {
+        <b>No</b>
+    }
+}

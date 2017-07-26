@@ -9,7 +9,7 @@
 			jdbcDriver="com.mysql.jdbc.Driver"
 			
 			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
-			maxConnections="10"
+			maxConnections="2"
 	>
 		<d2r:DBAuthentification username="medspace_client" password="k4N!rT"/>
 		<d2r:DataSourceProperty name="cachePrepStmts" value="true"/>

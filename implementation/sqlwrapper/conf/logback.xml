@@ -29,10 +29,13 @@
 
   <logger name="de.unipassau.medspace" level="INFO" />
   <logger name="GlobalModule" level="INFO" />
-  <logger name="MyApplicationLifeCycle" level="INFO" />
+  <logger name="de.unipassau.medspace.SQLWrapperService" level="INFO" />
 
   <!-- Suppress warning bug from https://hibernate.atlassian.net/browse/HV-1323 -->
   <logger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="error"/>
+
+  <!-- Disable HikariCP logger as we catch exceptions and log them ourselves -->
+  <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />

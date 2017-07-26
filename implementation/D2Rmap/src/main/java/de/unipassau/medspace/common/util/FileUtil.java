@@ -115,22 +115,18 @@ public class FileUtil {
     OutputStream out = null;
 
     try {
-      if (res.toString().startsWith("jar:")) {
-        input = FileUtil.class.getResourceAsStream(resourceName);
-        file = new TempFile(new Date().getTime() + " " + tempFileName, "tmp");
-        out = new FileOutputStream(file.get());
-        int read;
-        byte[] bytes = new byte[1024];
 
-        while ((read = input.read(bytes)) != -1) {
-          out.write(bytes, 0, read);
-        }
-        out.flush();
+      input = FileUtil.class.getResourceAsStream(resourceName);
+      file = new TempFile(new Date().getTime() + " " + tempFileName, ".tmp");
+      out = new FileOutputStream(file.get());
+      int read;
+      byte[] bytes = new byte[1024];
 
-      } else {
-        //this will probably work in your IDE, but not from a JAR
-        file = new TempFile(res.getFile(), "tmp");
+      while ((read = input.read(bytes)) != -1) {
+        out.write(bytes, 0, read);
       }
+      out.flush();
+
     } catch (IOException ex) {
       throw new IOException("Couldn't create temporary file from resource: " + resourceName, ex);
     } finally {
