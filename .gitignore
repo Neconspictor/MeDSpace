@@ -2,6 +2,8 @@
 *.bak
 *.bbl
 *.blg
+*.d2rtmp
+*.exe
 *.gz
 *.log
 *.out
@@ -29,4 +31,3 @@ implementation/sqlwrapper/target/*
 implementation/sqlwrapper/logs/*
 implementation/sqlwrapper/.idea/*
 implementation/sqlwrapper/project/*/*
-*.d2rtmp
