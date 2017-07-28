@@ -2,12 +2,16 @@ package de.unipassau.medspace;
 
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
+import de.unipassau.medspace.common.indexing.DataSourceIndex;
+import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
 import de.unipassau.medspace.d2r.exception.D2RException;
+import org.apache.jena.graph.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
@@ -21,6 +25,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by David Goeth on 24.07.2017.
@@ -74,7 +81,21 @@ public class SQLWrapperService {
     return true;
   }
 
-  private void startup(String configFile) throws D2RException {
+  public DataSourceStream<Triple> search(String keywords) throws IOException {
+    assert keywords != null;
+
+    StringTokenizer tokenizer = new StringTokenizer(keywords, ",", false);
+    List<String> keywordList = new ArrayList<>();
+
+    while(tokenizer.hasMoreTokens()) {
+      keywordList.add(tokenizer.nextToken());
+    }
+
+    KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher();
+    return searcher.searchForKeywords(keywordList);
+  }
+
+  private void startup(String configFile) throws D2RException, IOException {
 
     log.info("initializing SQL Wrapper...");
     try {
@@ -111,6 +132,18 @@ public class SQLWrapperService {
     } finally {
       log.debug("Closing Connection...");
       FileUtil.closeSilently(conn);
+    }
+    proxy = new D2rProxy(config, dataSourceManager);
+    wrapper = new D2rWrapper(proxy, config.getIndexDirectory());
+
+    DataSourceIndex index = wrapper.getIndex();
+
+    boolean exists = index.exists();
+
+    if (!exists) {
+      log.info("Indexing data...");
+      index.reindex();
+      log.info("Indexing done.");
     }
 
     log.info("Initialized SQL Wrapper");

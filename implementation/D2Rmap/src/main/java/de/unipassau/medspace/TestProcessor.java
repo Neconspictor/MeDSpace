@@ -8,6 +8,7 @@ import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.util.TempFile;
 import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.D2rWrapper;
+import de.unipassau.medspace.d2r.MappedSqlTuple;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
 import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
@@ -17,17 +18,20 @@ import java.io.*;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 
 
+import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
+import org.apache.jena.atlas.web.TypedInputStream;
+import org.apache.jena.base.Sys;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.*;
 import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.system.StreamRDFWrapper;
 import org.apache.jena.riot.system.StreamRDFWriter;
+import org.apache.jena.riot.writer.WriterStreamRDFBase;
 import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.core.Quad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,20 +86,45 @@ public class TestProcessor {
       Instant startTime = Instant.now();
       DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
 
+      //DataSourceStream<MappedSqlTuple> stream = wrapper.getProxy().getAllData();
+
+      //triples = new TripleData(stream);
+
+      //ObjectOutputStream out = new ObjectOutputStream(System.out);
+      PrefixMapping mapping = proxy.getNamespacePrefixMapper();
+
+
+
+      /*for (Triple triple : triples) {
+        //triple.
+        System.out.println(triple.toString(mapping));
+      }*/
+
+      //out.close();
+
       boolean hasTriples = triples.hasNext();
 
       if (hasTriples) {
+        //TypedInputStream inputStream =  TypedInputStream.wrap(null);
+        //RDFParser.create().source(inputStream).parse((StreamRDF)null);
         RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
         StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
-        PrefixMapping mapping = proxy.getNamespacePrefixMapper();
-        for (Map.Entry<String, String> map : mapping.getNsPrefixMap().entrySet()) {
+
+        WriterStreamRDFBaseExtension ext = new WriterStreamRDFBaseExtension(rdfOut);
+        ext.addPrefixMapping(mapping);
+
+        /*for (Map.Entry<String, String> map : mapping.getNsPrefixMap().entrySet()) {
           rdfOut.prefix(map.getKey(), map.getValue());
-        }
+        }*/
+
         rdfOut.start();
+
         for (Triple triple : triples) {
           rdfOut.triple(triple);
         }
+
         rdfOut.finish();
+
       } else {
         log.info("No results found!");
       }
@@ -122,6 +151,36 @@ public class TestProcessor {
       FileUtil.closeSilently(wrapper);
       FileUtil.closeSilently(dataSourceManager);
       log.info("streams successfully closed");
+    }
+  }
+
+  private static class TripleData implements DataSourceStream<Triple> {
+
+
+    private DataSourceStream<MappedSqlTuple> stream;
+    private List<Triple> cache = new ArrayList<>();
+
+    public TripleData(DataSourceStream<MappedSqlTuple> stream) {
+      this.stream = stream;
+    }
+
+    @Override
+    public void close() throws IOException {
+      stream.close();
+    }
+
+    @Override
+    public boolean hasNext() {
+      return stream.hasNext() || !cache.isEmpty();
+    }
+
+    @Override
+    public Triple next() {
+      if (cache.isEmpty()) {
+        MappedSqlTuple tuple = stream.next();
+        cache.addAll(tuple.getMap().createTriples(tuple.getSource()));
+      }
+      return cache.remove(0);
     }
   }
 }

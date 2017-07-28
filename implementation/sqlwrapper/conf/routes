@@ -7,7 +7,9 @@ GET     /                           controllers.SQLWrapperController.index
 
 GET     /testConnection             controllers.SQLWrapperController.testDatasourceConnection
 
-GET     /hello             controllers.SQLWrapperController.sayHello(name_id)
+GET /fileTest                 controllers.SQLWrapperController.fileTest
+
+GET /search                         controllers.SQLWrapperController.search
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
