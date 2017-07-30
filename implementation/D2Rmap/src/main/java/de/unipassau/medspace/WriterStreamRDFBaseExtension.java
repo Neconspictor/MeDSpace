@@ -30,6 +30,10 @@ public class WriterStreamRDFBaseExtension {
     map.putAll(mapping);
   }
 
+  public WriterStreamRDFBase getSource() {
+    return source;
+  }
+
 
   private WriterStreamRDFBase initSource(StreamRDFWrapper stream) {
     Field other = getField(StreamRDFWrapper.class, "other");

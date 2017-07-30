@@ -13,6 +13,7 @@ import de.unipassau.medspace.SQLWrapperService;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.test.HelloActor;
 import de.unipassau.medspace.test.HelloActorProtocol;
+import de.unipassau.medspace.test.InputOutputStream;
 import org.apache.jena.graph.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,5 +116,14 @@ private final FormFactory formFactory;
     }
 
     return ok(builder.toString());
+  }
+
+  public Result test() throws IOException {
+
+    InputOutputStream test = new InputOutputStream(256);
+
+    test.getOut().write(new byte[257]);
+
+    return ok(test.getByteContent());
   }
 }
