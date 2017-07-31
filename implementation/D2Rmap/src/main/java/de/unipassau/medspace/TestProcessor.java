@@ -4,8 +4,8 @@ import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.JenaRDFInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
-import de.unipassau.medspace.common.util.TempFile;
 import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
@@ -16,28 +16,21 @@ import de.unipassau.medspace.d2r.exception.D2RException;
 
 import java.io.*;
 import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
 
-import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
-import org.apache.jena.atlas.io.IndentedWriter;
-import org.apache.jena.atlas.web.TypedInputStream;
-import org.apache.jena.base.Sys;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.*;
 import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.system.StreamRDFWrapper;
 import org.apache.jena.riot.system.StreamRDFWriter;
-import org.apache.jena.riot.writer.WriterStreamRDFBase;
 import org.apache.jena.riot.writer.WriterStreamRDFBlocks;
 import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.sparql.core.Quad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,28 +86,15 @@ public class TestProcessor {
       //DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
 
       DataSourceStream<MappedSqlTuple> stream = wrapper.getProxy().getAllData();
-
       DataSourceStream<Triple> triples = new TripleData(stream);
 
-      //ObjectOutputStream out = new ObjectOutputStream(System.out);
+      //DataSourceStream<Triple> triples = new TripleTestStream();
       PrefixMapping mapping = proxy.getNamespacePrefixMapper();
-
-
-
-      /*for (Triple triple : triples) {
-        //triple.
-        System.out.println(triple.toString(mapping));
-      }*/
-
-      //out.close();
 
       boolean hasTriples = triples.hasNext();
 
       if (hasTriples) {
-        //TypedInputStream inputStream =  TypedInputStream.wrap(null);
-        //RDFParser.create().source(inputStream).parse((StreamRDF)null);
         RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
-        //final StreamRDF rdfOut = StreamRDFWriter.getWriterStream(System.out, format);
 
         ResettableByteArrayInputStream in = new ResettableByteArrayInputStream();
 
@@ -122,7 +102,7 @@ public class TestProcessor {
 
         final StreamRDF rdfOut = new WriterStreamRDFBlocks(new IndentedWriterEx(writer));
 
-        InputStream test = new JenaRDFInputStream(triples, mapping, false);
+        InputStream test = new JenaRDFInputStream(triples, mapping);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(test, StandardCharsets.UTF_8));
         String value = reader.readLine();
@@ -188,6 +168,39 @@ public class TestProcessor {
         cache.addAll(tuple.getMap().createTriples(tuple.getSource()));
       }
       return cache.remove(0);
+    }
+  }
+
+  private static class TripleTestStream implements DataSourceStream<Triple> {
+
+    private List<Triple> data;
+
+    public TripleTestStream() {
+      data = new ArrayList<>();
+      data.add(create("data1", "rdf:type", "data"));
+      data.add(create("data2", "rdf:type", "data"));
+    }
+
+    @Override
+    public void close() throws IOException {
+      data.clear();
+    }
+
+    @Override
+    public boolean hasNext() {
+      return !data.isEmpty();
+    }
+
+    @Override
+    public Triple next() {
+      return data.remove(0);
+    }
+
+    private static Triple create(String subjectStr, String predicateStr, String objectStr) {
+      Resource subject = ResourceFactory.createResource(subjectStr);
+      Property predicate = ResourceFactory.createProperty(predicateStr);
+      Resource object = ResourceFactory.createResource(objectStr);
+      return Triple.create(subject.asNode(), predicate.asNode(), object.asNode());
     }
   }
 }

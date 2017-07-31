@@ -1,9 +1,12 @@
-package de.unipassau.medspace;
+package de.unipassau.medspace.common.stream;
 
+import de.unipassau.medspace.ByteArrayOutputStreamEx;
+import de.unipassau.medspace.ResettableByteArrayInputStream;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.writer.WriterStreamRDFBlocks;
+import org.apache.jena.riot.system.StreamRDFWriter;
 import org.apache.jena.shared.PrefixMapping;
 
 import java.io.IOException;
@@ -17,28 +20,22 @@ public class JenaRDFInputStream extends InputStream {
 
   private final ResettableByteArrayInputStream in;
   private final DataSourceStream<Triple> triples;
-  private final TripleWriter writer;
+  private final ByteArrayOutputStreamEx out;
   private StreamRDF rdfOut;
 
-  public JenaRDFInputStream(DataSourceStream<Triple> triples, PrefixMapping mapping, boolean writeMapping) {
+  public JenaRDFInputStream(DataSourceStream<Triple> triples, PrefixMapping mapping) {
     this.triples = triples;
-    writer = new TripleWriter(1024);
     in = new ResettableByteArrayInputStream();
+    out = new ByteArrayOutputStreamEx();
 
-    rdfOut =  new WriterStreamRDFBlocks(new IndentedWriterEx(writer));
+    rdfOut = StreamRDFWriter.getWriterStream(out, Lang.TURTLE);
     rdfOut.start();
-    WriterStreamRDFBaseExtension extended = new WriterStreamRDFBaseExtension(rdfOut);
     if (mapping != null ) {
-      addMapping(mapping, writeMapping, extended);
+      addMapping(mapping);
     }
   }
 
-  private void addMapping(PrefixMapping mapping, boolean writeMapping, WriterStreamRDFBaseExtension extended) {
-    if (!writeMapping) {
-      extended.addPrefixMapping(mapping);
-      return;
-    }
-
+  private void addMapping(PrefixMapping mapping) {
     for (Map.Entry<String, String> map : mapping.getNsPrefixMap().entrySet()) {
       rdfOut.prefix(map.getKey(), map.getValue());
     }
@@ -50,18 +47,13 @@ public class JenaRDFInputStream extends InputStream {
     int elem = in.read();
 
     // elem == -1, i.d. in has to be filled with new data
-
     while (elem == -1) {
       elem = in.read();
-      //if (elem != -1) return elem;
-      if (elem != -1) {
-       int test = 0; //TODO without return there is a bug, but i don't know why; check it out!
-       return elem;
-      }
       updateInputBuffer();
 
       if (!triples.hasNext()) {
         rdfOut.finish();
+        updateInputBuffer();
         return in.read();
       }
       rdfOut.triple(triples.next());
@@ -71,11 +63,11 @@ public class JenaRDFInputStream extends InputStream {
   }
 
   private void updateInputBuffer() {
-    int pos = writer.getPos();
-    if (pos == -1) return;
+    int pos = out.size();
+    if (pos == 0) return;
 
     if (in.available() != 0) throw new IllegalStateException("Not all bytes consumed yet!");
-    in.reset(writer.getBuffer(), 0, pos);
-    writer.reset();
+    in.reset(out.getBufferSource(), 0, pos);
+    out.reset();
   }
 }

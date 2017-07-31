@@ -21,15 +21,19 @@ public class ResettableByteArrayInputStream extends ByteArrayInputStream {
   }
 
   public synchronized void reset(byte[] buf) {
-    this.buf = buf;
+    this.buf = new byte[buf.length];
+    System.arraycopy(buf, 0, this.buf, 0, buf.length);
     this.pos = 0;
     this.count = buf.length;
   }
 
   public synchronized void reset(byte[] buf, int offset, int length) {
-    this.buf = buf;
-    this.pos = offset;
-    this.count = offset + length;
-    this.mark = offset;
+
+
+    this.buf = new byte[length];
+    System.arraycopy(buf, offset, this.buf, 0, length);
+    this.pos = 0;
+    this.count = length;
+    this.mark = 0;
   }
 }
