@@ -34,6 +34,7 @@ public class DatatypePropertyBridge extends Bridge {
       // if no lang tag is set but the dataType tag create a typed literal
       String dataType = normalizer.normalize(getDataType());
       RDFDatatype rdfType = TypeMapper.getInstance().getSafeTypeByName(dataType);
+      System.out.println(value);
       literal = ResourceFactory.createTypedLiteral(value, rdfType);
     }  else {
       // no lang tag and dataType set; assume xsd:string is the data type

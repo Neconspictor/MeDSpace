@@ -1,17 +1,19 @@
 <?xml version="1.0"?>
+<!-->Map specifies wraps the D2R mapping<-->
 <d2r:Map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xmlns:d2r="http://www.medspace.com/D2Rmap"
 		 xsi:schemaLocation="http://www.medspace.com/D2Rmap http://www.medspace.com/D2Rmap/Medspace_D2Rmap.xsd">
-		 
-	<!-->com.mysql.jdbc.Driver</-->	 
-		 
+
+	<!-->DBConnection holds information for connecting to the database<-->
 	<d2r:DBConnection
 			jdbcDriver="com.mysql.jdbc.Driver"
-			
 			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
-			maxConnections="2"
+			maxConnections="10"
 	>
+		<!-->DBAuthentification is used to authenticate in the database with username and password<-->
 		<d2r:DBAuthentification username="medspace_client" password="k4N!rT"/>
+
+		<!--database specific properties-->
 		<d2r:DataSourceProperty name="cachePrepStmts" value="true"/>
 		<d2r:DataSourceProperty name="prepStmtCacheSize" value="250"/>
 		<d2r:DataSourceProperty name="prepStmtCacheSqlLimit" value="2048"/>
@@ -24,8 +26,20 @@
 		<d2r:DataSourceProperty name="elideSetAutoCommits" value="true"/>
 		<d2r:DataSourceProperty name="maintainTimeStats" value="false"/>
 	</d2r:DBConnection>
-	<d2r:OutputFormat>RDF/THRIFT</d2r:OutputFormat>
+
+	<!-->Which rdf serialization language should be used?
+		For more information about the supported rdf formats see:
+		https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang
+	<-->
+	<d2r:OutputFormat>TURTLE</d2r:OutputFormat>
+
+	<!-->Specifies where the wrapper should store indexed data<-->
 	<d2r:Index directory="_work/medspace/index"/>
+
+	<!-->RDF namespaces
+		@attribute prefix:		The prefix to use in the rdf triples
+		@attribute namespace:	The namespace represented by the prefix
+	<-->
 	<d2r:Namespace prefix="test" namespace="http://localhost/patient_test_namespace#"/>
 	<d2r:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>
 	<d2r:Namespace prefix="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
@@ -36,9 +50,15 @@
 	<d2r:Namespace prefix="sex" namespace="http://localhost/patient_test_namespace/sex#"/>
 	<d2r:Namespace prefix="patient" namespace="http://localhost/patient_test_namespace/patient#"/>
 
-	
-	<!-- D2R GroupMap: Organization, University, Institut, Department -->
-	<!--d2r:type="rdf:PlainLiteral"-->
+	<!-->A ClassMap maps a View of SQL table data to rdf triples
+			@attribute type: 			  the type (rdf:type) for the mapped data.
+			@attribute sql:  			  A sql query, that specifies the sql data, that should be mapped.
+			@attribute baseURI: 		  a prefix used to generate the URI of the mapped sql data.
+			@attribute resourceIdColumns: Specifies the columns of the sql query, which are used along with the base URI
+										  	for generating the URI of rdf triples.
+			@attribute id:				  Assigns a unique id to the ClassMap. The is can be used by other ClassMaps
+											to refer this ClassMap.
+	<-->
 	<d2r:ClassMap 
 		type="test:language"
 		sql="SELECT * FROM language;"
@@ -47,10 +67,6 @@
 		id="language">
 		
 		<d2r:DataTypePropertyBridge property="test:languageName" pattern="@@language.name@@" dataType="rdf:langString" lang="en"/>
-		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:homepage" d2r:column="Organizations.Homepage"/>-->
-		<!--<d2r:ObjectPropertyBridge d2r:property="rdf:type" d2r:pattern="http://localhost/languages#@@language.name@@"/>-->
-		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:homepage" d2r:column="Organizations.Homepage"/>-->
-		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:has_affiliate" d2r:referredClass="PersonsGroupMap" d2r:referredGroupBy="Rel_Person_Organization.PersonID"/>-->
 	</d2r:ClassMap>
 
 	<d2r:ClassMap
@@ -83,9 +99,8 @@
 		<d2r:DataTypePropertyBridge property="test:patientID" pattern="@@patient.id@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="test:date" pattern="@@patient.dateOfBirth@@" dataType="xsd:date"/>
 		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex" />
-		<d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus" referredColumns="patient.maritalstatus"/>
+		<!--><d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus" referredColumns="patient.maritalstatus"/><-->
+		<!--><d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus"/><-->
 		<d2r:ObjectPropertyBridge property="test:language" referredClass="language" referredColumns="patient.language"/>
-		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:homepage" d2r:column="Organizations.Homepage"/>-->
-		<!--<d2r:ObjectPropertyBridge d2r:property="iswc:has_affiliate" d2r:referredClass="PersonsGroupMap" d2r:referredGroupBy="Rel_Person_Organization.PersonID"/>-->
 	</d2r:ClassMap>
 </d2r:Map>

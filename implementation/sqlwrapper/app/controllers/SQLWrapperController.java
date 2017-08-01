@@ -5,34 +5,35 @@ import akka.actor.*;
 import static akka.pattern.Patterns.ask;
 
 import akka.stream.OverflowStrategy;
-import akka.stream.javadsl.Flow;
 import akka.stream.javadsl.Source;
 import akka.stream.javadsl.StreamConverters;
 import akka.util.ByteString;
 import de.unipassau.medspace.SQLWrapperService;
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.JenaRDFInputStream;
+import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.test.HelloActor;
 import de.unipassau.medspace.test.HelloActorProtocol;
 import de.unipassau.medspace.test.InputOutputStream;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.shared.PrefixMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.Play;
 import play.data.DynamicForm;
-import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.*;
 import scala.compat.java8.FutureConverters;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -101,21 +102,45 @@ private final FormFactory formFactory;
         "attachement; filename=" + filename);
   }
 
-  public Result search() throws IOException {
+  public Result search(boolean attach)  {
     DynamicForm requestData = formFactory.form().bindFromRequest();
     String keywords = requestData.get("keywords");
-    if (keywords == null)
-      return redirect(routes.SQLWrapperController.index());
 
-    DataSourceStream<Triple> triples = wrapperService.search(keywords);
+    if (log.isDebugEnabled())
+      log.debug("keyword search query: " + keywords);
 
-    StringBuilder builder = new StringBuilder();
-    for (Triple triple : triples) {
-      builder.append(triple.toString());
-      builder.append("\n");
+    DataSourceStream<Triple> triples = null;
+    try {
+      triples = wrapperService.search(keywords);
+    } catch (IOException e) {
+      log.error("Error while querying the D2rWrapper", e);
+      return internalServerError("Internal server error");
+    } catch (NotValidArgumentException e) {
+      return badRequest("keyword search query isn't valid: \"" + keywords + "\"");
     }
 
-    return ok(builder.toString());
+    Configuration config = wrapperService.getConfig();
+    PrefixMapping mapping = wrapperService.getProxy().getNamespacePrefixMapper();
+    Lang lang = config.getOutputFormat();
+    List<String> extensions = lang.getFileExtensions();
+    String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);
+    InputStream tripleStream = new JenaRDFInputStream(triples, lang, mapping);
+
+    String mimeType = Http.MimeTypes.TEXT;
+    String dispositionValue = "inline";
+
+    if ((lang == Lang.RDFTHRIFT)) {
+      mimeType = Http.MimeTypes.BINARY;
+      attach = true;
+    }
+
+    if (attach) {
+      Date date = new Date();
+      String filename = "SearchResult" + date.getTime() + "." + fileExtension;
+      dispositionValue = "attachement; filename=" + filename;
+    }
+
+    return ok(tripleStream).as(mimeType).withHeader("Content-Disposition", dispositionValue);
   }
 
   public Result test() throws IOException {

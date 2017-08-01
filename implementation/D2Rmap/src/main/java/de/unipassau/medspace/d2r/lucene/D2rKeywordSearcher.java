@@ -3,6 +3,7 @@ package de.unipassau.medspace.d2r.lucene;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.StreamCollection;
@@ -51,7 +52,8 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
   }
 
   @Override
-  public DataSourceStream<Triple> searchForKeywords(List<String> keywords) throws IOException {
+  public DataSourceStream<Triple> searchForKeywords(List<String> keywords) throws IOException,
+      NotValidArgumentException {
     if (useLucene) {
       DataSourceStream<Document> result =  keywordSearcher.searchForKeywords(keywords);
       return new DocToTripleStream(result, factory);

@@ -23,13 +23,9 @@ import java.util.*;
 
 
 import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.*;
-import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.system.StreamRDFWriter;
-import org.apache.jena.riot.writer.WriterStreamRDFBlocks;
+import org.apache.jena.riot.lang.CollectorStreamRDF;
 import org.apache.jena.shared.PrefixMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +36,6 @@ public class TestProcessor {
   private final static Logger log = LoggerFactory.getLogger(TestProcessor.class);
 
   public static void main(String[] args) throws IOException {
-    String prettyPrintingLang = "N3";
     DataSourceManager dataSourceManager = null;
     D2rWrapper wrapper = null;
 
@@ -83,34 +78,22 @@ public class TestProcessor {
       KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher();
 
       Instant startTime = Instant.now();
-      //DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
 
       DataSourceStream<MappedSqlTuple> stream = wrapper.getProxy().getAllData();
       DataSourceStream<Triple> triples = new TripleData(stream);
-
-      //DataSourceStream<Triple> triples = new TripleTestStream();
       PrefixMapping mapping = proxy.getNamespacePrefixMapper();
 
       boolean hasTriples = triples.hasNext();
 
       if (hasTriples) {
-        RDFFormat format = StreamRDFWriter.defaultSerialization(lang);
+        InputStream tripleStream = new JenaRDFInputStream(triples, config.getOutputFormat(), mapping);
 
-        ResettableByteArrayInputStream in = new ResettableByteArrayInputStream();
-
-        final TripleWriter writer = new TripleWriter(1024);
-
-        final StreamRDF rdfOut = new WriterStreamRDFBlocks(new IndentedWriterEx(writer));
-
-        InputStream test = new JenaRDFInputStream(triples, mapping);
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(test, StandardCharsets.UTF_8));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(tripleStream, StandardCharsets.UTF_8));
         String value = reader.readLine();
         while (value != null) {
           System.out.println(value);
           value = reader.readLine();
         }
-
 
       } else {
         log.info("No results found!");
@@ -120,8 +103,6 @@ public class TestProcessor {
 
 
       Instant endTime = Instant.now();
-      //Lang lang = config.getOutputFormat();
-      Lang prettyLang = RDFLanguages.shortnameToLang(prettyPrintingLang);
 
       log.info("RDF data exported ....");
       log.info("Time elapsed: " + Duration.between(startTime, endTime));

@@ -24,7 +24,7 @@
 		<d2r:DataSourceProperty name="elideSetAutoCommits" value="true"/>
 		<d2r:DataSourceProperty name="maintainTimeStats" value="false"/>
 	</d2r:DBConnection>
-	<d2r:OutputFormat>RDF/THRIFT</d2r:OutputFormat>
+	<d2r:OutputFormat>RDF/XML</d2r:OutputFormat>
 	<d2r:Index directory="_work/medspace/index"/>
 	<d2r:Namespace prefix="test" namespace="http://localhost/patient_test_namespace#"/>
 	<d2r:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>

@@ -15,7 +15,7 @@ public class D2R {
     public static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String RDFNS_PREFIX = "rdf";
     public static final String DELIMINATOR = "@@";
-    public static final String STANDARD_OUTPUT_FORMAT = "RDF/XML";
+    public static final String STANDARD_OUTPUT_FORMAT = "NTRIPLES";
 
     // root element Map
     public static final String ROOT_ELEMENT = "Map";

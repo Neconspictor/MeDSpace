@@ -2,6 +2,7 @@ package de.unipassau.medspace;
 
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
@@ -81,7 +82,7 @@ public class SQLWrapperService {
     return true;
   }
 
-  public DataSourceStream<Triple> search(String keywords) throws IOException {
+  public DataSourceStream<Triple> search(String keywords) throws IOException, NotValidArgumentException {
     assert keywords != null;
 
     StringTokenizer tokenizer = new StringTokenizer(keywords, ",", false);
@@ -160,5 +161,17 @@ public class SQLWrapperService {
     // to do a graceful shutdown and thus shouldn't produce any misleading error messages.
     // Thus, a call of System.exit is here justified.
     System.exit(errorCode);
+  }
+
+  public Configuration getConfig() {
+    return config;
+  }
+
+  public D2rWrapper getWrapper() {
+    return wrapper;
+  }
+
+  public D2rProxy getProxy() {
+    return proxy;
   }
 }

@@ -1,5 +1,6 @@
 package de.unipassau.medspace.common.lucene;
 
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import org.apache.lucene.analysis.Analyzer;
@@ -32,18 +33,30 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
   }
 
   @Override
-  public DataSourceStream<Document> searchForKeywords(List<String> keywords) throws IOException {
+  public DataSourceStream<Document> searchForKeywords(List<String> keywords) throws IOException,
+      NotValidArgumentException {
+
+    if (keywords.size() == 0) {
+      throw new NotValidArgumentException("No keywords to search for");
+    }
 
     SearchResult result = null;
+    Query query = null;
     try {
-      result = doLuceneKeywordSearch(fields, keywords);
+      query = constructQuery(fields, keywords);
+    } catch (ParseException e) {
+      throw new NotValidArgumentException("One of the keywords isn't valid", e);
+    }
+
+    try {
+      result = doLuceneKeywordSearch(query);
     } catch (IOException | ParseException e) {
       throw new IOException("Exception while querying the index: ", e);
     }
     return  new DocumentStream(result);
   }
 
-  private SearchResult doLuceneKeywordSearch(String[] fieldNameArray , List<String> keywords) throws IOException, ParseException {
+  private Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException {
     Analyzer analyzer = new StandardAnalyzer();
     QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
 
@@ -58,6 +71,14 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
     if (log.isDebugEnabled())
       log.debug("Constructed query: " + query);
 
+    return query;
+  }
+
+  private SearchResult doLuceneKeywordSearch(Query query) throws IOException,
+      ParseException {
+
+    if (log.isDebugEnabled())
+      log.debug("Constructed query: " + query);
     return new SearchResult(index.createReader(), query);
   }
 

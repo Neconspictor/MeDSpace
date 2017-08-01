@@ -8,6 +8,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -119,7 +120,7 @@ public class XmlUtil {
     try {
       // Init schema factory; Note  - we only use XML schemas (XSD)
       final SchemaFactory schemaFactory = SchemaFactory
-          .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+          .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);//);
 
       schema = schemaFactory.newSchema(schemaSources);
     } catch(SAXException e) {

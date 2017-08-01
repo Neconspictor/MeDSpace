@@ -1,5 +1,6 @@
 package de.unipassau.medspace.common.query;
 
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 
 import java.io.IOException;
@@ -16,6 +17,8 @@ public interface KeywordSearcher<E> {
    * @param keywords The keywords for searching data in the fields
    * @return The keyword search result as stream of data.
    * @throws IOException If an error occurs while the search is processed.
+   * @throws NotValidArgumentException if argument 'keywords' is null, empty or if one keyword is not valid for
    */
-  DataSourceStream<E> searchForKeywords(List<String> keywords) throws IOException;
+  DataSourceStream<E> searchForKeywords(List<String> keywords) throws IOException, NotValidArgumentException;
+
 }

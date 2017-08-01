@@ -9,7 +9,9 @@ import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.util.XmlUtil;
 import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.system.StreamRDFWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -22,7 +24,11 @@ import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by David Goeth on 30.05.2017.
@@ -32,8 +38,23 @@ public class ConfigurationReader {
   /** log4j logger used for this class */
   private static Logger log = LoggerFactory.getLogger(ConfigurationReader.class);
 
-  public ConfigurationReader() {
+  /**
+   * Contains all supported org.apache.jena.riot.Lang objects that are supported by the jena framework
+   * to be used for streaming. Not all rdf serialization formats supports to stream the triple result set,
+   * so not all jena rdf languages are supported.
+   */
+  private Set<Lang> supportedStreamLanguages;
 
+  public ConfigurationReader() {
+    supportedStreamLanguages = new HashSet<>();
+    Collection<RDFFormat> formats = StreamRDFWriter.registered();
+    for (RDFFormat format : formats) {
+      supportedStreamLanguages.add(format.getLang());
+    }
+
+    // delete rdf/null, as it only outputs an empty rdf graph
+    // -> not very useful for exporting data.
+    supportedStreamLanguages.remove(Lang.RDFNULL);
   }
 
   public static Configuration createDefaultConfig() {
@@ -181,7 +202,7 @@ public class ConfigurationReader {
     config.getMaps().add(cMap);
   }
 
-  private static void readConfig(Document document, Configuration config) throws IOException,
+  private void readConfig(Document document, Configuration config) throws IOException,
                                                                                  ClassNotFoundException,
                                                                                  D2RException {
     // Read namespaces
@@ -289,7 +310,7 @@ public class ConfigurationReader {
     map.addBridge(bridge);
   }
 
-  private static void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
+  private void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
     String format = elem.getTextContent();
     Lang lang = null;
 
@@ -298,8 +319,22 @@ public class ConfigurationReader {
     try {
       lang = getLangFromString(format);
     } catch (D2RException e) {
-      throw new D2RException("Error while retrieving language format", e);
+      throw new D2RException("Error while retrieving rdf language", e);
     }
+
+    if (!supportedStreamLanguages.contains(lang)) {
+      StringBuilder supportedLangs = new StringBuilder();
+      for (Lang l : supportedStreamLanguages) {
+        supportedLangs.append(l.getLabel());
+        supportedLangs.append("\n");
+      }
+
+      supportedLangs.delete(supportedLangs.length() -1, supportedLangs.length());
+
+      throw new D2RException("RDF language isn't supported for streaming rdf triples: " + lang.getLabel() +
+      "\nSupported languages are:\n" + supportedLangs.toString());
+    }
+
     config.setOutputFormat(lang);
   }
 

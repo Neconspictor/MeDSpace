@@ -24,12 +24,15 @@ libraryDependencies ++= Seq(
 	"mysql" % "mysql-connector-java" % "5.1.42",
 
 	// Jena
-	"org.apache.jena" % "jena-arq" % "3.3.0",
-	"org.apache.jena" % "jena-core" % "3.3.0",
-	"org.apache.jena" % "jena-iri" % "3.3.0",
-	"org.apache.jena" % "jena-tdb" % "3.3.0",
-	
-	// Logging
+	"org.apache.jena" % "jena-arq" % "3.4.0",
+	"org.apache.jena" % "jena-core" % "3.4.0",
+	"org.apache.jena" % "jena-iri" % "3.4.0",
+	"org.apache.jena" % "jena-tdb" % "3.4.0",
+	"org.apache.jena" % "jena-base" % "3.4.0" % "test",
+	"org.apache.jena" % "apache-jena-libs" % "3.4.0" pomOnly(),
+
+
+// Logging
 	// We only want to use one logging instance but some libs are using slf4j
 	// while others use log4j -> we use log4j and bridge slf4j to it
 
@@ -40,7 +43,9 @@ libraryDependencies ++= Seq(
 	//"org.slf4j" % "slf4j-api" % "1.7.25",
 
 	// XML Parser
-	"xerces" % "xercesImpl" % "2.11.0",
+	"net.sf.saxon" % "Saxon-HE" % "9.8.0-3",
+	//"xerces" % "xercesImpl" % "2.11.0",
+	//"org.opengis.cite.xerces" % "xercesImpl-xsd11" % "2.12-beta-r1667115",
 
 	// JUnit
 	"junit" % "junit" % "4.12" % "test",
