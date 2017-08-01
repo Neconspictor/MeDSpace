@@ -98,9 +98,9 @@
 	>
 		<d2r:DataTypePropertyBridge property="test:patientID" pattern="@@patient.id@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="test:date" pattern="@@patient.dateOfBirth@@" dataType="xsd:date"/>
-		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex" />
-		<!--><d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus" referredColumns="patient.maritalstatus"/><-->
-		<!--><d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus"/><-->
+		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex"/>
+		<d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus"
+								  referredColumns="patient.maritalstatus"/>
 		<d2r:ObjectPropertyBridge property="test:language" referredClass="language" referredColumns="patient.language"/>
 	</d2r:ClassMap>
 </d2r:Map>

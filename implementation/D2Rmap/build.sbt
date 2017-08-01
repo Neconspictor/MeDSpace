@@ -43,8 +43,8 @@ libraryDependencies ++= Seq(
 	//"org.slf4j" % "slf4j-api" % "1.7.25",
 
 	// XML Parser
-	"net.sf.saxon" % "Saxon-HE" % "9.8.0-3",
-	//"xerces" % "xercesImpl" % "2.11.0",
+	//"net.sf.saxon" % "Saxon-HE" % "9.8.0-3",
+	"xerces" % "xercesImpl" % "2.11.0",
 	//"org.opengis.cite.xerces" % "xercesImpl-xsd11" % "2.12-beta-r1667115",
 
 	// JUnit

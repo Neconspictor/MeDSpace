@@ -82,7 +82,7 @@
 	</xsd:complexType>
 
 	<!-->
-		A DataTypePropertyBridge defines a mapping to define a property for a rdf resource. The value of the property
+		A DataTypePropertyBridge defines a property for a rdf resource. The value of the property
 		is hereby a literal value.
 
 		@attribute property: The uri of the rdf property
@@ -105,50 +105,40 @@
 	</xsd:complexType>
 
 	<!-->
-		A ObjectPropertyBridge defines a mapping to define a property for a rdf resource. The value of the property
-		is hereby another rdf resource.
+		A ObjectPropertyBridge defines a property for a rdf resource. The value of the property
+		is hereby another rdf resource. The referenced rdf resource has to be defined by another ClassMap
 
-		@attribute property: The uri of the rdf property
-		@attribute pattern: Defines the value of the property. It is possible to use the content of the sql tuple: The
-								content of a column of a SQL query (defined by the ClassMap the property bridge belongs
-								to) can be accessed by beginning with '@@' than writing the column in the format t.c
-								(where t is the table name and c is the column name) and than ending the expression
-								with '@@'.
-								Example:
-								If 'patient' is a table and 'name' is a column of 'patient', than the
-								content of 'name' can be accessed by '@@patient.name@@'
-		@attribute dataType: Specifies a rdf datatype for the property
-		@attribute lang: Specifies a language tag for the property
+		@attribute property: The uri of the rdf property.
+		@attribute referredClass:   The id of the ClassMap the value of the property is referring.
+		@attribute referredColumns: The columns in the sql query (from the ClassMap this property belongs to and not
+									the referred ClassMap), that define the referred rdf resource. The columns should
+									match the attribute "resourceIdColumns" of the referred ClassMap in order ensure to
+									produce valid rdf resource references. This is important, as there is no automatic
+									validation. The User is responsible for specifying the right columns in the right
+									order.
 	<-->
 	<xsd:complexType name="ObjectPropertyBridge">
-
-		<!--<xsd:assert test="@referredColumns" />-->
-		<xsd:choice maxOccurs="1">
-			<xsd:element name="ClassReference" type="d2r:ClassReference" minOccurs="0" maxOccurs="1"/>
-			<xsd:element name="Pattern" type="d2r:Pattern" minOccurs="0" maxOccurs="1"/>
-		</xsd:choice>
 		<xsd:attribute name="property" type="xsd:string" use="required"/>
-		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
-		<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
-		<xsd:attribute name="referredColumns" type="xsd:string" use="optional"/>
+		<xsd:attribute name="referredClass" type="xsd:string" use="required"/>
+		<xsd:attribute name="referredColumns" type="xsd:string" use="required"/>
 	</xsd:complexType>
 
+	<!-->
+		Describes a property, that is send to the datasource while establishing a connection to it.
+		@attribute name:  The name of the property
+		@attribute value: The value of the property
+	<-->
 	<xsd:complexType name="DataSourceProperty">
 		<xsd:attribute name="name" type="xsd:string" use="required"/>
 		<xsd:attribute name="value" type="xsd:string" use="required"/>
 	</xsd:complexType>
 
+	<!-->
+		Specifies the directory the wrapper should store indexed sql data.
+		@attribute directory:  The directory the wrapper should store the index
+	<-->
 	<xsd:complexType name="Index">
 		<xsd:attribute name="directory" type="xsd:string" use="required"/>
-	</xsd:complexType>
-
-	<xsd:complexType name="ClassReference">
-		<xsd:attribute name="class" type="xsd:string" use="required"/>
-		<xsd:attribute name="columns" type="xsd:string" use="required"/>
-	</xsd:complexType>
-
-	<xsd:complexType name="Pattern">
-		<xsd:attribute name="value" type="xsd:string" use="required"/>
 	</xsd:complexType>
 	
 </xsd:schema> 
