@@ -10,6 +10,7 @@ import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rUtil;
 import de.unipassau.medspace.d2r.exception.D2RException;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;

@@ -1,0 +1,5 @@
+java -cp h2-1.4.195.jar org.h2.tools.RunScript -url jdbc:h2:./medspace -script init.sql -user sa
+
+java -cp h2-1.4.195.jar org.h2.tools.Server -tcp -tcpAllowOthers -tcpPort 5000
+
+java -cp h2-1.4.195.jar org.h2.tools.Server -tcpShutdown "tcp://localhost:5000"

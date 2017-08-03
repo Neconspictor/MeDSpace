@@ -23,6 +23,8 @@ libraryDependencies ++= Seq(
 	// Connector/J
 	"mysql" % "mysql-connector-java" % "5.1.42",
 
+	"com.h2database" % "h2" % "1.4.195",
+
 	// Jena
 	"org.apache.jena" % "jena-arq" % "3.4.0",
 	"org.apache.jena" % "jena-core" % "3.4.0",

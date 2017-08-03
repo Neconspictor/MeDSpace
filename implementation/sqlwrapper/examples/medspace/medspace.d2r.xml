@@ -1,13 +1,16 @@
 <?xml version="1.0"?>
 <!-->Map specifies wraps the D2R mapping<-->
-<d2r:Map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns:d2r="http://www.medspace.com/D2Rmap"
-		 xsi:schemaLocation="http://www.medspace.com/D2Rmap http://www.medspace.com/D2Rmap/Medspace_D2Rmap.xsd">
+<d2r:Map xmlns:d2r="http://www.medspace.com/D2Rmap"
+>
 
-	<!-->DBConnection holds information for connecting to the database<-->
+	<!-->DBConnection holds information for connecting to the database
+	jdbcDriver="com.mysql.jdbc.Driver"
+	jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
+
+	<-->
 	<d2r:DBConnection
-			jdbcDriver="com.mysql.jdbc.Driver"
-			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
+			jdbcDriver="org.h2.Driver"
+			jdbcDSN="jdbc:h2:tcp://localhost:5000/./medspace;SCHEMA=MEDSPACE"
 			maxConnections="10"
 	>
 		<!-->DBAuthentification is used to authenticate in the database with username and password<-->
@@ -31,7 +34,7 @@
 		For more information about the supported rdf formats see:
 		https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang
 	<-->
-	<d2r:OutputFormat>TURTLE</d2r:OutputFormat>
+	<d2r:OutputFormat>NTRIPLES</d2r:OutputFormat>
 
 	<!-->Specifies where the wrapper should store indexed data<-->
 	<d2r:Index directory="_work/medspace/index"/>
@@ -50,15 +53,7 @@
 	<d2r:Namespace prefix="sex" namespace="http://localhost/patient_test_namespace/sex#"/>
 	<d2r:Namespace prefix="patient" namespace="http://localhost/patient_test_namespace/patient#"/>
 
-	<!-->A ClassMap maps a View of SQL table data to rdf triples
-			@attribute type: 			  the type (rdf:type) for the mapped data.
-			@attribute sql:  			  A sql query, that specifies the sql data, that should be mapped.
-			@attribute baseURI: 		  a prefix used to generate the URI of the mapped sql data.
-			@attribute resourceIdColumns: Specifies the columns of the sql query, which are used along with the base URI
-										  	for generating the URI of rdf triples.
-			@attribute id:				  Assigns a unique id to the ClassMap. The is can be used by other ClassMaps
-											to refer this ClassMap.
-	<-->
+
 	<d2r:ClassMap 
 		type="test:language"
 		sql="SELECT * FROM language;"
@@ -76,6 +71,8 @@
 			type="test:maritalstatus"
 			id="maritalstatus"
 	>
+		<!--> Aliases can be used in the pattern attribute<-->
+		<!--> m is an alias for maritalstatuc; So m.name refers to maritalstatus.name <-->
 		<d2r:DataTypePropertyBridge property="test:maritalStatusName" pattern="@@m.name@@" dataType="xsd:string"/>
 	</d2r:ClassMap>
 
@@ -101,6 +98,7 @@
 		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex"/>
 		<d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus"
 								  referredColumns="patient.maritalstatus"/>
+		<d2r:ObjectPropertyBridge property="test:maritalstatus" pattern="test:maritalstatuc/@@patient.maritalstatus@@"/>
 		<d2r:ObjectPropertyBridge property="test:language" referredClass="language" referredColumns="patient.language"/>
 	</d2r:ClassMap>
 </d2r:Map>

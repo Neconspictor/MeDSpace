@@ -83,7 +83,10 @@ public class SQLWrapperService {
   }
 
   public DataSourceStream<Triple> search(String keywords) throws IOException, NotValidArgumentException {
-    assert keywords != null;
+
+    if (keywords == null) {
+      throw new NotValidArgumentException("keywords mustn't be null");
+    }
 
     StringTokenizer tokenizer = new StringTokenizer(keywords, ",", false);
     List<String> keywordList = new ArrayList<>();

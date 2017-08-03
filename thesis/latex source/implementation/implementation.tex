@@ -55,7 +55,7 @@ and check, that the variables \emph{character\_set\_client}, \emph{character\_se
 Basically, these variables are used to interpret and write data consistently in UTF-8. More information about the stated variables can be found on the manual
 \footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html\#sysvar_character_set_client}}.
 
-The next step is to initialize the data source with a database and some content. Further we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few rights as possible' we grant that user only reading rights for fetching data. The commands for initializing the data source and creating a read-user are in the file \textbf{init.sql} which is located in the appendix data in the folder \textbf{implementation/SQL}.
+The next step is to initialize the data source with a database and some content. Further we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few rights as possible' we grant that user only reading rights for fetching data. The commands for initializing the data source and creating a read-user are in the file \textbf{init\_mysql.sql} which is located in the appendix data in the folder \textbf{implementation/SQL/mysql}.
 
 To execute commands from a file, execute while logged in as the root user:
 

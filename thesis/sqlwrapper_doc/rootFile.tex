@@ -1,6 +1,4 @@
-\documentclass[a4paper,12pt,titlepage, openany, openright, cleardoubleempty]{scrreprt} %page-size, letter-size, with title, is an article
-%twoside
-
+\documentclass[a4paper,12pt,titlepage = false, openany, openright, cleardoubleempty]{scrreprt} %page-size, letter-size, with title, is an article
 
 \usepackage{color}
 \usepackage{verbatim}
@@ -55,7 +53,19 @@ hypertexnames,
 breaklinks,
 ]{hyperref}
 
+\usepackage{xpatch}
 
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+\usepackage{svg}
+%\setsvg{inkscape=inkscape -z -D,svgpath=images/}
+
+\usepackage{scrextend}
+
+\usepackage{enumitem}
+
+\usepackage{tabto}
 
 \makeatletter
 \@removefromreset{footnote}{chapter}
@@ -74,6 +84,9 @@ breaklinks,
   \@totalleftmargin\z@
   \setbox0=\vbox\bgroup \verbatim
 }
+\makeatother 
+
+\makeatletter
 \def\endinverseverbatim{%
   \endverbatim
   \unskip\setbox0=\lastbox
@@ -81,6 +94,8 @@ breaklinks,
   \colorbox{black}{\box0}%
 }
 \makeatother
+
+\makeatletter
 \def\codebox{%
 \color{white}\normalsize
 \begin{tcolorbox}[width=\textwidth,colback={gray}, colupper=white]
@@ -89,10 +104,26 @@ breaklinks,
 \def\endcodebox{%
 \end{tcolorbox}
 }
+\makeatother 
 
 \makeatletter
+\def\docunit[#1]{
+\textbf{#1} 
+\begingroup
+\par\noindent %ab hier der Text, der eingerückt werden soll
+\leftskip=1cm % Parameter anpassen
+}
 
+\makeatletter
+\def\enddocunit{%
+\noindent
+  \par
+  \endgroup
+}
 \makeatother
+
+
+
 \lstset{breaklines=true}
 \lstset{basicstyle=\ttfamily}
 \lstset{language=Java}
@@ -159,44 +190,28 @@ citecolor   = {cyan}
 
 \makeindex %must be before "begin{document}
 \begin{document}
+
+\renewcommand{\cleardoublepage}{}
+\renewcommand{\clearpage}{}
+
 \graphicspath{{pics/}}
 
 \pagestyle{empty}
 
 \pagenumbering{roman}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Titelseite
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\selectlanguage{ngerman}
-\include{titlepage}
-
-\pagestyle{fancy}
-\selectlanguage{english}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Kurzfassung (wenn möglich auf Englisch, ansonsten Deutsch)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\include{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Inhaltsverzeichnis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\titleformat{\section}[block]{\huge\bfseries\filcenter}{}{0.0em}{}
+\titlespacing*{\section}{0pt}{0.0ex}{0.0ex}
+\include{content/precontent}
 \tableofcontents
+\endgroup
 
-\cleardoublepage %beginne neue Seitenzählung auf einer rechten Seite (ungerade Seitenzahl)
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Tabellenverzeichnis
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\listoftables
-\addcontentsline{toc}{chapter}{List of Tables}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Abbildungsverzeichnis
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\listoffigures
-\addcontentsline{toc}{chapter}{\listfigurename}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Diese beiden Zeilen werden für Doppelseitigen Ausdruck benötigt und
@@ -213,26 +228,8 @@ citecolor   = {cyan}
 %%%     - oder den ganzen Text einfach reinschreiben (unübersichtlich)
 %%% Wie es gemacht wird spielt fürr den eigentlichen Output keine Rolle.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\include{intro/intro}
 
-\include{introduction/motivation}
-\chapter{Foundation in Data integration}
-\input{theoretical/data-integration}
-\chapter{Dataspaces}
-\input{theoretical/dataspace/Components}
-\input{theoretical/dataspace/ProbabilisticMediatedSchemaMapping}
-%\input{theoretical/dataspace/DatabasesToDataspacesANewAbstractionForInformationManagement}
-%\input{theoretical/dataspace/PrinciplesOfDataspaceSystems}
-%\input{theoretical/dataspace/TowardsRealizationOfDataspaces}
-%\input{theoretical/dataspace/DataModelingInDataspaceSupportSystems}
-\input{theoretical/dataspace/TowardsAModelToDataspaces_NDJAFA}
-\chapter{Reference Projects}
-\input{reference-projects/DebugITOntologyMediatedLayeredDataIntegration}
-\include{implementation/implementation}
-
-%\include{summaries/summaries}
-
-\include{glossary/glossary}
+\include{content/intro}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibtex-Tool: http://jabref.sourceforge.net/
@@ -241,8 +238,5 @@ citecolor   = {cyan}
 \bibliography{bib.bib}
 \addcontentsline{toc}{chapter}{\bibname}
 
-
-\selectlanguage{ngerman}
-\include{assertion}
 
 \end{document}
