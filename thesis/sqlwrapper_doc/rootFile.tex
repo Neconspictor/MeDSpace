@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,titlepage = false, openany, openright, cleardoubleempty]{scrreprt} %page-size, letter-size, with title, is an article
+\documentclass[a4paper,12pt,titlepage = false, openany, openright, onside]{scrreprt} %page-size, letter-size, with title, is an article
 
 \usepackage{color}
 \usepackage{verbatim}
@@ -67,11 +67,53 @@ breaklinks,
 
 \usepackage{tabto}
 
+\usepackage[framemethod=TikZ]{mdframed}
+
+ \usepackage{afterpage}
+
+
+
+% BOXES
+%% set up the environment
+\newmdenv[%
+	subtitlebelowline=true,
+	subtitleaboveline=true,
+	subtitlebackgroundcolor=yellow!1!white,
+	frametitle={Example:},
+	frametitlerule=true,
+	frametitlebackgroundcolor=yellow!1!white,
+    backgroundcolor=yellow!1, % number behind ! specifies the transparency in percent
+    linecolor=black,
+    outerlinewidth=1pt,
+    roundcorner=1mm,
+    skipabove=\baselineskip,
+    skipbelow=\baselineskip,
+]{ExampleBox}
+
+
+\newenvironment{indention}[1]
+	{
+		\par
+		\vspace*{-0.3cm}
+		\noindent
+		\leftskip=#1
+	}
+	{
+		\noindent
+		\par
+		\vspace*{-0.3cm}
+	}
+
+
+\makeatletter
+\def\XMLComment#1{%
+<!{-}{-} #1 {-}{-}>
+}
+\makeatother 
+
 \makeatletter
 \@removefromreset{footnote}{chapter}
 \makeatother 
-
-
 
 \makeatletter
 \def\inverseverbatim{%
@@ -82,7 +124,7 @@ breaklinks,
   \@minipagetrue
   \@tempswatrue
   \@totalleftmargin\z@
-  \setbox0=\vbox\bgroup \verbatim
+  \setbox0=\vbox\bgroup \verbatim 
 }
 \makeatother 
 
@@ -107,18 +149,18 @@ breaklinks,
 \makeatother 
 
 \makeatletter
-\def\docunit[#1]{
-\textbf{#1} 
+\def\BeginAttribute[#1]{
+#1 
 \begingroup
 \par\noindent %ab hier der Text, der eingerückt werden soll
 \leftskip=1cm % Parameter anpassen
 }
 
 \makeatletter
-\def\enddocunit{%
+\def\EndAttribute{%
 \noindent
-  \par
-  \endgroup
+\par
+\endgroup %
 }
 \makeatother
 
@@ -191,8 +233,20 @@ citecolor   = {cyan}
 \makeindex %must be before "begin{document}
 \begin{document}
 
-\renewcommand{\cleardoublepage}{}
-\renewcommand{\clearpage}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Prevents pagebreaks before and after a chapter
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+  \renewcommand\chapter{\par%
+    \thispagestyle{plain}%
+    \global\@topnum\z@
+    \@afterindentfalse
+    \secdef\@chapter\@schapter}
+\makeatother
+
 
 \graphicspath{{pics/}}
 
@@ -208,16 +262,16 @@ citecolor   = {cyan}
 \begingroup
 \titleformat{\section}[block]{\huge\bfseries\filcenter}{}{0.0em}{}
 \titlespacing*{\section}{0pt}{0.0ex}{0.0ex}
-\include{content/precontent}
-\tableofcontents
+\input{content/precontent}
 \endgroup
 
+\tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Diese beiden Zeilen werden für Doppelseitigen Ausdruck benötigt und
 %%% damit erst nach dem Inhaltsverzeichnis die Seiten gezählt werden.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cleardoublepage
+
 \pagenumbering{arabic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,12 +283,16 @@ citecolor   = {cyan}
 %%% Wie es gemacht wird spielt fürr den eigentlichen Output keine Rolle.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\include{content/intro}
+
+
+\input{content/content}
+%\renewcommand{\clearpage}{\oldclearpage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibtex-Tool: http://jabref.sourceforge.net/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\bibliographystyle{ieeetr}
+
+
 \bibliography{bib.bib}
 \addcontentsline{toc}{chapter}{\bibname}
 
