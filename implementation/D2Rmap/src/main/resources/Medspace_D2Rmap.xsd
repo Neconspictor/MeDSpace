@@ -38,9 +38,12 @@
 	<!-->
 		DBConnection holds information for connecting to the database.
 
-		@attribute jdbcDriver:	The jdbc driver to use for opening a jdbc connection to the database.
+		@attribute jdbcDriver:		The jdbc driver to use for opening a jdbc connection to the database.
 
-		@attribute jdbcDSN:		The jdbc Data Source Name, i.d. the URI to address the database.
+		@attribute jdbcDSN:			The jdbc Data Source Name, i.d. the URI to address the database.
+
+		@attribute maxConnections:	The maximum size of the connection pool, the wrapper should use. If not specified
+									a default value is used.
 	<-->
 	<xsd:complexType name="DBConnection">
 		<xsd:sequence>

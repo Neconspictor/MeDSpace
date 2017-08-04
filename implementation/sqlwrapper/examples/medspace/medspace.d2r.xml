@@ -39,7 +39,7 @@
 		For more information about the supported rdf formats see:
 		https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang
 	<-->
-	<d2r:OutputFormat>NTRIPLES</d2r:OutputFormat>
+	<d2r:OutputFormat>TURTLE</d2r:OutputFormat>
 
 	<!-->Specifies where the wrapper should store indexed data<-->
 	<d2r:Index directory="_work/medspace/index"/>
@@ -92,7 +92,7 @@
 	</d2r:ClassMap>
 
 	<d2r:ClassMap
-			sql="SELECT patient.id, patient.dateOfBirth, patient.sex, patient.maritalstatus, patient.language FROM patient;"
+			sql="SELECT p.id, p.dateOfBirth, p.sex, p.maritalstatus, p.language FROM patient p;"
 			resourceIdColumns="patient.id"
 			baseURI="http://localhost/patient_test_namespace/patient#"
 			id="patient"
@@ -103,7 +103,7 @@
 		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex"/>
 		<d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus"
 								  referredColumns="patient.maritalstatus"/>
-		<d2r:ObjectPropertyBridge property="test:maritalstatus" pattern="test:maritalstatuc/@@patient.maritalstatus@@"/>
+		<d2r:ObjectPropertyBridge property="test:maritalstatus" pattern="test:maritalstatus/@@patient.maritalstatus@@"/>
 		<d2r:ObjectPropertyBridge property="test:language" referredClass="language" referredColumns="patient.language"/>
 	</d2r:ClassMap>
 </d2r:Map>

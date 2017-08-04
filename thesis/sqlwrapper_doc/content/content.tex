@@ -73,23 +73,10 @@ Can occur any number of times
 \begin{ExampleBox}
 	<d2r:Map xmlns:d2r="http://www.medspace.com/D2Rmap">
 		\begin{indention}{1cm}
-		\XMLComment{DBConnection element is required} \newline
-		<d2r:DBConnection></d2r:DBConnection>
-		
-		\XMLComment{OutputFormat element is required} \newline
-		<d2r:OutputFormat></d2r:OutputFormat>
-		
-		\XMLComment{The Index element is optional}\newline
-		<d2r:Index></d2r:Index>
-
-		\XMLComment{Than follows an optional list of namespaces and class maps in any order}\newline
-		<d2r:Namespace></d2r:Namespace>\newline
-		<d2r:ClassMap></d2r:ClassMap>\newline
-		<d2r:ClassMap></d2r:ClassMap>\newline
-		<d2r:Namespace></d2r:Namespace>
-		\begin{indention}{2cm}
-			\ldots
-		\end{indention}		
+		\XMLComment{DBConnection element is required} \\		
+		\XMLComment{OutputFormat element is required} \\		
+		\XMLComment{The Index element is optional}\\
+		\XMLComment{Than follows an optional list of namespaces and class maps in any order}\\
 		
 		\end{indention}
 	</d2r:Map>
@@ -97,3 +84,259 @@ Can occur any number of times
 
 
 \section{Top-Level-Elements}
+
+\subsection{DBConnection}
+\textbf{Description:} \newline
+Defines properties to specify and customize the connection to a relational database
+
+\textbf{Attributes:} \newline
+\BeginAttribute[jdbcDriver, \emph{required}]
+The jdbc driver to use for opening a jdbc connection to the database.
+\EndAttribute
+\BeginAttribute[jdbcDSN, \emph{required}]
+The jdbc Data Source Name, i.d. the URI to address the database.
+\EndAttribute
+\BeginAttribute[maxConnections, \emph{optional}]
+The maximum size of the connection pool, the wrapper should use. If not specified a default value is used.
+\EndAttribute
+
+\textbf{Sub Elements:} \newline
+\BeginAttribute[DBAuthentification, \emph{optional}]
+If it occurrs, it has to be stated has the first sub element.
+Can only occur once.
+\EndAttribute
+\BeginAttribute[DataSourceProperty, \emph{optional}]
+Can occur in any number of times.
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:DBConnection
+	\begin{indention}{1cm}
+		jdbcDriver="com.mysql.jdbc.Driver"\\
+		jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"\\
+		maxConnections=10
+	\end{indention}
+	>
+		\begin{indention}{1cm}
+		\XMLComment{DBAuthentification element is required}\\
+		\XMLComment{Than follows an optional list of datasource properties}
+		\end{indention}
+	</d2r:DBConnection>
+\end{ExampleBox}
+
+\subsubsection{DBAuthentification}
+\textbf{Description:} \newline
+DBAuthentification is used to authenticate in the database with username and password
+
+\textbf{Attributes:} \newline
+\BeginAttribute[username, \emph{required}]
+The user name needed for database authentification.
+\EndAttribute
+\BeginAttribute[password, \emph{optional}]
+The password needed for database authentification.
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:DBAuthentification
+	\begin{indention}{1cm}
+		username="root"\\
+		password="1234"	
+	\end{indention}
+	/>
+\end{ExampleBox}
+
+\subsubsection{DataSourceProperty}
+\textbf{Description:} \newline
+Describes a datasource specific property, that is send to the datasource while establishing a connection to it.
+
+\textbf{Attributes:} \newline
+\BeginAttribute[name, \emph{required}]
+The name of the property.
+\EndAttribute
+\BeginAttribute[value, \emph{required}]
+The value of the property.
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:DataSourceProperty name="cacheResultSetMetadata" value="true"/>
+\end{ExampleBox}
+
+
+\subsection{OutputFormat}
+\textbf{Description:} \newline
+Specifies the rdf language, the exported data should be written in. 
+
+\begin{ExampleBox}
+	<d2r:OutputFormat>NTRIPLES</d2r:OutputFormat>
+\end{ExampleBox}
+
+\subsection{Index}
+\textbf{Description:} \newline
+Specifies the directory the wrapper should store indexed sql data.
+
+\textbf{Attributes:} \newline
+\BeginAttribute[directory, \emph{required}]
+The directory the wrapper should store the index
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:Index directory="\_work/medspace/index"/>
+\end{ExampleBox}
+
+
+\subsection{Namespace}
+\textbf{Description:} \newline
+Defines a RDF namespace the wrapper can use.
+
+\textbf{Attributes:} \newline
+\BeginAttribute[prefix, \emph{required}]
+The prefix to use in the rdf triples.
+\EndAttribute
+\BeginAttribute[namespace, \emph{required}]
+The namespace represented by the prefix.
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:Namespace 
+	\begin{indention}{1cm}
+		prefix="rdf"\\
+		namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns\#"
+	\end{indention}
+	/>
+\end{ExampleBox}
+
+\subsection{ClassMap}
+\textbf{Description:} \newline
+A ClassMap maps a virtual view of SQL table data to rdf triples. The view is defined by a regular SQL query.
+
+\textbf{Attributes:} \newline
+\BeginAttribute[type, \emph{required}]
+the type (rdf:type) for the mapped data.
+\EndAttribute
+\BeginAttribute[id, \emph{required}]
+Assigns a unique id to the ClassMap. The is can be used by other ClassMaps to refer this ClassMap.
+\EndAttribute
+\BeginAttribute[baseURI, \emph{required}]
+a prefix used to generate the URI of the mapped sql data.
+\EndAttribute
+\BeginAttribute[resourceIdColumns, \emph{required}]
+Specifies the columns of the sql query, which are used along with the base URI for generating the URI of rdf triples.
+\EndAttribute
+\BeginAttribute[sql, \emph{required}]
+A sql query, that specifies the sql data, that should be mapped.
+\EndAttribute
+
+\textbf{Sub Elements:} \newline
+\BeginAttribute[DataTypePropertyBridge, \emph{optional}]
+Defines a new datatype property bridge. Can occur in any number of times.
+\EndAttribute
+\BeginAttribute[ObjectPropertyBridge, \emph{optional}]
+Defines a new object property bridge. Can occur in any number of times.
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:ClassMap 
+	\begin{indention}{1cm}
+		type="test:patient"\\
+		sql="SELECT p.id, p.dateOfBirth, p.sex, p.maritalstatus, p.language\\ 
+		FROM patient p;"\\
+		resourceIdColumns="patient.id"\\
+		baseURI="http://www.example.com/patient\#"\\
+		id="patient"
+	\end{indention}
+	>
+
+	\begin{indention}{1cm}
+		\XMLComment{Optional list of DataTypePropertieBridge instances}\\
+		\XMLComment{Optional list of ObjectPropertyBridge instances}
+	\end{indention}	
+	
+	</d2r:ClassMap>
+\end{ExampleBox}
+
+\section{Property Mappings}
+Property mappings define bridges between columns of the result set and instance
+properties.
+
+If a value in the result set is NULL, no property of the specific type is defined for
+that instance.
+
+\subsection{DataTypePropertyBridge}
+\textbf{Description:} \newline
+A DatatypePropertyBridge defines a bridge between a column of the result set and a literal property of the instances created.
+
+\textbf{Attributes:} \newline
+\BeginAttribute[property, \emph{required}]
+The name of the rdf property
+\EndAttribute
+\label{patternLabel}
+\BeginAttribute[pattern, \emph{required}]
+Defines the value of the property. It is possible to use the content of the sql tuple: The content of a column of a SQL query (defined by the ClassMap the property bridge belongs to) can be accessed by beginning with '@@' than writing the column in the format t.c (where t is the table name and c is the column name) and than ending the expression with '@@'.
+
+\emph{Example:}\newline
+If 'patient' is a table and 'name' is a column of 'patient', than the content of 'name' can be accessed by '@@patient.name@@'
+
+\emph{Note:} \newline
+Aliases can be used. If m is an alias for maritalstatus, @@m.name@@ is the same as maritalstatus.name
+\EndAttribute
+\BeginAttribute[dataType, \emph{optional}]
+Specifies a rdf datatype for the property.
+\EndAttribute
+\BeginAttribute[lang, \emph{optional}]
+Specifies a language tag,e.g. "de" or "en", for the property.
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:DataTypePropertyBridge 
+	\begin{indention}{1cm}
+		property="test:languageName"\\
+		pattern="@@language.name@@"\\ 
+		dataType="rdf:langString"\\
+		lang="en"
+	\end{indention}
+	/>
+\end{ExampleBox}
+
+\subsection{ObjectPropertyBridge}
+\textbf{Description:} \newline
+ObjectPropertyBridge defines a bridge between a column of the result set and an rdf resource of the created instances.
+
+\textbf{Attributes:} \newline
+\BeginAttribute[property, \emph{required}]
+The uri (qualified name) of the rdf property
+\EndAttribute
+\label{refferedClassLabel}
+\BeginAttribute[referredClass, \emph{optional}] 
+Specifies, that this bridge refers to a resource of another ClassMap. 
+The value of this attribute is the id of the referred ClassMap.
+\EndAttribute
+\BeginAttribute[referredColumns, \emph{optional}]
+This attribute is only used, if the attribute \emph{referredClass} is used.
+This attribute specifies the columns in the sql query (from the ClassMap this property belongs to and not the referred ClassMap), that define the referred rdf resource. The columns should match the attribute "resourceIdColumns" of the referred ClassMap in order ensure to produce valid rdf resource references. This is important, as there is no automatic validation. The User is responsible for specifying the right columns in the right order.
+\EndAttribute
+\BeginAttribute[pattern, \emph{optional}]
+Specifies, that instead of a ClassMap references a general pattern should be used. See the DataTypePropertyBridge \hyperref[patternLabel]{\emph{pattern}} 
+for more details about the pattern generation.
+
+Note:\newline
+This attribute will be ignored, if the
+\hyperref[refferedClassLabel]{\emph{refferedClass}} attribute is specified.
+\EndAttribute
+
+\begin{ExampleBox}
+	<d2r:ObjectPropertyBridge 
+	\begin{indention}{1cm}
+		property="test:maritalstatus"\\
+		pattern="test:maritalstatus/@@patient.maritalstatus@@"
+	\end{indention}
+	/>
+	
+	\XMLComment{The same object property, but using the referredClass attribute; This example assumes, that there exists a ClassMap having the id \emph{maritalstatus}}\\
+	<d2r:ObjectPropertyBridge 
+	\begin{indention}{1cm}
+		property="test:maritalstatus"\\
+		referredClass="maritalstatus"\\
+		referredColumns="patient.maritalstatus"
+	\end{indention}
+	/>
+\end{ExampleBox}
