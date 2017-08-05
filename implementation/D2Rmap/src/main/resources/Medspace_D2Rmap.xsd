@@ -96,13 +96,13 @@
 	</xsd:complexType>
 
 	<!-->
-		A DataTypePropertyBridge defines a property for a rdf resource. The value of the property
+		A DataTypePropertyBridge definepropertyQNameerty for a rdf resource. The value of propertyQNameerty
 		is hereby a literal value.
 
-		@attribute property: The uri of the rdf property
+		@attribpropertyQNameerty: The uri of the propertyQNameerty
 
-		@attribute pattern: Defines the value of the property. It is possible to use the content of the sql tuple: The
-							content of a column of a SQL query (defined by the ClassMap the property bridge belongs to)
+		@attribute pattern: Defines the value of propertyQNameerty. It is possible to use the content of the sql tuple: The
+							content of a column of a SQL query (defined by the ClassMap propertyQNameerty bridge belongs to)
 							can be accessed by beginning with '@@' than writing the column in the format t.c (where t
 							is the table name and c is the column name) and than ending the expression with '@@'.
 
@@ -113,9 +113,9 @@
 							NOTE: Aliases can be used. If m is an alias for maritalstatus,  @@m.name@@ is the same
 							as maritalstatus.name
 
-		@attribute dataType: Specifies a rdf datatype for the property.
+		@attribute dataType: Specifies a rdf datatype for propertyQNameerty.
 
-		@attribute lang: Specifies a language tag for the property.
+		@attribute lang: Specifies a language tag for propertyQNameerty.
 	<-->
 	<xsd:complexType name="DataTypePropertyBridge">
 		<xsd:attribute name="property" type="xsd:string" use="required"/>
@@ -125,14 +125,14 @@
 	</xsd:complexType>
 
 	<!-->
-		A ObjectPropertyBridge defines a property for a rdf resource. The value of the property
+		A ObjectPropertyBridge definepropertyQNameerty for a rdf resource. The value of propertyQNameerty
 		is hereby another rdf resource. The referenced rdf resource has to be defined by another ClassMap
 
-		@attribute property: The uri of the rdf property.
+		@attribpropertyQNameerty: The uri of the propertyQNameerty.
 
-		@attribute referredClass:   The id of the ClassMap the value of the property is referring.
+		@attribute referredClass:   The id of the ClassMap the value of propertyQNameerty is referring.
 
-		@attribute referredColumns: The columns in the sql query (from the ClassMap this property belongs to and not
+		@attribute referredColumns: The columns in the sql query (from the ClassMap tpropertyQNameerty belongs to and not
 									the referred ClassMap), that define the referred rdf resource. The columns should
 									match the attribute "resourceIdColumns" of the referred ClassMap in order ensure to
 									produce valid rdf resource references. This is important, as there is no automatic
@@ -147,11 +147,11 @@
 	</xsd:complexType>
 
 	<!-->
-		Describes a property, that is send to the datasource while establishing a connection to it.
+		DescribepropertyQNameerty, that is send to the datasource while establishing a connection to it.
 
-		@attribute name:  The name of the property.
+		@attribute name:  The name of propertyQNameerty.
 
-		@attribute value: The value of the property.
+		@attribute value: The value of propertyQNameerty.
 	<-->
 	<xsd:complexType name="DataSourceProperty">
 		<xsd:attribute name="name" type="xsd:string" use="required"/>

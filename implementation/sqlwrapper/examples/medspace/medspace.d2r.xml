@@ -103,7 +103,7 @@
 		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex"/>
 		<d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus"
 								  referredColumns="patient.maritalstatus"/>
-		<d2r:ObjectPropertyBridge property="test:maritalstatus" pattern="test:maritalstatus/@@patient.maritalstatus@@"/>
+		<d2r:ObjectPropertyBridge property="test:maritalstatus" pattern="maritalStatus:@@patient.maritalstatus@@"/>
 		<d2r:ObjectPropertyBridge property="test:language" referredClass="language" referredColumns="patient.language"/>
 	</d2r:ClassMap>
 </d2r:Map>

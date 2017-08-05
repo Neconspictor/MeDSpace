@@ -41,7 +41,7 @@
 
 <!ELEMENT d2r:DatatypePropertyBridge EMPTY>
 <!ATTLIST d2r:DatatypePropertyBridge
-        d2r:property CDATA #REQUIRED
+        d2r:propertyQName CDATA #REQUIRED
         d2r:column CDATA #IMPLIED
         d2r:pattern CDATA #IMPLIED
         d2r:value CDATA #IMPLIED
@@ -53,7 +53,7 @@
 
 <!ELEMENT d2r:ObjectPropertyBridge EMPTY>
 <!ATTLIST d2r:ObjectPropertyBridge
-        d2r:property CDATA #REQUIRED
+        d2r:propertyQName CDATA #REQUIRED
         d2r:column CDATA #IMPLIED
         d2r:pattern CDATA #IMPLIED
         d2r:value CDATA #IMPLIED

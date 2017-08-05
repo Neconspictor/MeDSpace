@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -110,19 +109,19 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
 
     // rdf type
     ObjectPropertyBridge typeBridge = new ObjectPropertyBridge(null, Arrays.asList(map));
-    typeBridge.setProperty("rdf:type");
+    typeBridge.setPropertyQName("rdf:type");
     typeBridge.setPattern("test:language");
     map.addBridge(typeBridge);
 
     // base uri
     map.setBaseURI("http://localhost/patient_test_namespace/languages#");
 
-    // datatype property
+    // datatype propertyQName
     DatatypePropertyBridge bridge = new DatatypePropertyBridge();
-    bridge.setProperty("test:languageName");
+    bridge.setPropertyQName("test:languageName");
     bridge.setPattern("language.name");
     bridge.setDataType("rdf:langString");
-    bridge.setXmlLang("en");
+    bridge.setLangTag("en");
     map.addBridge(bridge);
 
     return map;

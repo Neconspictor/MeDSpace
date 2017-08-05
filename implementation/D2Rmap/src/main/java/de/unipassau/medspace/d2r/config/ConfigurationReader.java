@@ -27,8 +27,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by David Goeth on 30.05.2017.
@@ -163,17 +161,17 @@ public class ConfigurationReader {
       // add rdf:type bridge
       String value = mapElement.getAttribute(D2R.CLASS_MAP_TYPE_ATTRIBUTE);
       ObjectPropertyBridge typeBridge = new ObjectPropertyBridge(null, maps);
-      typeBridge.setProperty("rdf:type");
+      typeBridge.setPropertyQName("rdf:type");
       typeBridge.setPattern(value);
       map.addBridge(typeBridge);
     }
 
-    // Read datatype property mappings
+    // Read datatype propertyQName mappings
     NodeList propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.DATA_TYPE_PROPERTY_BRIDGE_ELEMENT);
     for (int i = 0; i< propertyList.getLength(); ++i)
       readDataTypePropertyElement((Element)propertyList.item(i), map);
 
-    // Read object property mappings
+    // Read object propertyQName mappings
     propertyList = mapElement.getElementsByTagNameNS(D2R.D2RNS, D2R.OBJECT_PROPERTY_BRIDGE_ELEMENT);
     for (int i = 0; i< propertyList.getLength(); ++i)
       readObjectPropertyElement((Element)propertyList.item(i), map, maps);
@@ -244,10 +242,10 @@ public class ConfigurationReader {
 
   private static void readDataTypePropertyElement(Element elem, D2rMap map) {
     DatatypePropertyBridge bridge = new DatatypePropertyBridge();
-    bridge.setProperty(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
+    bridge.setPropertyQName(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
     bridge.setDataType(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_DATA_TYPE_ATTRIBUTE));
-    bridge.setXmlLang(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_LANG_ATTRIBUTE));
+    bridge.setLangTag(elem.getAttribute(D2R.DATA_TYPE_PROPERTY_BRIDGE_LANG_ATTRIBUTE));
     map.addBridge(bridge);
   }
 
@@ -304,9 +302,9 @@ public class ConfigurationReader {
     final String referredClassID = elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_CLASS_ATTRIBUTE);
 
     ObjectPropertyBridge bridge = new ObjectPropertyBridge(referredClassID, maps);
-    bridge.setProperty(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
+    bridge.setPropertyQName(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_PATTERN_ATTRIBUTE));
-    bridge.setReferredGroupBy(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE));
+    bridge.setReferredColumns(elem.getAttribute(D2R.OBJECT_PROPERTY_BRIDGE_REFERRED_GROUPBY_ATTRIBUTE));
     map.addBridge(bridge);
   }
 

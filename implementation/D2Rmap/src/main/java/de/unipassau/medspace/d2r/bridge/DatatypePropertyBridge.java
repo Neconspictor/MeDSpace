@@ -21,15 +21,15 @@ public class DatatypePropertyBridge extends Bridge {
 
   @Override
   public RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer) {
-    // Generate property value
+    // Generate propertyQName value
     Literal literal = null;
     String value = D2rUtil.parsePattern(getPattern(),
         D2R.DELIMINATOR, tuple);
 
     // The lang tag specifies indirectly the dataType (rdf:langeString)
     // Thus the lang tag has a higher priority than the dataType tag
-    if ((value != null) && (getXmlLang() != null)) {
-      literal = ResourceFactory.createLangLiteral((String) value, getXmlLang());
+    if ((value != null) && (getLangTag() != null)) {
+      literal = ResourceFactory.createLangLiteral((String) value, getLangTag());
     } else if ((value != null) && (getDataType() != null)) {
       // if no lang tag is set but the dataType tag create a typed literal
       String dataType = normalizer.normalize(getDataType());

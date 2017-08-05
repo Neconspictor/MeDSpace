@@ -88,7 +88,7 @@ public class D2rMap {
     }
 
     for (Bridge bridge : getBridges()) {
-      // generate property
+      // generate propertyQName
       Property prop = bridge.createProperty(normalizer);
       RDFNode value = bridge.getValue(tuple, normalizer);
       if (prop != null && value != null) {
@@ -108,8 +108,14 @@ public class D2rMap {
     return Collections.unmodifiableList(bridges);
   }
 
+  /**
+   * Provides the id of this D2rMap.
+   * Warranty: The result isn't null
+   * @return
+   */
   public String getId() {
-    return this.id;
+    assert id != null;
+    return id;
   }
 
   public QNameNormalizer getNormalizer() {
@@ -136,8 +142,14 @@ public class D2rMap {
     this.baseURI = baseURI;
   }
 
+  /**
+   * Creates an URI for an rdf resource which is an instance of this D2rMap.
+   *
+   * @param resourceID An distinct id referring to an rdf resource of this D2rMap.
+   * @return The URI for the provided resource id
+   */
   public String urify(String resourceID) {
-    return baseURI + resourceID;
+    return normalizer.normalize(baseURI + resourceID);
   }
 
   public String getSql() {
@@ -148,7 +160,15 @@ public class D2rMap {
     this.id = id.trim().toUpperCase();
   }
 
+  /**
+   * Sets the qualified name normalizer this D2rMap should use to
+   * @param normalizer The qualified name normalizer to use
+   * @throws NullPointerException if 'normalizer' is null
+   */
   public void setNormalizer(QNameNormalizer normalizer) {
+    if (normalizer == null) {
+      throw new NullPointerException("the QNameNormalizer isn't allowed to be null");
+    }
     this.normalizer = normalizer;
   }
 
