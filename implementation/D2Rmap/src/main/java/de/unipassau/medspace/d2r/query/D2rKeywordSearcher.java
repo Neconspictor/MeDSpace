@@ -1,4 +1,4 @@
-package de.unipassau.medspace.d2r.lucene;
+package de.unipassau.medspace.d2r.query;
 
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.SelectStatement;
@@ -15,7 +15,6 @@ import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
 import org.apache.jena.graph.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.lucene.document.Document;
 
 import javax.sql.DataSource;
 import java.io.IOException;

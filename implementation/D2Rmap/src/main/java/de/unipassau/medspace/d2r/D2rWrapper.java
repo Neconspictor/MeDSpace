@@ -11,7 +11,7 @@ import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
-import de.unipassau.medspace.d2r.lucene.D2rKeywordSearcher;
+import de.unipassau.medspace.d2r.query.D2rKeywordSearcher;
 import de.unipassau.medspace.d2r.lucene.LuceneD2rResultFactory;
 import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
 import de.unipassau.medspace.d2r.lucene.SqlToDocStream;
