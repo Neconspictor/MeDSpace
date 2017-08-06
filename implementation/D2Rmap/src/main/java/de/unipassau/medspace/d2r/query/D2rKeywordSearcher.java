@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ import java.util.List;
 public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
   private static Logger log = LoggerFactory.getLogger(D2rKeywordSearcher.class);
-  private D2rWrapper wrapper;
+  private D2rWrapper<?> wrapper;
 
   public D2rKeywordSearcher(D2rWrapper wrapper) throws IOException {
     this.wrapper = wrapper;
@@ -45,9 +46,10 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
       List<String> columns = query.getColumns();
 
       String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns, "OR");
-      query.addTemporaryCondition(keywordCondition);
+
       DataSourceManager manager = wrapper.getDataSourceManager();
-      StreamFactory<Triple> stream = createTripleStreamFactory(map, manager.getDataSource(), new ArrayList<>());
+      StreamFactory<Triple> stream = createTripleStreamFactory(map, manager.getDataSource(),
+          Arrays.asList(keywordCondition));
       result.add(stream);
     }
 
@@ -72,11 +74,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
                                                          List<String> conditionList) throws IOException {
 
     SelectStatement statement = map.getQuery();
-    for (String condition : conditionList) {
-      statement.addTemporaryCondition(condition);
-    }
-
-    String query = statement.toString();
+    String query = statement.getSqlQuery(conditionList);
 
     //generate resources using the Connection
     return () -> {

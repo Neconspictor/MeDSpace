@@ -1,5 +1,33 @@
-@()
 
-@main("Welcome to Play") {
-  <h1>Welcome to Play!</h1>
+
+@(config: de.unipassau.medspace.d2r.config.Configuration)
+
+@main("SQL Wrapper(D2R)") {
+  <h1>SQL Wrapper(D2R) status site</h1>
+
+
+  <h4>Index</h4>
+
+  Index is used: @config.isIndexUsed()
+
+  <br>
+
+  @if(config.isIndexUsed()) {
+    Index Directory: @config.getIndexDirectory().toString() <br>
+  }
+
+  <h4>Datasource</h4>
+
+  JDBC-Driver: @config.getJdbcDriver().getName()  <br>
+  JDBC-URL: @config.getJdbc() <br>
+
+  Connection-Pool size: @config.getMaxConnections() <br>
+
+  <p>Maps:</p>
+  <ul>
+  @for(map <- config.getMaps()) {
+    <li>map id: @map.getId</li>
+  }
+  </ul>
+
 }

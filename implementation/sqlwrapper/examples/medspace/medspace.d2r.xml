@@ -63,7 +63,7 @@
 
 	<d2r:ClassMap 
 		type="test:language"
-		sql="SELECT * FROM language;"
+		sql="SELECT * FROM language UNION SELECT * from sex"
 		baseURI="http://localhost/patient_test_namespace/languages#"
 		resourceIdColumns="language.name"
 		id="language">

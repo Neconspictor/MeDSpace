@@ -183,7 +183,7 @@ public class ConfigurationReader {
 
     // sql and groupBy attributes are required
     String sqlQuery = mapElement.getAttribute(D2R.CLASS_MAP_SQL_ATTRIBUTE);
-    validateSqlQuery(sqlQuery);
+    validateSqlQuery(sqlQuery, config.isIndexUsed());
     cMap.setSql(sqlQuery);
     cMap.addResourceIdColumns(mapElement.getAttribute(D2R.CLASS_MAP_RESOURCE_ID_COLUMNS_ATTRIBUTE));
 
@@ -351,9 +351,13 @@ public class ConfigurationReader {
     }
   }
 
-  private static void validateSqlQuery(String sqlQuery) throws D2RException {
+  private static void validateSqlQuery(String sqlQuery, boolean indexUsed) throws D2RException {
     String ucQuery = sqlQuery.toUpperCase();
-    if (ucQuery.contains("UNION"))
-      throw new D2RException("SQL statement should not contain UNION: " + sqlQuery);
+    if (ucQuery.contains("UNION")) {
+      if (!indexUsed) {
+        //SelectStatement does not support UNION clauses, yet!
+        throw new D2RException("SQL statement should not contain UNION: " + sqlQuery);
+      }
+    }
   }
 }

@@ -55,11 +55,11 @@ public class D2RMapTest extends BasicJDBCTestCaseAdapter {
 
     SelectStatement statement = map.getQuery();
 
-    try (SqlStream stream = statement.execute(dataSource)) {
+    /*try (SqlStream stream = statement.execute(dataSource)) {
       for (SQLResultTuple tuple : stream) {
         System.out.println(tuple.toString());
       }
-    }
+    }*/
 
   }
 

@@ -1,5 +1,6 @@
 package de.unipassau.medspace.common.indexing;
 
+import de.unipassau.medspace.common.lucene.ResultFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import org.apache.jena.graph.Triple;
 
@@ -11,7 +12,7 @@ import java.io.IOException;
  * A full-text search index is intended to be used for full-text and keyword searches.
  * This interface is intended to be used as a wrapper for a full-text search engine implementation.
  */
-public interface DataSourceIndex<DocumentType> extends Closeable {
+public interface DataSourceIndex<DocumentType, ElemType> extends Closeable {
 
   /**
    * Deletes all the indexed data.
@@ -90,4 +91,6 @@ public interface DataSourceIndex<DocumentType> extends Closeable {
     clearIndex();
     index(data);
   };
+
+  ResultFactory<ElemType, DocumentType> getResultFactory();
 }

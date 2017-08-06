@@ -1,5 +1,6 @@
 package de.unipassau.medspace.d2r;
 
+import java.io.Serializable;
 import java.util.*;
 import java.sql.*;
 
@@ -28,7 +29,7 @@ import javax.sql.DataSource;
  * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
  * @version V0.3
  */
-public class D2rMap {
+public class D2rMap implements Serializable {
   private Vector<Bridge> bridges;
   private String baseURI;
   private String sql;
@@ -174,5 +175,16 @@ public class D2rMap {
 
   public void setSql(String sql) {
     this.sql = sql;
+  }
+
+  /**
+   * TODO
+   * @return
+   */
+  @Override
+  public String toString() {
+    return "D2rMap:\n" +
+        "id= " + id + "\n" +
+        "sql= " + sql;
   }
 }

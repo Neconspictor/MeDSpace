@@ -3,14 +3,18 @@ package de.unipassau.medspace;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.indexing.IndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
+import de.unipassau.medspace.d2r.MappedSqlTuple;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
 import de.unipassau.medspace.d2r.exception.D2RException;
+import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
 import org.apache.jena.graph.Triple;
+import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
@@ -26,6 +30,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Created by David Goeth on 24.07.2017.
@@ -37,7 +44,7 @@ public class SQLWrapperService {
   private final static String D2RMap = "./examples/medspace/medspace.d2r.xml";
   private DataSourceManager dataSourceManager;
   private Configuration config;
-  private D2rWrapper wrapper;
+  private D2rWrapper<Document> wrapper;
 
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle) {
@@ -55,6 +62,14 @@ public class SQLWrapperService {
         log.info("Graceful shutdown will be initiated...");
         gracefulShutdown(lifecycle, -1);
       }
+
+      lifecycle.addStopHook(() -> {
+        log.info("Shutdown is executing...");
+        wrapper.close();
+
+        dataSourceManager.close();
+        return CompletableFuture.completedFuture(null);
+      });
 
     //lifecycle.stop();
     //System.exit(-1);
@@ -109,7 +124,7 @@ public class SQLWrapperService {
     try {
       jdbcURI = new URI(config.getJdbc());
     } catch (URISyntaxException e) {
-      String errorMessage = "Couldn't get an URI from the jdb uri specified in the config file" + "\n";
+      String errorMessage = "Couldn't get an URI from the jdbc uri specified in the config file" + "\n";
       errorMessage += "jdbc URI: " + jdbcURI + "\n";
       errorMessage += "config file: " + configFile + "\n";
       new D2RException(errorMessage, e);
@@ -133,16 +148,22 @@ public class SQLWrapperService {
       log.debug("Closing Connection...");
       FileUtil.closeSilently(conn);
     }
-    wrapper = new D2rWrapper(dataSourceManager, config.getMaps(),
+    wrapper = new D2rWrapper<Document>(dataSourceManager, config.getMaps(),
                               config.getNamespaces(), config.getIndexDirectory());
 
-    boolean exists = wrapper.existsIndex();
+    IndexFactory<Document, MappedSqlTuple> indexFactory =
+        new LuceneIndexFactory(wrapper, config.getIndexDirectory().toString());
 
-    if (!exists) {
+    wrapper.init(config.getIndexDirectory(), indexFactory);
+
+    boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
+
+    if (shouldReindex) {
       log.info("Indexing data...");
       wrapper.reindexData();
       log.info("Indexing done.");
     }
+
 
     log.info("Initialized SQL Wrapper");
   }

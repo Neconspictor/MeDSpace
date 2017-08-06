@@ -7,17 +7,18 @@ import de.unipassau.medspace.common.lucene.ResultFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
+import de.unipassau.medspace.common.rdf.TripleCacheStream;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.query.D2rKeywordSearcher;
-import de.unipassau.medspace.d2r.lucene.LuceneD2rResultFactory;
 import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
 import de.unipassau.medspace.d2r.lucene.SqlToDocStream;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.shared.impl.PrefixMappingImpl;
+import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * TODO
  */
-public class D2rWrapper implements Wrapper {
+public class D2rWrapper<DocType> implements Wrapper {
 
   /**
    * Logger
@@ -45,12 +46,7 @@ public class D2rWrapper implements Wrapper {
   /**
    * TODO
    */
-  private DataSourceIndex<?> index;
-
-  /**
-   * TODO
-   */
-  private ResultFactory resultFactory;
+  private DataSourceIndex<DocType, MappedSqlTuple> index;
 
   /**
    * TODO
@@ -124,8 +120,6 @@ public class D2rWrapper implements Wrapper {
     this.dataSourceManager = dataSourceManager;
 
     indexUsed = false;
-
-    init(indexDirectory);
   }
 
   /**
@@ -165,7 +159,7 @@ public class D2rWrapper implements Wrapper {
    * @return
    * @throws IOException
    */
-  public DataSourceStream<MappedSqlTuple> getAllData() throws IOException {
+  public DataSourceStream<MappedSqlTuple> getAllSourceData() throws IOException {
     return proxy.getAllData(maps);
   }
 
@@ -222,9 +216,11 @@ public class D2rWrapper implements Wrapper {
 
     if (!indexUsed) throw new IOException("Cannot reindex data as no index is used!");
 
-    DataSourceStream docStream = null;
+
+    SqlToDocStream<DocType> docStream = null;
+
     try {
-      docStream = new SqlToDocStream(getAllData(), resultFactory);
+      docStream = new SqlToDocStream<DocType>(getAllSourceData(), index.getResultFactory());
       index.open();
       index.reindex(docStream);
 
@@ -243,6 +239,17 @@ public class D2rWrapper implements Wrapper {
   @Override
   public boolean isIndexUsed() {
     return indexUsed;
+  }
+
+  @Override
+  public DataSourceStream<Triple> getAllData() throws IOException {
+    DataSourceStream<MappedSqlTuple> source = getAllSourceData();
+    return new TripleCacheStream<MappedSqlTuple>(source){
+      @Override
+      protected List<Triple> createTriples(MappedSqlTuple elem) {
+        return elem.getMap().createTriples(elem.getSource());
+      }
+    };
   }
 
   /**
@@ -275,15 +282,12 @@ public class D2rWrapper implements Wrapper {
    * @param indexDirectory
    * @throws IOException
    */
-  private void init(Path indexDirectory) throws IOException {
+  public void init(Path indexDirectory, IndexFactory<DocType, MappedSqlTuple> indexFactory) throws IOException {
 
     indexUsed = indexDirectory != null;
 
     // Should no index be used? -> early exit
     if (!indexUsed) return;
-
-    resultFactory = new LuceneD2rResultFactory(D2R.MAP_FIELD, this);
-    IndexFactory indexFactory = new LuceneIndexFactory(this, indexDirectory.toString());
 
 
     try {

@@ -1,6 +1,7 @@
 package de.unipassau.medspace;
 
 import de.unipassau.medspace.common.SQL.DataSourceManager;
+import de.unipassau.medspace.common.indexing.IndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
@@ -21,10 +22,12 @@ import java.time.Instant;
 import java.util.*;
 
 
+import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.*;
 import org.apache.jena.shared.PrefixMapping;
+import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +38,7 @@ public class TestProcessor {
 
   public static void main(String[] args) throws IOException {
     DataSourceManager dataSourceManager = null;
-    Wrapper wrapper = null;
+    D2rWrapper<Document> wrapper = null;
 
     try {
       log.info("D2R test started ....");
@@ -60,8 +63,13 @@ public class TestProcessor {
         //index = new SqlIndex(config.getIndexDirectory(), proxy);
       }
 
-      wrapper = new D2rWrapper(dataSourceManager, config.getMaps(),
+      wrapper = new D2rWrapper<>(dataSourceManager, config.getMaps(),
                                 config.getNamespaces(), config.getIndexDirectory());
+
+      IndexFactory<Document, MappedSqlTuple> indexFactory =
+          new LuceneIndexFactory(wrapper, config.getIndexDirectory().toString());
+
+      wrapper.init(config.getIndexDirectory(), indexFactory);
 
       boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
 
@@ -75,7 +83,8 @@ public class TestProcessor {
 
       Instant startTime = Instant.now();
 
-      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("\\+male"));
+      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("Male"));
+      //triples = wrapper.getAllData();
       PrefixMapping mapping = wrapper.getNamespacePrefixMapper();
 
       boolean hasTriples = triples.hasNext();

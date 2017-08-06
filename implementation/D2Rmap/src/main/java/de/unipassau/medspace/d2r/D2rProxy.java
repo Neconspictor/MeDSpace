@@ -61,11 +61,7 @@ public class D2rProxy {
                                                            List<String> conditionList) throws IOException {
 
     SelectStatement statement = map.getQuery();
-    for (String condition : conditionList) {
-      statement.addTemporaryCondition(condition);
-    }
-
-    String query = statement.toString();
+    String query = statement.getSqlQuery(conditionList);
 
     SqlStream.QueryParams queryParams = new SqlStream.QueryParams(dataSource, query);
     StreamFactory<SQLResultTuple> resultTupleFactory = () -> {

@@ -64,7 +64,7 @@ private final FormFactory formFactory;
    * <code>GET</code> request with a path of <code>/</code>.
    */
   public Result index() {
-    return ok(views.html.index.render());
+    return ok(views.html.index.render(wrapperService.getConfig()));
   }
 
   public CompletionStage<Result> testDatasourceConnection() {

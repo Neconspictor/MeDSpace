@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * TODO
  */
-public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document> {
+public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document, ElemType> {
 
   private List<String> fields;
   private Path indexDirectoryPath;
@@ -51,7 +51,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     } catch (IOException e) {
       throw new IOException("Couldn't createDoc index directory");
     }
-    LuceneDataSourceIndex result = new LuceneDataSourceIndex(path,
+    LuceneDataSourceIndex<ElemType> result = new LuceneDataSourceIndex<>(path,
         Collections.unmodifiableList(fields), resultFactory);
 
     return result;
@@ -82,8 +82,8 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
   @Override
   public KeywordSearcher<Triple> convert(KeywordSearcher<Document> source) throws IOException {
     return keywords -> {
-      DataSourceStream result =  source.searchForKeywords(keywords);
-      return new DocToTripleStream(result, resultFactory);
+      DataSourceStream<Document> result =  source.searchForKeywords(keywords);
+      return new DocToTripleStream<ElemType>(result, resultFactory);
     };
   }
 
@@ -141,7 +141,12 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
 
     try(IndexWriter w = new IndexWriter(index, config)) {
-      w.addDocuments(data);
+      //w.addDocuments(data);
+      for (Document doc : data) {
+        w.addDocument(doc);
+        w.flush();
+        w.commit();
+      }
       w.flush();
       w.commit();
     }
@@ -170,6 +175,11 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
     index(data);
+  }
+
+  @Override
+  public ResultFactory<ElemType, Document> getResultFactory() {
+    return resultFactory;
   }
 
   /**

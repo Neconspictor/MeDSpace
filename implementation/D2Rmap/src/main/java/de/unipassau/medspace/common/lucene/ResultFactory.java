@@ -29,4 +29,6 @@ public interface ResultFactory<ElemType, DocType> {
    * @return
    */
   List<Triple> triplize(DocType elem);
+
+  Class<DocType> getDocType();
 }

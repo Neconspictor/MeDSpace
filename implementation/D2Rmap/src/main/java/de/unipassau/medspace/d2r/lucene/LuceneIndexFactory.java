@@ -6,6 +6,7 @@ import de.unipassau.medspace.common.lucene.LuceneDataSourceIndex;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rWrapper;
+import de.unipassau.medspace.d2r.MappedSqlTuple;
 import org.apache.lucene.document.Document;
 
 import java.io.IOException;
@@ -15,12 +16,12 @@ import java.util.List;
 /**
  * TODO
  */
-public class LuceneIndexFactory implements IndexFactory<Document>{
+public class LuceneIndexFactory implements IndexFactory<Document, MappedSqlTuple>{
 
-  private D2rWrapper wrapper;
+  private D2rWrapper<Document> wrapper;
   private String directory;
 
-  public LuceneIndexFactory(D2rWrapper wrapper, String directory) {
+  public LuceneIndexFactory(D2rWrapper<Document> wrapper, String directory) {
     this.wrapper = wrapper;
     this.directory = directory;
   }
@@ -31,7 +32,7 @@ public class LuceneIndexFactory implements IndexFactory<Document>{
    * @throws IOException
    */
   @Override
-  public DataSourceIndex<Document> createIndex() throws IOException {
+  public DataSourceIndex<Document, MappedSqlTuple> createIndex() throws IOException {
     LuceneD2rResultFactory factory = new LuceneD2rResultFactory(D2R.MAP_FIELD, wrapper);
     return LuceneDataSourceIndex.create(directory, createFields(wrapper.getMaps()), factory);
   }

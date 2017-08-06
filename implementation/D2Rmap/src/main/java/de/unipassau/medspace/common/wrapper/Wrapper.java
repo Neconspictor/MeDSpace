@@ -1,6 +1,7 @@
 package de.unipassau.medspace.common.wrapper;
 
 import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.stream.DataSourceStream;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.shared.PrefixMapping;
 
@@ -44,4 +45,10 @@ public interface Wrapper extends Closeable {
    * @return
    */
   boolean isIndexUsed();
+
+  /**
+   * TODO Test stuff
+   * @return
+   */
+  DataSourceStream<Triple> getAllData() throws IOException;
 }

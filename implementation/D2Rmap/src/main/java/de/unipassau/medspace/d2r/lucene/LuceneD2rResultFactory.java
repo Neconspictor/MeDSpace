@@ -32,6 +32,11 @@ public class LuceneD2rResultFactory extends AbstractD2rResultFactory<Document> {
     return map.createTriples(tuple.getSource());
   }
 
+  @Override
+  public Class<Document> getDocType() {
+    return Document.class;
+  }
+
 
   @Override
   public MappedSqlTuple createElem(Document doc) {

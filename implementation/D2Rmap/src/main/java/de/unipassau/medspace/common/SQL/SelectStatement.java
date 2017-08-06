@@ -16,7 +16,6 @@ public class SelectStatement {
   private String beforeWhereConditionStatement;
   private ArrayList<String> columnList;
   private List<String> staticConditionList;
-  private List<String> temporaryConditionList;
   private String afterWhereConditionStatement;
   private List<String> orderByList;
 
@@ -27,7 +26,6 @@ public class SelectStatement {
     beforeWhereConditionStatement = "";
     columnList = new ArrayList<>();
     staticConditionList = new ArrayList<>();
-    temporaryConditionList = new ArrayList<>();
     afterWhereConditionStatement = "";
     orderByList = new ArrayList<>();
     parse(query, dataSource);
@@ -80,21 +78,12 @@ public class SelectStatement {
     return beforeWhereClause + builder.toString() + afterWhereClause;
   }
 
-  public SqlStream execute(DataSource dataSource) throws SQLException {
-    SqlStream result = null;
-    try {
-      String query = toString();
-      result = new SqlStream(new SqlStream.QueryParams(dataSource, query));
-    } catch (SQLException e) {
-      FileUtil.closeSilently(result);
-      throw e;
-    }
-
-    reset();
-    return result;
-  }
-
-  public String toString() {
+  /**
+   * TODO
+   * @param temporaryConditionList
+   * @return
+   */
+  public String getSqlQuery(List<String> temporaryConditionList) {
     StringBuilder builder = new StringBuilder(beforeWhereConditionStatement);
     final String and = " AND ";
     boolean available = (staticConditionList.size() > 0) || (temporaryConditionList.size() > 0);
@@ -141,6 +130,10 @@ public class SelectStatement {
     builder.append(";");
 
     return builder.toString();
+  }
+
+  public String toString() {
+    return getSqlQuery(new ArrayList<>());
   }
 
   private static String getAfter(String query, int index) {
@@ -319,10 +312,6 @@ public class SelectStatement {
     return splitIndex;
   }
 
-  public void addTemporaryCondition(String condition) {
-    temporaryConditionList.add(condition);
-  }
-
   /**
    * Provides a unmodifiable list of the columns used by this select statement.
    * @return A unmodifiable list of the columns
@@ -331,9 +320,6 @@ public class SelectStatement {
     return Collections.unmodifiableList(columnList);
   }
 
-  protected void reset() {
-    temporaryConditionList.clear();
-  }
 
   protected enum Clause {
     SELECT ("SELECT"), FROM("FROM"), WHERE("WHERE"), GROUP_BY("GROUP BY"), HAVING("HAVING"), UNION("UNION"),
