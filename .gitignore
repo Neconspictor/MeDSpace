@@ -31,3 +31,4 @@ implementation/sqlwrapper/target/*
 implementation/sqlwrapper/logs/*
 implementation/sqlwrapper/.idea/*
 implementation/sqlwrapper/project/*/*
+implementation/sqlwrapper/_work/*
