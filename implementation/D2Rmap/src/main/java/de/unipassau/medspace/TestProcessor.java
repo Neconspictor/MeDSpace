@@ -1,12 +1,11 @@
 package de.unipassau.medspace;
 
 import de.unipassau.medspace.common.SQL.DataSourceManager;
-import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
-import de.unipassau.medspace.d2r.D2rProxy;
+import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
 import de.unipassau.medspace.d2r.config.Configuration;
@@ -25,7 +24,6 @@ import java.util.*;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.*;
-import org.apache.jena.riot.lang.CollectorStreamRDF;
 import org.apache.jena.shared.PrefixMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +35,7 @@ public class TestProcessor {
 
   public static void main(String[] args) throws IOException {
     DataSourceManager dataSourceManager = null;
-    D2rWrapper wrapper = null;
+    Wrapper wrapper = null;
 
     try {
       log.info("D2R test started ....");
@@ -53,7 +51,6 @@ public class TestProcessor {
           config.getMaxConnections(),
           config.getDataSourceProperties());
 
-      D2rProxy proxy = new D2rProxy(config, dataSourceManager);
       log.info("D2R proxy created ....");
       log.info("D2R file read ....");
 
@@ -63,15 +60,14 @@ public class TestProcessor {
         //index = new SqlIndex(config.getIndexDirectory(), proxy);
       }
 
-      wrapper = new D2rWrapper(proxy, config.getIndexDirectory());
+      wrapper = new D2rWrapper(dataSourceManager, config.getMaps(),
+                                config.getNamespaces(), config.getIndexDirectory());
 
-      DataSourceIndex index = wrapper.getIndex();
-
-      boolean exists = index.exists();
+      boolean exists = wrapper.existsIndex();
 
       if (!exists) {
         log.info("Indexing data...");
-        index.reindex();
+        wrapper.reindexData();
         log.info("Indexing done.");
       }
 
@@ -79,9 +75,8 @@ public class TestProcessor {
 
       Instant startTime = Instant.now();
 
-      DataSourceStream<MappedSqlTuple> stream = wrapper.getProxy().getAllData();
-      DataSourceStream<Triple> triples = new TripleData(stream);
-      PrefixMapping mapping = proxy.getNamespacePrefixMapper();
+      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male", "female"));
+      PrefixMapping mapping = wrapper.getNamespacePrefixMapper();
 
       boolean hasTriples = triples.hasNext();
 

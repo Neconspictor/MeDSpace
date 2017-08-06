@@ -1,8 +1,10 @@
 package de.unipassau.medspace.common.lucene;
 
-import de.unipassau.medspace.common.indexing.FullTextSearchIndex;
+import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
+import org.apache.jena.graph.Triple;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -15,34 +17,41 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by David Goeth on 07.07.2017.
+ * TODO
  */
-public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
+public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document> {
 
   private List<String> fields;
   private Path indexDirectoryPath;
   private FSDirectory index;
   private volatile boolean isOpen;
+  private ResultFactory<ElemType, Document> resultFactory;
 
-  private static Logger log = LoggerFactory.getLogger(FullTextSearchIndex.class);
+  private static Logger log = LoggerFactory.getLogger(DataSourceIndex.class);
 
-  protected FullTextSearchIndexImpl(Path directory) {
+  protected LuceneDataSourceIndex(Path directory, List<String> fields,
+                                  ResultFactory<ElemType, Document> resultFactory) {
     indexDirectoryPath = directory;
+    this.fields = fields;
     index = null;
     isOpen = false;
+    this.resultFactory = resultFactory;
   }
 
-  public static FullTextSearchIndexImpl create(String directory) throws IOException {
+  public static <ElemType> LuceneDataSourceIndex<ElemType> create(String directory, List<String> fields,
+                                             ResultFactory<ElemType, Document> resultFactory) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
-      throw new IOException("Couldn't create index directory");
+      throw new IOException("Couldn't createDoc index directory");
     }
-    FullTextSearchIndexImpl result = new FullTextSearchIndexImpl(path);
+    LuceneDataSourceIndex result = new LuceneDataSourceIndex(path,
+        Collections.unmodifiableList(fields), resultFactory);
 
     return result;
   }
@@ -65,8 +74,26 @@ public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
   }
 
   @Override
-  public KeywordSearcher<Document> createKeywordSearcher() throws IOException {
-    return new LuceneKeywordSearcher(fields, this);
+  public KeywordSearcher<Document> createDocKeywordSearcher() throws IOException {
+    return new LuceneKeywordSearcher(fields, () -> DirectoryReader.open(index));
+  }
+
+  @Override
+  public KeywordSearcher<Triple> convert(KeywordSearcher<Document> source) throws IOException {
+    return keywords -> {
+      DataSourceStream result =  source.searchForKeywords(keywords);
+      return new DocToTripleStream(result, resultFactory);
+    };
+  }
+
+  @Override
+  public boolean exists() {
+    try {
+      return hasIndexedData();
+    } catch (IOException e) {
+      log.error("Error while trying to query indexed data: ", e);
+      return false;
+    }
   }
 
   @Override
@@ -84,12 +111,8 @@ public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
    * @throws IOException Will be thrown if the FSDirectory couldn't be opened, doesn't exists or another low level I/O
    * Error occurs
    */
-  public IndexReader createReader() throws IOException {
+  private IndexReader createReader() throws IOException {
     return DirectoryReader.open(index);
-  }
-
-  public List<String> getSearchableFields() {
-    return fields;
   }
 
   @Override
@@ -98,7 +121,7 @@ public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
 
     try {
       if (!DirectoryReader.indexExists(index)) {
-          // early exit as trying to create an index reader of a non existing
+          // early exit as trying to createDoc an index reader of a non existing
           // index Directory would rise an IOException
           return false;
       }
@@ -146,9 +169,5 @@ public class FullTextSearchIndexImpl implements FullTextSearchIndex<Document> {
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
     index(data);
-  }
-
-  public void setSearchableFields(List<String> fields) {
-    this.fields = fields;
   }
 }

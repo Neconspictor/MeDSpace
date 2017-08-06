@@ -173,7 +173,7 @@ public class AbstractClassLoaderFactory
 
     try {
 
-      //get the Class from the class Loader, create an instance
+      //get the Class from the class Loader, createDoc an instance
       Class objectClass = this.loadClass(className);
       object = objectClass.newInstance();
     }
@@ -337,7 +337,7 @@ public class AbstractClassLoaderFactory
 
       try {
 
-        //used to dynamically create an instance of the supplied Driver Class
+        //used to dynamically createDoc an instance of the supplied Driver Class
         Class loadedClass = this.getClassFromURL(classPath, className);
 
         //instantiate Object

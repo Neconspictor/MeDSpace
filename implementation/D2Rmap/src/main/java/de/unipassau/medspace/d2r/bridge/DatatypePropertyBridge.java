@@ -11,14 +11,17 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 
 /**
- * D2R bridge for DataProperties (Literals).
- * <BR>History: 01-15-2003   : Initial version of this class.
- * <BR>History: 09-25-2003   : Changed for Jena2.
- * @author Chris Bizer chris@bizer.de
- * @version V0.2
+ * D2r Bridge for properties with a data type (Literals).
  */
 public class DatatypePropertyBridge extends Bridge {
 
+  /**
+   * Creates a property value from a given SQLResultTuple and normalizes it with the normalizer.
+   * The resulting property value will be an rdf literal.
+   * @param tuple The sql result tuple to get the propertyQName value from.
+   * @param normalizer The qualified name normalizer to normalize the resulting propertyQName value.
+   * @return An rdf literal as an rdf node.
+   */
   @Override
   public RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer) {
     // Generate propertyQName value
@@ -31,8 +34,8 @@ public class DatatypePropertyBridge extends Bridge {
     if ((value != null) && (getLangTag() != null)) {
       literal = ResourceFactory.createLangLiteral((String) value, getLangTag());
     } else if ((value != null) && (getDataType() != null)) {
-      // if no lang tag is set but the dataType tag create a typed literal
-      String dataType = normalizer.normalize(getDataType());
+      // if no lang tag is set but the dataType tag createDoc a typed literal
+      String dataType = normalizer.normalize(this.dataType);
       RDFDatatype rdfType = TypeMapper.getInstance().getSafeTypeByName(dataType);
       literal = ResourceFactory.createTypedLiteral(value, rdfType);
     }  else {

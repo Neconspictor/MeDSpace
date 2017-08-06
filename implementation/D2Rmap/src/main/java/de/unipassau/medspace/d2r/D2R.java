@@ -62,7 +62,7 @@ public class D2R {
     // element OutputFormat
     public static final String OUTPUT_FORMAT_ELEMENT = "OutputFormat";
 
-    // elemt FullTextSearchIndex
+    // elemt DataSourceIndex
     public static final String INDEX_ELEMENT = "Index";
     public static final String INDEX_DIRECTORY_ATTRIBUTE = "directory";
 

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * An abstract class representing an D2r Bridge. A D2r Bridge is used to create rdf statements for a specific
+ * An abstract class representing an D2r Bridge. A D2r Bridge is used to createDoc rdf statements for a specific
  * rdf resource. These statements are also called properties of a given rdf resource.
  */
 abstract public class Bridge {
@@ -19,7 +19,7 @@ abstract public class Bridge {
     protected String dataType;
 
     /**
-     * The pattern to create properties from.
+     * The pattern to createDoc properties from.
      */
     protected String pattern;
 
@@ -58,7 +58,7 @@ abstract public class Bridge {
     }
 
     /**
-     * Provides the pattern to create the value of the properties.
+     * Provides the pattern to createDoc the value of the properties.
      * @return The value pattern for the properties created by this D2r Bridge.
      */
     public String getPattern() {
@@ -71,8 +71,6 @@ abstract public class Bridge {
      * Provides the propertyQName value as a rdf node from a specific sql result tuple.
      * @param tuple The sql result tuple to get the propertyQName value from.
      * @param normalizer The qualified name normalizer to normalize the resulting propertyQName value.
-     *                   It is implementation dependent if a normalizer is needed. E.g. a DataTypePropertyBridge
-     *                   don't need any normalizer.
      * @return  The propertyQName value represented as an rdf node.
      */
     public abstract RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
@@ -114,7 +112,7 @@ abstract public class Bridge {
     }
 
     /**
-     * Sets the pattern used to create the propertyQName values.
+     * Sets the pattern used to createDoc the propertyQName values.
      * @param pattern The wished value pattern
      */
     public void setPattern(String pattern) {

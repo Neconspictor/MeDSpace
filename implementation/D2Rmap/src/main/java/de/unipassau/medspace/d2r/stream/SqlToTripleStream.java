@@ -33,7 +33,7 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
     try {
       stream = new SqlStream(startParams);
     } catch (SQLException e) {
-      throw new IOException("Couldn't create stream to the sql datasource", e);
+      throw new IOException("Couldn't createDoc stream to the sql datasource", e);
     }
   }
 

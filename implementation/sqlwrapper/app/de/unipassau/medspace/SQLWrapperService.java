@@ -3,11 +3,9 @@ package de.unipassau.medspace;
 import de.unipassau.medspace.common.SQL.DataSourceManager;
 import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
-import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
-import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
@@ -20,7 +18,6 @@ import play.api.inject.ApplicationLifecycle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,7 +37,6 @@ public class SQLWrapperService {
   private final static String D2RMap = "./examples/medspace/medspace.d2r.xml";
   private DataSourceManager dataSourceManager;
   private Configuration config;
-  private D2rProxy proxy;
   private D2rWrapper wrapper;
 
   @Inject
@@ -137,16 +133,14 @@ public class SQLWrapperService {
       log.debug("Closing Connection...");
       FileUtil.closeSilently(conn);
     }
-    proxy = new D2rProxy(config, dataSourceManager);
-    wrapper = new D2rWrapper(proxy, config.getIndexDirectory());
+    wrapper = new D2rWrapper(dataSourceManager, config.getMaps(),
+                              config.getNamespaces(), config.getIndexDirectory());
 
-    DataSourceIndex index = wrapper.getIndex();
-
-    boolean exists = index.exists();
+    boolean exists = wrapper.existsIndex();
 
     if (!exists) {
       log.info("Indexing data...");
-      index.reindex();
+      wrapper.reindexData();
       log.info("Indexing done.");
     }
 
@@ -172,9 +166,5 @@ public class SQLWrapperService {
 
   public D2rWrapper getWrapper() {
     return wrapper;
-  }
-
-  public D2rProxy getProxy() {
-    return proxy;
   }
 }

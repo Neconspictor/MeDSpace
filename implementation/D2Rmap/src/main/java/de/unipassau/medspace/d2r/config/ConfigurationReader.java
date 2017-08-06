@@ -289,7 +289,7 @@ public class ConfigurationReader {
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
-      throw new IOException("Error while trying to create index directory path", e);
+      throw new IOException("Error while trying to createDoc index directory path", e);
     }
 
 

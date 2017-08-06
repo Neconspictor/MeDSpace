@@ -101,7 +101,7 @@ public class XmlUtil {
 
     List<TempFile> tempFiles = new ArrayList<>();
 
-    // create for each schema file name a source
+    // createDoc for each schema file name a source
     for (int i = 0; i < schemaFilenames.length; ++i) {
       String filename = schemaFilenames[i];
       if (FileUtil.isResource(filename)) {
@@ -114,7 +114,7 @@ public class XmlUtil {
       schemaSources[i] = new StreamSource(filename);
     }
 
-    // create the schema as the compound of the schema sources
+    // createDoc the schema as the compound of the schema sources
     Schema schema = null;
 
     try {
@@ -124,7 +124,7 @@ public class XmlUtil {
 
       schema = schemaFactory.newSchema(schemaSources);
     } catch(SAXException e) {
-      throw new SAXException("Couldn't create compound schema!", e);
+      throw new SAXException("Couldn't createDoc compound schema!", e);
     } finally {
       tempFiles.stream().forEach((TempFile file)-> {
         FileUtil.closeSilently(file, true);

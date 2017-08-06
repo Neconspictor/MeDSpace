@@ -1,13 +1,32 @@
 package de.unipassau.medspace.common.lucene;
 
-import org.apache.lucene.document.Document;
+import org.apache.jena.graph.Triple;
+
+import java.util.List;
 
 /**
- * Created by David Goeth on 24.07.2017.
+ * TODO
  */
-public interface ResultFactory<E> {
+public interface ResultFactory<ElemType, DocType> {
 
-  Document create(E elem);
+  /**
+   * TODO
+   * @param elem
+   * @return
+   */
+  DocType createDoc(ElemType elem);
 
-  E create(Document doc);
+  /**
+   * TODO
+   * @param doc
+   * @return
+   */
+  default ElemType createElem(DocType doc) {return null;};
+
+  /**
+   * TODO
+   * @param elem
+   * @return
+   */
+  List<Triple> triplize(DocType elem);
 }

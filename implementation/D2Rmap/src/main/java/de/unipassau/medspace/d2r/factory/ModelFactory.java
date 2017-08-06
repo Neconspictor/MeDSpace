@@ -121,7 +121,7 @@ public class ModelFactory extends AbstractClassLoaderFactory {
       model = (Model) object;
     } else {
 
-      throw new FactoryException("Could not create Model instance. " +
+      throw new FactoryException("Could not createDoc Model instance. " +
                                  className + " may not be a valid " +
                                  "implementation of " +
                                  "com.hp.hpl.jena.rdf.model.Model ");
@@ -155,7 +155,7 @@ public class ModelFactory extends AbstractClassLoaderFactory {
       model = (Model) object;
     } else {
 
-      throw new FactoryException("Could not create Model instance. " +
+      throw new FactoryException("Could not createDoc Model instance. " +
                                  className + " may not be a valid " +
                                  "implementation of " +
                                  "com.hp.hpl.jena.rdf.model.Model ");
@@ -174,7 +174,7 @@ public class ModelFactory extends AbstractClassLoaderFactory {
     //container for object
     Model model = null;
 
-    //create a default instance from Jena's ModelFactory
+    //createDoc a default instance from Jena's ModelFactory
     model = org.apache.jena.rdf.model.ModelFactory.createDefaultModel();
 
     //return the instance

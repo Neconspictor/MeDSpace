@@ -24,12 +24,12 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
   private static Logger log = LoggerFactory.getLogger(LuceneKeywordSearcher.class);
 
   private String[] fields;
-  private FullTextSearchIndexImpl index;
+  private IndexReaderFactory readerFactory;
 
-  public LuceneKeywordSearcher(List<String> fields, FullTextSearchIndexImpl index) {
+  public LuceneKeywordSearcher(List<String> fields, IndexReaderFactory readerFactory) {
     this.fields = new String[fields.size()];
     fields.toArray(this.fields);
-    this.index = index;
+    this.readerFactory = readerFactory;
   }
 
   @Override
@@ -79,7 +79,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
 
     if (log.isDebugEnabled())
       log.debug("Constructed query: " + query);
-    return new SearchResult(index.createReader(), query);
+    return new SearchResult(readerFactory.createReader(), query);
   }
 
   private static class DocumentStream implements DataSourceStream<Document> {

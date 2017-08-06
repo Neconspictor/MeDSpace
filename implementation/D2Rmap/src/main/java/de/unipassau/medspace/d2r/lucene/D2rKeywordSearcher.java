@@ -10,7 +10,6 @@ import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.d2r.D2rMap;
-import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
 import org.apache.jena.graph.Triple;
@@ -30,15 +29,13 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
   private static Logger log = LoggerFactory.getLogger(D2rKeywordSearcher.class);
 
-  private KeywordSearcher<Document> keywordSearcher;
   private boolean useLucene;
-  private D2rProxy proxy;
-  private SqlResultFactory factory;
+  private D2rWrapper wrapper;
+  private KeywordSearcher<Triple> keywordSearcher; //TODO should use the same document type
 
-  public D2rKeywordSearcher(D2rWrapper wrapper, KeywordSearcher<Document> keywordSearcher) throws IOException {
+  public D2rKeywordSearcher(D2rWrapper wrapper, KeywordSearcher<Triple> keywordSearcher) throws IOException {
     this.keywordSearcher = keywordSearcher;
-    this.proxy = wrapper.getProxy();
-    factory = wrapper.getResultFactory();
+    this.wrapper = wrapper;
     useLucene = true;
   }
 
@@ -55,8 +52,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
   public DataSourceStream<Triple> searchForKeywords(List<String> keywords) throws IOException,
       NotValidArgumentException {
     if (useLucene) {
-      DataSourceStream<Document> result =  keywordSearcher.searchForKeywords(keywords);
-      return new DocToTripleStream(result, factory);
+      return keywordSearcher.searchForKeywords(keywords);
     }
     return searchByDatasource(keywords);
   }
@@ -66,14 +62,14 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
     StreamCollection<Triple> result = new StreamCollection<>();
 
     // Generate instances for all maps
-    for (D2rMap map : proxy.getMaps()) {
+    for (D2rMap map : wrapper.getMaps()) {
 
       SelectStatement query = map.getQuery();
       List<String> columns = query.getColumns();
 
       String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns);
       query.addTemporaryCondition(keywordCondition);
-      DataSourceManager manager = proxy.getDataSourceManager();
+      DataSourceManager manager = wrapper.getDataSourceManager();
       StreamFactory<Triple> stream = createTripleStreamFactory(map, manager.getDataSource(), new ArrayList<>());
       result.add(stream);
     }

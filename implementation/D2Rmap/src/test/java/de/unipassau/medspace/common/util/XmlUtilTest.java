@@ -236,7 +236,7 @@ public class XmlUtilTest {
           schema = factory.newSchema(file);
         }
       } catch(FileNotFoundException | SAXException | URISyntaxException e) {
-        throw new D2RException("Couldn't create SourceSchema object!");
+        throw new D2RException("Couldn't createDoc SourceSchema object!");
       }
     }
 

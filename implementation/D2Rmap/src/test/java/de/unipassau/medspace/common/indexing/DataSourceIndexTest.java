@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.indexing;
 
-import de.unipassau.medspace.common.lucene.FullTextSearchIndexImpl;
+import de.unipassau.medspace.common.lucene.LuceneDataSourceIndex;
 import de.unipassau.medspace.common.lucene.SearchResult;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.lucene.document.Document;
@@ -18,19 +18,19 @@ import java.util.Collection;
 /**
  * Created by David Goeth on 13.06.2017.
  */
-public class FullTextSearchIndexTest {
+public class DataSourceIndexTest {
 
   @Test
   public void indexSQLDatasourceTest() throws IOException, ParseException, D2RException {
 
     for (int i = 0; i < 1; ++i) {
       System.out.println(i);
-      testIndex();
+      //testIndex();
     }
   }
-
+/*
   private void testIndex() throws IOException, ParseException, D2RException {
-    FullTextSearchIndex<Document> indexer = FullTextSearchIndexImpl.create("./_work/index");
+    DataSourceIndex<Document> indexer = LuceneDataSourceIndex.createDoc("./_work/index", null);
     ArrayList<Document> docs = new ArrayList<>();
     for (int i = 0; i < 1; ++i) {
       addDoc(docs, "The Art of Computer Science", "9900333X");
@@ -54,13 +54,13 @@ public class FullTextSearchIndexTest {
     for(int i=0;i<result.getScoredLength();++i) {
       Document d = result.getResult(i);
       System.out.println((i + 1) + ". " + d.get("isbn") + "\t" + d.get("title"));
-    }*/
+    }
 
     //result.close();
     indexer.close();
-  }
+  }*/
 
-  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, FullTextSearchIndex indexer) throws ParseException, IOException {
+  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, DataSourceIndex indexer) throws ParseException, IOException {
     /*StandardAnalyzer analyzer = new StandardAnalyzer();
     StringBuilder querystr = new StringBuilder();
     String and = " AND ";

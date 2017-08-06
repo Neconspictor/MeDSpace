@@ -2,6 +2,7 @@ package de.unipassau.medspace.common.wrapper;
 
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.shared.PrefixMapping;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -16,7 +17,18 @@ public interface Wrapper extends Closeable {
    * datasource's data set.
    * @return A KeywordSearcher for searching the proxied datasource's data set
    *         based on keywords.
-   * @throws IOException If an error occurs while trying to create a keyword searcher
+   * @throws IOException If an error occurs while trying to createDoc a keyword searcher
    */
   KeywordSearcher<Triple> createKeywordSearcher() throws IOException;
+
+
+  /**
+   * TODO
+   * @return
+   */
+  PrefixMapping getNamespacePrefixMapper();
+
+  void reindexData() throws IOException;
+
+  boolean existsIndex();
 }

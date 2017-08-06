@@ -120,7 +120,7 @@ private final FormFactory formFactory;
     }
 
     Configuration config = wrapperService.getConfig();
-    PrefixMapping mapping = wrapperService.getProxy().getNamespacePrefixMapper();
+    PrefixMapping mapping = wrapperService.getWrapper().getNamespacePrefixMapper();
     Lang lang = config.getOutputFormat();
     List<String> extensions = lang.getFileExtensions();
     String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);

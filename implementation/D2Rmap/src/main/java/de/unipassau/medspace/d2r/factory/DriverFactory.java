@@ -131,7 +131,7 @@ public class DriverFactory extends AbstractClassLoaderFactory {
       }
       else {
 
-        throw new FactoryException("Could not create Driver instance. " +
+        throw new FactoryException("Could not createDoc Driver instance. " +
                                    className + " may not be a valid " +
                                    "implementation of java.sql.Driver. ");
       }
@@ -179,7 +179,7 @@ public class DriverFactory extends AbstractClassLoaderFactory {
       driver = (Driver) object;
     } else {
 
-      throw new FactoryException("Could not create Driver instance. " +
+      throw new FactoryException("Could not createDoc Driver instance. " +
                                  className + " may not be a valid " +
                                  "implementation of java.sql.Driver. ");
     }

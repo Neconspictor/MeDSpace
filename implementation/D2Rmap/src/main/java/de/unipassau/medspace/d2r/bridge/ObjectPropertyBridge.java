@@ -29,13 +29,13 @@ public class ObjectPropertyBridge
   protected String referredClassID;
 
   /**
-   * Specifies the referred D2rMap to create property values.
-   * If it is null, the pattern member attribute of the Bridge class is used to create property values.
+   * Specifies the referred D2rMap to createDoc property values.
+   * If it is null, the pattern member attribute of the Bridge class is used to createDoc property values.
    */
   protected D2rMap referredClass;
 
   /**
-   * Specifies the columns that should be used from a sql query to create property values from.
+   * Specifies the columns that should be used from a sql query to createDoc property values from.
    */
   protected List<String> referredColumns;
 
@@ -64,7 +64,7 @@ public class ObjectPropertyBridge
   }
 
   /**
-   * Provides the D2rMap that is referred by this class. That D2rMap is used to create property values.
+   * Provides the D2rMap that is referred by this class. That D2rMap is used to createDoc property values.
    * @return The referred D2rMap or null, if no D2rMap is used for creating property values.
    */
   public D2rMap getReferredClass() {
@@ -72,7 +72,7 @@ public class ObjectPropertyBridge
   }
 
   /**
-   * Provides an unmodifiable list of the columns of a SQL result tuple, that are used to create property values from.
+   * Provides an unmodifiable list of the columns of a SQL result tuple, that are used to createDoc property values from.
    * @return An unmodifiable list of the referred columns of a SQL result tuple.
    */
   public List<String> getReferredColumns() {
@@ -80,7 +80,7 @@ public class ObjectPropertyBridge
   }
 
   /**
-   * Sets the referred D2rMap this ObjectPropertyBridge should use to create property values.
+   * Sets the referred D2rMap this ObjectPropertyBridge should use to createDoc property values.
    * @param map The D2rMap to use for creating property values.
    */
   public void setReferredClass(D2rMap map) {
@@ -89,7 +89,7 @@ public class ObjectPropertyBridge
   }
 
   /**
-   * Parses a string containing the column fields and adds them to the bridge. The columns are used to create rdf
+   * Parses a string containing the column fields and adds them to the bridge. The columns are used to createDoc rdf
    * resources from the referred D2rMap class. The referred D2rMap is given by the method getReferredClass
    * @param  fields String with GroupBy fields separated by ','.
    */
@@ -190,7 +190,7 @@ public class ObjectPropertyBridge
   /**
    * Creates a rdf resource from a given SQLResultTuple. The result will be an instance of the
    * referred D2rMap.
-   * @param tuple The sql result tuple to create the rdf resource from.
+   * @param tuple The sql result tuple to createDoc the rdf resource from.
    * @return An rdf resource which is an instance of the referred D2rMap specified by the class member 'referredClass'.
    */
   private Resource getFromClass(SQLResultTuple tuple) {
@@ -211,7 +211,7 @@ public class ObjectPropertyBridge
 
   /**
    * Creates a rdf resource from a given SQLResultTuple by using the pattern of this class.
-   * @param tuple The sql result tuple to create the rdf resource from.
+   * @param tuple The sql result tuple to createDoc the rdf resource from.
    * @return
    */
   private String getFromPattern(SQLResultTuple tuple) {

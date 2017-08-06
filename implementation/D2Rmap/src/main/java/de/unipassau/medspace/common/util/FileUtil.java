@@ -46,7 +46,7 @@ public class FileUtil {
     File dir = new File(directory);
     if (!dir.exists()) {
       if (!dir.mkdirs()) {
-        throw new IOException("Couldn't create directory from: " + path);
+        throw new IOException("Couldn't createDoc directory from: " + path);
       }
     }
 
@@ -128,7 +128,7 @@ public class FileUtil {
       out.flush();
 
     } catch (IOException ex) {
-      throw new IOException("Couldn't create temporary file from resource: " + resourceName, ex);
+      throw new IOException("Couldn't createDoc temporary file from resource: " + resourceName, ex);
     } finally {
       closeSilently(out);
       closeSilently(input);

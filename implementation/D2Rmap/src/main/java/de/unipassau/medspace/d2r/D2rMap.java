@@ -82,7 +82,7 @@ public class D2rMap {
     resource = ResourceFactory.createResource(uri);
 
     if (resource == null || resourceID.equals("")) {
-      log.warn("Warning: Couldn't create resource " + resourceID + " in map " + getId() +
+      log.warn("Warning: Couldn't createDoc resource " + resourceID + " in map " + getId() +
           ".");
       return null;
     }

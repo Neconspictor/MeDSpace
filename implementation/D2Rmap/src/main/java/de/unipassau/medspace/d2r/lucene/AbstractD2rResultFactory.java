@@ -1,35 +1,35 @@
 package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.common.SQL.SelectStatement;
+import de.unipassau.medspace.common.lucene.ResultFactory;
 import de.unipassau.medspace.d2r.D2rMap;
-import de.unipassau.medspace.d2r.D2rProxy;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.d2r.D2rUtil;
+import de.unipassau.medspace.d2r.D2rWrapper;
+import de.unipassau.medspace.d2r.MappedSqlTuple;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.javatuples.Pair;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by David Goeth on 06.07.2017.
+ * TODO
  */
-public class SqlResultFactory {
+public abstract class AbstractD2rResultFactory<DocType> implements ResultFactory<MappedSqlTuple, DocType> {
 
   /**
    * This constant is used as the field name for the map id
    */
-  private final String mapField;
-  private final D2rProxy proxy;
+  protected final String mapField;
+  protected final D2rWrapper wrapper;
 
 
-  public SqlResultFactory(String mapField, D2rProxy proxy) {
+  public AbstractD2rResultFactory(String mapField, D2rWrapper wrapper) {
     this.mapField = mapField;
-    this.proxy = proxy;
+    this.wrapper = wrapper;
   }
 
   public static List<String> getMappedColumns(D2rMap map) {
@@ -45,7 +45,7 @@ public class SqlResultFactory {
     return result;
   }
 
-  public Document create(SQLResultTuple tuple, String mapId) {
+  protected Document create(SQLResultTuple tuple, String mapId) {
     Document doc = new Document();
 
       mapTo(doc, mapId);
@@ -67,33 +67,6 @@ public class SqlResultFactory {
     return doc;
   }
 
-  public SQLResultTuple create(Document doc) {
-    assert isMapped(doc);
-
-    String mapId = getMapId(doc);
-    ArrayList<Pair<String, String>> columnValuePairs = new ArrayList<>();
-
-    D2rMap map = proxy.getMapById(mapId);
-    assert map != null;
-
-    String columnNamePrefix = mapId + "_";
-
-    doc.forEach(indexableField -> {
-      String columnName = indexableField.name();
-
-      // Skip the MAP element
-      if (columnName.equals(mapField)) return;
-
-      // Delete the column prefix
-      columnName = columnName.substring(columnNamePrefix.length(), columnName.length());
-
-      String value = indexableField.stringValue();
-      columnValuePairs.add(new Pair<>(columnName, value));
-    });
-
-    return new SQLResultTuple(columnValuePairs);
-  }
-
   /**
    * Provides the map id of the specified document. It is assumed that the
    * document was previously mapped to a map id. If this isn't the case,
@@ -102,12 +75,12 @@ public class SqlResultFactory {
    * @return The map id of the document
    * @throws IllegalArgumentException If the document isn't mapped to a map id.
    */
-  public D2rMap getMap(Document doc) {
+  protected D2rMap getMap(Document doc) {
     String mapId = getMapId(doc);
-    return proxy.getMapById(mapId);
+    return wrapper.getMapById(mapId);
   }
 
-  public String getMapId(Document doc) {
+  protected String getMapId(Document doc) {
     if (!isMapped(doc)) {
       throw new IllegalArgumentException("Specified document isn't mapped: " + doc);
     }
@@ -119,7 +92,7 @@ public class SqlResultFactory {
    * @param doc The document to check
    * @return true, if the document is mapped to a map id
    */
-  public boolean isMapped(Document doc) {
+  protected boolean isMapped(Document doc) {
     return doc.getField(mapField) != null;
   }
 
@@ -128,7 +101,7 @@ public class SqlResultFactory {
    * @param doc The document to map
    * @param mapId The map id for the document
    */
-  public void mapTo(Document doc, String mapId) {
+  protected void mapTo(Document doc, String mapId) {
     doc.add(new StringField(mapField, mapId, Field.Store.YES));
   }
 }

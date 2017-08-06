@@ -1,8 +1,6 @@
 package de.unipassau.medspace.common.wrapper;
 
-import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
-import org.apache.jena.graph.Triple;
 
 /**
  * A class that acts as a proxy for a datasource that provides data of type E. This proxy provides methods for
