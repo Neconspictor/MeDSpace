@@ -8,7 +8,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * Created by David Goeth on 24.07.2017.
+ * TODO
  */
 public interface Wrapper extends Closeable {
 
@@ -21,14 +21,27 @@ public interface Wrapper extends Closeable {
    */
   KeywordSearcher<Triple> createKeywordSearcher() throws IOException;
 
-
   /**
    * TODO
    * @return
    */
   PrefixMapping getNamespacePrefixMapper();
 
+  /**
+   * TODO
+   * @throws IOException
+   */
   void reindexData() throws IOException;
 
+  /**
+   * TODO
+   * @return
+   */
   boolean existsIndex();
+
+  /**
+   * TODO
+   * @return
+   */
+  boolean isIndexUsed();
 }

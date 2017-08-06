@@ -28,37 +28,15 @@ import java.util.List;
 public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
   private static Logger log = LoggerFactory.getLogger(D2rKeywordSearcher.class);
-
-  private boolean useLucene;
   private D2rWrapper wrapper;
-  private KeywordSearcher<Triple> keywordSearcher; //TODO should use the same document type
 
-  public D2rKeywordSearcher(D2rWrapper wrapper, KeywordSearcher<Triple> keywordSearcher) throws IOException {
-    this.keywordSearcher = keywordSearcher;
+  public D2rKeywordSearcher(D2rWrapper wrapper) throws IOException {
     this.wrapper = wrapper;
-    useLucene = true;
-  }
-
-  /**
-   * Tells this searcher to use the index or querying the datasource directly.
-   * @param use true if the index should be used, or false, if the datasource should
-   *            be queryied directly.
-   */
-  public void useLucene(boolean use) {
-    useLucene = use;
   }
 
   @Override
   public DataSourceStream<Triple> searchForKeywords(List<String> keywords) throws IOException,
       NotValidArgumentException {
-    if (useLucene) {
-      return keywordSearcher.searchForKeywords(keywords);
-    }
-    return searchByDatasource(keywords);
-  }
-
-  private DataSourceStream<Triple> searchByDatasource(List<String> keywords) throws IOException {
-
     StreamCollection<Triple> result = new StreamCollection<>();
 
     // Generate instances for all maps
@@ -67,7 +45,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
       SelectStatement query = map.getQuery();
       List<String> columns = query.getColumns();
 
-      String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns);
+      String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns, "OR");
       query.addTemporaryCondition(keywordCondition);
       DataSourceManager manager = wrapper.getDataSourceManager();
       StreamFactory<Triple> stream = createTripleStreamFactory(map, manager.getDataSource(), new ArrayList<>());

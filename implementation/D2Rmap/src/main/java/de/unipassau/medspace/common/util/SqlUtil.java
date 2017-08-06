@@ -8,21 +8,21 @@ import java.util.List;
  */
 public class SqlUtil {
 
-  public static String createKeywordCondition(List<String> keywords, List<String> columnNames) {
+  public static String createKeywordCondition(List<String> keywords, List<String> columnNames, String operator) {
     StringBuilder builder = new StringBuilder();
-    final String and = " AND ";
+    final String spacedOperator = " " + operator + " ";
 
     for (String keyword : keywords) {
       String condition = createOrColumnCondition("LIKE '%" + keyword + "%'", columnNames);
       builder.append("(");
       builder.append(condition);
       builder.append(")");
-      builder.append(and);
+      builder.append(spacedOperator);
     }
 
     if (keywords.size() > 0) {
       // delete last and
-      builder.delete(builder.length() - and.length(), builder.length());
+      builder.delete(builder.length() - spacedOperator.length(), builder.length());
     }
 
     return builder.toString();

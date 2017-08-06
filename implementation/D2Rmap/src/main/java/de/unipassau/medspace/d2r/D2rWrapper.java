@@ -82,6 +82,8 @@ public class D2rWrapper implements Wrapper {
    */
   private DataSourceManager dataSourceManager;
 
+  private boolean indexUsed;
+
   /**
    * TODO
    * @param dataSourceManager
@@ -121,6 +123,8 @@ public class D2rWrapper implements Wrapper {
 
     this.dataSourceManager = dataSourceManager;
 
+    indexUsed = false;
+
     init(indexDirectory);
   }
 
@@ -130,7 +134,7 @@ public class D2rWrapper implements Wrapper {
    */
   @Override
   public void close() throws IOException {
-    index.close();
+    FileUtil.closeSilently(index, true);
   }
 
   /**
@@ -141,15 +145,18 @@ public class D2rWrapper implements Wrapper {
   @Override
   public KeywordSearcher<Triple> createKeywordSearcher() throws IOException {
 
-    D2rKeywordSearcher searcher = null;
+    KeywordSearcher<Triple> searcher = null;
 
     try {
-      searcher = new D2rKeywordSearcher(this, index.createKeywordSearcher());
+      if (indexUsed) {
+        searcher = index.createKeywordSearcher();
+      } else {
+        searcher = new D2rKeywordSearcher(this);
+      }
     } catch (IOException e) {
       throw new IOException("Error while trying to createDoc a keyword searcher", e);
     }
 
-    searcher.useLucene(true);
     return searcher;
   }
 
@@ -212,6 +219,9 @@ public class D2rWrapper implements Wrapper {
    */
   @Override
   public void reindexData() throws IOException {
+
+    if (!indexUsed) throw new IOException("Cannot reindex data as no index is used!");
+
     DataSourceStream docStream = null;
     try {
       docStream = new SqlToDocStream(getAllData(), resultFactory);
@@ -227,7 +237,12 @@ public class D2rWrapper implements Wrapper {
 
   @Override
   public boolean existsIndex() {
-    return index.exists();
+    return !indexUsed ? false : index.exists();
+  }
+
+  @Override
+  public boolean isIndexUsed() {
+    return indexUsed;
   }
 
   /**
@@ -261,6 +276,12 @@ public class D2rWrapper implements Wrapper {
    * @throws IOException
    */
   private void init(Path indexDirectory) throws IOException {
+
+    indexUsed = indexDirectory != null;
+
+    // Should no index be used? -> early exit
+    if (!indexUsed) return;
+
     resultFactory = new LuceneD2rResultFactory(D2R.MAP_FIELD, this);
     IndexFactory indexFactory = new LuceneIndexFactory(this, indexDirectory.toString());
 

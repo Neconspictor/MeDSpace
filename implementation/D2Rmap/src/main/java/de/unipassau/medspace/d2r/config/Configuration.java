@@ -29,7 +29,7 @@ public class Configuration {
 
   public Configuration() {
     dataSourceProperties = new ArrayList<>();
-    indexDirectory = Paths.get("./");
+    indexDirectory = null; // null hints, that no index directory should be used
     maps = new ArrayList<>();
     namespaces = new HashMap<>();
     outputFormat = null;

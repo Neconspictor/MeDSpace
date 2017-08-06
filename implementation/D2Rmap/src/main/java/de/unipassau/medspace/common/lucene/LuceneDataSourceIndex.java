@@ -5,7 +5,8 @@ import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import org.apache.jena.graph.Triple;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -58,7 +59,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
 
   public void clearIndex() throws IOException {
     if (!isOpen) throw new IOException("Indexer is not open!");
-    StandardAnalyzer analyzer = new StandardAnalyzer();
+    Analyzer analyzer = buildAnalyzer();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
     IndexWriter w = null;
@@ -75,7 +76,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
 
   @Override
   public KeywordSearcher<Document> createDocKeywordSearcher() throws IOException {
-    return new LuceneKeywordSearcher(fields, () -> DirectoryReader.open(index));
+    return new LuceneKeywordSearcher(fields, () -> DirectoryReader.open(index), buildAnalyzer());
   }
 
   @Override
@@ -135,7 +136,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
   }
 
   public void index(Iterable<Document> data) throws IOException {
-    StandardAnalyzer analyzer = new StandardAnalyzer();
+    Analyzer analyzer = buildAnalyzer();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
     config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
 
@@ -169,5 +170,18 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
     index(data);
+  }
+
+  /**
+   * TODO
+   * @return
+   * @throws IOException
+   */
+  private Analyzer buildAnalyzer() throws IOException {
+    return CustomAnalyzer.builder()
+        .withTokenizer("whitespace")
+        .addTokenFilter("lowercase")
+        .addTokenFilter("standard")
+        .build();
   }
 }

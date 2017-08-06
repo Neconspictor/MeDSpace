@@ -41,7 +41,9 @@
 	<-->
 	<d2r:OutputFormat>TURTLE</d2r:OutputFormat>
 
-	<!-->Specifies where the wrapper should store indexed data<-->
+	<!-->Specifies where the wrapper should store indexed data
+
+	<-->
 	<d2r:Index directory="_work/medspace/index"/>
 
 	<!-->RDF namespaces

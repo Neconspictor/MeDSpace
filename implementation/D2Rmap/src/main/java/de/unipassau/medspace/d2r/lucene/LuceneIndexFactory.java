@@ -25,12 +25,22 @@ public class LuceneIndexFactory implements IndexFactory<Document>{
     this.directory = directory;
   }
 
+  /**
+   * TODO
+   * @return
+   * @throws IOException
+   */
   @Override
   public DataSourceIndex<Document> createIndex() throws IOException {
     LuceneD2rResultFactory factory = new LuceneD2rResultFactory(D2R.MAP_FIELD, wrapper);
     return LuceneDataSourceIndex.create(directory, createFields(wrapper.getMaps()), factory);
   }
 
+  /**
+   * TODO
+   * @param maps
+   * @return
+   */
   private List<String> createFields(List<D2rMap> maps) {
     List<String> fields = new ArrayList<>();
     for (D2rMap map : maps) {

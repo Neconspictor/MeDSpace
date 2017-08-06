@@ -4,6 +4,7 @@ import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -25,11 +26,13 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
 
   private String[] fields;
   private IndexReaderFactory readerFactory;
+  private Analyzer analyzer;
 
-  public LuceneKeywordSearcher(List<String> fields, IndexReaderFactory readerFactory) {
+  public LuceneKeywordSearcher(List<String> fields, IndexReaderFactory readerFactory, Analyzer analyzer) {
     this.fields = new String[fields.size()];
     fields.toArray(this.fields);
     this.readerFactory = readerFactory;
+    this.analyzer = analyzer;
   }
 
   @Override
@@ -56,8 +59,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
     return  new DocumentStream(result);
   }
 
-  private Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException {
-    Analyzer analyzer = new StandardAnalyzer();
+  private Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException, IOException {
     QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
 
     StringBuilder keywordsConcat = new StringBuilder();

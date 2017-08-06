@@ -63,9 +63,9 @@ public class TestProcessor {
       wrapper = new D2rWrapper(dataSourceManager, config.getMaps(),
                                 config.getNamespaces(), config.getIndexDirectory());
 
-      boolean exists = wrapper.existsIndex();
+      boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
 
-      if (!exists) {
+      if (shouldReindex) {
         log.info("Indexing data...");
         wrapper.reindexData();
         log.info("Indexing done.");
@@ -75,7 +75,7 @@ public class TestProcessor {
 
       Instant startTime = Instant.now();
 
-      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male", "female"));
+      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("\\+male"));
       PrefixMapping mapping = wrapper.getNamespacePrefixMapper();
 
       boolean hasTriples = triples.hasNext();
