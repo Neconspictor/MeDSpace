@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -18,11 +19,13 @@ public class StreamCollection<E> implements StartableStream<E> {
 
   private Queue<StreamProxy<E>> streams;
   private StartCloseValidator validator;
+  private boolean rethrowExceptions;
 
   public StreamCollection() {
     super();
     this.streams = new LinkedList<>();
     validator = new StartCloseValidator();
+    rethrowExceptions = false;
   }
 
   public StreamCollection(Queue<StreamFactory<E>> streams) {
@@ -65,7 +68,13 @@ public class StreamCollection<E> implements StartableStream<E> {
       log.error("Error while validation", e);
       return false;
     }
-    StreamProxy<E> activeStream = getActiveStream();
+    StreamProxy<E> activeStream = null;
+    try {
+      activeStream = getActiveStream();
+    } catch (IOException e) {
+      log.error("Error: ", e);
+      throw new NoSuchElementException("Couldn't access active stream");
+    }
     return activeStream != null;
   }
 
@@ -78,7 +87,13 @@ public class StreamCollection<E> implements StartableStream<E> {
       return null;
     }
 
-    StreamProxy<E> activeStream = getActiveStream();
+    StreamProxy<E> activeStream = null;
+    try {
+      activeStream = getActiveStream();
+    } catch (IOException e) {
+      log.error("Error while trying to retrieve next stream: ", e);
+      throw new NoSuchElementException("Couldn't access active stream");
+    }
     if (activeStream == null) throw new IllegalStateException("No valid next object available!");
     return activeStream.iterator().next();
   }
@@ -88,6 +103,13 @@ public class StreamCollection<E> implements StartableStream<E> {
     validator.validateStart();
     if (getActiveStream() == null) {
       log.warn("StreamCollection has started streaming, but no streams were added!");
+    }
+    try {
+      System.out.println("before sleep...");
+      Thread.sleep(10000);
+      System.out.println("After sleep...");
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
   }
 
@@ -100,7 +122,7 @@ public class StreamCollection<E> implements StartableStream<E> {
    *
    * @return The current active stream to fetch data from or null, if no stream is available more.
    */
-  private StreamProxy<E> getActiveStream() {
+  private StreamProxy<E> getActiveStream() throws IOException {
 
     while(!streams.isEmpty()) {
 
@@ -113,6 +135,8 @@ public class StreamCollection<E> implements StartableStream<E> {
           stream.start();
         } catch (IOException e) {
           log.error("Error while trying to start a stream: ", e);
+
+          if (rethrowExceptions) throw e;
 
           // Just remove the stream and get the validateNext
           // We don't care about errors occuring while closing it
@@ -135,5 +159,9 @@ public class StreamCollection<E> implements StartableStream<E> {
     }
 
     return null;
+  }
+
+  public void setRethrowExceptions(boolean rethrowExceptions) {
+    this.rethrowExceptions = rethrowExceptions;
   }
 }

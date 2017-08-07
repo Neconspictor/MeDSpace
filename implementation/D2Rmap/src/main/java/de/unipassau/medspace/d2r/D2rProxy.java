@@ -95,6 +95,7 @@ public class D2rProxy {
     for (D2rMap map : maps) {
       result.add(createStreamFactory(map, connectionPool.getDataSource(), new ArrayList<>()));
     }
+    result.setRethrowExceptions(true);
     result.start();
     return result;
   }
