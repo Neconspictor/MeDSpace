@@ -1,41 +1,39 @@
 package controllers;
 
-import akka.NotUsed;
 import akka.actor.*;
-import static akka.pattern.Patterns.ask;
 
-import akka.stream.OverflowStrategy;
-import akka.stream.javadsl.Source;
-import akka.stream.javadsl.StreamConverters;
-import akka.util.ByteString;
+
 import de.unipassau.medspace.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.test.HelloActor;
-import de.unipassau.medspace.test.HelloActorProtocol;
-import de.unipassau.medspace.test.InputOutputStream;
+
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.shared.PrefixMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.api.Play;
+
+import org.xbill.DNS.Address;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.*;
-import scala.compat.java8.FutureConverters;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+
+import org.xbill.DNS.*;
+import play.twirl.api.Html;
+import scala.Dynamic;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -55,6 +53,10 @@ private final FormFactory formFactory;
     this.wrapperService = wrapperService;
     helloActor = system.actorOf(HelloActor.getProps());
     this.formFactory = formFactory;
+  }
+
+  public Result guiTest() {
+    return ok(views.html.testGui.render());
   }
 
   /**
@@ -104,5 +106,34 @@ private final FormFactory formFactory;
     }
 
     return ok(tripleStream).as(mimeType).withHeader("Content-Disposition", dispositionValue);
+  }
+
+  public Result registerDataSourceTest() {
+    String clientHostName = null;
+    Http.Request request = request();
+    DynamicForm form = formFactory.form().bindFromRequest(request, "description");
+    String desc  = form.get("description");
+
+    if (desc == null) {
+      //assign default description
+      desc ="";
+    }
+
+    try {
+      clientHostName = getClientHostName(request);
+    } catch (UnknownHostException e) {
+      return badRequest("Couldn't get client host name: " + request().remoteAddress());
+    }
+
+    String result = "Request accepted. Datasource was registered: " + clientHostName + " <br>" +
+        "description: '" + desc + "' <br>" +
+        "exports in namespaces: ";
+
+    return ok(views.html.minimal.render("Accepted", Html.apply(result)));
+  }
+
+  private String getClientHostName(Http.Request request) throws UnknownHostException {
+      InetAddress client = InetAddress.getByName(request.remoteAddress());
+      return Address.getHostName(client);
   }
 }

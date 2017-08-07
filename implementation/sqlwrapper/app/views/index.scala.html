@@ -6,7 +6,11 @@
         connectionPool: ConnectionPool,
         metaData: java.sql.DatabaseMetaData)
 
-@main("SQL Wrapper(D2R)") {
+@pageSceleton("SQL Wrapper(D2R)",
+  routes.Assets.versioned("stylesheets/nothing.css").url,
+  routes.Assets.versioned("javascripts/nothing.js").url,
+  routes.Assets.versioned("images/favicon.png").url) {
+
   <h1>SQL Wrapper(D2R) status page</h1>
 
   <h4>Services</h4>
@@ -14,8 +18,10 @@
   <ul>
     <li>param keywords: The kexword to search for</li>
     <li>param attach: Should the keyword seach result be attached as a file? (Only relevant when using a browser)</li>
-    <li>url: <bold>@routes.SQLWrapperController.search("keyword1 keyword2",false).url</bold></li>
-    <li>Keyword search test page(GUI): </li>
+    <li>url: <a href='@routes.SQLWrapperController.search("keyword1 keyword2",false)'>
+    @routes.SQLWrapperController.search("keyword1 keyword2",false)</a></li>
+    <li>Keyword search test page(GUI): <a href="@routes.SQLWrapperController.guiTest()">
+    @routes.SQLWrapperController.guiTest()</a> </li>
   </ul>
 
   <h4>Index</h4>
