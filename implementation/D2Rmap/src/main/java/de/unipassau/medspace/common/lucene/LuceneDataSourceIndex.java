@@ -64,9 +64,13 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
     IndexWriter w = null;
 
+    config.setCommitOnClose(true);
+
     try {
       w = new IndexWriter(index, config);
       w.deleteAll();
+      w.flush();
+      w.commit();
     } catch (IOException e) {
       log.error("Error while clearing the index", e);
     } finally {
@@ -76,7 +80,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
 
   @Override
   public KeywordSearcher<Document> createDocKeywordSearcher() throws IOException {
-    return new LuceneKeywordSearcher(fields, () -> DirectoryReader.open(index), buildAnalyzer());
+    return new LuceneKeywordSearcher(fields, () -> createReader(), buildAnalyzer());
   }
 
   @Override
@@ -111,6 +115,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
    * @return A reader alloing to query this index
    * @throws IOException Will be thrown if the FSDirectory couldn't be opened, doesn't exists or another low level I/O
    * Error occurs
+   * IMPORTANT: The resulting IndexReader has to be closed, if not needed anymore!!!
    */
   private IndexReader createReader() throws IOException {
     return DirectoryReader.open(index);
@@ -127,8 +132,10 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
           return false;
       }
 
-      IndexReader reader = createReader();
-      return reader.numDocs() > 0;
+      try(IndexReader reader = createReader()) {
+        return reader.numDocs() > 0;
+      }
+
     } catch (IOException e) {
       log.error("Error while retrieving document count: ", e);
       throw new IOException("Couldn't query indexed data");
@@ -138,7 +145,8 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
   public void index(Iterable<Document> data) throws IOException {
     Analyzer analyzer = buildAnalyzer();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
-    config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
+    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+    config.setCommitOnClose(true);
 
     try(IndexWriter w = new IndexWriter(index, config)) {
       //w.addDocuments(data);

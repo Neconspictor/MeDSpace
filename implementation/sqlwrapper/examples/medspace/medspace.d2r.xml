@@ -63,7 +63,7 @@
 
 	<d2r:ClassMap 
 		type="test:language"
-		sql="SELECT * FROM language UNION SELECT * from sex"
+		sql="SELECT * FROM language"
 		baseURI="http://localhost/patient_test_namespace/languages#"
 		resourceIdColumns="language.name"
 		id="language">
@@ -105,7 +105,6 @@
 		<d2r:ObjectPropertyBridge property="test:sex" referredClass="sex" referredColumns="patient.sex"/>
 		<d2r:ObjectPropertyBridge property="test:maritalstatus" referredClass="maritalstatus"
 								  referredColumns="patient.maritalstatus"/>
-		<d2r:ObjectPropertyBridge property="test:maritalstatus" pattern="maritalStatus:@@patient.maritalstatus@@"/>
 		<d2r:ObjectPropertyBridge property="test:language" referredClass="language" referredColumns="patient.language"/>
 	</d2r:ClassMap>
 </d2r:Map>

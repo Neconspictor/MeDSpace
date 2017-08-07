@@ -3,11 +3,13 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.SQLWrapperController.index
+GET     /                           controllers.SQLWrapperController.index()
 
 GET /search                         controllers.SQLWrapperController.search(keywords:String ?="", attach:Boolean ?= true)
 
-GET /registerDatasourceTest         controllers.SQLWrapperController.registerDataSourceTest
+GET /registerDatasourceTest         controllers.SQLWrapperController.registerDataSourceTest()
+
+GET /reindex                        controllers.SQLWrapperController.reindex()
 
 GET /test_gui                         controllers.SQLWrapperController.guiTest()
 

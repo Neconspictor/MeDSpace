@@ -1,5 +1,6 @@
 package de.unipassau.medspace.common.lucene;
 
+import de.unipassau.medspace.common.util.FileUtil;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.*;
@@ -64,8 +65,7 @@ public class SearchResult implements Closeable {
    */
   @Override
   public void close() throws IOException {
-    if (reader != null)
-      reader.close();
+    FileUtil.closeSilently(reader, true);
   }
 
   /**

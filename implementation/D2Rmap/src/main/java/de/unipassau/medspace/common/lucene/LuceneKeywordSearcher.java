@@ -56,6 +56,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
     } catch (IOException | ParseException e) {
       throw new IOException("Exception while querying the index: ", e);
     }
+
     return  new DocumentStream(result);
   }
 

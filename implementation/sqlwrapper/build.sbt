@@ -4,7 +4,7 @@ organization := "de.unipassau.medspace"
 // project description
 description := "SqlWrapper"
 
-version := "1.0-SNAPSHOT"
+version := "0.1-PROTOTYPE"
 
 lazy val sql_wrapper = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin)

@@ -217,8 +217,9 @@ public class D2rWrapper<DocType> implements Wrapper {
     SqlToDocStream<DocType> docStream = null;
 
     try {
-      docStream = new SqlToDocStream<DocType>(getAllSourceData(), index.getResultFactory());
+      index.close();
       index.open();
+      docStream = new SqlToDocStream<DocType>(getAllSourceData(), index.getResultFactory());
       index.reindex(docStream);
 
     } catch (IOException e) {

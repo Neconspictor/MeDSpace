@@ -4,7 +4,7 @@ name := "d2rmap"
 // orgnization name (e.g., the package name of the project)
 organization := "de.unipassau.medspace"
 
-version := "1.0-SNAPSHOT"
+version := "0.1-PROTOTYPE"
 
 // project description
 description := "D2R Map"

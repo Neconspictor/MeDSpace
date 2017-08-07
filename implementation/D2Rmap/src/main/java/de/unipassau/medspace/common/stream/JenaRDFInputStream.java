@@ -34,6 +34,11 @@ public class JenaRDFInputStream extends InputStream {
     }
   }
 
+  public void close() throws IOException{
+      rdfOut.finish();
+      triples.close();
+  }
+
   private void addMapping(PrefixMapping mapping) {
     for (Map.Entry<String, String> map : mapping.getNsPrefixMap().entrySet()) {
       rdfOut.prefix(map.getKey(), map.getValue());

@@ -7,6 +7,7 @@ import de.unipassau.medspace.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
+import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.test.HelloActor;
 
@@ -78,9 +79,11 @@ private final FormFactory formFactory;
     try {
       triples = wrapperService.search(keywords);
     } catch (IOException e) {
+      FileUtil.closeSilently(triples);
       log.error("Error while querying the D2rWrapper", e);
       return internalServerError("Internal server error");
     } catch (NotValidArgumentException e) {
+      FileUtil.closeSilently(triples);
       return badRequest("keyword search query isn't valid: \"" + keywords + "\"");
     }
 
@@ -130,6 +133,20 @@ private final FormFactory formFactory;
         "exports in namespaces: ";
 
     return ok(views.html.minimal.render("Accepted", Html.apply(result)));
+  }
+
+  public Result reindex() {
+    if (!wrapperService.getWrapper().isIndexUsed())
+      return ok("No index used, nothing to do.");
+
+    try {
+      wrapperService.getWrapper().reindexData();
+    } catch (IOException e) {
+      log.error("Error while reindexing: ", e);
+      return internalServerError("Internal Server error");
+    }
+
+    return ok("Data reindexed.");
   }
 
   private String getClientHostName(Http.Request request) throws UnknownHostException {

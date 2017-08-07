@@ -5,6 +5,7 @@ import de.unipassau.medspace.common.stream.DataSourceStream;
 import org.apache.jena.graph.Triple;
 import org.apache.lucene.document.Document;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -22,5 +23,10 @@ public class DocToTripleStream<ElemType> extends TripleCacheStream<Document> {
   @Override
   protected List<Triple> createTriples(Document elem) {
     return resultFactory.triplize(elem);
+  }
+
+  @Override
+  public void close() throws IOException {
+    super.close();
   }
 }
