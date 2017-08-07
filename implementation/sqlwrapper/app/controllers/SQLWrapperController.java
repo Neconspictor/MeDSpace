@@ -103,10 +103,7 @@ private final FormFactory formFactory;
         "attachement; filename=" + filename);
   }
 
-  public Result search(boolean attach)  {
-    DynamicForm requestData = formFactory.form().bindFromRequest();
-    String keywords = requestData.get("keywords");
-
+  public Result search(String keywords, boolean attach)  {
     if (log.isDebugEnabled())
       log.debug("keyword search query: " + keywords);
 

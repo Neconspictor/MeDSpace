@@ -9,7 +9,7 @@ GET     /testConnection             controllers.SQLWrapperController.testDatasou
 
 GET /fileTest                 controllers.SQLWrapperController.fileTest
 
-GET /search                         controllers.SQLWrapperController.search(attach:Boolean ?= true)
+GET /search                         controllers.SQLWrapperController.search(keywords:String ?="", attach:Boolean ?= true)
 
 GET /test                       controllers.SQLWrapperController.test
 
