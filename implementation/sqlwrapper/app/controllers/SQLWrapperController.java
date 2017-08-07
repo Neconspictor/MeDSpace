@@ -68,41 +68,6 @@ private final FormFactory formFactory;
         wrapperService.getMetaData()));
   }
 
-  public CompletionStage<Result> testDatasourceConnection() {
-    return CompletableFuture.supplyAsync(() ->
-        wrapperService.isConnected())
-    .thenApply((isConnected)->
-        ok(views.html.connectionTest.render(isConnected)));
-  }
-
-  public CompletionStage<Result> sayHello(String name) {
-    return FutureConverters.toJava(ask(helloActor, new HelloActorProtocol.SayHello(name), 1000))
-        .thenApply(response -> ok((String) response));
-  }
-
-  public Result fileTest() throws FileNotFoundException {
-
-    InputStream input = Play.current().classloader().getResourceAsStream("public/large.txt");
-    if (input == null) {
-      throw new FileNotFoundException("large.bin was not found!");
-    }
-
-    Source<ByteString, ?> source = Source.<ByteString>actorRef(256, OverflowStrategy.dropNew())
-        .mapMaterializedValue(sourceActor -> {
-          sourceActor.tell(ByteString.fromString("My cool response"), null);
-          sourceActor.tell(new Status.Success(NotUsed.getInstance()), null);
-          return NotUsed.getInstance();
-        });
-
-    Source<ByteString, ?> source2 = StreamConverters.fromInputStream(()-> input);
-
-    source = source.concat(source2);
-
-    String filename = "MyCoolFile.bin";
-    return ok().chunked(source).as(Http.MimeTypes.BINARY).withHeader("Content-Disposition",
-        "attachement; filename=" + filename);
-  }
-
   public Result search(String keywords, boolean attach)  {
     if (log.isDebugEnabled())
       log.debug("keyword search query: " + keywords);
@@ -139,14 +104,5 @@ private final FormFactory formFactory;
     }
 
     return ok(tripleStream).as(mimeType).withHeader("Content-Disposition", dispositionValue);
-  }
-
-  public Result test() throws IOException {
-
-    InputOutputStream test = new InputOutputStream(256);
-
-    test.getOut().write(new byte[257]);
-
-    return ok(test.getByteContent());
   }
 }
