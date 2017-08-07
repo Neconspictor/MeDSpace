@@ -1,5 +1,6 @@
 package de.unipassau.medspace;
 
+import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
@@ -17,6 +18,8 @@ import org.apache.jena.graph.Triple;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.Environment;
+import play.api.Play;
 import play.api.inject.ApplicationLifecycle;
 
 
@@ -25,6 +28,8 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -40,26 +45,43 @@ import java.util.concurrent.CompletableFuture;
 public class SQLWrapperService {
 
   private static Logger log = LoggerFactory.getLogger(SQLWrapperService.class);
-  private final static String D2RMap = "./examples/medspace/medspace.d2r.xml";
   private ConnectionPool connectionPool;
   private Configuration config;
   private D2rWrapper<Document> wrapper;
   private DatabaseMetaData metaData;
+  private  com.typesafe.config.Config playConfig;
 
   @Inject
-  public SQLWrapperService(ApplicationLifecycle lifecycle) {
+  public SQLWrapperService(ApplicationLifecycle lifecycle,
+                           com.typesafe.config.Config playConfig,
+                           Environment environment) {
       /*lifecycle.addStopHook(() -> {
         log.warn("gracefulShutdown hook hello world!");
         return  	CompletableFuture.completedFuture(null);
       });*/
 
+      this.playConfig = playConfig;
+
       try {
-        startup(D2RMap);
+        String mappingConfigFile = playConfig.getString("MeDSpaceMappingConfig");
+        Path mappingPath = Paths.get(mappingConfigFile);
+        boolean isRelative = !mappingPath.isAbsolute();
+        String homePath = "./";
+        if (environment.isProd()) {
+          homePath = getExecutionPath() + "/../";
+          if (isRelative) mappingConfigFile = homePath + mappingConfigFile;
+        }
+
+        startup(mappingConfigFile, homePath);
+      }catch(ConfigException.Missing | ConfigException.WrongType e) {
+        log.error("Couldn't read MeDSpace mapping config file: ", e);
+        log.info("Graceful shutdown is initiated...");
+        gracefulShutdown(lifecycle, -1);
       } catch(Throwable e) {
         // Catching Throwable is regarded to be a bad habit, but as we catch the Throwable only
         // for allowing the application to shutdown gracefully, it is ok to do so.
         log.error("Failed to initialize SQL Wrapper", e);
-        log.info("Graceful shutdown will be initiated...");
+        log.info("Graceful shutdown is initiated...");
         gracefulShutdown(lifecycle, -1);
       }
 
@@ -119,7 +141,7 @@ public class SQLWrapperService {
     return searcher.searchForKeywords(keywordList);
   }
 
-  private void startup(String configFile) throws D2RException, IOException, SQLException {
+  private void startup(String configFile, String homePath) throws D2RException, IOException, SQLException {
 
     log.info("initializing SQL Wrapper...");
     try {
@@ -158,13 +180,28 @@ public class SQLWrapperService {
       log.debug("Closing Connection...");
       FileUtil.closeSilently(conn);
     }
+
+    Path indexPath = config.getIndexDirectory();
+    String indexDirectory = indexPath.toString();
+    boolean isRelative = !indexPath.isAbsolute();
+
+    if (isRelative) {
+      indexDirectory = homePath + indexDirectory;
+      if (indexDirectory.startsWith("/")) {
+        indexDirectory = indexDirectory.substring(1);
+      }
+      System.out.println("index directory: " + indexDirectory);
+      indexPath = Paths.get(indexDirectory).normalize();
+      System.out.println("index path: " + indexPath.toString());
+    }
+
     wrapper = new D2rWrapper<Document>(connectionPool, config.getMaps(),
-                              config.getNamespaces(), config.getIndexDirectory());
+                              config.getNamespaces(), indexPath);
 
     IndexFactory<Document, MappedSqlTuple> indexFactory =
-        new LuceneIndexFactory(wrapper, config.getIndexDirectory().toString());
+        new LuceneIndexFactory(wrapper, indexPath.toString());
 
-    wrapper.init(config.getIndexDirectory(), indexFactory);
+    wrapper.init(indexPath, indexFactory);
 
     boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
 
@@ -197,5 +234,12 @@ public class SQLWrapperService {
 
   public DatabaseMetaData getMetaData() {
     return metaData;
+  }
+
+  private String getExecutionPath(){
+    String absolutePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+    absolutePath = absolutePath.substring(0, absolutePath.lastIndexOf("/"));
+    absolutePath = absolutePath.replaceAll("%20"," "); // Surely need to do this here
+    return absolutePath;
   }
 }

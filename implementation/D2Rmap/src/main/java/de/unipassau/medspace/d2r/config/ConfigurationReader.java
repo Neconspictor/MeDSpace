@@ -22,7 +22,9 @@ import org.xml.sax.SAXParseException;
 
 import javax.xml.validation.Schema;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -287,8 +289,9 @@ public class ConfigurationReader {
     Path path = null;
 
     try {
-      path = FileUtil.createDirectory(directory);
-    } catch (IOException e) {
+      //path = FileUtil.createDirectory(directory);
+      path = Paths.get(directory);
+    } catch (InvalidPathException e) {
       throw new IOException("Error while trying to createDoc index directory path", e);
     }
 
