@@ -112,11 +112,6 @@ public class SqlStream implements DataSourceStream<SQLResultTuple> {
   }
 
   @Override
-  public Iterator<SQLResultTuple> iterator() {
-    return resultSetIterator;
-  }
-
-  @Override
   public SQLResultTuple next() {
     return resultSetIterator.next();
   }

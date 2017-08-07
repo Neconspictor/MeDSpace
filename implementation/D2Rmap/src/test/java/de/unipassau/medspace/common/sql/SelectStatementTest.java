@@ -37,12 +37,12 @@ public class SelectStatementTest {
   }
 
   private void printQueryResult(SqlStream result) throws SQLException, IOException {
-    for (SQLResultTuple tuple : result) {
+    /*for (SQLResultTuple tuple : result) {
       for (int i = 0; i < tuple.getColumnCount(); ++i) {
         System.out.print(tuple.getValue(i) + " ");
       }
     }
-
+*/
     System.out.println();
   }
 }

@@ -137,34 +137,18 @@ private final FormFactory formFactory;
     return ok(views.html.minimal.render("Accepted", Html.apply(result)));
   }
 
-  public CompletionStage<Result> reindex() {
-    //if (!wrapperService.getWrapper().isIndexUsed())
-    //  return ok("No index used, nothing to do.");
+  public Result reindex() {
+    if (!wrapperService.getWrapper().isIndexUsed())
+      return ok("No index used, nothing to do.");
 
-    return CompletableFuture.supplyAsync(() -> {
-      // do something with request()
-      try {
-        wrapperService.getWrapper().reindexData();
-      } catch (IOException e) {
-        log.error("Error while reindexing: ", e);
-        return false;
-      }
-      return true;
-    }).thenApply(success -> {
-      if (success) {
-        return ok("Data reindexed.");
-      }
-      return internalServerError("Internal Server error");
-    });
-
-    /*try {
+    try {
       wrapperService.getWrapper().reindexData();
     } catch (IOException e) {
       log.error("Error while reindexing: ", e);
       return internalServerError("Internal Server error");
     }
 
-    return ok("Data reindexed.");*/
+    return ok("Data reindexed.");
   }
 
   private String getClientHostName(Http.Request request) throws UnknownHostException {

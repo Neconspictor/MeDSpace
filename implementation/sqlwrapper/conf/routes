@@ -5,7 +5,7 @@
 # An example controller showing a sample home page
 GET     /                           controllers.SQLWrapperController.index()
 
-GET /search                         controllers.SQLWrapperController.search(keywords:String ?="", attach:Boolean ?= true)
+GET /search                         controllers.SQLWrapperController.search(keywords:String ?="", attach:Boolean ?= false)
 
 GET /registerDatasourceTest         controllers.SQLWrapperController.registerDataSourceTest()
 

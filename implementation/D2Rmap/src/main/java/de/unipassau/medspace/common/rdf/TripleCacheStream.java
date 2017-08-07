@@ -35,13 +35,13 @@ public abstract class TripleCacheStream<E> implements DataSourceStream<Triple> {
   protected abstract List<Triple> createTriples(E elem);
 
   @Override
-  public boolean hasNext() {
+  public boolean hasNext() throws IOException {
     if (!tripleCache.isEmpty()) return true;
     return stream.hasNext();
   }
 
   @Override
-  public Triple next() {
+  public Triple next() throws IOException {
     if (tripleCache.isEmpty()) {
       E nextElem = stream.next();
       tripleCache.addAll(createTriples(nextElem));

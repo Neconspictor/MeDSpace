@@ -61,41 +61,23 @@ public class StreamCollection<E> implements StartableStream<E> {
   }
 
   @Override
-  public boolean hasNext() {
+  public boolean hasNext() throws IOException {
     try {
       validator.validateHasNext();
     } catch (IOException e) {
       log.error("Error while validation", e);
       return false;
     }
-    StreamProxy<E> activeStream = null;
-    try {
-      activeStream = getActiveStream();
-    } catch (IOException e) {
-      log.error("Error: ", e);
-      throw new NoSuchElementException("Couldn't access active stream");
-    }
+    StreamProxy<E> activeStream = getActiveStream();
     return activeStream != null;
   }
 
   @Override
-  public E next() {
-    try {
-      validator.validateNext();
-    } catch (IOException e) {
-      log.error("Error while validation", e);
-      return null;
-    }
-
-    StreamProxy<E> activeStream = null;
-    try {
-      activeStream = getActiveStream();
-    } catch (IOException e) {
-      log.error("Error while trying to retrieve next stream: ", e);
-      throw new NoSuchElementException("Couldn't access active stream");
-    }
+  public E next() throws IOException {
+    validator.validateNext();
+    StreamProxy<E> activeStream = getActiveStream();
     if (activeStream == null) throw new IllegalStateException("No valid next object available!");
-    return activeStream.iterator().next();
+    return activeStream.next();
   }
 
   @Override
@@ -103,13 +85,6 @@ public class StreamCollection<E> implements StartableStream<E> {
     validator.validateStart();
     if (getActiveStream() == null) {
       log.warn("StreamCollection has started streaming, but no streams were added!");
-    }
-    try {
-      System.out.println("before sleep...");
-      Thread.sleep(10000);
-      System.out.println("After sleep...");
-    } catch (InterruptedException e) {
-      e.printStackTrace();
     }
   }
 
@@ -146,7 +121,7 @@ public class StreamCollection<E> implements StartableStream<E> {
         }
       }
 
-      if (!stream.iterator().hasNext()) {
+      if (!stream.hasNext()) {
 
         // Just remove the stream and get the validateNext
         // Errors shouldn't occur normally, so log them

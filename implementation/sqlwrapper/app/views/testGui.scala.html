@@ -33,8 +33,13 @@
 <div class= "centeredBlock">
     <form class="queryField" action="@routes.SQLWrapperController.search("", false)" method="GET">
         <input class="bigTextField" type="text" name="keywords" placeholder="Search Dataspace...">
-        <input type="hidden" name="attach" value="false" />
+        @*<input type="hidden" name="attach" value="false" />*@
         <button class="button grayGradient bigText" type="submit">Search</button>
+        <div>
+            Attach result has file
+            <input type="checkbox" name="attach" value="true">
+
+        </div>
     </form>
 </div>
 }

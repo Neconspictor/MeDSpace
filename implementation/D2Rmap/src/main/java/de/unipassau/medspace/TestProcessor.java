@@ -82,7 +82,7 @@ public class TestProcessor {
 
       Instant startTime = Instant.now();
 
-      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("Male"));
+      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
       //triples = wrapper.getAllData();
       PrefixMapping mapping = wrapper.getNamespacePrefixMapper();
 
@@ -141,12 +141,12 @@ public class TestProcessor {
     }
 
     @Override
-    public boolean hasNext() {
+    public boolean hasNext() throws IOException {
       return stream.hasNext() || !cache.isEmpty();
     }
 
     @Override
-    public Triple next() {
+    public Triple next() throws IOException {
       if (cache.isEmpty()) {
         MappedSqlTuple tuple = stream.next();
         cache.addAll(tuple.getMap().createTriples(tuple.getSource()));

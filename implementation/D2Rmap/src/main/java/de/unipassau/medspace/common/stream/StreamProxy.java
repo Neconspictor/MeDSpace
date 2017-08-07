@@ -31,14 +31,9 @@ public class StreamProxy<E> implements StartableStream<E> {
   }
 
   @Override
-  public boolean hasNext() {
-    try {
-      validator.validateHasNext();
-    } catch (IOException e) {
-      log.error("Error during validation", e);
-      return false;
-    }
-    return impl.iterator().hasNext();
+  public boolean hasNext() throws IOException {
+    validator.validateHasNext();
+    return impl.hasNext();
   }
 
   /**
@@ -50,14 +45,9 @@ public class StreamProxy<E> implements StartableStream<E> {
   }
 
   @Override
-  public E next() {
-    try {
-      validator.validateNext();
-    } catch (IOException e) {
-      log.error("Error during validation", e);
-      return null;
-    }
-    return impl.iterator().next();
+  public E next() throws IOException {
+    validator.validateNext();
+    return impl.next();
   }
 
   @Override

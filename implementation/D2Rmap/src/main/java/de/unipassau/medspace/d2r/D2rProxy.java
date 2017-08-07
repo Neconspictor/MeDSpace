@@ -72,12 +72,12 @@ public class D2rProxy {
       }
 
       @Override
-      public boolean hasNext() {
+      public boolean hasNext() throws IOException {
         return source.hasNext();
       }
 
       @Override
-      public MappedSqlTuple next() {
+      public MappedSqlTuple next() throws IOException {
         return new MappedSqlTuple(source.next(), map);
       }
     };

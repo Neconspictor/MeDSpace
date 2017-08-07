@@ -142,7 +142,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     }
   }
 
-  public void index(Iterable<Document> data) throws IOException {
+  public void index(DataSourceStream<Document> data) throws IOException {
     Analyzer analyzer = buildAnalyzer();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -150,7 +150,8 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
 
     try(IndexWriter w = new IndexWriter(index, config)) {
       //w.addDocuments(data);
-      for (Document doc : data) {
+      while (data.hasNext()) {
+        Document doc = data.next();
         w.addDocument(doc);
         w.flush();
         w.commit();
@@ -179,7 +180,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
   /**
    * Clears the index and indexes the sql data.
    */
-  public void reindex(Iterable<Document> data) throws IOException {
+  public void reindex(DataSourceStream<Document> data) throws IOException {
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
     index(data);

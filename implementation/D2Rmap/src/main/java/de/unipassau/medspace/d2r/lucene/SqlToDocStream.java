@@ -27,12 +27,12 @@ public class SqlToDocStream<DocType> implements DataSourceStream<DocType> {
   }
 
   @Override
-  public boolean hasNext() {
+  public boolean hasNext() throws IOException {
     return stream.hasNext();
   }
 
   @Override
-  public DocType next() {
+  public DocType next() throws IOException {
     MappedSqlTuple tuple = stream.next();
     return factory.createDoc(tuple);
   }
