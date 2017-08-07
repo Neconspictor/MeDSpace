@@ -1,6 +1,10 @@
 
 
-@(config: de.unipassau.medspace.d2r.config.Configuration)
+@import de.unipassau.medspace.common.SQL.ConnectionPool
+@(service: de.unipassau.medspace.SQLWrapperService,
+        config: de.unipassau.medspace.d2r.config.Configuration,
+        connectionPool: ConnectionPool,
+        metaData: java.sql.DatabaseMetaData)
 
 @main("SQL Wrapper(D2R)") {
   <h1>SQL Wrapper(D2R) status site</h1>
@@ -18,10 +22,24 @@
 
   <h4>Datasource</h4>
 
+  Database-Product: @metaData.getDatabaseProductName() <br>
+  Database-Product-Version: @metaData.getDatabaseProductVersion() <br>
+  Driver: @metaData.getDriverName() <br>
+  Driver-Version: @metaData.getDriverVersion() <br>
+
   JDBC-Driver: @config.getJdbcDriver().getName()  <br>
   JDBC-URL: @config.getJdbc() <br>
 
-  Connection-Pool size: @config.getMaxConnections() <br>
+  Max connections: @metaData.getMaxConnections <br>
+  Max row size: @metaData.getMaxRowSize <br>
+
+  <h4>Connection Pool</h4>
+
+  Max connection pool size: @connectionPool.getMaxPoolSize() <br>
+  Number active connections: @connectionPool.getActiveConnectionsNumber <br>
+  Number idle connections: @connectionPool.getIdleConnectionsNumber <br>
+  Number total connections: @connectionPool.getTotalConnectionsNumber <br>
+
 
   <p>Maps:</p>
   <ul>

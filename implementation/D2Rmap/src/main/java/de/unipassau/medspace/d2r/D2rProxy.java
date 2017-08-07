@@ -4,25 +4,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
-import de.unipassau.medspace.common.SQL.DataSourceManager;
+import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.rdf.Namespace;
-import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.StreamFactory;
-import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.common.SQL.SelectStatement;
-import org.apache.jena.ext.com.google.common.collect.Lists;
-import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.shared.impl.PrefixMappingImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import org.apache.lucene.document.Document;
 
 import javax.sql.DataSource;
 
@@ -40,13 +32,13 @@ public class D2rProxy {
   /**
    * The datasource manager is used to get a open connection to the datasource
    */
-  private DataSourceManager dataSourceManager;
+  private ConnectionPool connectionPool;
 
 
-  public D2rProxy(DataSourceManager dataSourceManager) throws D2RException {
-    assert dataSourceManager != null;
+  public D2rProxy(ConnectionPool connectionPool) throws D2RException {
+    assert connectionPool != null;
 
-    this.dataSourceManager = dataSourceManager;
+    this.connectionPool = connectionPool;
   }
 
   /**
@@ -101,7 +93,7 @@ public class D2rProxy {
   public DataSourceStream<MappedSqlTuple> getAllData(List<D2rMap> maps) throws IOException {
     StreamCollection<MappedSqlTuple> result = new StreamCollection<>();
     for (D2rMap map : maps) {
-      result.add(createStreamFactory(map, dataSourceManager.getDataSource(), new ArrayList<>()));
+      result.add(createStreamFactory(map, connectionPool.getDataSource(), new ArrayList<>()));
     }
     result.start();
     return result;

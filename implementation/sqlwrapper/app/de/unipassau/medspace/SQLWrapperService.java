@@ -1,7 +1,7 @@
 package de.unipassau.medspace;
 
-import de.unipassau.medspace.common.SQL.DataSourceManager;
-import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
+import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.indexing.IndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
@@ -26,13 +26,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * Created by David Goeth on 24.07.2017.
@@ -42,9 +41,10 @@ public class SQLWrapperService {
 
   private static Logger log = LoggerFactory.getLogger(SQLWrapperService.class);
   private final static String D2RMap = "./examples/medspace/medspace.d2r.xml";
-  private DataSourceManager dataSourceManager;
+  private ConnectionPool connectionPool;
   private Configuration config;
   private D2rWrapper<Document> wrapper;
+  private DatabaseMetaData metaData;
 
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle) {
@@ -67,12 +67,21 @@ public class SQLWrapperService {
         log.info("Shutdown is executing...");
         wrapper.close();
 
-        dataSourceManager.close();
+        connectionPool.close();
         return CompletableFuture.completedFuture(null);
       });
 
     //lifecycle.stop();
     //System.exit(-1);
+  }
+
+  public Configuration getConfig() {
+    return config;
+  }
+
+
+  public D2rWrapper getWrapper() {
+    return wrapper;
   }
 
 
@@ -83,7 +92,7 @@ public class SQLWrapperService {
   public boolean isConnected() {
     Connection conn = null;
     try {
-      conn = dataSourceManager.getDataSource().getConnection();
+      conn = connectionPool.getDataSource().getConnection();
     } catch (SQLException e) {
       return false;
     } finally {
@@ -110,7 +119,7 @@ public class SQLWrapperService {
     return searcher.searchForKeywords(keywordList);
   }
 
-  private void startup(String configFile) throws D2RException, IOException {
+  private void startup(String configFile) throws D2RException, IOException, SQLException {
 
     log.info("initializing SQL Wrapper...");
     try {
@@ -130,7 +139,7 @@ public class SQLWrapperService {
       new D2RException(errorMessage, e);
     }
 
-    dataSourceManager = new HikariDataSourceManager(
+    connectionPool = new HikariConnectionPool(
         jdbcURI,
         config.getJdbcDriver(),
         config.getDatabaseUsername(),
@@ -141,14 +150,15 @@ public class SQLWrapperService {
     // check if the datasource manager can connect to the datasource.
     Connection conn = null;
     try {
-      conn = dataSourceManager.getDataSource().getConnection();
+      conn = connectionPool.getDataSource().getConnection();
+      metaData = conn.getMetaData();
     } catch (SQLException e) {
       throw new D2RException("Couldn't establish connection to the datasource", e);
     } finally {
       log.debug("Closing Connection...");
       FileUtil.closeSilently(conn);
     }
-    wrapper = new D2rWrapper<Document>(dataSourceManager, config.getMaps(),
+    wrapper = new D2rWrapper<Document>(connectionPool, config.getMaps(),
                               config.getNamespaces(), config.getIndexDirectory());
 
     IndexFactory<Document, MappedSqlTuple> indexFactory =
@@ -181,11 +191,11 @@ public class SQLWrapperService {
     System.exit(errorCode);
   }
 
-  public Configuration getConfig() {
-    return config;
+  public ConnectionPool getConnectionPool() {
+    return connectionPool;
   }
 
-  public D2rWrapper getWrapper() {
-    return wrapper;
+  public DatabaseMetaData getMetaData() {
+    return metaData;
   }
 }

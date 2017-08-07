@@ -1,6 +1,6 @@
 package de.unipassau.medspace.d2r.query;
 
-import de.unipassau.medspace.common.SQL.DataSourceManager;
+import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
       String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns, "OR");
 
-      DataSourceManager manager = wrapper.getDataSourceManager();
+      ConnectionPool manager = wrapper.getConnectionPool();
       StreamFactory<Triple> stream = createTripleStreamFactory(map, manager.getDataSource(),
           Arrays.asList(keywordCondition));
       result.add(stream);

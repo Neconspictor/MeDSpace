@@ -2,8 +2,6 @@ package de.unipassau.medspace.common.SQL;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.pool.HikariPool;
-import de.unipassau.medspace.common.SQL.DataSourceManager;
 import org.javatuples.Pair;
 
 import javax.sql.DataSource;
@@ -16,7 +14,7 @@ import java.util.List;
 /**
  * Created by David Goeth on 12.06.2017.
  */
-public class HikariDataSourceManager implements DataSourceManager {
+public class HikariConnectionPool implements ConnectionPool {
   private HikariDataSource dataSource;
   private List<Pair<String, String>> datasourceProperties;
   private URI jdbcURI;
@@ -25,7 +23,7 @@ public class HikariDataSourceManager implements DataSourceManager {
   private int poolSize;
   private String userName;
 
-  public HikariDataSourceManager(URI jdbcURI, Class driverClass, String userName, String password, int poolSize, List<Pair<String, String>> datasourceProperties) {
+  public HikariConnectionPool(URI jdbcURI, Class driverClass, String userName, String password, int poolSize, List<Pair<String, String>> datasourceProperties) {
     assert poolSize > 0;
 
     dataSource = null;
@@ -46,8 +44,28 @@ public class HikariDataSourceManager implements DataSourceManager {
   }
 
 
+  @Override
+  public int getActiveConnectionsNumber() {
+    return dataSource.getHikariPoolMXBean().getActiveConnections();
+  }
+
   public DataSource getDataSource() {
     return dataSource;
+  }
+
+  @Override
+  public int getIdleConnectionsNumber() {
+    return dataSource.getHikariPoolMXBean().getIdleConnections();
+  }
+
+  @Override
+  public int getMaxPoolSize() {
+    return dataSource.getHikariConfigMXBean().getMaximumPoolSize();
+  }
+
+  @Override
+  public int getTotalConnectionsNumber() {
+    return dataSource.getHikariPoolMXBean().getTotalConnections();
   }
 
   private void init() {
@@ -65,7 +83,6 @@ public class HikariDataSourceManager implements DataSourceManager {
       hikariConfig.addDataSourceProperty(property.getValue0(), property.getValue1());
     }
     dataSource =  new HikariDataSource(hikariConfig);
-
   }
 
   @Override

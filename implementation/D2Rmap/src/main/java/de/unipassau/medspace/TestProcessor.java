@@ -1,17 +1,16 @@
 package de.unipassau.medspace;
 
-import de.unipassau.medspace.common.SQL.DataSourceManager;
+import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.indexing.IndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
-import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
-import de.unipassau.medspace.common.SQL.HikariDataSourceManager;
 import de.unipassau.medspace.d2r.exception.D2RException;
 
 import java.io.*;
@@ -37,7 +36,7 @@ public class TestProcessor {
   private final static Logger log = LoggerFactory.getLogger(TestProcessor.class);
 
   public static void main(String[] args) throws IOException {
-    DataSourceManager dataSourceManager = null;
+    ConnectionPool connectionPool = null;
     D2rWrapper<Document> wrapper = null;
 
     try {
@@ -46,7 +45,7 @@ public class TestProcessor {
       Configuration config = new ConfigurationReader().readConfig(D2RMap);
       URI jdbcURI = new URI(config.getJdbc());
 
-      dataSourceManager = new HikariDataSourceManager(
+      connectionPool = new HikariConnectionPool(
           jdbcURI,
           config.getJdbcDriver(),
           config.getDatabaseUsername(),
@@ -63,7 +62,7 @@ public class TestProcessor {
         //index = new SqlIndex(config.getIndexDirectory(), proxy);
       }
 
-      wrapper = new D2rWrapper<>(dataSourceManager, config.getMaps(),
+      wrapper = new D2rWrapper<>(connectionPool, config.getMaps(),
                                 config.getNamespaces(), config.getIndexDirectory());
 
       IndexFactory<Document, MappedSqlTuple> indexFactory =
@@ -121,7 +120,7 @@ public class TestProcessor {
       log.debug("Error stacktrace", ex);
     } finally {
       FileUtil.closeSilently(wrapper);
-      FileUtil.closeSilently(dataSourceManager);
+      FileUtil.closeSilently(connectionPool);
       log.info("streams successfully closed");
     }
   }

@@ -1,9 +1,8 @@
 package de.unipassau.medspace.d2r;
 
-import de.unipassau.medspace.common.SQL.DataSourceManager;
+import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.indexing.IndexFactory;
-import de.unipassau.medspace.common.lucene.ResultFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
@@ -13,12 +12,10 @@ import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.query.D2rKeywordSearcher;
-import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
 import de.unipassau.medspace.d2r.lucene.SqlToDocStream;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.shared.impl.PrefixMappingImpl;
-import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,25 +73,25 @@ public class D2rWrapper<DocType> implements Wrapper {
   /**
    * TODO
    */
-  private DataSourceManager dataSourceManager;
+  private ConnectionPool connectionPool;
 
   private boolean indexUsed;
 
   /**
    * TODO
-   * @param dataSourceManager
+   * @param connectionPool
    * @param maps
    * @param namespaces
    * @param indexDirectory
    * @throws IOException
    * @throws D2RException
    */
-  public D2rWrapper(DataSourceManager dataSourceManager,
+  public D2rWrapper(ConnectionPool connectionPool,
                     List<D2rMap> maps,
                     HashMap<String, Namespace> namespaces,
                     Path indexDirectory) throws IOException, D2RException
   {
-    this.proxy = new D2rProxy(dataSourceManager);
+    this.proxy = new D2rProxy(connectionPool);
 
     // We won't change the list; being cautious we make it unmodifiable.
     // TODO make the list elements itself immutable after they are initialized
@@ -106,7 +103,7 @@ public class D2rWrapper<DocType> implements Wrapper {
     for (D2rMap map : maps) {
       idToMap.put(map.getId(), map);
       map.setNormalizer(normalizer);
-      map.init(dataSourceManager.getDataSource());
+      map.init(connectionPool.getDataSource());
     }
 
     this.namespaces = namespaces;
@@ -117,7 +114,7 @@ public class D2rWrapper<DocType> implements Wrapper {
       namespacePrefixMapper.setNsPrefix(namespace.getPrefix(), namespace.getFullURI());
     }
 
-    this.dataSourceManager = dataSourceManager;
+    this.connectionPool = connectionPool;
 
     indexUsed = false;
   }
@@ -272,8 +269,8 @@ public class D2rWrapper<DocType> implements Wrapper {
    * TODO
    * @return
    */
-  public DataSourceManager getDataSourceManager() {
-    return dataSourceManager;
+  public ConnectionPool getConnectionPool() {
+    return connectionPool;
   }
 
 
