@@ -7,8 +7,6 @@
 	jdbcDriver="com.mysql.jdbc.Driver"
 	jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
 
-jdbcDriver="com.mysql.jdbc.Driver"
-			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
 	
 	org.h2.Driver
 	jdbc:h2:tcp://localhost:5000/./medspace;SCHEMA=MEDSPACE

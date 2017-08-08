@@ -28,8 +28,8 @@
   <logger name="application" level="DEBUG" />
 
   <logger name="de.unipassau.medspace" level="INFO" />
-  <logger name="GlobalModule" level="INFO" />
-  <logger name="de.unipassau.medspace.SQLWrapperService" level="INFO" />
+  <logger name="GlobalModule" level="DEBUG" />
+  <logger name="de.unipassau.medspace.SQLWrapperService" level="DEBUG" />
 
   <!-- Suppress warning bug from https://hibernate.atlassian.net/browse/HV-1323 -->
   <logger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="error"/>

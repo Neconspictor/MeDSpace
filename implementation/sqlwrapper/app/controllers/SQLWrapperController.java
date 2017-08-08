@@ -1,15 +1,11 @@
 package controllers;
 
-import akka.actor.*;
-
-
 import de.unipassau.medspace.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.DataSourceStream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.config.Configuration;
-import de.unipassau.medspace.test.HelloActor;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.Lang;
@@ -31,12 +27,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
-import org.xbill.DNS.*;
 import play.twirl.api.Html;
-import scala.Dynamic;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -46,15 +37,13 @@ import scala.Dynamic;
 public class SQLWrapperController extends Controller {
 
   private final SQLWrapperService wrapperService;
-  private final ActorRef helloActor;
   private static Logger log = LoggerFactory.getLogger(SQLWrapperController.class);
 
 private final FormFactory formFactory;
   @Inject
-  SQLWrapperController(SQLWrapperService wrapperService, ActorSystem system,
+  SQLWrapperController(SQLWrapperService wrapperService,
                        FormFactory formFactory) {
     this.wrapperService = wrapperService;
-    helloActor = system.actorOf(HelloActor.getProps());
     this.formFactory = formFactory;
   }
 

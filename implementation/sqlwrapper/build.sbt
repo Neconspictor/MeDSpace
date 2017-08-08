@@ -7,7 +7,7 @@ description := "SqlWrapper"
 version := "0.1-PROTOTYPE"
 
 lazy val sql_wrapper = (project in file("."))
-  .enablePlugins(PlayJava, LauncherJarPlugin)
+  .enablePlugins(PlayJava, LauncherJarPlugin) //, LauncherJarPlugin
   .aggregate(d2rmap)
   .dependsOn(d2rmap)
 
@@ -22,5 +22,6 @@ libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"
 // https://mvnrepository.com/artifact/dnsjava/dnsjava
 libraryDependencies += "dnsjava" % "dnsjava" % "2.1.8"
 
+//batScriptTemplateLocation := file("run.bat" )
 
 javacOptions ++= Seq("-Xlint:unchecked")

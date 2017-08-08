@@ -296,7 +296,7 @@ public class D2rWrapper<DocType> implements Wrapper {
         throw new IOException("Error while trying to createDoc index: ", e);
       }
     } catch (IOException e) {
-      throw new IOException("Couldn't createDoc Index", e);
+      throw new IOException("Couldn't create Index", e);
     }
   }
 }

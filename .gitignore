@@ -10,6 +10,8 @@
 *.pdf
 *.sav
 *.toc
+*.db
+*.jar
 
 // gradle
 *.gradle

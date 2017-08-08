@@ -49,7 +49,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
-      throw new IOException("Couldn't createDoc index directory");
+      throw new IOException("Couldn't create index directory", e);
     }
     LuceneDataSourceIndex<ElemType> result = new LuceneDataSourceIndex<>(path,
         Collections.unmodifiableList(fields), resultFactory);

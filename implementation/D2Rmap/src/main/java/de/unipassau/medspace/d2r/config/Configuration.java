@@ -101,7 +101,7 @@ public class Configuration {
   }
 
   public void setIndexDirectory(Path indexDirectory) {
-    this.indexDirectory = indexDirectory;
+    this.indexDirectory = indexDirectory.normalize();
   }
 
   public void setMaps(List<D2rMap> maps) {

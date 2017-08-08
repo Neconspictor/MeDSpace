@@ -19,12 +19,12 @@ import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.Environment;
-import play.api.Play;
 import play.api.inject.ApplicationLifecycle;
 
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -53,26 +53,13 @@ public class SQLWrapperService {
 
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
-                           com.typesafe.config.Config playConfig,
-                           Environment environment) {
-      /*lifecycle.addStopHook(() -> {
-        log.warn("gracefulShutdown hook hello world!");
-        return  	CompletableFuture.completedFuture(null);
-      });*/
+                           com.typesafe.config.Config playConfig) {
 
       this.playConfig = playConfig;
 
       try {
         String mappingConfigFile = playConfig.getString("MeDSpaceMappingConfig");
-        Path mappingPath = Paths.get(mappingConfigFile);
-        boolean isRelative = !mappingPath.isAbsolute();
-        String homePath = "./";
-        if (environment.isProd()) {
-          homePath = getExecutionPath() + "/../";
-          if (isRelative) mappingConfigFile = homePath + mappingConfigFile;
-        }
-
-        startup(mappingConfigFile, homePath);
+        startup(mappingConfigFile);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
         log.error("Couldn't read MeDSpace mapping config file: ", e);
         log.info("Graceful shutdown is initiated...");
@@ -141,7 +128,7 @@ public class SQLWrapperService {
     return searcher.searchForKeywords(keywordList);
   }
 
-  private void startup(String configFile, String homePath) throws D2RException, IOException, SQLException {
+  private void startup(String configFile) throws D2RException, IOException, SQLException {
 
     log.info("initializing SQL Wrapper...");
     try {
@@ -182,18 +169,6 @@ public class SQLWrapperService {
     }
 
     Path indexPath = config.getIndexDirectory();
-    String indexDirectory = indexPath.toString();
-    boolean isRelative = !indexPath.isAbsolute();
-
-    if (isRelative) {
-      indexDirectory = homePath + indexDirectory;
-      if (indexDirectory.startsWith("/")) {
-        indexDirectory = indexDirectory.substring(1);
-      }
-      System.out.println("index directory: " + indexDirectory);
-      indexPath = Paths.get(indexDirectory).normalize();
-      System.out.println("index path: " + indexPath.toString());
-    }
 
     wrapper = new D2rWrapper<Document>(connectionPool, config.getMaps(),
                               config.getNamespaces(), indexPath);
@@ -236,10 +211,4 @@ public class SQLWrapperService {
     return metaData;
   }
 
-  private String getExecutionPath(){
-    String absolutePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-    absolutePath = absolutePath.substring(0, absolutePath.lastIndexOf("/"));
-    absolutePath = absolutePath.replaceAll("%20"," "); // Surely need to do this here
-    return absolutePath;
-  }
 }

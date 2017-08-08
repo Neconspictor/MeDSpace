@@ -1,7 +1,6 @@
 import com.google.inject.AbstractModule;
 import de.unipassau.medspace.SQLWrapperService;
-import de.unipassau.medspace.d2r.D2rProxy;
-import de.unipassau.medspace.d2r.D2rWrapper;
+import de.unipassau.medspace.SystemConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,17 +22,13 @@ public class GlobalModule extends AbstractModule {
     this.configuration = configuration;
   }
 
-  public void foo() {
-    D2rProxy proxy = null;
-    D2rWrapper wrapper = null;
-  }
-
   @Override
   protected void configure() {
     if (environment.asJava().isTest()) return;
     log.info("GlobuleModule configures dependencies...");
     //bind(ClassLoader.class).toInstance(environment.classLoader());
     //bind(Startup.class).asEagerSingleton();
+    bind(SystemConfig.class).asEagerSingleton();
     bind(SQLWrapperService.class).asEagerSingleton();
     log.info("done.");
 
