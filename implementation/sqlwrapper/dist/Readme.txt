@@ -53,6 +53,3 @@ Both applications can be stopped as is usual by using CTRL/COMMAND + C inside th
 The default Port the Wrapper is set to 80, so just browse localhost and you should be brought to the index page of the Wrapper.
 The index page lists all available services. A test client can be found /test_gui. If you like to reindex the data (e.g. after changing the sql data),
 than execute the reindex REST service by browsing to /reindex .
-
-
-
