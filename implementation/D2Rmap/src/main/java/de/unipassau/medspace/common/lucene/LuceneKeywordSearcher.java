@@ -2,10 +2,8 @@ package de.unipassau.medspace.common.lucene;
 
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -36,7 +34,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
   }
 
   @Override
-  public DataSourceStream<Document> searchForKeywords(List<String> keywords) throws IOException,
+  public Stream<Document> searchForKeywords(List<String> keywords) throws IOException,
       NotValidArgumentException {
 
     if (keywords.size() == 0) {
@@ -85,7 +83,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
     return new SearchResult(readerFactory.createReader(), query);
   }
 
-  private static class DocumentStream implements DataSourceStream<Document> {
+  private static class DocumentStream implements Stream<Document> {
 
     private int index;
     private SearchResult searchResult;

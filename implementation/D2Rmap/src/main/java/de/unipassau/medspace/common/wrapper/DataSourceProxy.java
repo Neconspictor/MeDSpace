@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.wrapper;
 
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 
 /**
  * A class that acts as a proxy for a datasource that provides data of type E. This proxy provides methods for
@@ -19,5 +19,5 @@ public interface DataSourceProxy<E> {
    * Provides a stream of all the proxied datasource's data set.
    * @return A stream of all data of the proxied datasource.
    */
-  DataSourceStream<E> getData();
+  Stream<E> getData();
 }

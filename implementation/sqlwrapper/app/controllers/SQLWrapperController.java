@@ -2,7 +2,7 @@ package controllers;
 
 import de.unipassau.medspace.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.config.Configuration;
@@ -66,7 +66,7 @@ private final FormFactory formFactory;
     if (log.isDebugEnabled())
       log.debug("keyword search query: " + keywords);
 
-    DataSourceStream<Triple> triples = null;
+    Stream<Triple> triples = null;
     try {
       triples = wrapperService.search(keywords);
     } catch (IOException e) {

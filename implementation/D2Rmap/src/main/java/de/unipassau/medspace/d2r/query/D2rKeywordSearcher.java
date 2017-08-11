@@ -5,7 +5,7 @@ import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.common.util.SqlUtil;
@@ -34,7 +34,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
   }
 
   @Override
-  public DataSourceStream<Triple> searchForKeywords(List<String> keywords) throws IOException,
+  public Stream<Triple> searchForKeywords(List<String> keywords) throws IOException,
       NotValidArgumentException {
     StreamCollection<Triple> result = new StreamCollection<>();
 

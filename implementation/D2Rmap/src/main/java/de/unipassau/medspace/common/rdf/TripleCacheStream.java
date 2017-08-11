@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.rdf;
 
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import org.apache.jena.graph.Triple;
 
 import java.io.IOException;
@@ -11,12 +11,12 @@ import java.util.Queue;
 /**
  * Created by David Goeth on 03.07.2017.
  */
-public abstract class TripleCacheStream<E> implements DataSourceStream<Triple> {
+public abstract class TripleCacheStream<E> implements Stream<Triple> {
 
   protected Queue<Triple> tripleCache;
-  protected DataSourceStream<E> stream;
+  protected Stream<E> stream;
 
-  public TripleCacheStream(DataSourceStream<E> stream) {
+  public TripleCacheStream(Stream<E> stream) {
     this();
     this.stream = stream;
   }

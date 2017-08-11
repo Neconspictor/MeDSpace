@@ -7,7 +7,7 @@ import java.util.*;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.StreamFactory;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.stream.StreamCollection;
@@ -64,8 +64,8 @@ public class D2rProxy {
       }
     };
 
-    return () -> new DataSourceStream<MappedSqlTuple>() {
-      private DataSourceStream<SQLResultTuple> source = resultTupleFactory.create();
+    return () -> new Stream<MappedSqlTuple>() {
+      private Stream<SQLResultTuple> source = resultTupleFactory.create();
       @Override
       public void close() throws IOException {
         source.close();
@@ -90,7 +90,7 @@ public class D2rProxy {
    * @return
    * @throws IOException
    */
-  public DataSourceStream<MappedSqlTuple> getAllData(List<D2rMap> maps) throws IOException {
+  public Stream<MappedSqlTuple> getAllData(List<D2rMap> maps) throws IOException {
     StreamCollection<MappedSqlTuple> result = new StreamCollection<>();
     for (D2rMap map : maps) {
       result.add(createStreamFactory(map, connectionPool.getDataSource(), new ArrayList<>()));

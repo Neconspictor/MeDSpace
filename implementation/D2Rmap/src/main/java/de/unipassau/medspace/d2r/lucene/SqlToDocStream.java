@@ -1,7 +1,7 @@
 package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.common.lucene.ResultFactory;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
 
 import java.io.IOException;
@@ -9,12 +9,12 @@ import java.io.IOException;
 /**
  * Created by David Goeth on 30.06.2017.
  */
-public class SqlToDocStream<DocType> implements DataSourceStream<DocType> {
+public class SqlToDocStream<DocType> implements Stream<DocType> {
 
-  private final DataSourceStream<MappedSqlTuple> stream;
+  private final Stream<MappedSqlTuple> stream;
   private final ResultFactory<MappedSqlTuple, DocType> factory;
 
-  public SqlToDocStream(DataSourceStream<MappedSqlTuple> stream,
+  public SqlToDocStream(Stream<MappedSqlTuple> stream,
                         ResultFactory<MappedSqlTuple, DocType> resultFactory) throws IOException {
 
     this.stream = stream;

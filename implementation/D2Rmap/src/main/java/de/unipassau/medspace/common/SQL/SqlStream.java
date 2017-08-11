@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.SQL;
 
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.iterator.LookaheadIterator;
 import org.slf4j.Logger;
@@ -12,12 +12,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
 
 /**
  * Represents a StartableIterable of SQL tuples created from a SQL query.
  */
-public class SqlStream implements DataSourceStream<SQLResultTuple> {
+public class SqlStream implements Stream<SQLResultTuple> {
 
   private static Logger log = LoggerFactory.getLogger(SqlStream.class);
 

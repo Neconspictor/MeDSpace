@@ -2,7 +2,7 @@ package de.unipassau.medspace.common.lucene;
 
 import de.unipassau.medspace.common.indexing.DataSourceIndex;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import org.apache.jena.graph.Triple;
 import org.apache.lucene.analysis.Analyzer;
@@ -86,7 +86,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
   @Override
   public KeywordSearcher<Triple> convert(KeywordSearcher<Document> source) throws IOException {
     return keywords -> {
-      DataSourceStream<Document> result =  source.searchForKeywords(keywords);
+      Stream<Document> result =  source.searchForKeywords(keywords);
       return new DocToTripleStream<ElemType>(result, resultFactory);
     };
   }
@@ -142,7 +142,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     }
   }
 
-  public void index(DataSourceStream<Document> data) throws IOException {
+  public void index(Stream<Document> data) throws IOException {
     Analyzer analyzer = buildAnalyzer();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -180,7 +180,7 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
   /**
    * Clears the index and indexes the sql data.
    */
-  public void reindex(DataSourceStream<Document> data) throws IOException {
+  public void reindex(Stream<Document> data) throws IOException {
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
     index(data);

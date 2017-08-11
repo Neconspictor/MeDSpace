@@ -7,7 +7,7 @@ import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
@@ -156,7 +156,7 @@ public class D2rWrapper<DocType> implements Wrapper {
    * @return
    * @throws IOException
    */
-  public DataSourceStream<MappedSqlTuple> getAllSourceData() throws IOException {
+  public Stream<MappedSqlTuple> getAllSourceData() throws IOException {
     return proxy.getAllData(maps);
   }
 
@@ -240,8 +240,8 @@ public class D2rWrapper<DocType> implements Wrapper {
   }
 
   @Override
-  public DataSourceStream<Triple> getAllData() throws IOException {
-    DataSourceStream<MappedSqlTuple> source = getAllSourceData();
+  public Stream<Triple> getAllData() throws IOException {
+    Stream<MappedSqlTuple> source = getAllSourceData();
     return new TripleCacheStream<MappedSqlTuple>(source){
       @Override
       protected List<Triple> createTriples(MappedSqlTuple elem) {

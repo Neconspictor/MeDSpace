@@ -1,21 +1,24 @@
 package de.unipassau.medspace.common.exception;
 
 /**
- * Created by David Goeth on 01.08.2017.
+ * A checked exception to specify that a given argument isn't valid.
  */
 public class NotValidArgumentException extends Exception {
-private String message = null;
 
-public NotValidArgumentException(String message) {
-    this.message = message;
+    /**
+     * Constructs a new NotValidArgumentException from a given error message.
+     * @param message The error message to use for the exception cause.
+     */
+    public NotValidArgumentException(String message) {
+    super(message);
     }
 
-public NotValidArgumentException(String message, Throwable cause) {
+    /**
+     * Constructs a new NotValidArgumentException from a given error message and cause.
+     * @param message The error message to use.
+     * @param cause The cause of the rise of this exception.
+     */
+    public NotValidArgumentException(String message, Throwable cause) {
     super(message, cause);
-    this.message = message;
-    }
-
-public String getMessage() {
-    return this.message;
     }
 }

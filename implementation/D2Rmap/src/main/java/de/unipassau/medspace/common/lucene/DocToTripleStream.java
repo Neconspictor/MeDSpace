@@ -1,7 +1,7 @@
 package de.unipassau.medspace.common.lucene;
 
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import org.apache.jena.graph.Triple;
 import org.apache.lucene.document.Document;
 
@@ -15,7 +15,7 @@ public class DocToTripleStream<ElemType> extends TripleCacheStream<Document> {
 
   protected ResultFactory<ElemType, Document> resultFactory;
 
-  public DocToTripleStream(DataSourceStream<Document> source, ResultFactory<ElemType, Document> resultFactory) {
+  public DocToTripleStream(Stream<Document> source, ResultFactory<ElemType, Document> resultFactory) {
     this.resultFactory = resultFactory;
     stream = source;
   }

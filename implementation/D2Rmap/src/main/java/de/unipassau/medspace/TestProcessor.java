@@ -4,7 +4,7 @@ import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.indexing.IndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class TestProcessor {
-  private final static String D2RMap = "./examples/medspace/medspace.d2r.xml";
+  private final static String D2RMap = "./medspace/medspace-d2r-mapping.xml";
   private final static Logger log = LoggerFactory.getLogger(TestProcessor.class);
 
   public static void main(String[] args) throws IOException {
@@ -82,7 +82,7 @@ public class TestProcessor {
 
       Instant startTime = Instant.now();
 
-      DataSourceStream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
+      Stream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
       //triples = wrapper.getAllData();
       PrefixMapping mapping = wrapper.getNamespacePrefixMapper();
 
@@ -125,13 +125,13 @@ public class TestProcessor {
     }
   }
 
-  private static class TripleData implements DataSourceStream<Triple> {
+  private static class TripleData implements Stream<Triple> {
 
 
-    private DataSourceStream<MappedSqlTuple> stream;
+    private Stream<MappedSqlTuple> stream;
     private List<Triple> cache = new ArrayList<>();
 
-    public TripleData(DataSourceStream<MappedSqlTuple> stream) {
+    public TripleData(Stream<MappedSqlTuple> stream) {
       this.stream = stream;
     }
 
@@ -155,7 +155,7 @@ public class TestProcessor {
     }
   }
 
-  private static class TripleTestStream implements DataSourceStream<Triple> {
+  private static class TripleTestStream implements Stream<Triple> {
 
     private List<Triple> data;
 

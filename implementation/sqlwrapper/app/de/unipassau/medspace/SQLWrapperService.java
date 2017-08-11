@@ -6,7 +6,7 @@ import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.indexing.IndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
@@ -18,18 +18,15 @@ import org.apache.jena.graph.Triple;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.Environment;
 import play.api.inject.ApplicationLifecycle;
 
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -111,7 +108,7 @@ public class SQLWrapperService {
     return true;
   }
 
-  public DataSourceStream<Triple> search(String keywords) throws IOException, NotValidArgumentException {
+  public Stream<Triple> search(String keywords) throws IOException, NotValidArgumentException {
 
     if (keywords == null) {
       throw new NotValidArgumentException("keywords mustn't be null");

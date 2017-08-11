@@ -2,7 +2,7 @@ package de.unipassau.medspace.common.indexing;
 
 import de.unipassau.medspace.common.lucene.ResultFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.stream.DataSourceStream;
+import de.unipassau.medspace.common.stream.Stream;
 import org.apache.jena.graph.Triple;
 
 import java.io.Closeable;
@@ -69,7 +69,7 @@ public interface DataSourceIndex<DocumentType, ElemType> extends Closeable {
    * @param data The data to index.
    * @throws IOException if an error occurs.
    */
-  void index(DataSourceStream<DocumentType> data) throws IOException;
+  void index(Stream<DocumentType> data) throws IOException;
 
   /**
    * Checks if the wrapped index is open.
@@ -88,7 +88,7 @@ public interface DataSourceIndex<DocumentType, ElemType> extends Closeable {
    * @param data TODO
    * @throws IOException TODO
    */
-  default void reindex(DataSourceStream<DocumentType> data) throws IOException {
+  default void reindex(Stream<DocumentType> data) throws IOException {
     clearIndex();
     index(data);
   };

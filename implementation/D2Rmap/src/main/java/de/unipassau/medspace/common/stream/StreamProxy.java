@@ -6,17 +6,36 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Created by David Goeth on 30.06.2017.
+ * A stream proxy is a startable stream, that proxies another stream or startable stream.
  */
 public class StreamProxy<E> implements StartableStream<E> {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(StreamProxy.class);
 
+  /**
+   * The stream factory which is used to create the proxied stream.
+   */
   protected StreamFactory<E> factory;
-  protected DataSourceStream<E> impl;
+
+  /**
+   * The proxied stream.
+   */
+  protected Stream<E> impl;
+
+  /**
+   * A validator used in methods that needs validation.
+   */
   protected StartCloseValidator validator;
 
 
+  /**
+   * Creates a new stream proxy from a given stream factory.
+   * @param factory The factory that is used by this class to produce the
+   *        proxied stream.
+   */
   public StreamProxy(StreamFactory<E> factory) {
     validator = new StartCloseValidator();
     impl = null;
@@ -26,18 +45,19 @@ public class StreamProxy<E> implements StartableStream<E> {
 
   @Override
   public void close() throws IOException {
-    validator.validateClose();
+    validator.close();
     impl.close();
   }
 
   @Override
   public boolean hasNext() throws IOException {
-    validator.validateHasNext();
+    validator.validateStarted();
     return impl.hasNext();
   }
 
   /**
-   * Checks if this {@code StartableStream} is open. A {@code StartableStream} is open, if it has started but isn't closed yet.
+   * Checks if this {@code StartableStream} is open. A {@code StartableStream} is open, if it has started
+   * but isn't closed yet.
    * @return true if this {@code StartableStream} is open;
    */
   public boolean isOpen() {
@@ -46,14 +66,14 @@ public class StreamProxy<E> implements StartableStream<E> {
 
   @Override
   public E next() throws IOException {
-    validator.validateNext();
+    validator.validateOpened();
     return impl.next();
   }
 
   @Override
   public void start() throws IOException {
 
-    validator.validateStart();
+    validator.start();
     assert impl == null;
 
     impl = factory.create();

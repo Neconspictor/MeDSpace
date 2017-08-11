@@ -3,9 +3,14 @@ package de.unipassau.medspace.common.stream;
 import java.io.IOException;
 
 /**
- * Created by David Goeth on 30.06.2017.
+ * A factory interface for streams of a certain type.
  */
 public interface StreamFactory<E> {
 
-  DataSourceStream<E> create() throws IOException;
+  /**
+   * Creates a new stream.
+   * @return A new stream of a set of data.
+   * @throws IOException thrown if the stream couldn't be created properly.
+   */
+  Stream<E> create() throws IOException;
 }
