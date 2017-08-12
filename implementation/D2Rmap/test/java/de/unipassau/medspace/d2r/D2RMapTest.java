@@ -9,8 +9,6 @@ import de.unipassau.medspace.d2r.bridge.DatatypePropertyBridge;
 import de.unipassau.medspace.d2r.bridge.ObjectPropertyBridge;
 import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.exception.D2RException;
-import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.junit.Test;
