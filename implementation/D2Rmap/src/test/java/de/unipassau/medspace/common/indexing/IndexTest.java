@@ -1,6 +1,5 @@
 package de.unipassau.medspace.common.indexing;
 
-import de.unipassau.medspace.common.lucene.LuceneDataSourceIndex;
 import de.unipassau.medspace.common.lucene.SearchResult;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.lucene.document.Document;
@@ -10,15 +9,12 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Created by David Goeth on 13.06.2017.
  */
-public class DataSourceIndexTest {
+public class IndexTest {
 
   @Test
   public void indexSQLDatasourceTest() throws IOException, ParseException, D2RException {
@@ -30,7 +26,7 @@ public class DataSourceIndexTest {
   }
 /*
   private void testIndex() throws IOException, ParseException, D2RException {
-    DataSourceIndex<Document> indexer = LuceneDataSourceIndex.createDoc("./_work/index", null);
+    Index<Document> indexer = LuceneIndex.createDoc("./_work/index", null);
     ArrayList<Document> docs = new ArrayList<>();
     for (int i = 0; i < 1; ++i) {
       addDoc(docs, "The Art of Computer Science", "9900333X");
@@ -60,7 +56,7 @@ public class DataSourceIndexTest {
     indexer.close();
   }*/
 
-  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, DataSourceIndex indexer) throws ParseException, IOException {
+  private SearchResult doKeywordSearchWithPreCounting(String[] keywords, Index indexer) throws ParseException, IOException {
     /*StandardAnalyzer analyzer = new StandardAnalyzer();
     StringBuilder querystr = new StringBuilder();
     String and = " AND ";

@@ -1,7 +1,7 @@
 package de.unipassau.medspace.d2r;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
-import de.unipassau.medspace.common.indexing.DataSourceIndex;
+import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.indexing.IndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
@@ -43,7 +43,7 @@ public class D2rWrapper<DocType> implements Wrapper {
   /**
    * TODO
    */
-  private DataSourceIndex<DocType, MappedSqlTuple> index;
+  private Index<DocType, MappedSqlTuple> index;
 
   /**
    * TODO
@@ -164,7 +164,7 @@ public class D2rWrapper<DocType> implements Wrapper {
    * TODO
    * @return
    */
-  public DataSourceIndex getIndex() {
+  public Index getIndex() {
     return index;
   }
 

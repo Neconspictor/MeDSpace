@@ -1,8 +1,8 @@
 package de.unipassau.medspace.d2r.lucene;
 
-import de.unipassau.medspace.common.indexing.DataSourceIndex;
+import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.indexing.IndexFactory;
-import de.unipassau.medspace.common.lucene.LuceneDataSourceIndex;
+import de.unipassau.medspace.common.lucene.LuceneIndex;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rWrapper;
@@ -32,9 +32,9 @@ public class LuceneIndexFactory implements IndexFactory<Document, MappedSqlTuple
    * @throws IOException
    */
   @Override
-  public DataSourceIndex<Document, MappedSqlTuple> createIndex() throws IOException {
+  public Index<Document, MappedSqlTuple> createIndex() throws IOException {
     LuceneD2rResultFactory factory = new LuceneD2rResultFactory(D2R.MAP_FIELD, wrapper);
-    return LuceneDataSourceIndex.create(directory, createFields(wrapper.getMaps()), factory);
+    return LuceneIndex.create(directory, createFields(wrapper.getMaps()), factory);
   }
 
   /**

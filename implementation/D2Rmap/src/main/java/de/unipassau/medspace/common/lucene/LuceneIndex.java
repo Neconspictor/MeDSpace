@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.lucene;
 
-import de.unipassau.medspace.common.indexing.DataSourceIndex;
+import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * TODO
  */
-public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document, ElemType> {
+public class LuceneIndex<ElemType> implements Index<Document, ElemType> {
 
   private List<String> fields;
   private Path indexDirectoryPath;
@@ -32,10 +32,10 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
   private volatile boolean isOpen;
   private ResultFactory<ElemType, Document> resultFactory;
 
-  private static Logger log = LoggerFactory.getLogger(DataSourceIndex.class);
+  private static Logger log = LoggerFactory.getLogger(Index.class);
 
-  protected LuceneDataSourceIndex(Path directory, List<String> fields,
-                                  ResultFactory<ElemType, Document> resultFactory) {
+  protected LuceneIndex(Path directory, List<String> fields,
+                        ResultFactory<ElemType, Document> resultFactory) {
     indexDirectoryPath = directory;
     this.fields = fields;
     index = null;
@@ -43,15 +43,15 @@ public class LuceneDataSourceIndex<ElemType> implements DataSourceIndex<Document
     this.resultFactory = resultFactory;
   }
 
-  public static <ElemType> LuceneDataSourceIndex<ElemType> create(String directory, List<String> fields,
-                                             ResultFactory<ElemType, Document> resultFactory) throws IOException {
+  public static <ElemType> LuceneIndex<ElemType> create(String directory, List<String> fields,
+                                                        ResultFactory<ElemType, Document> resultFactory) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
       throw new IOException("Couldn't create index directory", e);
     }
-    LuceneDataSourceIndex<ElemType> result = new LuceneDataSourceIndex<>(path,
+    LuceneIndex<ElemType> result = new LuceneIndex<>(path,
         Collections.unmodifiableList(fields), resultFactory);
 
     return result;

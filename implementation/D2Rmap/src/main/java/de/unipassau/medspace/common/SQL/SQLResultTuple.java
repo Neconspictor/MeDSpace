@@ -56,13 +56,13 @@ public class SQLResultTuple {
   }
   public String getValue(int index) {
     if (index < 0 || index >= columnCount)
-      throw new IndexOutOfBoundsException("DataSourceIndex is not bounded to [0, " + columnCount + ") : index=" + index);
+      throw new IndexOutOfBoundsException("Index is not bounded to [0, " + columnCount + ") : index=" + index);
     return values[index];
   }
 
   public String getColumnName(int index) {
     if (index < 0 || index >= columnCount)
-      throw new IndexOutOfBoundsException("DataSourceIndex is not bounded to [0, " + columnCount + ") : index=" + index);
+      throw new IndexOutOfBoundsException("Index is not bounded to [0, " + columnCount + ") : index=" + index);
     return columns[index];
   }
 

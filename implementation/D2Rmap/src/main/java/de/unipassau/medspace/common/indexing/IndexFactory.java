@@ -7,5 +7,5 @@ import java.io.IOException;
  */
 public interface IndexFactory<DocType, ElemType> {
 
-  DataSourceIndex<DocType, ElemType> createIndex() throws IOException;
+  Index<DocType, ElemType> createIndex() throws IOException;
 }

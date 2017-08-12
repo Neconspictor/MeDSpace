@@ -13,7 +13,7 @@ import java.io.IOException;
  * A full-text search index is intended to be used for full-text and keyword searches.
  * This interface is intended to be used as a wrapper for a full-text search engine implementation.
  */
-public interface DataSourceIndex<DocumentType, ElemType> extends Closeable {
+public interface Index<DocumentType, ElemType> extends Closeable {
 
   /**
    * Deletes all the indexed data.
