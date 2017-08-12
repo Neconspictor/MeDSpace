@@ -4,7 +4,7 @@ import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
-import de.unipassau.medspace.common.indexing.IndexFactory;
+import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
@@ -170,7 +170,7 @@ public class SQLWrapperService {
     wrapper = new D2rWrapper<Document>(connectionPool, config.getMaps(),
                               config.getNamespaces(), indexPath);
 
-    IndexFactory<Document, MappedSqlTuple> indexFactory =
+    TripleIndexFactory<Document, MappedSqlTuple> indexFactory =
         new LuceneIndexFactory(wrapper, indexPath.toString());
 
     wrapper.init(indexPath, indexFactory);

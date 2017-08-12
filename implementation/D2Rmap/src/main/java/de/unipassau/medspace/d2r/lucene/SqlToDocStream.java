@@ -2,6 +2,7 @@ package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.common.lucene.ResultFactory;
 import de.unipassau.medspace.common.stream.Stream;
+import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
 
 import java.io.IOException;
@@ -12,13 +13,12 @@ import java.io.IOException;
 public class SqlToDocStream<DocType> implements Stream<DocType> {
 
   private final Stream<MappedSqlTuple> stream;
-  private final ResultFactory<MappedSqlTuple, DocType> factory;
+  private final Converter<MappedSqlTuple, DocType> converter;
 
   public SqlToDocStream(Stream<MappedSqlTuple> stream,
-                        ResultFactory<MappedSqlTuple, DocType> resultFactory) throws IOException {
-
+                        Converter<MappedSqlTuple, DocType> converter) throws IOException {
     this.stream = stream;
-    this.factory = resultFactory;
+    this.converter = converter;
   }
 
   @Override
@@ -34,6 +34,6 @@ public class SqlToDocStream<DocType> implements Stream<DocType> {
   @Override
   public DocType next() throws IOException {
     MappedSqlTuple tuple = stream.next();
-    return factory.createDoc(tuple);
+    return converter.convert(tuple);
   }
 }

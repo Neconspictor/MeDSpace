@@ -24,42 +24,36 @@ import java.util.List;
 /**
  * TODO
  */
-public class LuceneIndex<ElemType> implements Index<Document, ElemType> {
-
-  private List<String> fields;
+public class LuceneIndex implements Index<Document> {
   private Path indexDirectoryPath;
   private FSDirectory index;
   private volatile boolean isOpen;
-  private ResultFactory<ElemType, Document> resultFactory;
+  private AnalyzerBuilder builder;
 
   private static Logger log = LoggerFactory.getLogger(Index.class);
 
-  protected LuceneIndex(Path directory, List<String> fields,
-                        ResultFactory<ElemType, Document> resultFactory) {
+  protected LuceneIndex(Path directory, AnalyzerBuilder builder) {
     indexDirectoryPath = directory;
-    this.fields = fields;
+    this.builder = builder;
     index = null;
     isOpen = false;
-    this.resultFactory = resultFactory;
   }
 
-  public static <ElemType> LuceneIndex<ElemType> create(String directory, List<String> fields,
-                                                        ResultFactory<ElemType, Document> resultFactory) throws IOException {
+  public static LuceneIndex create(String directory, AnalyzerBuilder builder) throws IOException {
     Path path = null;
     try {
       path = FileUtil.createDirectory(directory);
     } catch (IOException e) {
       throw new IOException("Couldn't create index directory", e);
     }
-    LuceneIndex<ElemType> result = new LuceneIndex<>(path,
-        Collections.unmodifiableList(fields), resultFactory);
+    LuceneIndex result = new LuceneIndex(path, builder);
 
     return result;
   }
 
   public void clearIndex() throws IOException {
     if (!isOpen) throw new IOException("Indexer is not open!");
-    Analyzer analyzer = buildAnalyzer();
+    Analyzer analyzer = builder.build();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
     IndexWriter w = null;
@@ -78,7 +72,7 @@ public class LuceneIndex<ElemType> implements Index<Document, ElemType> {
     }
   }
 
-  @Override
+ /* @Override
   public KeywordSearcher<Document> createDocKeywordSearcher() throws IOException {
     return new LuceneKeywordSearcher(fields, () -> createReader(), buildAnalyzer());
   }
@@ -87,9 +81,9 @@ public class LuceneIndex<ElemType> implements Index<Document, ElemType> {
   public KeywordSearcher<Triple> convert(KeywordSearcher<Document> source) throws IOException {
     return keywords -> {
       Stream<Document> result =  source.searchForKeywords(keywords);
-      return new DocToTripleStream<ElemType>(result, resultFactory);
+      return new DocToTripleStream(result, resultFactory);
     };
-  }
+  }*/
 
   @Override
   public boolean exists() {
@@ -117,7 +111,7 @@ public class LuceneIndex<ElemType> implements Index<Document, ElemType> {
    * Error occurs
    * IMPORTANT: The resulting IndexReader has to be closed, if not needed anymore!!!
    */
-  private IndexReader createReader() throws IOException {
+  public IndexReader createReader() throws IOException {
     return DirectoryReader.open(index);
   }
 
@@ -143,7 +137,7 @@ public class LuceneIndex<ElemType> implements Index<Document, ElemType> {
   }
 
   public void index(Stream<Document> data) throws IOException {
-    Analyzer analyzer = buildAnalyzer();
+    Analyzer analyzer = builder.build();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
     config.setCommitOnClose(true);
@@ -184,23 +178,5 @@ public class LuceneIndex<ElemType> implements Index<Document, ElemType> {
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
     index(data);
-  }
-
-  @Override
-  public ResultFactory<ElemType, Document> getResultFactory() {
-    return resultFactory;
-  }
-
-  /**
-   * TODO
-   * @return
-   * @throws IOException
-   */
-  private Analyzer buildAnalyzer() throws IOException {
-    return CustomAnalyzer.builder()
-        .withTokenizer("whitespace")
-        .addTokenFilter("lowercase")
-        .addTokenFilter("standard")
-        .build();
   }
 }

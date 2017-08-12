@@ -2,7 +2,7 @@ package de.unipassau.medspace.common.SQL;
 
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
-import de.unipassau.medspace.common.iterator.LookaheadIterator;
+import de.unipassau.medspace.common.util.LookaheadIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

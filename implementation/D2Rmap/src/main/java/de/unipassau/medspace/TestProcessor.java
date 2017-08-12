@@ -2,7 +2,7 @@ package de.unipassau.medspace;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
-import de.unipassau.medspace.common.indexing.IndexFactory;
+import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
@@ -65,7 +65,7 @@ public class TestProcessor {
       wrapper = new D2rWrapper<>(connectionPool, config.getMaps(),
                                 config.getNamespaces(), config.getIndexDirectory());
 
-      IndexFactory<Document, MappedSqlTuple> indexFactory =
+      TripleIndexFactory<Document, MappedSqlTuple> indexFactory =
           new LuceneIndexFactory(wrapper, config.getIndexDirectory().toString());
 
       wrapper.init(config.getIndexDirectory(), indexFactory);

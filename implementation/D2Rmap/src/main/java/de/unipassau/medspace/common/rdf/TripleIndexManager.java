@@ -14,7 +14,7 @@ import java.io.IOException;
 public class TripleIndexManager<DocType, ElemType> extends IndexManager<DocType, ElemType> {
   protected Converter<KeywordSearcher<DocType>, KeywordSearcher<Triple>> tripleSearchConverter;
 
-  public TripleIndexManager(IndexSearcher<DocType, ElemType> searcher,
+  public TripleIndexManager(IndexSearcher<DocType> searcher,
                             Converter<ElemType, DocType> converterToDoc,
                             Converter<DocType, ElemType> converterToElem,
                             Converter<KeywordSearcher<DocType>, KeywordSearcher<Triple>> tripleSearchConverter) {

@@ -1,19 +1,16 @@
 package de.unipassau.medspace.common.indexing;
 
-import de.unipassau.medspace.common.lucene.ResultFactory;
-import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
-import org.apache.jena.graph.Triple;
-
 import java.io.Closeable;
 import java.io.IOException;
 
 /**
  * A index is a concept for storing data suitable for later searching it.
  * A full-text search index is intended to be used for full-text and keyword searches.
- * This interface is intended to be used as a wrapper for a full-text search engine implementation.
+ * This interface is intended to be used as a wrapper for a full-text search engine implementation
+ * like apache lucene.
  */
-public interface Index<DocumentType, ElemType> extends Closeable {
+public interface Index<DocumentType> extends Closeable {
 
   /**
    * Deletes all the indexed data.
@@ -22,31 +19,8 @@ public interface Index<DocumentType, ElemType> extends Closeable {
   void clearIndex() throws IOException;
 
   /**
-   * TODO
-   * Creates a keyword searcher for initiating keyword searches onto the indexed data.
-   * @return A keyword searcher for the wrapped index.
-   * @throws IOException If an error occurs.
-   */
-  default KeywordSearcher<Triple> createKeywordSearcher() throws IOException {
-    return convert(createDocKeywordSearcher());
-  };
-
-  /**
-   * TODO
-   * Creates a keyword searcher for initiating keyword searches onto the indexed data.
-   * @return A keyword searcher for the wrapped index.
-   * @throws IOException If an error occurs.
-   */
-  KeywordSearcher<DocumentType> createDocKeywordSearcher() throws IOException;
-
-
-  KeywordSearcher<Triple> convert(KeywordSearcher<DocumentType> source) throws IOException;
-
-
-  /**
-   * TODO
-   * Checks, if the materialized index was created once before.
-   * @return true if the index was created once before.
+   * Checks, if this index is open and has indexed data.
+   * @return true if the index is open and has indexed data.
    */
   default boolean exists() {
     try {
@@ -85,13 +59,11 @@ public interface Index<DocumentType, ElemType> extends Closeable {
 
   /**
    * Clears the index and indexes the sql data.
-   * @param data TODO
-   * @throws IOException TODO
+   * @param data A stream of documents that should be indexed.
+   * @throws IOException If any IO-Error occurs.
    */
   default void reindex(Stream<DocumentType> data) throws IOException {
     clearIndex();
     index(data);
-  };
-
-  ResultFactory<ElemType, DocumentType> getResultFactory();
+  }
 }

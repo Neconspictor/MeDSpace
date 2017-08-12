@@ -2,12 +2,14 @@ package de.unipassau.medspace.d2r;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.indexing.Index;
-import de.unipassau.medspace.common.indexing.IndexFactory;
+import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
+import de.unipassau.medspace.common.rdf.TripleIndexManager;
 import de.unipassau.medspace.common.stream.Stream;
+import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
@@ -43,7 +45,7 @@ public class D2rWrapper<DocType> implements Wrapper {
   /**
    * TODO
    */
-  private Index<DocType, MappedSqlTuple> index;
+  private TripleIndexManager<DocType, MappedSqlTuple> indexManager;
 
   /**
    * TODO
@@ -125,7 +127,7 @@ public class D2rWrapper<DocType> implements Wrapper {
    */
   @Override
   public void close() throws IOException {
-    FileUtil.closeSilently(index, true);
+    FileUtil.closeSilently(indexManager, true);
   }
 
   /**
@@ -140,7 +142,7 @@ public class D2rWrapper<DocType> implements Wrapper {
 
     try {
       if (indexUsed) {
-        searcher = index.createKeywordSearcher();
+        searcher = indexManager.createTripleKeywordSearcher();
       } else {
         searcher = new D2rKeywordSearcher(this);
       }
@@ -165,7 +167,7 @@ public class D2rWrapper<DocType> implements Wrapper {
    * @return
    */
   public Index getIndex() {
-    return index;
+    return indexManager.getIndex();
   }
 
   /**
@@ -213,13 +215,14 @@ public class D2rWrapper<DocType> implements Wrapper {
 
     if (!indexUsed) throw new IOException("Cannot reindex data as no index is used!");
 
-
+    Index<DocType> index = indexManager.getIndex();
+    Converter<MappedSqlTuple, DocType> converter =  indexManager.getConverterToDoc();
     SqlToDocStream<DocType> docStream = null;
 
     try {
       index.close();
       index.open();
-      docStream = new SqlToDocStream<DocType>(getAllSourceData(), index.getResultFactory());
+      docStream = new SqlToDocStream<DocType>(getAllSourceData(), converter);
       index.reindex(docStream);
 
     } catch (IOException e) {
@@ -231,7 +234,7 @@ public class D2rWrapper<DocType> implements Wrapper {
 
   @Override
   public boolean existsIndex() {
-    return !indexUsed ? false : index.exists();
+    return !indexUsed ? false : indexManager.getIndex().exists();
   }
 
   @Override
@@ -280,7 +283,7 @@ public class D2rWrapper<DocType> implements Wrapper {
    * @param indexDirectory
    * @throws IOException
    */
-  public void init(Path indexDirectory, IndexFactory<DocType, MappedSqlTuple> indexFactory) throws IOException {
+  public void init(Path indexDirectory, TripleIndexFactory<DocType, MappedSqlTuple> indexFactory) throws IOException {
 
     indexUsed = indexDirectory != null;
 
@@ -290,7 +293,8 @@ public class D2rWrapper<DocType> implements Wrapper {
 
     try {
       try {
-        index = indexFactory.createIndex();
+        indexManager = indexFactory.createIndexManager();
+        Index<DocType> index = indexManager.getIndex();
         index.open();
       } catch (IOException e) {
         throw new IOException("Error while trying to createDoc index: ", e);

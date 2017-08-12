@@ -1,4 +1,4 @@
-package de.unipassau.medspace.common.iterator;
+package de.unipassau.medspace.common.util;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
