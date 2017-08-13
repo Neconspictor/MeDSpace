@@ -1,7 +1,5 @@
 package de.unipassau.medspace.common.rdf;
 
-import java.util.List;
-
 /**
  * QNameNormalizer normailzes qNames to use namespace prefixes for shortening the URI of the qName.
  * For more details about qNames, see <a href="https://www.w3.org/TR/REC-xml-names/#dt-qualname">

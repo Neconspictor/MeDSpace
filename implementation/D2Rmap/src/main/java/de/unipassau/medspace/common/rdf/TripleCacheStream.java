@@ -9,18 +9,32 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Created by David Goeth on 03.07.2017.
+ * A TripleCacheStream wraps a another stream and converts the elements of the other stream to triples.
  */
 public abstract class TripleCacheStream<E> implements Stream<Triple> {
 
+  /**
+   * Stores triples of a converted element from the source stream.
+   */
   protected Queue<Triple> tripleCache;
+
+  /**
+   * The stream wrapped by this class.
+   */
   protected Stream<E> stream;
 
+  /**
+   * Creates a new TripleCacheStream from another stream.
+   * @param stream The stream that should be triplized by this class.
+   */
   public TripleCacheStream(Stream<E> stream) {
     this();
     this.stream = stream;
   }
 
+  /**
+   * Default constructor. Protected as it shouldn't be used by clients.
+   */
   protected TripleCacheStream() {
     tripleCache = new LinkedList<>();
     stream = null;
@@ -32,6 +46,11 @@ public abstract class TripleCacheStream<E> implements Stream<Triple> {
     stream.close();
   }
 
+  /**
+   * Converts an object to a list of triples.
+   * @param elem The object to convert.
+   * @return A list of triples representing the converted object.
+   */
   protected abstract List<Triple> createTriples(E elem);
 
   @Override
