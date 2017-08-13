@@ -13,15 +13,31 @@ import java.io.IOException;
  */
 public class TempFile implements Closeable {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(TempFile.class);
 
+  /**
+   * The used file.
+   */
   private File source;
 
+  /**
+   * Creates a new TempFile.
+   * @param fileName The filename of this temporary file.
+   * @param suffix The file ending of this temporary file.
+   * @throws IOException thrown if any IO-Error occurs.
+   */
   public TempFile(String fileName, String suffix) throws IOException {
     source = File.createTempFile(fileName, suffix);
     source.deleteOnExit();
   }
 
+  /**
+   * Provides the file this class holds.
+   * @return
+   */
   public File get() {
     return source;
   };

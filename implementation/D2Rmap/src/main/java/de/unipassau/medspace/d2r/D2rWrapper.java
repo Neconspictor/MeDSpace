@@ -242,16 +242,6 @@ public class D2rWrapper<DocType> implements Wrapper {
     return indexUsed;
   }
 
-  @Override
-  public Stream<Triple> getAllData() throws IOException {
-    Stream<MappedSqlTuple> source = getAllSourceData();
-    return new TripleCacheStream<MappedSqlTuple>(source){
-      @Override
-      protected List<Triple> createTriples(MappedSqlTuple elem) {
-        return elem.getMap().createTriples(elem.getSource());
-      }
-    };
-  }
 
   /**
    * TODO

@@ -1,5 +1,6 @@
 package de.unipassau.medspace.d2r.query;
 
+import com.mockrunner.jdbc.SQLUtil;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
@@ -44,7 +45,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
       SelectStatement query = map.getQuery();
       List<String> columns = query.getColumns();
 
-      String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns, "OR");
+      String keywordCondition = SqlUtil.createKeywordCondition(keywords, columns, SqlUtil.Operator.OR);
 
       ConnectionPool manager = wrapper.getConnectionPool();
       StreamFactory<Triple> stream = createTripleStreamFactory(map, manager.getDataSource(),

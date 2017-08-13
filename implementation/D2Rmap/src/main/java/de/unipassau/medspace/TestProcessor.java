@@ -58,15 +58,18 @@ public class TestProcessor {
 
       Lang lang = Lang.TURTLE;
 
-      if (config.isIndexUsed()) {
-        //index = new SqlIndex(config.getIndexDirectory(), proxy);
-      }
+
 
       wrapper = new D2rWrapper<>(connectionPool, config.getMaps(),
                                 config.getNamespaces(), config.getIndexDirectory());
 
-      TripleIndexFactory<Document, MappedSqlTuple> indexFactory =
-          new LuceneIndexFactory(wrapper, config.getIndexDirectory().toString());
+
+
+      TripleIndexFactory<Document, MappedSqlTuple> indexFactory = null;
+
+      if (config.isIndexUsed()) {
+        indexFactory =  new LuceneIndexFactory(wrapper, config.getIndexDirectory().toString());
+      }
 
       wrapper.init(config.getIndexDirectory(), indexFactory);
 
@@ -82,7 +85,7 @@ public class TestProcessor {
 
       Instant startTime = Instant.now();
 
-      Stream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male"));
+      Stream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male", "female"));
       //triples = wrapper.getAllData();
       PrefixMapping mapping = wrapper.getNamespacePrefixMapper();
 

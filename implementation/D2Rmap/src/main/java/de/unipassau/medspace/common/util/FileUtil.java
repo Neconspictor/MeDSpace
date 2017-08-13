@@ -15,12 +15,25 @@ import java.util.Date;
  */
 public class FileUtil {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(FileUtil.class);
 
+  /**
+   * Closes an {@link AutoCloseable} but catches any exceptions thrown while closing it. The catched exceptions
+   * will be logged.
+   * @param closeable Will be closed.
+   */
   public static void closeSilently(AutoCloseable closeable) {
     closeSilently(closeable, true);
   }
 
+  /**
+   * Closes an {@link AutoCloseable} but catches any exceptions thrown while closing it.
+   * @param closeable Will be closed.
+   * @param logErrors Specifies if catched exceptions should be logged.
+   */
   public static void closeSilently(AutoCloseable closeable, boolean logErrors) {
     if (closeable == null) return;
     try {
@@ -32,6 +45,12 @@ public class FileUtil {
     }
   }
 
+  /**
+   * Creates a directory structure from a given directory path and returns a path to that directory.
+   * @param directory Represents a directory
+   * @return A path representing the directory.
+   * @throws IOException If the specified directory string doesn't represent a directory or another IO-Error occurs.
+   */
   public static Path createDirectory(String directory) throws IOException {
     assert directory != null;
 
@@ -57,6 +76,11 @@ public class FileUtil {
     return path;
   }
 
+  /**
+   * Provides a URL from a given resource file name.
+   * @param filename The resource to get an URL from.
+   * @return The URL to the specified resource.
+   */
   public static URL getResource(String filename) {
     return FileUtil.class.getResource(filename);
   }
@@ -89,28 +113,17 @@ public class FileUtil {
     return resource.getFile();
   }
 
-  public static void write(InputStream in, String output) throws IOException {
-    FileOutputStream file = new FileOutputStream(output);
-    byte[] buffer = new byte[1024];
-
-    try {
-      while (in.available() > 0) {
-        int currentReadedBytes = in.read(buffer, 0, buffer.length);
-        file.write(buffer, 0, currentReadedBytes);
-      }
-    } catch (IOException e) {
-      throw e;
-    } finally {
-      closeSilently(file);
-    }
-  }
-
+  /**
+   * Creates a temporary file from a resource.
+   * @param resourceName The name of the resource.
+   * @param tempFileName The wished name of the created temporary file.
+   * @return The temporary file having the same content as the resource.
+   * @throws IOException If an IO-Error occurs.
+   */
   public static TempFile createTempFileFromResource(String resourceName, String tempFileName)
       throws IOException {
 
     TempFile file = null;
-    URL res = FileUtil.class.getResource(resourceName);
-
     InputStream input = null;
     OutputStream out = null;
 

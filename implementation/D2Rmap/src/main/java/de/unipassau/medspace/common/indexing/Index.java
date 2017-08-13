@@ -31,7 +31,7 @@ public interface Index<DocumentType> extends Closeable {
   };
 
   /**
-   * Checks if this index as indexed data.
+   * Checks if this index has indexed data.
    *
    * @return true if this index has at least one indexed document.
    * @throws IOException if the index isn't opened or an error occurs.

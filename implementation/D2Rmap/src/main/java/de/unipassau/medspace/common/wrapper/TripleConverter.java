@@ -1,6 +1,5 @@
 package de.unipassau.medspace.common.wrapper;
 
-import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import org.apache.jena.graph.Triple;
 
 import java.util.List;

@@ -29,6 +29,9 @@ import static de.unipassau.medspace.common.util.FileUtil.closeSilently;
  */
 public class XmlUtil {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(XmlUtil.class.getName());
 
   /**

@@ -4,72 +4,60 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * @author Ian Pojman (pojman@gmail.com)
+ * A LookaheadIterator pre-fetches data in order to decide if data does exists or not. <br><br>
+ *
+ * This class is based on the version from Ian Pojman (pojman@gmail.com), but has been adapted and some additional
+ * documentation has been added, too.
+ *
+ * @author Ian Pojman (pojman@gmail.com), David Goeth (goeth@fim.uni-passau.de) added documentation, removed not needed
+ * stuff
  */
 public abstract class LookaheadIterator<T> implements Iterator<T> {
-  /** The predetermined "validateNext" object retrieved from the wrapped iterator, can be null. */
+  /**
+   * The predetermined "next" item. Null indicates, that it hasn't been loaded, yet.
+   * */
   protected T next;
 
   /**
-   * Implement the validateHasNext policy of this iterator.
-   * Returns true of the getNext() policy returns a new item.
+   * Returns true if the next item has been prefetched or otherwise fetches a new item and returns true if
+   * the result isn't null.
    */
   public boolean hasNext()
   {
-    if (next != null)
-    {
+    if (next != null) {
       return true;
-    }
-
-    // we havent done it already, so go find the validateNext thing...
-    if (!doesHaveNext())
-    {
-      return false;
     }
 
     return getNext();
   }
 
-  /** by default we can return true, since our logic does not rely on validateHasNext() -
-   * it prefetches the validateNext
-   * @return true
-   * */
-  protected boolean doesHaveNext() {
-    return true;
-  }
-
   /**
-   * Fetch the validateNext item
-   * @return false if the validateNext item is null.
+   * Fetches the next item
+   * @return false if the next item is null.
    */
-  protected boolean getNext()
-  {
+  protected boolean getNext() {
     next = loadNext();
-
-    return next!=null;
+    return next != null;
   }
 
   /**
-   * Subclasses implement the 'get validateNext item' functionality by implementing this method. Implementations
-   * return null when they have no more.
-   * @return Null if there is no validateNext.
+   * Subclasses implement the 'get next item' functionality by implementing this method. Implementations
+   * return null when they have no more items to provide.
+   * @return Null if there is no next item.
    */
   protected abstract T loadNext();
 
   /**
-   * Return the validateNext item from the wrapped iterator.
+   * Return the next item from the wrapped iterator.
    */
   public T next()
   {
-    if (!hasNext())
-    {
+    if (!hasNext()) {
       throw new NoSuchElementException();
     }
 
     T result = next;
-
     next = null;
-
     return result;
   }
 
@@ -77,8 +65,7 @@ public abstract class LookaheadIterator<T> implements Iterator<T> {
    * Not implemented.
    * @throws UnsupportedOperationException always
    */
-  public void remove()
-  {
+  public void remove() {
     throw new UnsupportedOperationException();
   }
 }
