@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * An abstract class representing an D2r Bridge. A D2r Bridge is used to createDoc rdf statements for a specific
+ * An abstract class representing a D2r Bridge. A D2r Bridge is used to create rdf statements for a specific
  * rdf resource. These statements are also called properties of a given rdf resource.
  */
 abstract public class Bridge {
@@ -34,7 +34,7 @@ abstract public class Bridge {
     protected String propertyQName;
 
     /**
-     * Logger
+     * Logger instance for this class.
      */
     private static Logger log = LoggerFactory.getLogger(Bridge.class);
 
@@ -75,6 +75,10 @@ abstract public class Bridge {
      */
     public abstract RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
 
+    /**
+     * Provides the used datatype (if any is used) or null otherwise.
+     * @return The used datatype or null if no datatype is used.
+     */
     public String getDataType() {
         return this.dataType;
     }
