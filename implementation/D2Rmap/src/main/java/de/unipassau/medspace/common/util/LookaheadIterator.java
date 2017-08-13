@@ -50,7 +50,8 @@ public abstract class LookaheadIterator<T> implements Iterator<T> {
   }
 
   /**
-   * Subclasses implement the 'get validateNext item' functionality by implementing this method. Implementations return null when they have no more.
+   * Subclasses implement the 'get validateNext item' functionality by implementing this method. Implementations
+   * return null when they have no more.
    * @return Null if there is no validateNext.
    */
   protected abstract T loadNext();

@@ -14,17 +14,43 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Represents a StartableIterable of SQL tuples created from a SQL query.
+ * SqlStream executes a sql query on a datasource and provides the result as a stream of {@link SQLResultTuple}s.
  */
 public class SqlStream implements Stream<SQLResultTuple> {
 
+  /**
+   * Logger instance of this class.
+   */
   private static Logger log = LoggerFactory.getLogger(SqlStream.class);
 
+  /**
+   * Used to create sql result tuples from.
+   */
   private ResultSet resultSet;
+
+  /**
+   * An utility for iterating over the result set in a lookahead manner.
+   */
   private LookaheadIterator<SQLResultTuple> resultSetIterator;
+
+  /**
+   * The number of columns the sql query result has.
+   */
   private int numColumns;
+
+  /**
+   * The sql statement used to retrieve the result set from.
+   */
   private Statement statement;
+
+  /**
+   * Used to connect to the datasource.
+   */
   private Connection connection;
+
+  /**
+   * Flag to specifiy if this stream is closed.
+   */
   private volatile boolean closed;
 
   /**
@@ -79,10 +105,8 @@ public class SqlStream implements Stream<SQLResultTuple> {
       log.debug("Opened SqlStream.");
   }
 
-  public static QueryParams createDefault(DataSource dataSource, String query) {
-    return new QueryParams(dataSource, 10, 0, query);
-  }
 
+  @Override
   public void close() throws IOException {
     if (closed) throw new IOException("SqlStream already closed!");
     FileUtil.closeSilently(connection, true);
@@ -101,6 +125,10 @@ public class SqlStream implements Stream<SQLResultTuple> {
       log.debug("Closed SqlStream.");
   }
 
+  /**
+   * Provides the number of columns of the retrieved sql result set.
+   * @return
+   */
   public int getColumnCount() {
     return numColumns;
   }

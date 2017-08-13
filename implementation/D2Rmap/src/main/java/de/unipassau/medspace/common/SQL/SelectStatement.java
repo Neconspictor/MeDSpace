@@ -1,7 +1,5 @@
 package de.unipassau.medspace.common.SQL;
 
-import de.unipassau.medspace.common.util.FileUtil;
-
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
@@ -10,7 +8,8 @@ import static de.unipassau.medspace.common.SQL.SelectStatement.Clause.*;
 
 
 /**
- * Created by David Goeth on 08.06.2017.
+ * A SelectStatement represents a sql select statement of a jdbc query and provides the possibility to construct sql
+ * queries with additional WHERE conditions.
  */
 public class SelectStatement {
   private String beforeWhereConditionStatement;
@@ -19,9 +18,19 @@ public class SelectStatement {
   private String afterWhereConditionStatement;
   private List<String> orderByList;
 
+  /**
+   * Defines the order of clauses as they have to occur in a sql select statement.
+   */
   private static ArrayList<Clause> querySelectStatementOrder = new ArrayList<>(Arrays.asList(Clause.SELECT, FROM,
       WHERE, Clause.GROUP_BY, Clause.HAVING, Clause.UNION, Clause.ORDER_BY));
 
+  /**
+   * Creates a new SelectStatement and validates it on a given datasource.
+   * @param query The select statement to create a SelectStatement from.
+   * @param dataSource the datasource to test the query on.
+   * @throws SQLException thrown if the query is erroneous, isn't a select query or an error occurs while testing
+   * the query on the database.
+   */
   public SelectStatement(String query, DataSource dataSource) throws SQLException {
     beforeWhereConditionStatement = "";
     columnList = new ArrayList<>();
@@ -31,57 +40,11 @@ public class SelectStatement {
     parse(query, dataSource);
   }
 
-  public static String addConditionStatements(String query, List<String> conditionList) {
-    // Nothing to do?
-    if (conditionList.size() == 0)
-      return query;
-
-    String ucQuery = query.toUpperCase();
-    String startClause = "WHERE";
-
-    int beforeWhereClauseIndex = getBeforeIndex(ucQuery, querySelectStatementOrder,
-        querySelectStatementOrder.indexOf(startClause));
-
-    int afterWhereClauseIndex = beforeWhereClauseIndex + startClause.length();
-    boolean containsStartClause = ucQuery.contains(startClause);
-    if (!containsStartClause) {
-      afterWhereClauseIndex = beforeWhereClauseIndex;
-    }
-    String beforeWhereClause = getBefore(query, beforeWhereClauseIndex);
-    String afterWhereClause = getAfter(query, afterWhereClauseIndex);
-
-    if (beforeWhereClause.matches("(.*)\\s")) { // ends with a whitesapce
-      beforeWhereClause = beforeWhereClause.substring(0, beforeWhereClause.length() - 1);
-    }
-
-    if (afterWhereClause.matches("^\\s(.*)")) { // begins with a whitesapce
-      afterWhereClause = afterWhereClause.substring(1, afterWhereClause.length());
-    }
-
-    // Create where condition clause statement
-    StringBuilder builder = new StringBuilder(" ");
-    String andStatement = " AND ";
-    builder.append(startClause);
-    builder.append(" ");
-    for (String condition : conditionList) {
-      builder.append(condition);
-      builder.append(andStatement);
-    }
-
-    // delete last " AND "
-    if (!containsStartClause) {
-      builder.delete(builder.length() - andStatement.length(), builder.length());
-      builder.append(" ");
-    }
-
-    // concatenate finally the query pieces
-    return beforeWhereClause + builder.toString() + afterWhereClause;
-  }
-
   /**
-   * TODO
-   * @param temporaryConditionList
-   * @return
+   * Creates a sql query string representing this select statement.
+   * Note, that this SelectStatement won't be affected by the call of this method.
+   * @param temporaryConditionList additional WHERE conditions which sould be added to the query.
+   * @return The constructed sql select query.
    */
   public String getSqlQuery(List<String> temporaryConditionList) {
     StringBuilder builder = new StringBuilder(beforeWhereConditionStatement);
@@ -132,28 +95,50 @@ public class SelectStatement {
     return builder.toString();
   }
 
+  @Override
   public String toString() {
     return getSqlQuery(new ArrayList<>());
   }
 
-  private static String getAfter(String query, int index) {
+  /**
+   * Provides a substring that begins with the stated split index.
+   * @param string The string to split.
+   * @param index The split index. Defines the point at that the string should be split after.
+   * @return The substring string beginning at the split index.
+   */
+  private static String getAfter(String string, int index) {
     if ((index <= -1)
-        || (index >= query.length())) {
+        || (index >= string.length())) {
       return "";
     }
-    return query.substring(index, query.length());
+    return string.substring(index, string.length());
   }
 
-  private static String getBefore(String query, int index) {
-    if (index == -1) {
+  /**
+   * Provides a substring that begins at index 0 and ends at the given end index. The character at the end index
+   * isn't included.
+   * @param query The string to split.
+   * @param endIndex Defines the end of the substring.
+   * @return a substring in the index range [0, endIndex)
+   */
+  private static String getBefore(String query, int endIndex) {
+    if (endIndex == -1) {
       return query;
     } else {
-      if (index > query.length())
-        index = query.length();
-      return query.substring(0, index);
+      if (endIndex > query.length())
+        endIndex = query.length();
+      return query.substring(0, endIndex);
     }
   }
 
+  /**
+   * Provides the string index from a sql select statement that specify the end just before a certain {@link Clause}
+   * begins. The clause is specified by the given index and the list of Clause arguments.
+   * @param query The query to get an index from.
+   * @param querySelectStatementOrder Defines the order clauses inside the select statement query.
+   * @param index Specifies the position of the Clause inside the list of clauses.
+   * @return The index inside the query string just before the specified clause begins.
+   */
   private static int getBeforeIndex(String query, List<Clause> querySelectStatementOrder, int index) {
     assert index != -1;
     int splitIndex = -1;
@@ -165,12 +150,24 @@ public class SelectStatement {
     return splitIndex;
   }
 
+  /**
+   * Adds a string to a string builder. But before adding the string it is enclosed by some white spaces.
+   * @param builder The string builder to add the string to.
+   * @param str The string to wrap with white spaces and add to the string builder.
+   */
   private void wrapWithSpaces(StringBuilder builder, String str) {
     builder.append(" ");
     builder.append(str);
     builder.append(" ");
   }
 
+  /**
+   * Initializes this SelectStatement with a given select query and validates the query on a given datasource.
+   * @param query The query used to initialize this object.
+   * @param dataSource The datasource to test the query on.
+   * @throws SQLException thrown if the query is erroneous, isn't a select query or an error occurs while testing
+   * the query on the database.
+   */
   private void parse(String query, DataSource dataSource) throws  SQLException {
     List<Clause> q = querySelectStatementOrder;
 
@@ -226,7 +223,13 @@ public class SelectStatement {
     }
   }
 
-  private static Vector<String> parseOrderBy(String query, int orderByIndex) {
+  /**
+   * Parses a sql ORDER BY statement from a select statement query.
+   * @param query The select statement query to get the ORDER BY statement from.
+   * @param orderByIndex Specifies the beginning of the ORDER BY clause inside the query.
+   * @return A list of ORDER BY statements.
+   */
+  private static List<String> parseOrderBy(String query, int orderByIndex) {
     String orderByString = query.substring(orderByIndex, query.length());
     orderByString = orderByString.replaceFirst(ORDER_BY.toString(), "");
     orderByString = orderByString.trim();
@@ -234,13 +237,20 @@ public class SelectStatement {
       orderByString = orderByString.substring(0, orderByString.length() - 1);
     StringTokenizer tokenizer = new StringTokenizer(orderByString, ",");
 
-    Vector<String> result = new Vector<>();
+    List<String> result = new ArrayList<>();
     while(tokenizer.hasMoreTokens()) {
       result.add(tokenizer.nextToken().trim());
     }
     return result;
   }
 
+  /**
+   * Provides the column list before the FROM clause of a select statement query.
+   * @param query The select statement query to get the columns before the FROM clause.
+   * @param dataSource Used to fetch column names (e.g. if the * operator is used )
+   * @return The list of columns
+   * @throws SQLException thrown if the query is erroneous, isn't a select query or an error occurs on the datasource.
+   */
   private static ArrayList<String> parseColumns(String query, DataSource dataSource) throws SQLException {
     if (!query.contains(SELECT.toString())) {
       throw new SQLException("Query doesn't contain a SELECT clause: " + query);
@@ -276,10 +286,17 @@ public class SelectStatement {
     return result;
   }
 
+  /**
+   * Fetches the column names of a select query from a given datasource.
+   * @param query The select query to use.
+   * @param dataSource The datasource to execute the query on.
+   * @return A list of column names used in the select query.
+   * @throws SQLException thrown if the query is erroneous, isn't a select query or an error occurs on the datasource.
+   */
   private static ArrayList<String> fetchColumnNames(String query, DataSource dataSource) throws SQLException {
     ArrayList<String> result = new ArrayList<>();
     try(Connection con = dataSource.getConnection()) {
-      con.setReadOnly(true);
+      con.setReadOnly(true); // assure that we don't modify any data accidentally.
       PreparedStatement stmt = con.prepareStatement(query);
       stmt.setMaxRows(1); // we want fetch only meta data, so we don't bother about the content
       ResultSet set = stmt.executeQuery();
@@ -289,12 +306,23 @@ public class SelectStatement {
         column = column.replaceFirst(" .*", "");
         result.add(column.toUpperCase());
       }
-      //con.commit();
     }
 
     return result;
   }
 
+  /**
+   * Provides the index inside a query string from a range of clauses, specified by a start and end index.
+   * The getFirst parameter specifies, if the string index of the first occurence of any clause from the clause range
+   * should be returned. If getFirst is set to false, than the last occurence of any clause of the clause range is
+   * searched and returned will be the string index before this found clause begins.
+   * @param query The Select statement query to get the index from.
+   * @param startClauseIndex Specifies the starting index for the clause range.
+   * @param endClauseIndex Specifies the ending index for the clause range.
+   * @param getFirst if set to true, the first occurrence of any clause inside the clause range is searched. Otherwise
+   *                 the last occurrence is searched.
+   * @return
+   */
   private static int getClauseRangeSplitIndex(String query, int startClauseIndex, int endClauseIndex, boolean getFirst) {
     assert startClauseIndex >= 0;
     assert endClauseIndex >= 0;
@@ -313,26 +341,37 @@ public class SelectStatement {
   }
 
   /**
-   * Provides a unmodifiable list of the columns used by this select statement.
-   * @return A unmodifiable list of the columns
+   * Provides an unmodifiable list of the columns used by this select statement.
+   * @return An unmodifiable list of the columns
    */
   public List<String> getColumns() {
     return Collections.unmodifiableList(columnList);
   }
 
 
+  /**
+   * Defines all possible statements that can occur in a sql select statement and their occurrence order.
+   */
   protected enum Clause {
     SELECT ("SELECT"), FROM("FROM"), WHERE("WHERE"), GROUP_BY("GROUP BY"), HAVING("HAVING"), UNION("UNION"),
     ORDER_BY("ORDER BY");
 
-    private String description;
+    /**
+     * Specifies the name of the clause as you would use it in a sql query.
+     */
+    private String name;
 
-    Clause(String description) {
-      this.description = description;
+    /**
+     * Constructs a new Clause base on it's name.
+     * @param name The name of the clause.
+     */
+    Clause(String name) {
+      this.name = name;
     }
 
+    @Override
     public String toString() {
-      return description;
+      return name;
     }
   }
 }
