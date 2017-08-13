@@ -45,9 +45,9 @@ public class IndexTest {
     System.out.println("Time needed for query: " + Duration.between(startTime, endTime));
 
 
-    /*System.out.println("Found " + result.getScoredLength() + " hits.");
+    /*System.out.println("Found " + result.getSize() + " hits.");
     System.out.println("Total hit count: " + result.getTotalLength());
-    for(int i=0;i<result.getScoredLength();++i) {
+    for(int i=0;i<result.getSize();++i) {
       Document d = result.getResult(i);
       System.out.println((i + 1) + ". " + d.get("isbn") + "\t" + d.get("title"));
     }

@@ -5,7 +5,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * A index is a concept for storing data suitable for later searching it.
+ * An index is a concept for storing data suitable for later searching it.
  * A full-text search index is intended to be used for full-text and keyword searches.
  * This interface is intended to be used as a wrapper for a full-text search engine implementation
  * like apache lucene.
@@ -58,7 +58,7 @@ public interface Index<DocumentType> extends Closeable {
   void open() throws IOException;
 
   /**
-   * Clears the index and indexes the sql data.
+   * Clears the index and indexes than new data.
    * @param data A stream of documents that should be indexed.
    * @throws IOException If any IO-Error occurs.
    */

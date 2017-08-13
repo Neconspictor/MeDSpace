@@ -5,6 +5,7 @@ import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -16,16 +17,37 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by David Goeth on 09.07.2017.
+ * A keyword searcher for the apache lucene search engine.
  */
 public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(LuceneKeywordSearcher.class);
 
+  /**
+   * An array of names specifying lucene {@link org.apache.lucene.document.Field}s that should be included in the search.
+   * Fields that aren't included into the array will be ignored.
+   */
   private String[] fields;
+
+  /**
+   * A factory for creating an {@link IndexReader}, which is used to read a lucene index.
+   */
   private IndexReaderFactory readerFactory;
+
+  /**
+   * Used to analyze the indexed data.
+   */
   private Analyzer analyzer;
 
+  /**
+   * Creates a new {@link LuceneKeywordSearcher}
+   * @param fields Specifies the names of {@link org.apache.lucene.document.Field} to consider for searching.
+   * @param readerFactory Used to read an lucene index.
+   * @param analyzer Used to analyze the index.
+   */
   public LuceneKeywordSearcher(List<String> fields, IndexReaderFactory readerFactory, Analyzer analyzer) {
     this.fields = new String[fields.size()];
     fields.toArray(this.fields);
@@ -51,14 +73,21 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
 
     try {
       result = doLuceneKeywordSearch(query);
-    } catch (IOException | ParseException e) {
+    } catch (IOException e) {
       throw new IOException("Exception while querying the index: ", e);
     }
 
     return  new DocumentStream(result);
   }
 
-  private Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException, IOException {
+  /**
+   * Constructs a new keyword query for the lucene index.
+   * @param fieldNameArray The names of a list of {@link org.apache.lucene.document.Field} to consider for searching.
+   * @param keywords The keywords to search for in the specified {@link org.apache.lucene.document.Field}s.
+   * @return A new query that searches for the specified keywords.
+   * @throws ParseException If the query couldn't be constructed.
+   */
+  private Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException {
     QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
 
     StringBuilder keywordsConcat = new StringBuilder();
@@ -75,19 +104,38 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
     return query;
   }
 
-  private SearchResult doLuceneKeywordSearch(Query query) throws IOException,
-      ParseException {
+  /**
+   * Executes a query.
+   * @param query The query to execute.
+   * @return The result of the executed query.
+   * @throws IOException If an IO-Error occurs while retrieving the search result.
+   */
+  private SearchResult doLuceneKeywordSearch(Query query) throws IOException {
 
     if (log.isDebugEnabled())
       log.debug("Constructed query: " + query);
     return new SearchResult(readerFactory.createReader(), query);
   }
 
+  /**
+   * A stream of lucene {@link Document}s
+   */
   private static class DocumentStream implements Stream<Document> {
 
+    /**
+     * A cursor for getting the next document from the search result.
+     */
     private int index;
+
+    /**
+     * The search result to retrieve the documents from.
+     */
     private SearchResult searchResult;
 
+    /**
+     * Creates a new DocumentStream from a given search result.
+     * @param searchResult Used as document input stream.
+     */
     public DocumentStream(SearchResult searchResult) {
       index = 0;
       this.searchResult = searchResult;
@@ -100,7 +148,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
 
     @Override
     public boolean hasNext() {
-      return index < searchResult.getScoredLength();
+      return index < searchResult.getSize();
     }
 
     @Override

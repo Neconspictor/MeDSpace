@@ -1,6 +1,5 @@
 package de.unipassau.medspace.d2r.lucene;
 
-import de.unipassau.medspace.common.lucene.ResultFactory;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.d2r.MappedSqlTuple;

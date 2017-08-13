@@ -9,41 +9,57 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * TODO
+ * Specifies the result of a {@link Query}
  */
 public class SearchResult implements Closeable {
 
   /**
-   * TODO
+   * Used to read documents from the lucene index.
    */
   private IndexReader reader;
 
   /**
-   * TODO
+   * Used to search documents from the index using a query.
    */
   private IndexSearcher searcher;
 
   /**
-   * TODO
+   * The lucene search result.
    */
   private TopDocs topDocs;
 
   /**
-   * TODO
+   * Executes a given query and constructs a search result from it.
+   * @param reader Used to read the lucene index.
+   * @param query The query to get a search result from.
+   * @throws IOException If an IO-Error occurs during collecting the search result.
    */
   public SearchResult(IndexReader reader, Query query) throws IOException {
     this(reader, query, false, 0);
   }
 
   /**
-   * TODO
+   * Executes a given query and constructs a search result from it.
+   * @param reader Used to read the lucene index.
+   * @param query The query to get a search result from.
+   * @param totalHitCount Sets a maximum of the number of documents that can be included to the search result.
+   *                      E.g. if it is set to 100, maximal 100 documents can be retrieved.
+   * @throws IOException If an IO-Error occurs during collecting the search result.
    */
   public SearchResult(IndexReader reader, Query query, int totalHitCount) throws IOException {
     this(reader, query, true, totalHitCount);
   }
 
   /**
-   * TODO
+   * Executes a given query and constructs a search result from it.
+   * @param reader Used to read the lucene index.
+   * @param query The query to get a search result from.
+   * @param useTotalHitCount Specifies if a limit for the retrieved documents should be used. If set to false, no limit
+   *                         is used and thus all documents will be searched that match the query.
+   * @param totalHitCount Sets a maximum of the number of documents that can be included to the search result.
+   *                      E.g. if it is set to 100, maximal 100 documents can be retrieved.
+   *                      This number is only considered if useTotalHitCount is set to true.
+   * @throws IOException If an IO-Error occurs during collecting the search result.
    */
   private SearchResult(IndexReader reader, Query query, boolean useTotalHitCount, int totalHitCount) throws IOException {
     this.reader = reader;
@@ -60,16 +76,17 @@ public class SearchResult implements Closeable {
     topDocs = searcher.search(query, totalHitCount);
   }
 
-  /**
-   * TODO
-   */
   @Override
   public void close() throws IOException {
     FileUtil.closeSilently(reader, true);
   }
 
   /**
-   * TODO
+   * Provides a document from the search result by its index score.
+   * E.g. the first document has index 0, the second document index 1 and so on.
+   * @param i The score index of the wished document.
+   * @return The document having the specified score index.
+   * @throws IOException If an IO-Error occurs.
    */
   public Document getResult(int i) throws IOException {
     ScoreDoc[] hits = topDocs.scoreDocs;
@@ -78,21 +95,27 @@ public class SearchResult implements Closeable {
   }
 
   /**
-   * TODO
+   * Provides the number of documents that can be retrieved from this search result.
+   * @return
    */
-  public int getScoredLength() {
+  public int getSize() {
     return topDocs.scoreDocs.length;
   }
 
   /**
-   * TODO
+   * Provides access to the scored top documents.
+   * @return The scored top documents found by this search result.
    */
   public TopDocs getTopDocs() {
     return topDocs;
   }
 
   /**
-   * TODO
+   * Provides the number of total documents of the index that match the query.
+   * NOTE: This number doesn't specifiy the number of documents that can be retrieved from this SearchResult.
+   * If used a totalHitCount while constructing the SearchResult, this number can be larger than the documents inside
+   * this SearchResult. To get the number of included documents, use {@link #getSize}
+   * @return
    */
   public int getTotalLength() {
     return topDocs.totalHits;

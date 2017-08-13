@@ -1,12 +1,9 @@
 package de.unipassau.medspace.common.lucene;
 
 import de.unipassau.medspace.common.indexing.Index;
-import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
-import org.apache.jena.graph.Triple;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -18,20 +15,44 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
 
 /**
- * TODO
+ * {@link LuceneIndex} is an {@link Index} for the lucene search engine.
  */
 public class LuceneIndex implements Index<Document> {
-  private Path indexDirectoryPath;
-  private FSDirectory index;
-  private volatile boolean isOpen;
-  private AnalyzerBuilder builder;
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(Index.class);
 
+  /**
+   * Specifies the directory to store indexed data files.
+   */
+  private Path indexDirectoryPath;
+
+  /**
+   * The lucene file (stored on the hard disk) index.
+   */
+  private FSDirectory index;
+
+  /**
+   * Flag to specify if the index is currently open.
+   */
+  private volatile boolean isOpen;
+
+  /**
+   * An analyzer builder to retrieve an {@link Analyzer}.
+   * The analyzer is used to analyze the data before indexing it.
+   * E.g. stop words can be defined by the analyzer.
+   */
+  private AnalyzerBuilder builder;
+
+  /**
+   * Creates a new lucene index.
+   * @param directory Specifies the index directory for storing indexed data.
+   * @param builder Used to build an analyzer for data to be indexed.
+   */
   protected LuceneIndex(Path directory, AnalyzerBuilder builder) {
     indexDirectoryPath = directory;
     this.builder = builder;
@@ -39,6 +60,13 @@ public class LuceneIndex implements Index<Document> {
     isOpen = false;
   }
 
+  /**
+   * Creates a new lucene index.
+   * @param directory Specifies the index directory for storing indexed data.
+   * @param builder Used to build an analyzer for data to be indexed.
+   * @return a new lucene index
+   * @throws IOException if directory doesn't specify a valid directory
+   */
   public static LuceneIndex create(String directory, AnalyzerBuilder builder) throws IOException {
     Path path = null;
     try {
@@ -51,6 +79,7 @@ public class LuceneIndex implements Index<Document> {
     return result;
   }
 
+  @Override
   public void clearIndex() throws IOException {
     if (!isOpen) throw new IOException("Indexer is not open!");
     Analyzer analyzer = builder.build();
@@ -72,19 +101,6 @@ public class LuceneIndex implements Index<Document> {
     }
   }
 
- /* @Override
-  public KeywordSearcher<Document> createDocKeywordSearcher() throws IOException {
-    return new LuceneKeywordSearcher(fields, () -> createReader(), buildAnalyzer());
-  }
-
-  @Override
-  public KeywordSearcher<Triple> convert(KeywordSearcher<Document> source) throws IOException {
-    return keywords -> {
-      Stream<Document> result =  source.searchForKeywords(keywords);
-      return new DocToTripleStream(result, resultFactory);
-    };
-  }*/
-
   @Override
   public boolean exists() {
     try {
@@ -105,7 +121,7 @@ public class LuceneIndex implements Index<Document> {
   }
 
   /**
-   * Creates a new IndexReader.
+   * Creates a new {@link IndexReader}.
    * @return A reader alloing to query this index
    * @throws IOException Will be thrown if the FSDirectory couldn't be opened, doesn't exists or another low level I/O
    * Error occurs
@@ -136,6 +152,7 @@ public class LuceneIndex implements Index<Document> {
     }
   }
 
+  @Override
   public void index(Stream<Document> data) throws IOException {
     Analyzer analyzer = builder.build();
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -143,7 +160,6 @@ public class LuceneIndex implements Index<Document> {
     config.setCommitOnClose(true);
 
     try(IndexWriter w = new IndexWriter(index, config)) {
-      //w.addDocuments(data);
       while (data.hasNext()) {
         Document doc = data.next();
         w.addDocument(doc);
@@ -155,10 +171,12 @@ public class LuceneIndex implements Index<Document> {
     }
   }
 
+  @Override
   public boolean isOpen() {
     return isOpen;
   }
 
+  @Override
   public void open() throws IOException {
     assert indexDirectoryPath != null;
     close();
@@ -171,9 +189,7 @@ public class LuceneIndex implements Index<Document> {
     isOpen = true;
   }
 
-  /**
-   * Clears the index and indexes the sql data.
-   */
+  @Override
   public void reindex(Stream<Document> data) throws IOException {
     if (!isOpen) throw new IOException("Indexer is not open!");
     clearIndex();
