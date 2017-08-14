@@ -167,8 +167,7 @@ public class SQLWrapperService {
 
     Path indexPath = config.getIndexDirectory();
 
-    wrapper = new D2rWrapper<Document>(connectionPool, config.getMaps(),
-                              config.getNamespaces(), indexPath);
+    wrapper = new D2rWrapper<Document>(connectionPool, config.getMaps(), config.getNamespaces());
 
     TripleIndexFactory<Document, MappedSqlTuple> indexFactory =
         new LuceneIndexFactory(wrapper, indexPath.toString());

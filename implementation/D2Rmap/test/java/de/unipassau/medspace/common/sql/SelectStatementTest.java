@@ -20,7 +20,7 @@ public class SelectStatementTest {
     /*String query = "SELECT * FROM LANGUAGE WHERE LANGUAGE.name LIKE '%' ORDER BY LANGUAGE.NAME;";
     URI jdbcURI = new URI("jdbc:mysql://localhost:3306/medspace?useSSL=false");
 
-    DataSource dataSource = new HikariConnectionPool(
+    DataSourceProperty dataSource = new HikariConnectionPool(
         jdbcURI,
         "medspace_client",
         "k4N!rT",

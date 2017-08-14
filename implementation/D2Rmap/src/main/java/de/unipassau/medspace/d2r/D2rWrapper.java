@@ -6,7 +6,6 @@ import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
-import de.unipassau.medspace.common.rdf.TripleCacheStream;
 import de.unipassau.medspace.common.rdf.TripleIndexManager;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
@@ -28,7 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * TODO
+ * A D2rWrapper is a wrapper for a sql database that uses D2r mapping for exporting data to rdf triples.
+ * @param <DocType> Specifies the class type of the documents used by the index if thi wrapper should use an index.
  */
 public class D2rWrapper<DocType> implements Wrapper {
 
@@ -38,60 +38,61 @@ public class D2rWrapper<DocType> implements Wrapper {
   private static Logger log = LoggerFactory.getLogger(D2rWrapper.class);
 
   /**
-   * TODO
+   * Used to get data from the datasource.
    */
   private D2rProxy proxy;
 
   /**
-   * TODO
+   * Used to index data and used for doing keyword searches.
    */
   private TripleIndexManager<DocType, MappedSqlTuple> indexManager;
 
   /**
-   * TODO
+   * Allows accessing D2rMaps by their id.
    */
   private HashMap<String, D2rMap> idToMap;
 
   /**
-   * TODO
+   * The list of used D2rMaps.
    */
   private List<D2rMap> maps;
 
   /**
-   * TODO
+   * A qualified name normalizer used to normalize rdf triples.
    */
   private QNameNormalizer normalizer;
 
   /**
-   * TODO
+   * Allows accessing namespaces by their prefixes.
    */
   private HashMap<String, Namespace> namespaces;
 
   /**
-   * TODO
+   * The namespaces additionally in this data structure to allow jena api access on the namespaces.
+   * isn't used in the Wrapper itself, but allows clients of the Wrapper to use the namespaces.
    */
   private PrefixMapping namespacePrefixMapper;
 
   /**
-   * TODO
+   * Used to get a connection to the datasource. Primarily used to create the proxy to the datasource.
    */
   private ConnectionPool connectionPool;
 
+  /**
+   * Used to specify whether an index is used.
+   */
   private boolean indexUsed;
 
   /**
-   * TODO
-   * @param connectionPool
-   * @param maps
-   * @param namespaces
-   * @param indexDirectory
-   * @throws IOException
-   * @throws D2RException
+   * Creates a new D2rWrapper.
+   * @param connectionPool The connction pool to use to get a connection to the datasource.
+   * @param maps The list of D2rMaps that this wrapper should use.
+   * @param namespaces A mapping of namespaces this wrapper should use.
+   * @throws D2RException If the wrapper couldn't be created successfully.
    */
   public D2rWrapper(ConnectionPool connectionPool,
                     List<D2rMap> maps,
-                    HashMap<String, Namespace> namespaces,
-                    Path indexDirectory) throws IOException, D2RException
+                    HashMap<String, Namespace> namespaces) throws D2RException
   {
     this.proxy = new D2rProxy(connectionPool);
 
@@ -121,20 +122,12 @@ public class D2rWrapper<DocType> implements Wrapper {
     indexUsed = false;
   }
 
-  /**
-   * TODO
-   * @throws IOException
-   */
+
   @Override
   public void close() throws IOException {
     FileUtil.closeSilently(indexManager, true);
   }
 
-  /**
-   * TODO
-   * @return
-   * @throws IOException
-   */
   @Override
   public KeywordSearcher<Triple> createKeywordSearcher() throws IOException {
 
@@ -154,26 +147,28 @@ public class D2rWrapper<DocType> implements Wrapper {
   }
 
   /**
-   * TODO
-   * @return
-   * @throws IOException
+   * Provides all the data of the datasource that are mapped by the D2rMaps of this class.
+   * @return A stream of mapped sql tuples. Represents all data from the datasource that can be accessed by this
+   * wrapper.
+   * @throws IOException If an IO-Error occurs.
    */
   public Stream<MappedSqlTuple> getAllSourceData() throws IOException {
     return proxy.getAllData(maps);
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the index used by this wrapper.
+   * @return The index used by this wrapper or null, if no index is used.
    */
   public Index getIndex() {
-    return indexManager.getIndex();
+    if (indexManager == null) return null;
+      return indexManager.getIndex();
   }
 
   /**
-   * TODO
-   * @param id
-   * @return
+   * Provides a D2rMap by its id.
+   * @param id The id for searching the D2rMap.
+   * @return The D2rMap that has the specified id or null, if no D2rMap was found having the specified id.
    */
   public D2rMap getMapById(String id) {
     return idToMap.get(id);
@@ -198,18 +193,12 @@ public class D2rWrapper<DocType> implements Wrapper {
     }
   }
 
-  /**
-   * TODO
-   * @return
-   */
+  @Override
   public PrefixMapping getNamespacePrefixMapper() {
     return namespacePrefixMapper;
   }
 
-  /**
-   * TODO
-   * @throws IOException
-   */
+
   @Override
   public void reindexData() throws IOException {
 
@@ -242,15 +231,6 @@ public class D2rWrapper<DocType> implements Wrapper {
     return indexUsed;
   }
 
-
-  /**
-   * TODO
-   * @return
-   */
-  public HashMap<String, Namespace> getNamespaces() {
-    return namespaces;
-  }
-
   /**
    * Provides read access to the list of D2rMaps
    * @return An unmodifiable list of D2rMaps
@@ -260,8 +240,8 @@ public class D2rWrapper<DocType> implements Wrapper {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the connection pool os this wrapper.
+   * @return The connection pool of this wrapper.
    */
   public ConnectionPool getConnectionPool() {
     return connectionPool;
@@ -269,9 +249,10 @@ public class D2rWrapper<DocType> implements Wrapper {
 
 
   /**
-   * TODO
-   * @param indexDirectory
-   * @throws IOException
+   * Inits the wrapper.
+   * @param indexDirectory The directory to store indexed data to or null, if the wrapper shouldn't use an index.
+   * @param indexFactory A factory that is used to create the index for this wrapper.
+   * @throws IOException If an IO-Error occurs.
    */
   public void init(Path indexDirectory, TripleIndexFactory<DocType, MappedSqlTuple> indexFactory) throws IOException {
 

@@ -216,6 +216,6 @@ public class ObjectPropertyBridge
    */
   private String getFromPattern(SQLResultTuple tuple) {
     return D2rUtil.parsePattern(pattern,
-        D2R.DELIMINATOR, tuple);
+        D2R.PATTERN_DELIMINATOR, tuple);
   }
 }

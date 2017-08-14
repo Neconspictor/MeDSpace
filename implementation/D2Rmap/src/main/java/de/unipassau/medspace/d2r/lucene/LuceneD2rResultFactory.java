@@ -50,7 +50,7 @@ public class LuceneD2rResultFactory  {
     SelectStatement query = map.getQuery();
 
     for (String column : query.getColumns()) {
-      String col = D2rUtil.getFieldNameUpperCase(column);
+      String col = D2rUtil.getColumnNameUpperCase(column);
       result.add(mapid + col);
     }
 

@@ -60,8 +60,7 @@ public class TestProcessor {
 
 
 
-      wrapper = new D2rWrapper<>(connectionPool, config.getMaps(),
-                                config.getNamespaces(), config.getIndexDirectory());
+      wrapper = new D2rWrapper<>(connectionPool, config.getMaps(), config.getNamespaces());
 
 
 

@@ -18,52 +18,87 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 
 /**
- * D2rMap Class. A D2rMap class is created for every d2r:ClassMap element in the mapping file.
- * The D2rMap class contains a Vector with all Bridges and an HashMap with all resources.
- * <BR><BR>History:
- * <BR>18-05-2017   : Updated for Java 8; removed unsafe operations
- * <BR>07-21-2004   : Error handling changed to Log4J.
- * <BR>09-25-2003   : Changed for Jena2.
- * <BR>01-15-2003   : Initial version of this class.
- *
- * @author Chris Bizer chris@bizer.de / David Goeth goeth@fim.uni-passau.de
- * @version V0.3
+ * A D2rMap is an object that describes a mapping from sql data to rdf triples.
  */
 public class D2rMap implements Serializable {
-  private Vector<Bridge> bridges;
+
+  /**
+   * a list of used D2R bridges
+   */
+  private List<Bridge> bridges;
+
+  /**
+   * The base URI rdf resources created by this class should have.
+   */
   private String baseURI;
+
+  /**
+   * Defines a sql query, that is used to fetch the data from a sql database that wounding will be converted to rdf
+   * triples.
+   */
   private String sql;
+
+  /**
+   * A select query statement. Is used to easily query the database.
+   */
   private SelectStatement statement;
+
+  /**
+   * The D2rMap id. Should be unique in order to identify different D2rMaps.
+   */
   private String id;
+
+  /**
+   * The columns of the sql query, that combined form a unique id for the rdf resources to be created.
+   */
   private List<String> resourceIdColumns;
+
+  /**
+   * Used to normalize the rdf triples.
+   */
   private QNameNormalizer normalizer;
 
-  /** log4j logger used for this class */
+  /**
+   * Logger instance of this class.
+   */
   private static Logger log = LoggerFactory.getLogger(D2rMap.class);
 
+  /**
+   * Default constructor. Creates a new D2rMap.
+   */
   public D2rMap() {
-    bridges = new Vector<>();
+    bridges = new ArrayList<>();
     resourceIdColumns = new ArrayList<>();
     normalizer = qName -> qName;
   }
 
 
+  /**
+   * Adds a D2rMap bridge to this D2rMap.
+   * @param bridge The bridge to be added.
+   */
   public void addBridge(Bridge bridge) {
     this.bridges.add(bridge);
   }
 
   /**
-   * Adds GroupBy fields to the map.
-   * @param  fields String containing all GroupBy fields separated be ','.
+   * Adds columns from the given string to the resource id column list of this class.
+   * The resource id columns ure used to construct unique ids for rdf resources.
+   * @param  columns String containing all resource id columns. The columns are expected  to be separated by ','.
    */
-  public void addResourceIdColumns(String fields) {
-    StringTokenizer tokenizer = new StringTokenizer(fields, ",");
+  public void addResourceIdColumns(String columns) {
+    StringTokenizer tokenizer = new StringTokenizer(columns, ",");
     while (tokenizer.hasMoreTokens()) {
       String columnName = tokenizer.nextToken().toUpperCase().trim();
       resourceIdColumns.add(columnName);
     }
   }
 
+  /**
+   * Creates a list of rdf triples from a given sql result tuple.
+   * @param tuple The sql result tuple to create rdf triples from.
+   * @return A  list of rdf triples that represent the sql result tuple.
+   */
   public List<Triple> createTriples(SQLResultTuple tuple) {
     List<Triple> triples = new ArrayList<>();
     Resource resource;
@@ -101,10 +136,18 @@ public class D2rMap implements Serializable {
     return triples;
   }
 
+  /**
+   * Provides the base URi that is used by this class to give created rdf triples a base URI.
+   * @return The base URI of this D2rMap.
+   */
   public String getBaseURI() {
     return baseURI;
   }
 
+  /**
+   * Provides an unmodifiable list of D2r bridges used by this class.
+   * @return The list of used D2r bridges. The result is unmodifiable.
+   */
   public List<Bridge> getBridges() {
     return Collections.unmodifiableList(bridges);
   }
@@ -119,18 +162,37 @@ public class D2rMap implements Serializable {
     return id;
   }
 
+  /**
+   * Provides the used qualified name normalizer used by this class to normalize rdf triples.
+   * @return The normalizer used by this class.
+   */
   public QNameNormalizer getNormalizer() {
     return normalizer;
   }
 
+  /**
+   * Provides the sql query to get the sql data that this class can map to rdf triples.
+   * @return The used sql select query.
+   */
   public SelectStatement getQuery() {
     return statement;
   }
 
+  /**
+   * Provides an unmodifiable list of resource id columns that is used to create unique URIs for rdf resources which are created by
+   * this class.
+   * @return An unmodifiable list of the resource id columns.
+   */
   public List<String> getResourceIdColumns() {
     return Collections.unmodifiableList(resourceIdColumns);
   }
 
+  /**
+   * Inits this D2rMap. The Datasource is needed to get column names of the query and verify that the select query of
+   * is valid.
+   * @param dataSource The datasource used to init the select query.
+   * @throws D2RException
+   */
   public void init(DataSource dataSource) throws D2RException {
     try {
       statement = new SelectStatement(this.sql, dataSource);
@@ -139,6 +201,10 @@ public class D2rMap implements Serializable {
     }
   }
 
+  /**
+   * Sets the base URI this class should use as a base for all rdf triples created by this class.
+   * @param baseURI The base URI to use.
+   */
   public void setBaseURI(String baseURI) {
     this.baseURI = baseURI;
   }
@@ -153,10 +219,18 @@ public class D2rMap implements Serializable {
     return normalizer.normalize(baseURI + resourceID);
   }
 
+  /**
+   * Provides the sql query used to fetch data from a datasource.
+   * @return
+   */
   public String getSql() {
     return sql;
   }
 
+  /**
+   * Sets the D2rMap for this class.
+   * @param id The new D2rMap id.
+   */
   public void setId(String id) {
     this.id = id.trim().toUpperCase();
   }
@@ -173,18 +247,18 @@ public class D2rMap implements Serializable {
     this.normalizer = normalizer;
   }
 
+  /**
+   * Sets the sql select query this class should use to fetch sql data from a datasource.
+   * @param sql The sql select query to use.
+   */
   public void setSql(String sql) {
     this.sql = sql;
   }
 
-  /**
-   * TODO
-   * @return
-   */
+
   @Override
   public String toString() {
     return "D2rMap:\n" +
-        "id= " + id + "\n" +
-        "sql= " + sql;
+        "id= " + id;
   }
 }

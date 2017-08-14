@@ -25,7 +25,7 @@ public class HikariConnectionPool implements ConnectionPool {
   private static Logger log = LoggerFactory.getLogger(HikariConnectionPool.class);
 
   /**
-   * The HikariCP DataSource implementation. Used to get a DataSource.
+   * The HikariCP DataSourceProperty implementation. Used to get a DataSourceProperty.
    */
   private HikariDataSource dataSource;
 

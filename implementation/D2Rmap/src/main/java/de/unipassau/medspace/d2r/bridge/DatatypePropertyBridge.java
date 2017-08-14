@@ -27,7 +27,7 @@ public class DatatypePropertyBridge extends Bridge {
     // Generate propertyQName value
     Literal literal = null;
     String value = D2rUtil.parsePattern(getPattern(),
-        D2R.DELIMINATOR, tuple);
+        D2R.PATTERN_DELIMINATOR, tuple);
 
     // The lang tag specifies indirectly the dataType (rdf:langeString)
     // Thus the lang tag has a higher priority than the dataType tag
