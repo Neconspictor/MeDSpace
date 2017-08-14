@@ -30,11 +30,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by David Goeth on 30.05.2017.
+ * Used to read a D2rMap config file.
  */
 public class ConfigurationReader {
 
-  /** log4j logger used for this class */
+  /**
+   * Logger instance of this class.
+   */
   private static Logger log = LoggerFactory.getLogger(ConfigurationReader.class);
 
   /**
@@ -44,6 +46,9 @@ public class ConfigurationReader {
    */
   private Set<Lang> supportedStreamLanguages;
 
+  /**
+   * Constructs a new ConfigurationReader.
+   */
   public ConfigurationReader() {
     supportedStreamLanguages = new HashSet<>();
     Collection<RDFFormat> formats = StreamRDFWriter.registered();
@@ -56,6 +61,10 @@ public class ConfigurationReader {
     supportedStreamLanguages.remove(Lang.RDFNULL);
   }
 
+  /**
+   * Creates a new ConfigurationReader and initializes it with default values specified in {@link D2R}.
+   * @return
+   */
   public static Configuration createDefaultConfig() {
     Configuration config = new Configuration();
     config.getNamespaces().put(D2R.RDFNS_PREFIX, new Namespace(D2R.RDFNS_PREFIX, D2R.RDFNS));
@@ -118,6 +127,12 @@ public class ConfigurationReader {
     return config;
   }
 
+  /**
+   * Parses a string that represents an jena rdf language to the representing java object.
+   * @param format The string that represent a jena rdf language.
+   * @return The rdf language.
+   * @throws D2RException If the string couldn't be parsed.
+   */
   private static Lang getLangFromString(String format) throws D2RException {
     assert format != null;
 
@@ -129,6 +144,11 @@ public class ConfigurationReader {
     return lang;
   }
 
+  /**
+   * Parses a list of datasource properties from a given D2rMap root element and adds it to the specified Configuration.
+   * @param root The root element of a valid D2rMap config.
+   * @param config The configuration the read datasource properties should be added to.
+   */
   private static void parseDataSourceSpecificProperties(Element root, Configuration config) {
     NodeList list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.DataSourceProperty.NAME);
 
@@ -140,6 +160,12 @@ public class ConfigurationReader {
     }
   }
 
+  /**
+   * Reads all D2r bridges specified in a specific ClassMap element.
+   * @param config Used to get the list of all read D2rMaps.
+   * @param mapElement The ClassMap element.
+   * @throws D2RException If a parse error occurs.
+   */
   private static void readClassMapBridges(Configuration config, Element mapElement) throws D2RException {
 
     String id = mapElement.getAttribute(D2R.ClassMap.ID_ATTRIBUTE);
@@ -178,6 +204,13 @@ public class ConfigurationReader {
       readObjectPropertyElement((Element)propertyList.item(i), map, maps);
   }
 
+  /**
+   * Reads a ClassMap element, creates a D2rMap from it and adds it to the specified Configuration.
+   * @param config The Configuration the created D2rMap should be added to.
+   * @param mapElement The element that represents a ClassMap element.
+   * @throws IOException If an IO-Error occurs.
+   * @throws D2RException If a parse error occurs.
+   */
   private static void readClassMapElement(Configuration config, Element mapElement) throws IOException, D2RException {
     List<D2rMap> maps = config.getMaps();
     D2rMap cMap = new D2rMap();
@@ -201,6 +234,15 @@ public class ConfigurationReader {
     config.getMaps().add(cMap);
   }
 
+  /**
+   * Parses a D2rMap config from a given XML document and stores its content in the specified Configuration.
+   * @param document The xml document that represents a valid D2rMap config file.
+   * @param config The Configuration to fill.
+   * @throws IOException If the document does not contain a D2rMap root element or another IO-Error occurs.
+   * @throws ClassNotFoundException If the jdbc driver class, specified in the D2rMap config, couldn't be found in the
+   * class path.
+   * @throws D2RException if another parse error occurs.
+   */
   private void readConfig(Document document, Configuration config) throws IOException,
                                                                                  ClassNotFoundException,
                                                                                  D2RException {
@@ -241,6 +283,11 @@ public class ConfigurationReader {
       readClassMapBridges(config, (Element)list.item(i));
   }
 
+  /**
+   * Parses a DataTypePropertyBridge from a given element and adds it to the given D2rMap.
+   * @param elem Represents a DataTypePropertyBridge element
+   * @param map The D2rMap the read DataTypePropertyBridge should be added to.
+   */
   private static void readDataTypePropertyElement(Element elem, D2rMap map) {
     DatatypePropertyBridge bridge = new DatatypePropertyBridge();
     bridge.setPropertyQName(elem.getAttribute(D2R.DataTypePropertyBridge.PROPERTY_ATTRIBUTE));
@@ -250,6 +297,11 @@ public class ConfigurationReader {
     map.addBridge(bridge);
   }
 
+  /**
+   * Parses a DBAuthentification element and updates the specified Configuration.
+   * @param config The configuration that should be updated.
+   * @param elem Represents a DBAuthentification element.
+   */
   private static void readDBAuthentificationElement(Configuration config, Element elem) {
     config.setDatabaseUsername(elem.getAttribute(D2R.DBAuthentification.USERNAME_ATTRIBUTE));
     String password = elem.getAttribute(D2R.DBAuthentification.PASSWORD_ATTRIBUTE);
@@ -257,6 +309,12 @@ public class ConfigurationReader {
     config.setDatabasePassword(password);
   }
 
+  /**
+   * Parses a DBConnection element and updates the specified Configuration.
+   * @param config The configuration that should be updated.
+   * @param elem Represents a DBConnection element.
+   * @throws ClassNotFoundException thrown if the jdbcDriver attribute couldn't be matched to a valid jdbc driver class.
+   */
   private static void readDBConnectionElement(Configuration config, Element elem) throws ClassNotFoundException {
     NodeList authentifications = elem.getElementsByTagNameNS(D2R.D2RNS, D2R.DBAuthentification.NAME);
     if (authentifications.getLength() > 0)
@@ -278,6 +336,12 @@ public class ConfigurationReader {
     parseDataSourceSpecificProperties(elem, config);
   }
 
+  /**
+   * Reads the index directory from a given element and adds it to the given Configuration.
+   * @param config The configuration the read index directory should be added to.
+   * @param elem The element that represents an index element.
+   * @throws IOException If the index directory couldn't be parsed.
+   */
   private static void readIndexElement(Configuration config, Element elem) throws IOException {
     String directory = elem.getAttribute(D2R.Index.DIRECTORY_ATTRIBUTE);
 
@@ -299,6 +363,13 @@ public class ConfigurationReader {
     config.setIndexDirectory(path);
   }
 
+  /**
+   * Reads an ObjectPropertyBridge from a given element for a specific D2rMap.
+   * @param elem The element that represents an ObjectPropertyBridge
+   * @param map The D2rMap the parsed ObjectPropertyBridge should be added to.
+   * @param maps Used to create the new ObjectPropertyBridge.
+   * @throws D2RException If the ObjectPropertyBridge couldn't be parsed.
+   */
   private static void readObjectPropertyElement(Element elem, D2rMap map, List<D2rMap> maps) throws D2RException {
 
     final String referredClassID = elem.getAttribute(D2R.ObjectPropertyBridge.REFERRED_CLASS_ATTRIBUTE);
@@ -310,6 +381,12 @@ public class ConfigurationReader {
     map.addBridge(bridge);
   }
 
+  /**
+   * Parses the rdf output format language
+   * @param config The configuration the readed output format should be added to.
+   * @param elem The element that contains the output format.
+   * @throws D2RException If the rdf language couldn't be parsed from the content of the specified element.
+   */
   private void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
     String format = elem.getTextContent();
     Lang lang = null;
@@ -353,6 +430,12 @@ public class ConfigurationReader {
     }
   }
 
+  /**
+   * Tests whether a given sql query is valid for a sql attribute from a ClassMap element.
+   * @param sqlQuery
+   * @param indexUsed
+   * @throws D2RException
+   */
   private static void validateSqlQuery(String sqlQuery, boolean indexUsed) throws D2RException {
     String ucQuery = sqlQuery.toUpperCase();
     if (ucQuery.contains("UNION")) {
