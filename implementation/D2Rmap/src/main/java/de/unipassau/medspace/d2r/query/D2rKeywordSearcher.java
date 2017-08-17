@@ -1,6 +1,5 @@
 package de.unipassau.medspace.d2r.query;
 
-import com.mockrunner.jdbc.SQLUtil;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
@@ -27,9 +26,21 @@ import java.util.List;
  */
 public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(D2rKeywordSearcher.class);
+
+  /**
+   * The D2rWrapper this class operates on.
+   */
   private D2rWrapper<?> wrapper;
 
+  /**
+   * Creates a new D2rKeywordSearcher.
+   * @param wrapper The D2rWrapper to search on.
+   * @throws IOException If an IO-Error occurs.
+   */
   public D2rKeywordSearcher(D2rWrapper wrapper) throws IOException {
     this.wrapper = wrapper;
   }

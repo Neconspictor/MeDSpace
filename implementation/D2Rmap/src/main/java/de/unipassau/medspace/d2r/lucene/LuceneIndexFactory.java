@@ -22,23 +22,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A factory that creates a lucene index manager for a {@link D2rWrapper}.
  */
 public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSqlTuple> {
 
+  /**
+   * The D2rWrapper used to create the index.
+   */
   private D2rWrapper<Document> wrapper;
+
+  /**
+   * The directory to store lucene index data to.
+   */
   private String directory;
 
+  /**
+   * Creates a new LuceneIndexFactory.
+   * @param wrapper The wrapper to create an index manager for.
+   * @param directory The directory the created index should store its data.
+   */
   public LuceneIndexFactory(D2rWrapper<Document> wrapper, String directory) {
     this.wrapper = wrapper;
     this.directory = directory;
   }
 
-  /**
-   * TODO
-   * @return
-   * @throws IOException
-   */
+
   @Override
   public TripleIndexManager<Document, MappedSqlTuple> createIndexManager() throws IOException {
 
@@ -55,9 +63,9 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
   }
 
   /**
-   * TODO
-   * @param maps
-   * @return
+   * Creates a list of a storable fields from a given list of D2rMaps.
+   * @param maps The D2rMap list to get all storable fields from.
+   * @return A list of a storable fields from a given list of D2rMaps.
    */
   private List<String> createFields(List<D2rMap> maps) {
     List<String> fields = new ArrayList<>();
@@ -69,9 +77,9 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
   }
 
   /**
-   * TODO
-   * @return
-   * @throws IOException
+   * Creates an {@link Analyzer} used for indexing and searching.
+   * @return An {@link Analyzer} used for indexing and searching.
+   * @throws IOException If an IO-Error occurs.
    */
   private Analyzer buildAnalyzer() throws IOException {
     return CustomAnalyzer.builder()
@@ -81,11 +89,33 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
         .build();
   }
 
+  /**
+   * An index searcher tailored to the lucene search engine.
+   */
   private static class LuceneIndexSearcher extends IndexSearcher<Document> {
+
+    /**
+     * A list of fields, that should be searchable.
+     */
     private List<String> fields;
+
+    /**
+     * A factory creating an index reader.
+     */
     private IndexReaderFactory readerFactory;
+
+    /**
+     * A factory for creating an analyzer for analyzing the search query before executing it.
+     */
     private AnalyzerBuilder builder;
 
+    /**
+     * Creates a new LuceneIndexSearcher.
+     * @param index The index the index searcher should operate on.
+     * @param fields A list of fields that are stored in the index and should be searchable by this searcher.
+     * @param readerFactory A factory to create a reader for the index.
+     * @param builder A factory for creating an analyzer for analyzing the search query before executing it.
+     */
     public LuceneIndexSearcher(Index<Document> index, List<String> fields, IndexReaderFactory readerFactory,
                                AnalyzerBuilder builder) {
       super(index);
@@ -100,10 +130,21 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
     }
   }
 
+  /**
+   * Converts a keyword searcher outputing lucene documents to a converter that outputs the result to rdf triples.
+   */
   private static class TripleSearchConverter implements Converter<KeywordSearcher<Document>,
       KeywordSearcher<Triple>> {
+
+    /**
+     * Used to convert the documents to rdf triples.
+     */
     private Converter<Document, List<Triple>> triplizer;
 
+    /**
+     * Creates a new TripleSearchConverter.
+     * @param triplizer The converter used to create triples from the documents.
+     */
     public TripleSearchConverter(Converter<Document, List<Triple>> triplizer) {
       this.triplizer = triplizer;
     }

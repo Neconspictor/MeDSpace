@@ -13,14 +13,31 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Created by David Goeth on 28.06.2017.
+ * Creates a stream that converts a stream of sql tuples to triple stream.
  */
 public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(SqlToTripleStream.class);
+
+  /**
+   * Query parameters used co create a new sql stream.
+   */
   private SqlStream.QueryParams startParams;
+
+  /**
+   * The D2rMap the resulting sql tuples can be mapped to.
+   */
   private D2rMap map;
 
+  /**
+   * Creates a new SqlToTripleStream
+   * @param queryParams Query parameters used co create a new sql stream.
+   * @param map The D2rMap the resulting sql tuples can be mapped to.
+   * @throws IOException If an IO-Error occurs.
+   */
   public SqlToTripleStream(SqlStream.QueryParams queryParams, D2rMap map) throws IOException {
     super();
 
@@ -40,7 +57,8 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
   @Override
   public void close() throws IOException {
     super.close();
-    log.debug("Successfully closed.");
+    if (log.isDebugEnabled())
+      log.debug("Successfully closed.");
   }
 
   @Override

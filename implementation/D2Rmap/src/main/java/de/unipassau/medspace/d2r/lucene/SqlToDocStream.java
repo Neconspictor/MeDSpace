@@ -7,13 +7,26 @@ import de.unipassau.medspace.d2r.MappedSqlTuple;
 import java.io.IOException;
 
 /**
- * Created by David Goeth on 30.06.2017.
+ * A stream that converts {@link MappedSqlTuple}s to the document type of an index.
  */
 public class SqlToDocStream<DocType> implements Stream<DocType> {
 
+  /**
+   * Used as input for accessing the mapped sql tuples.
+   */
   private final Stream<MappedSqlTuple> stream;
+
+  /**
+   * Used to convert the mapped sql tuples to the desired document class.
+   */
   private final Converter<MappedSqlTuple, DocType> converter;
 
+  /**
+   * Creates a new SqlToDocStream.
+   * @param stream Used as input for accessing the mapped sql tuples
+   * @param converter Used to convert the mapped sql tuples to the desired document class.
+   * @throws IOException If an IO-Error occurs.
+   */
   public SqlToDocStream(Stream<MappedSqlTuple> stream,
                         Converter<MappedSqlTuple, DocType> converter) throws IOException {
     this.stream = stream;
