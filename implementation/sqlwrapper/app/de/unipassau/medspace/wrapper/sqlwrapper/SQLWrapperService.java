@@ -1,4 +1,4 @@
-package de.unipassau.medspace;
+package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
@@ -36,24 +36,45 @@ import java.util.StringTokenizer;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Created by David Goeth on 24.07.2017.
+ * Defines the Model of the SQL wrapper.
  */
 @Singleton
 public class SQLWrapperService {
 
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(SQLWrapperService.class);
-  private ConnectionPool connectionPool;
-  private Configuration config;
-  private D2rWrapper<Document> wrapper;
-  private DatabaseMetaData metaData;
-  private  com.typesafe.config.Config playConfig;
 
+  /**
+   * Used to establish connection to the datasource.
+   */
+  private ConnectionPool connectionPool;
+
+  /**
+   * The D2R configuration.
+   */
+  private Configuration config;
+
+  /**
+   * The D2R wrapper.
+   */
+  private D2rWrapper<Document> wrapper;
+
+  /**
+   * Read meta data from the datasource.
+   */
+  private DatabaseMetaData metaData;
+
+
+  /**
+   * Creates a new SQLWrapperService.
+   * @param lifecycle Used to add shutdown hooks to the play framework.
+   * @param playConfig Used to read play specific configurations.
+   */
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
                            com.typesafe.config.Config playConfig) {
-
-      this.playConfig = playConfig;
-
       try {
         String mappingConfigFile = playConfig.getString("MeDSpaceMappingConfig");
         startup(mappingConfigFile);
@@ -81,11 +102,19 @@ public class SQLWrapperService {
     //System.exit(-1);
   }
 
+  /**
+   * Provides the D2R configuration.
+   * @return The D2R configuration.
+   */
   public Configuration getConfig() {
     return config;
   }
 
 
+  /**
+   * Provides the D2R wrapper.
+   * @return The D2R wrapper.
+   */
   public D2rWrapper getWrapper() {
     return wrapper;
   }
@@ -108,6 +137,13 @@ public class SQLWrapperService {
     return true;
   }
 
+  /**
+   * Performs a keyword search on the underlying datasource or on the index if one is used.
+   * @param keywords The keywords to search for.
+   * @return A stream of rdf triples representing the result of the keyword search.
+   * @throws IOException If an IO-Error occurs.
+   * @throws NotValidArgumentException If 'keywords' is null.
+   */
   public Stream<Triple> search(String keywords) throws IOException, NotValidArgumentException {
 
     if (keywords == null) {
@@ -125,6 +161,13 @@ public class SQLWrapperService {
     return searcher.searchForKeywords(keywordList);
   }
 
+  /**
+   * Does startup the sql wrapper.
+   * @param configFile The path to the MeDSpace D2r config file.
+   * @throws D2RException If the configuration file doesn't exists or is erroneous
+   * @throws IOException If an IO-Error occurs.
+   * @throws SQLException If the connection to the datasource could'nt be established.
+   */
   private void startup(String configFile) throws D2RException, IOException, SQLException {
 
     log.info("initializing SQL Wrapper...");
@@ -159,7 +202,7 @@ public class SQLWrapperService {
       conn = connectionPool.getDataSource().getConnection();
       metaData = conn.getMetaData();
     } catch (SQLException e) {
-      throw new D2RException("Couldn't establish connection to the datasource", e);
+      throw new SQLException("Couldn't establish connection to the datasource", e);
     } finally {
       log.debug("Closing Connection...");
       FileUtil.closeSilently(conn);
@@ -186,6 +229,11 @@ public class SQLWrapperService {
     log.info("Initialized SQL Wrapper");
   }
 
+  /**
+   * Does a graceful shutdown.
+   * @param lifecycle The application lifecycle of the play framework.
+   * @param errorCode An error code passed to the operating system.
+   */
   private void gracefulShutdown(ApplicationLifecycle lifecycle, int errorCode) {
 
     lifecycle.stop();
@@ -199,12 +247,19 @@ public class SQLWrapperService {
     System.exit(errorCode);
   }
 
+  /**
+   * Provides the used connection pool.
+   * @return The used connection pool.
+   */
   public ConnectionPool getConnectionPool() {
     return connectionPool;
   }
 
+  /**
+   * Provides meta data read from the datasource.
+   * @return The meta data from the datasource.
+   */
   public DatabaseMetaData getMetaData() {
     return metaData;
   }
-
 }

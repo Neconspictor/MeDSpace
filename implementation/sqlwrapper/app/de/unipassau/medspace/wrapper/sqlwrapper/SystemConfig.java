@@ -1,4 +1,4 @@
-package de.unipassau.medspace;
+package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,15 +13,22 @@ import java.net.URL;
 import com.typesafe.config.Config;
 
 /**
- * TODO
+ * This class is used to configure the environment of the play framework.
+ * It allows to specify a custom working directory that depends on the store location of the jar file and doesn't change
+ * if the application is started on different folders.
  */
 @Singleton
 public class SystemConfig {
 
   private static Logger log = LoggerFactory.getLogger(SystemConfig.class);
-  private File homeDirectory;
-  private String homeDirectoryPath;
+  private File customWorkingDirectory;
+  private String customWorkingDirectoryPath;
 
+  /**
+   * Creates a new SystemConfig
+   * @param environment The environment of the play framework.
+   * @param playConfig The configuration of the play framework.
+   */
   @Inject
   public SystemConfig(Environment environment,
                       Config playConfig) {
@@ -29,44 +36,47 @@ public class SystemConfig {
 
     // go one folder upwards
     String homePath = libDirectory + "/../";
-    homeDirectory = new File(homePath);
+    customWorkingDirectory = new File(homePath);
 
     //We result should be a directory and exist
-    boolean ok = homeDirectory.exists() && homeDirectory.isDirectory();
+    boolean ok = customWorkingDirectory.exists() && customWorkingDirectory.isDirectory();
     if (!ok) {
       // we cannot handle this errror
       throw new RuntimeException("Home Dirctory does not exist or is no directory: "
-          + homeDirectory.getAbsolutePath());
+          + customWorkingDirectory.getAbsolutePath());
     }
 
-    homeDirectoryPath = homeDirectory.toPath().normalize().toString();
+    customWorkingDirectoryPath = customWorkingDirectory.toPath().normalize().toString();
 
     // assure that we have a trailing slash
-    if (!homeDirectoryPath.endsWith("/") && !homeDirectoryPath.endsWith("\\")) {
-      homeDirectoryPath += "/";
+    if (!customWorkingDirectoryPath.endsWith("/") && !customWorkingDirectoryPath.endsWith("\\")) {
+      customWorkingDirectoryPath += "/";
     }
 
     //set the current working directory now to the home directory path
-    //System.setProperty("user.dir", homeDirectoryPath);
-
+    //System.setProperty("user.dir", customWorkingDirectoryPath);
   }
 
 
   /**
-   * Provides the path to the home directory; Path ends with a trailing slash
-   * @return The home directory path
+   * Provides the path to the custom working directory; Path ends with a trailing slash
+   * @return The custom working directory path
    */
-  public String getHomeDirectoryPath() {
-    return homeDirectoryPath;
-  }
-
-  public File getHomeDirectory() {
-    return homeDirectory;
+  public String getCustomWorkingDirectoryPath() {
+    return customWorkingDirectoryPath;
   }
 
   /**
-   *
-   * @return
+   * Provides the custom working directory as a file.
+   * @return The custom working directory.
+   */
+  public File getCustomWorkingDirectory() {
+    return customWorkingDirectory;
+  }
+
+  /**
+   * Provides the directory the compilation of this class lies.
+   * @return The directory where the compilation of this class lies.
    */
   private String getPlayLibDirectory()  {
     URL libURL = getClass().getProtectionDomain().getCodeSource().getLocation();

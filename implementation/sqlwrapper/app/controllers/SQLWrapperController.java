@@ -1,6 +1,6 @@
 package controllers;
 
-import de.unipassau.medspace.SQLWrapperService;
+import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.JenaRDFInputStream;
@@ -30,16 +30,31 @@ import java.util.List;
 import play.twirl.api.Html;
 
 /**
- * This controller contains an action to handle HTTP requests
- * to the application's home page.
+ * This controller handles the access of the SQL wrapper services and manages the proper GUI rendering of the services.
  */
 @Singleton
 public class SQLWrapperController extends Controller {
 
-  private final SQLWrapperService wrapperService;
+  /**
+   * Logger instance for this class.
+   */
   private static Logger log = LoggerFactory.getLogger(SQLWrapperController.class);
 
-private final FormFactory formFactory;
+  /**
+   * The SQL wrapper model.
+   */
+  private final SQLWrapperService wrapperService;
+
+  /**
+   * Factory for reading and writing HTML forms.
+   */
+  private final FormFactory formFactory;
+
+  /**
+   * Creates a new SQLWrapperController
+   * @param wrapperService
+   * @param formFactory
+   */
   @Inject
   SQLWrapperController(SQLWrapperService wrapperService,
                        FormFactory formFactory) {
@@ -47,21 +62,28 @@ private final FormFactory formFactory;
     this.formFactory = formFactory;
   }
 
+  /**
+   * Provides the test page of the SQL Wrapper.
+   * @return
+   */
   public Result guiTest() {
     return ok(views.html.testGui.render());
   }
 
   /**
-   * An action that renders an HTML page with a welcome message.
-   * The configuration in the <code>routes</code> file means that
-   * this method will be called when the application receives a
-   * <code>GET</code> request with a path of <code>/</code>.
+   * Provides the SQL Wrapper status and debug page.
    */
   public Result index() {
     return ok(views.html.index.render(wrapperService, wrapperService.getConfig(), wrapperService.getConnectionPool(),
         wrapperService.getMetaData()));
   }
 
+  /**
+   * Does invoke a keyword search on the SQL wrapper and provides the result as serialized rdf triples.
+   * @param keywords The keywords to search for on the SQl wrapper.
+   * @param attach Specifies if the caller wants the result stored in an HTML attachment field.
+   * @return RDF triples representing the keyword search result.
+   */
   public Result search(String keywords, boolean attach)  {
     if (log.isDebugEnabled())
       log.debug("keyword search query: " + keywords);
@@ -102,6 +124,10 @@ private final FormFactory formFactory;
     return ok(tripleStream).as(mimeType).withHeader("Content-Disposition", dispositionValue);
   }
 
+  /**
+   * Test service. Used for the later implementation of the registration on the Dataspace Register.
+   * @return Status report whether the registration was successful.
+   */
   public Result registerDataSourceTest() {
     String clientHostName = null;
     Http.Request request = request();
@@ -126,6 +152,12 @@ private final FormFactory formFactory;
     return ok(views.html.minimal.render("Accepted", Html.apply(result)));
   }
 
+  /**
+   * The SQL wrapper does reindex the data from the underlying datasource.
+   *
+   * NOTE: This service is not intended o be used in production. Use it just for testing purposes!
+   * @return Status report whether the reindexing was successfull.
+   */
   public Result reindex() {
     if (!wrapperService.getWrapper().isIndexUsed())
       return ok("No index used, nothing to do.");
@@ -140,6 +172,13 @@ private final FormFactory formFactory;
     return ok("Data reindexed.");
   }
 
+  /**
+   * Provides the host name of the client from a http request header.
+   * @param request The http request header to get the host name of the client.
+   * @return The host name of the client or its ip address if the client's ip address couldn't be resolved to a host
+   * name.
+   * @throws UnknownHostException If no ip address could be found from the request's client.
+   */
   private String getClientHostName(Http.Request request) throws UnknownHostException {
       InetAddress client = InetAddress.getByName(request.remoteAddress());
       return Address.getHostName(client);

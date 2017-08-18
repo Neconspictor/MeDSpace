@@ -1,7 +1,15 @@
 
 
 @import de.unipassau.medspace.common.SQL.ConnectionPool
-@(service: de.unipassau.medspace.SQLWrapperService,
+@import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService
+
+@*
+* Defines the start page of the SQL Wrapper.
+* The start page is indented to provide a human readable page that lists the services of the SQL wrapper and
+* does provide some debug information of the SQL wrapper.
+*@
+
+@(service: SQLWrapperService,
         config: de.unipassau.medspace.d2r.config.Configuration,
         connectionPool: ConnectionPool,
         metaData: java.sql.DatabaseMetaData)
