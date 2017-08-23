@@ -169,7 +169,7 @@ citecolor   = {cyan}
 %%% Titelseite
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \selectlanguage{ngerman}
-\include{titlepage}
+\input{titlepage}
 
 \pagestyle{fancy}
 \selectlanguage{english}
@@ -177,7 +177,7 @@ citecolor   = {cyan}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Kurzfassung (wenn möglich auf Englisch, ansonsten Deutsch)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\include{abstract}
+\input{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Inhaltsverzeichnis
@@ -215,10 +215,10 @@ citecolor   = {cyan}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\include{intro/intro}
 
-\include{introduction/motivation}
+\input{introduction/motivation}
 \chapter{Foundation in Data integration}
 \input{theoretical/data-integration}
-\chapter{Dataspaces}
+\chapter{Dataspaces} \label{chapter_dataspaces}
 \input{theoretical/dataspace/Components}
 \input{theoretical/dataspace/ProbabilisticMediatedSchemaMapping}
 %\input{theoretical/dataspace/DatabasesToDataspacesANewAbstractionForInformationManagement}
@@ -228,11 +228,11 @@ citecolor   = {cyan}
 \input{theoretical/dataspace/TowardsAModelToDataspaces_NDJAFA}
 \chapter{Reference Projects}
 \input{reference-projects/DebugITOntologyMediatedLayeredDataIntegration}
-\include{implementation/implementation}
+\input{implementation/implementation}
 
 %\include{summaries/summaries}
 
-\include{glossary/glossary}
+\input{glossary/glossary}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibtex-Tool: http://jabref.sourceforge.net/
@@ -243,6 +243,6 @@ citecolor   = {cyan}
 
 
 \selectlanguage{ngerman}
-\include{assertion}
+\input{assertion}
 
 \end{document}
