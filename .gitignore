@@ -7,7 +7,6 @@
 *.gz
 *.log
 *.out
-*.pdf
 *.sav
 *.toc
 *.db
@@ -35,3 +34,7 @@ implementation/sqlwrapper/.idea/*
 implementation/sqlwrapper/project/*/*
 implementation/sqlwrapper/_work/*
 implementation/sqlwrapper/medspace/*
+
+//thesis
+thesis/latex source/rootFile.pdf
+thesis/sqlwrapper_doc/MeDSpace_D2RMap_Language_Specification.pdf
