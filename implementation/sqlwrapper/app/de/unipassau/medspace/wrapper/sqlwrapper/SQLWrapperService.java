@@ -188,6 +188,8 @@ public class SQLWrapperService {
       new D2RException(errorMessage, e);
     }
 
+    log.info("Establish connection pool to: " + jdbcURI);
+
     connectionPool = new HikariConnectionPool(
         jdbcURI,
         config.getJdbcDriver(),

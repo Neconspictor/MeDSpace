@@ -5,16 +5,26 @@ In the thesis' project there are three datasources: A SQL database, a pdf file s
 structured data while the pdf file server contains semi-structured data.
 The following sub sections describe the functionality and implementation of the wrappers for the three datasources in detail.
 
+\textbf {Keyword query language convention}\\
+As already previously told, the one service that every wrapper has to implement is the keyword search functionality. In order to search for specific keywords, it is important to define a convention how the keyword search should work, since there are several possibilities. E.g. if a query is posed with two keywords, should a query be created for all results that contains both keywords or it is enough if one of the keywords is contained? Should boolean operators be allowed (AND, OR, NOT)? 
+
+The design decision is at follows: Rudimentary keyword search functionality suffices and several keyword searches have to be interpreted in an 'OR like' manner, i.d. one of the stated keywords suffices to fulfill the query condition. The reasons are, that no complex global query language is necessary, that all wrappers have to implement which leads to much more flexible implementation decisions. As wrappers can provide as many services as they like it is easy to provide a much more powerful keyword search service. So this design decision doesn't restrict the power of a wrapper.
+So, why is an 'OR like' interpretation used for a multi-keyword statement and not an 'AND like' one ? There is no special reason for that design decision, as both possibilities would be conceivable, since in the dataspace services could be implemented, that would complement the missing feature:\\
+A dataspace is supposed allowing to refine iteratively a keyword search result. Assuming that keywords are ORed, this condition allows to implement a service that allows the user to search for one keyword and than for another on the result set. The result would be a executed AND operator. Similarly could a service be implemented that would add an OR operator. 
+
+
 \subsection{SQL Wrapper}
 
-The task of the SQL Wrapper is to convert the SQL data into rdf and providing a keyword search functionality, as SQL databases doesn't provide such a functionality.
+The task of the SQL Wrapper is to convert the SQL data into RDF and providing a keyword search functionality, as SQL databases doesn't provide such a functionality. \\
+In the thesis' project a MySQL datasource is used. But as several other SQL database vendors exists, one additional design goal is to produce a wrapper that can be used with any other SQL database. That will considerably reduce prospective maintenance work.\\
+Thus, a SQL wrapper was implemented, that doesn't use any vendor specific features.
 
-At first we want to look at the conversion from sql to rdf. To do this, the wrapper implements a specialized version of the D2rMap language. D2rMap was designed by Chris Bizer and is  a declarative language to describe mappings between relational databases schemata and OWL/RDFS ontologies\cite{D2rMap_aDatabaseToRdfMappingLanguage}.
+At first, we want to look at the conversion from SQL to RDF. To do this, the wrapper implements a specialized version of the D2rMap language. D2rMap was designed by Chris Bizer and is  a declarative language to describe mappings between relational databases schemata and OWL/RDFS ontologies\cite{D2rMap_aDatabaseToRdfMappingLanguage}.
 
-D2rMap is a general purpose language to export any sql data to rdf. To better suit the needs for a dataspace wrapper, the language was changed. The changed language is called MeDSpace D2rMap and its language specification can be found in the appendix.
+D2rMap is a general purpose language to export any SQL data to RDF. To better suit the needs for a dataspace wrapper, the language was changed. The custom language is called MeDSpace D2rMap and its language specification can be found in the appendix.
 
 The mapping is done as follows: At first the user specifies mappings in a config file. Each mapping is used to create RDF instances of a certain type. The mapping contains a SQL query, that represents all the data, that is necessary to create the instances. Furthermore, in the mapping are columns specified, that are used to create unique IDs for the created RDF instances.
-The next step is to fetch the sql data and to group the record set according to the fore mentioned columns. Now, each row of the grouped record set represents a rdf instance, so the instances can be created. The last step is the creation of the property statements. Important to note is the seperation of the last two steps. Through the seperation it is possible to reference other rdf instances (from the same mapping or another). The mapping process is visualized in figure \ref{D2rMappingProcessFigure}.
+The next step is to fetch the SQL data and group the record set according to the fore mentioned columns. Now, each row of the grouped record set represents a RDF instance, so the instances can be created by proceeding all rows. The last step is the creation of the property statements of the RDF instances. Important to note is the seperation of the last two steps. As all RDF instances exists before the properties are created, it is possible to reference other RDF instances (from the same mapping or another). The mapping process is visualized in figure \ref{D2rMappingProcessFigure}.
 
 \begin{figure}[H]
 	\begin{center}
@@ -33,14 +43,21 @@ Mainly there are two possibilities, to implement a keyword search functionality:
 \end{itemize}
 
 At first glance, the first option sounds obviously simple, but after implementing it showed several disadvantages: SQL is not designed to provide search functionality based on keywords. SQL uses the \textbf{\emph{LIKE}} operator for pattern matching. But in order to do a Full-text search, the SQL Query executor cannot use any index resulting in poor query answer performance. Another problem of \emph{LIKE} is, that there is no way to define, that only whole words should be searched and not just sub word matching. Whole word matching is very important, as e.g. a user searching for data about male patients should not also get data about female patients.
-As a result, the \emph{LIKE} operator is not suitable for a proper keyword search service as expected to be provided by a dataspace wrapper. Several SQL database vendors provide often own solutions for Full-Text search queries. But these solutions have often other restrictions as e.g. only column fields having the datatype \emph{TEXT} (on MySQL) and the fields have to specified to be fulltext fields, so that the SQL engine is able to create an index for it (at MySQL databases at least).
-A Wrapper could use vendor specific services but that would exclude other SQL database vendors, obviously. 
+As a result, the \emph{LIKE} operator is not suitable for a proper keyword search service as expected to be provided by a dataspace wrapper. Several SQL database vendors provide often own solutions for Full-Text search queries. But these solutions have often other restrictions as e.g. only column fields having the datatype \emph{TEXT} (on MySQL) and the fields have to be specified as fulltext fields (in their creation or through an update operation), so that the SQL engine is able to create an index for it (at MySQL databases at least).\\
+A Wrapper could use vendor specific services but that would exclude other SQL database vendors, obviously.
 
 The second option doesn't rise the aforementioned issues of option one. For the Wrapper a keyword searcher was implemented using the fulltext search engine Apache Lucene Core \footnote{\url{https://lucene.apache.org/core/}}. The advantage of using Lucene is it's high-performance and scaling of keyword searches over large data sets. Additionally it allows a fine granular configuration about the query construction and sorts automatically the query result by relevance (so called query result ranking). \\
 The major disadvantage of using lucene is that the SQL data have to be extracted and indexed outside the database. If the data changes or rows are added resp. deleted, the index has to be updated accordingly. The update process can be very complex, as not only new data has to be indexed resp. existing data has to be removed, but also data that references the deleted or new data that depends on it.\\
 A simpler but obviously slower solution is to reindex the whole data set. Reindexing the whole data set is only advised if updates occur not that often or if it is acceptable if the wrapper updates the index not instantly and thus provides potentially outdated data.
 
-The decision which method is more suitable depends primarily on the use case and the domain. As the project is designed to be used as a test suite for medical datasources and medical science, it is acceptable if the data is outdated to some degree and will be updated not frequently. Changes on the datasource haven't to be updated in near-realtime. Having this in mind, the preferred method for the keyword search functionality clearly is using Apache Lucene Core, as the  advantages clearly outweigh its disadvantages. Thus, a full functional keyword searcher was implemented powered by Lucene.
+The decision which method is more suitable depends primarily on the use case and the domain. As the project is designed to be used as a test suite for medical datasources and medical science, it is acceptable if the data is outdated to some degree and will be updated not very frequent. So, changes on the datasource haven't to be updated in near-realtime. \\
+Than, one of the design goals for this project is to design a SQL wrapper that can be used with arbitrary vendors. As a result, vendor specific services are not an option, too.\\
+Having this in mind, the preferred method for the keyword search functionality clearly is Apache Lucene Core, as the  advantages clearly outweigh its disadvantages. Thus, a full functional keyword searcher was implemented powered by Lucene.
+
+
+\textcolor{red}{TODO:} keyword search services: The basic service and the advanced one, that utilizes the whole potential of Apache Lucene
+
+\textcolor{red}{TODO:} Communication with the register
 
 \subsection{Image Wrapper}
 fgfg
