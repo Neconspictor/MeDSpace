@@ -150,7 +150,7 @@ public class SQLWrapperService {
       throw new NotValidArgumentException("keywords mustn't be null");
     }
 
-    StringTokenizer tokenizer = new StringTokenizer(keywords, ",", false);
+    StringTokenizer tokenizer = new StringTokenizer(keywords, ", ", false);
     List<String> keywordList = new ArrayList<>();
 
     while(tokenizer.hasMoreTokens()) {

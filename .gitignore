@@ -35,6 +35,12 @@ implementation/sqlwrapper/project/*/*
 implementation/sqlwrapper/_work/*
 implementation/sqlwrapper/medspace/*
 
+//
+implementation/register/target/*
+implementation/register/logs/*
+implementation/register/.idea/*
+implementation/register/project/*/*
+
 //thesis
 thesis/latex source/rootFile.pdf
 thesis/sqlwrapper_doc/MeDSpace_D2RMap_Language_Specification.pdf

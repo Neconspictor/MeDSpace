@@ -30,17 +30,17 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
    * An array of names specifying lucene {@link org.apache.lucene.document.Field}s that should be included in the search.
    * Fields that aren't included into the array will be ignored.
    */
-  private String[] fields;
+  protected String[] fields;
 
   /**
    * A factory for creating an {@link IndexReader}, which is used to read a lucene index.
    */
-  private IndexReaderFactory readerFactory;
+  protected IndexReaderFactory readerFactory;
 
   /**
    * Used to analyze the indexed data.
    */
-  private Analyzer analyzer;
+  protected Analyzer analyzer;
 
   /**
    * Creates a new {@link LuceneKeywordSearcher}
@@ -63,6 +63,12 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
       throw new NotValidArgumentException("No keywords to search for");
     }
 
+    // escape  keywords
+    for (int i = 0; i < keywords.size(); ++i) {
+      String escaped = escape(keywords.get(i));
+      keywords.set(i, escaped);
+    }
+
     SearchResult result = null;
     Query query = null;
     try {
@@ -81,13 +87,30 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
   }
 
   /**
+   * Escape special characters and parer tokens from a lucene search query
+   * @param query The query to process.
+   * @return An escaped query
+   */
+  protected String escape(String query) {
+
+    // Eleminate the boolean operators OR, AND, NOT as they are only considered in upper case.
+    query = query.toLowerCase();
+
+    // Escape special characters used in the lucene query parser: + - && || ! ( ) { } [ ] ^ " ~ \ * ? : /
+    query = query.replaceAll("\\+|-|&&|\\|\\||!|\\(|\\)|\\{|\\}|\\[|\\]|\\^|\"|~|\\\\|\\*|\\?|:|/",
+        "\\\\$0");
+
+    return query;
+  }
+
+  /**
    * Constructs a new keyword query for the lucene index.
    * @param fieldNameArray The names of a list of {@link org.apache.lucene.document.Field} to consider for searching.
    * @param keywords The keywords to search for in the specified {@link org.apache.lucene.document.Field}s.
    * @return A new query that searches for the specified keywords.
    * @throws ParseException If the query couldn't be constructed.
    */
-  private Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException {
+  protected Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException {
     QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
 
     StringBuilder keywordsConcat = new StringBuilder();
@@ -110,7 +133,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
    * @return The result of the executed query.
    * @throws IOException If an IO-Error occurs while retrieving the search result.
    */
-  private SearchResult doLuceneKeywordSearch(Query query) throws IOException {
+  protected SearchResult doLuceneKeywordSearch(Query query) throws IOException {
 
     if (log.isDebugEnabled())
       log.debug("Constructed query: " + query);
@@ -120,7 +143,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
   /**
    * A stream of lucene {@link Document}s
    */
-  private static class DocumentStream implements Stream<Document> {
+  protected static class DocumentStream implements Stream<Document> {
 
     /**
      * A cursor for getting the next document from the search result.
