@@ -1,44 +1,25 @@
 @import de.unipassau.medspace.register.common.Datasource
 @import java.util.List
+@import test.DatasourceFormular
+@import test.NoResponseFormular
+@import test.RemoveDatasourceFormular
+
 @(msg : String, datasources : List[Datasource])
 
 @pageSceleton("Register Home",
-  routes.Assets.versioned("stylesheets/nothing.css").url,
-  routes.Assets.versioned("javascripts/registerCommon.js").url,
+  routes.Assets.versioned("stylesheets/test.css").url,
+  routes.Assets.versioned("javascripts/test.js").url,
   routes.Assets.versioned("images/favicon.png").url) {
   <h1>Register Home</h1>
   @msg
 
   <h2>Datasource Registration Test</h2>
 
-  <div class="container-fluid">
-    <div class="row">
-      <div class="control-group" id="fields">
-        <label class="control-label" for="field0"></label>
-        <div class="controls" id="profs">
-          <form class="input-append" action="@routes.RegisterController.add()" method="GET">
-            <div>
-              URI:          <input type="text" name="uri" placeholder="">
-            </div>
-            <div>
-              Description:  <input type="text" name="description" placeholder=""> <br>
-            </div>
-            <div>
-              <h4>Services</h4>
-            </div>
-            <div id="field">
-              <input autocomplete="off" class="input" id="field0" name="services[0]" type="text" placeholder="" data-items="8"/><button id="b1" class="btn add-more" type="button">+</button>
-            </div>
-            <small>Press + to add another service</small>
-            <br>
-            <button type="submit">Add</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+  @DatasourceFormular()
 
+  @NoResponseFormular()
 
+  @RemoveDatasourceFormular()
 
   <h2>Registered Datasources</h2>
 
@@ -57,6 +38,8 @@
             </li>
           }
         </ul>
+        <h4>Time stamp</h4>
+          @datasource.getTimeStamp()
       </li>
     }
   </ul>

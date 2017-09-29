@@ -1,0 +1,14 @@
+@()
+
+<div class="container-fluid">
+    <div class="row">
+        @*action="@routes.RegisterController.add()" method="GET"*@
+        <form class="input-append form-container" id="no-response-form" >
+            <h5><strong>Inform the register, that a datasource don't respond</strong></h5>
+            <input type="text" name="uri" placeholder="">
+            <br>
+            <button id="no-response-btn" type="submit">Notify</button>
+            <div id="no-response-alert-box"></div>
+        </form>
+    </div>
+</div>

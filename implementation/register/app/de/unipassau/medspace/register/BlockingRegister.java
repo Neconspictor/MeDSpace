@@ -1,8 +1,8 @@
 package de.unipassau.medspace.register;
 
+import com.sun.org.apache.regexp.internal.RE;
 import de.unipassau.medspace.register.common.Datasource;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
@@ -16,52 +16,95 @@ public class BlockingRegister {
 
   private final Map<String, Datasource> datasources;
   private final ReadWriteLock readWriteLock;
+  private static final int COOL_DOWN_TIME = 10000;
 
   public BlockingRegister() {
     this.datasources = new TreeMap<>();
     this.readWriteLock = new ReentrantReadWriteLock();
   }
 
-  public boolean addDatasource(Datasource datasource) throws InterruptedException {
+  public Results.Add addDatasource(Datasource.MutableDatasource mutable) {
+
+    if (mutable == null) {
+      return Results.Add.NULL_NOT_VALID;
+    }
+
     Lock lock = readWriteLock.writeLock();
+    Datasource newValue = Datasource.createFromMutable(mutable);
     try {
       lock.lock();
-      if (datasources.get(datasource.getUri()) == null) {
-        datasources.put(datasource.getUri(), datasource);
-        return true;
+      Datasource oldValue = datasources.get(newValue.getUri());
+      if (oldValue == null) {
+        datasources.put(newValue.getUri(), newValue);
+        return Results.Add.SUCCESS;
       }
-      return false;
+
+      if (oldValue.getTimeStamp().before(newValue.getTimeStamp())) {
+        datasources.put(newValue.getUri(), newValue);
+        return  Results.Add.SUCCESS;
+      }
+      return  Results.Add.NO_SUCCESS_NEWER_VERSION_EXISTS;
+
     } finally {
       lock.unlock();
     }
   }
 
-  public void datasourceNoRespond(Datasource datasource) {
+  public Results.NoResponse datasourceNoRespond(Datasource datasource) {
+    if (datasource == null) return Results.NoResponse.NULL_NOT_VALID;
     // For now just remove the datasource
-    removeDatasource(datasource);
+    Lock lock = readWriteLock.readLock();
+    Datasource toDelete;
+    try {
+      lock.lock();
+      toDelete = datasources.get(datasource.getUri());
+    } finally {
+      lock.unlock();
+    }
+
+    // datasource isn't registered?
+    if (toDelete == null) return Results.NoResponse.DATASOURCE_NOT_FOUND;
+
+    long datasourceMillis = datasource.getTimeStamp().getTime();
+    long toDeleteMillis = toDelete.getTimeStamp().getTime();
+    if (datasourceMillis > toDeleteMillis + COOL_DOWN_TIME) {
+      removeDatasource(datasource);
+      return Results.NoResponse.REMOVED_DATASOURCE;
+    }
+    return Results.NoResponse.COOL_DOWN_ACTIVE;
   }
 
   public Map<String, Datasource> getDatasources() {
     Lock lock = readWriteLock.readLock();
     try {
       lock.lock();
-      return Collections.unmodifiableMap(datasources);
+
+      //Create a shallow copy, as this object has to remain thread-safe
+      // NOTE: A wrapper class like Collections.unmodifiableList isn't enough
+      // as write operations to datasources would also change the content of the shallow copy!
+      // As Datasource is an immutable class, no copying has to be done.
+      Map<String, Datasource> copy = new TreeMap<>(datasources);
+      return copy;
     } finally {
       lock.unlock();
     }
   }
 
-  public boolean removeDatasource(Datasource datasource) {
+  public Results.Remove removeDatasource(Datasource datasource) {
+
+    if (datasource == null) return Results.Remove.NULL_NOT_VALID;
+
     Lock lock = readWriteLock.writeLock();
     try {
       lock.lock();
       if (datasources.get(datasource.getUri()) != null) {
         datasources.remove(datasource.getUri());
-        return true;
+        return Results.Remove.SUCCESS;
       }
-      return false;
+      return Results.Remove.DATASOURCE_NOT_FOUND;
     } finally {
       lock.unlock();
     }
   }
+
 }

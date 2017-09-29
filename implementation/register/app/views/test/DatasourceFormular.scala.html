@@ -1,0 +1,33 @@
+@()
+
+<div class="container-fluid">
+    <div class="row">
+        @*action="@routes.RegisterController.add()" method="GET"*@
+        <form class="input-append form-container" >
+            <div>
+                <h5><strong>Register a datasource</strong></h5>
+            </div>
+            <div>
+                <strong>URI</strong>
+                <br>
+                <input type="text" name="uri" placeholder="">
+            </div>
+            <div>
+                <strong>Description</strong>
+                <br>
+                <input type="text" name="description" placeholder=""> <br>
+            </div>
+            <div>
+                <strong>Services</strong>
+                <br>
+            </div>
+            <div class="fieldList">
+                @test.FieldItem()
+            </div>
+            <small>Press + to add another service</small>
+            <br>
+            <button class="btn-submit" type="submit">Add</button>
+            <div id="alertion-box"></div>
+        </form>
+    </div>
+</div>
