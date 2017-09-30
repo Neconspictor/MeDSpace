@@ -1,6 +1,5 @@
 package de.unipassau.medspace.register;
 
-import com.sun.org.apache.regexp.internal.RE;
 import de.unipassau.medspace.register.common.Datasource;
 
 import java.util.Map;
@@ -33,14 +32,14 @@ public class BlockingRegister {
     Datasource newValue = Datasource.createFromMutable(mutable);
     try {
       lock.lock();
-      Datasource oldValue = datasources.get(newValue.getUri());
+      Datasource oldValue = datasources.get(newValue.getUrl().toExternalForm());
       if (oldValue == null) {
-        datasources.put(newValue.getUri(), newValue);
+        datasources.put(newValue.getUrl().toExternalForm(), newValue);
         return Results.Add.SUCCESS;
       }
 
       if (oldValue.getTimeStamp().before(newValue.getTimeStamp())) {
-        datasources.put(newValue.getUri(), newValue);
+        datasources.put(newValue.getUrl().toExternalForm(), newValue);
         return  Results.Add.SUCCESS;
       }
       return  Results.Add.NO_SUCCESS_NEWER_VERSION_EXISTS;
@@ -57,7 +56,7 @@ public class BlockingRegister {
     Datasource toDelete;
     try {
       lock.lock();
-      toDelete = datasources.get(datasource.getUri());
+      toDelete = datasources.get(datasource.getUrl().toExternalForm());
     } finally {
       lock.unlock();
     }
@@ -97,8 +96,8 @@ public class BlockingRegister {
     Lock lock = readWriteLock.writeLock();
     try {
       lock.lock();
-      if (datasources.get(datasource.getUri()) != null) {
-        datasources.remove(datasource.getUri());
+      if (datasources.get(datasource.getUrl().toExternalForm()) != null) {
+        datasources.remove(datasource.getUrl().toExternalForm());
         return Results.Remove.SUCCESS;
       }
       return Results.Remove.DATASOURCE_NOT_FOUND;

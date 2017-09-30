@@ -42,9 +42,9 @@ public class RegisterController extends Controller {
      */
     public Result index() {
         Map<String, Datasource> datasources = registerBlocking.getDatasources();
-        Collection coll = datasources.values();
+        Collection<Datasource> coll = datasources.values();
         List<Datasource> list = new LinkedList<>(coll);
-        Collections.sort(list, Comparator.comparing(Datasource::getUri));
+        Collections.sort(list, Comparator.comparing(o -> o.getUrl().toExternalForm()));
 
         return ok(views.html.index.render("Welcome to the register home page!", list));
     }

@@ -38,8 +38,8 @@ public class Register extends AbstractActor {
 
   private void addDatasource(Protocol.AddDatasource message) {
     Datasource datasource = message.datasource;
-    if (datasources.get(datasource.getUri()) == null) {
-      datasources.put(datasource.getUri(), datasource);
+    if (datasources.get(datasource.getUrl()) == null) {
+      datasources.put(datasource.getUrl().toExternalForm(), datasource);
       sender().tell(new OperationStatus.Ok(), self());
     } else {
       sender().tell(new OperationStatus.NoChangesDone(), self());
@@ -58,8 +58,8 @@ public class Register extends AbstractActor {
 
   private void removeDatasource(Protocol.RemoveDatasource message) {
     Datasource datasource = message.datasource;
-    if (datasources.get(datasource.getUri()) != null) {
-      datasources.remove(datasource.getUri());
+    if (datasources.get(datasource.getUrl()) != null) {
+      datasources.remove(datasource.getUrl());
       sender().tell(new OperationStatus.Ok(), self());
     } else {
       sender().tell(new OperationStatus.NoChangesDone(), self());
