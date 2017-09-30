@@ -1,7 +1,5 @@
 package controllers;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
 import controllers.response.AddResultResponse;
 import controllers.response.NoResponseResultResponse;
 import controllers.response.RemoveResultResponse;
@@ -19,30 +17,28 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * This controller contains an action to handle HTTP requests
- * to the application's home page.
+ * This controller defines actions that allow to access the functionality of the register via HTTP.
  */
 public class RegisterController extends Controller {
 
-    private final ActorRef registerActor;
-    private final ActorRef testActor;
+    /**
+     * Used to read http request data.
+     */
     private final FormFactory formFactory;
+
+    /**
+     * The register, this controller is referring to.
+     */
     private final BlockingRegister registerBlocking;
 
     @Inject
-    public RegisterController(ActorSystem system, FormFactory formFactory) {
-        registerActor = system.actorOf(Register.getProps());
-        testActor = system.actorOf(TestActor.getProps());
-
+    public RegisterController(FormFactory formFactory) {
         this.formFactory = formFactory;
         registerBlocking = new BlockingRegister();
     }
 
     /**
-     * An action that renders an HTML page with a welcome message.
-     * The configuration in the <code>routes</code> file means that
-     * this method will be called when the application receives a
-     * <code>GET</code> request with a path of <code>/</code>.
+     * An action that renders a page for testing the register services.
      */
     public Result index() {
         Map<String, Datasource> datasources = registerBlocking.getDatasources();
@@ -53,6 +49,11 @@ public class RegisterController extends Controller {
         return ok(views.html.index.render("Welcome to the register home page!", list));
     }
 
+    /**
+     * An action that reads a Datasource.MutableDatasource from a sent form, creates a Datasource object from
+     * it and adds it to the register.
+     * @return A Results.Add serialized to a JSON object.
+     */
     public Result add() {
         Datasource.MutableDatasource mutable = readMutableDatasource();
         Results.Add result = registerBlocking.addDatasource(mutable);
@@ -60,14 +61,24 @@ public class RegisterController extends Controller {
         return ok(Json.toJson(response));
     }
 
+    /**
+     * An action that reads a Datasource.MutableDatasource from a sent form, creates a Datasource object from
+     * it. Finally the register is informed, that the sent datasource is not responding anymore.
+     * @return A Results.NoResponse serialized to a JSON object.
+     */
     public Result noResponse() {
         Datasource.MutableDatasource mutable = readMutableDatasource();
-        Datasource datasource = Datasource.createFromMutable(readMutableDatasource());
+        Datasource datasource = Datasource.createFromMutable(mutable);
         Results.NoResponse result = registerBlocking.datasourceNoRespond(datasource);
         ResultResponse response = new NoResponseResultResponse(result);
         return ok(Json.toJson(response));
     }
 
+    /**
+     * An action that reads a Datasource.MutableDatasource from a sent form, creates a Datasource object from
+     * it. Finally the register is informed, that the sent datasource should be removed.
+     * @return A Results.Remove serialized to a JSON object.
+     */
     public  Result remove() {
         Datasource.MutableDatasource mutable = readMutableDatasource();
         Datasource datasource = Datasource.createFromMutable(mutable);
@@ -76,6 +87,10 @@ public class RegisterController extends Controller {
         return ok(Json.toJson(response));
     }
 
+    /**
+     * An action that provides routes to services, that should be accessible from javascript.
+     * @return Javascript code, that allows access to services of this application directly from javascript.
+     */
     public Result javascriptRoutes() {
         return ok(
             JavaScriptReverseRouter.create("jsRoutes",
@@ -87,6 +102,11 @@ public class RegisterController extends Controller {
         ).as("text/javascript");
     }
 
+    /**
+     * Tries to read a Datasource.MutableDatasource from a sent form request.
+     * @return The read Datasource.MutableDatasource or null, if no Datasource.MutableDatasource object could
+     * be bound.
+     */
     private Datasource.MutableDatasource readMutableDatasource() {
         try {
             Form<Datasource.MutableDatasource> requestData = formFactory.form(Datasource.MutableDatasource.class)
