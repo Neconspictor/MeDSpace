@@ -1,4 +1,4 @@
-package controllers.response;
+package de.unipassau.medspace.register.response;
 
 /**
  * Created by David Goeth on 29.09.2017.

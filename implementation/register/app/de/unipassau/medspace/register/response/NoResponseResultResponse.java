@@ -1,4 +1,4 @@
-package controllers.response;
+package de.unipassau.medspace.register.response;
 
 import de.unipassau.medspace.register.Results.NoResponse;
 
