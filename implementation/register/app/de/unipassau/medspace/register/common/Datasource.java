@@ -6,7 +6,6 @@ import play.data.validation.Constraints;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -15,7 +14,7 @@ import java.util.*;
  * <br>
  * <strong>NOTE:</strong> This class is <strong>immutable</string>.
  */
-public class Datasource {
+public class Datasource implements Comparable<Datasource> {
 
   /**
    * Defines the location to query the wrapper.
@@ -33,11 +32,6 @@ public class Datasource {
   private final Set<String> services;
 
   /**
-   * The time stamp this object was created at.
-   */
-  private final long timeStampMilliSeconds;
-
-  /**
    * Logger instance for this class.
    */
   private static Logger log = LoggerFactory.getLogger(Datasource.class);
@@ -48,7 +42,7 @@ public class Datasource {
    * @param desc The description of the datasource wrapper. Can be null
    * @param services A list of supported services, the datasource wrapper supplies.
    */
-  public Datasource(String url, String desc, Set<String> services) throws MalformedURLException {
+  private Datasource(URL url, String desc, Set<String> services) {
 
     if (url == null) {
       throw new IllegalArgumentException("URI isn't allowed to be null");
@@ -64,15 +58,14 @@ public class Datasource {
       this.services.remove(null);
     }
 
-    // we don't want any case mismatches when comparing URIs.
-    this.url = new URL(url);
+    // java.net.URL is immutable
+    this.url = url;
 
     if (desc == null) {
       this.description = "";
     } else {
       this.description = desc;
     }
-    timeStampMilliSeconds = System.currentTimeMillis();
 
     if (log.isDebugEnabled())
       log.debug("New Datasource object created: " + this.toString());
@@ -83,30 +76,7 @@ public class Datasource {
    * @param other The Datasource to copy.
    */
   public static Datasource copyUpdateTimeStamp(Datasource other) throws MalformedURLException {
-    return new Datasource(other.url.toExternalForm(), other.description, other.services);
-  }
-
-  /**
-   * Creates an immutable Datasource object from a MutableDatasource object.
-   * @param mutable The MutableDatasource object used to create an immutable one.
-   * @return A Datasource object, that represents the same datasource as the mutable one. Or null, if
-   * no valid datasource object could be created.
-   */
-  public static Datasource createFromMutable(MutableDatasource mutable) {
-    if (mutable == null) return null;
-    Set<String> set = new HashSet<>();
-    if (mutable.services != null) {
-      set.addAll(mutable.services);
-    }
-    try {
-      return new Datasource(mutable.url, mutable.description, set);
-    } catch (MalformedURLException e) {
-      if (log.isDebugEnabled()) {
-        log.debug("Couldn't create new Datasource: " + e.getMessage());
-      }
-    }
-
-    return null;
+    return new Datasource(other.url, other.description, other.services);
   }
 
   /**
@@ -162,14 +132,6 @@ public class Datasource {
     return Collections.unmodifiableSet(services);
   }
 
-  /**
-   * Returns a copy of the time stamp this object was created at.
-   * @return The time stamp this object was created at.
-   */
-  public Timestamp getTimeStamp() {
-    return new Timestamp(timeStampMilliSeconds);
-  }
-
   @Override
   public int hashCode() {
     // url is immutable, so it is safe to use its hash code
@@ -179,22 +141,30 @@ public class Datasource {
 
   @Override
   public String toString() {
-    return "[" + url + ", '" + description + "', services: " + services + ", time stamp: " + timeStampMilliSeconds + "]";
+    return "[" + url + ", '" + description + "', services: " + services  + "]";
+  }
+
+  @Override
+  public int compareTo(Datasource other) {
+    String thisUrlStr = url.toExternalForm();
+    String otherUrlStr = other.url.toExternalForm();
+
+    return thisUrlStr.compareTo(otherUrlStr);
   }
 
   /**
    * Represents a mutable Datasource. This class is intended to be used to create immutable Datasource objects.
    */
-  public static class MutableDatasource {
+  public static class Builder {
 
     /**
      * The url of the datasource.
      */
     @Constraints.Required
-    private String url;
+    private URL url;
 
     /**
-     * The descrption of this datasource.
+     * The description of this datasource.
      */
     private String description;
 
@@ -203,11 +173,36 @@ public class Datasource {
      */
     private List<String> services;
 
+    public Builder() {
+      url = null;
+      description = null;
+      services = null;
+    }
+
+    /**
+     * Creates an immutable Datasource object from this Builder object.
+     * @return A Datasource object, that represents the same datasource as the mutable one. Or null, if
+     * no valid datasource object could be created.
+     */
+    public Datasource build() {
+      Set<String> set = new HashSet<>();
+      if (services != null) {
+        set.addAll(services);
+      }
+      return new Datasource(url, description, set);
+    }
+
+    /**
+     * NOTE: DO NOT DELETE the following getters/setters, even if some of the methods aren't used in the project
+     * apparently! The play framework uses Spring data binder for automatic binding
+     * forms to java objects and it needs for each field member a getter and setter method.
+     */
+
     /**
      * Provides the url of this datasource.
      * @return The url of this datasource.
      */
-    public String getUrl() {
+    public URL getUrl() {
       return url;
     }
 
@@ -215,7 +210,7 @@ public class Datasource {
      * Sets the url for this datasource.
      * @param url The new url for this datasource.
      */
-    public void setUrl(String url) {
+    public void setUrl(URL url) {
       this.url = url;
     }
 

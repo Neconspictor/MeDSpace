@@ -3,8 +3,9 @@
 @import test.DatasourceFormular
 @import test.NoResponseFormular
 @import test.RemoveDatasourceFormular
+@import java.sql.Timestamp
 
-@(msg : String, datasources : List[Datasource])
+@(msg : String, datasources : List[Datasource], modifiedMap : Map[Datasource, Timestamp])
 
 @pageSceleton("Register Home",
   routes.Assets.versioned("stylesheets/test.css").url,
@@ -38,8 +39,8 @@
             </li>
           }
         </ul>
-        <h4>Time stamp</h4>
-          @datasource.getTimeStamp()
+        <h4>Last update</h4>
+          @modifiedMap.get(datasource)
       </li>
     }
   </ul>

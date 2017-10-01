@@ -1,12 +1,14 @@
 package controllers;
 
-import controllers.response.AddResultResponse;
-import controllers.response.NoResponseResultResponse;
-import controllers.response.RemoveResultResponse;
-import controllers.response.ResultResponse;
+import de.unipassau.medspace.register.response.AddResultResponse;
+import de.unipassau.medspace.register.response.NoResponseResultResponse;
+import de.unipassau.medspace.register.response.RemoveResultResponse;
+import de.unipassau.medspace.register.response.ResultResponse;
 import de.unipassau.medspace.register.*;
 import de.unipassau.medspace.register.Results;
 import de.unipassau.medspace.register.common.Datasource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
@@ -14,6 +16,7 @@ import play.mvc.*;
 import play.routing.JavaScriptReverseRouter;
 
 import javax.inject.Inject;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -29,60 +32,62 @@ public class RegisterController extends Controller {
     /**
      * The register, this controller is referring to.
      */
-    private final BlockingRegister registerBlocking;
+    private final Register register;
+
+    private static Logger log = LoggerFactory.getLogger(RegisterController.class);
 
     @Inject
     public RegisterController(FormFactory formFactory) {
         this.formFactory = formFactory;
-        registerBlocking = new BlockingRegister();
+        register = new Register();
     }
 
     /**
      * An action that renders a page for testing the register services.
      */
     public Result index() {
-        Map<String, Datasource> datasources = registerBlocking.getDatasources();
-        Collection<Datasource> coll = datasources.values();
-        List<Datasource> list = new LinkedList<>(coll);
+        Map<Datasource, Timestamp> datasourceModifiedMap = register.getDatasources();
+        Set<Datasource> datasources = datasourceModifiedMap.keySet();
+        List<Datasource> list = new LinkedList<>(datasources);
         Collections.sort(list, Comparator.comparing(o -> o.getUrl().toExternalForm()));
 
-        return ok(views.html.index.render("Welcome to the register home page!", list));
+        return ok(views.html.index.render("Welcome to the register home page!", list, datasourceModifiedMap));
     }
 
     /**
-     * An action that reads a Datasource.MutableDatasource from a sent form, creates a Datasource object from
+     * An action that reads a Datasource.Builder from a sent form, creates a Datasource object from
      * it and adds it to the register.
      * @return A Results.Add serialized to a JSON object.
      */
     public Result add() {
-        Datasource.MutableDatasource mutable = readMutableDatasource();
-        Results.Add result = registerBlocking.addDatasource(mutable);
+        Datasource.Builder builder = readMutableDatasource();
+        Results.Add result = register.addDatasource(builder.build());
         ResultResponse response =  new AddResultResponse(result);
         return ok(Json.toJson(response));
     }
 
     /**
-     * An action that reads a Datasource.MutableDatasource from a sent form, creates a Datasource object from
+     * An action that reads a Datasource.Builder from a sent form, creates a Datasource object from
      * it. Finally the register is informed, that the sent datasource is not responding anymore.
      * @return A Results.NoResponse serialized to a JSON object.
      */
     public Result noResponse() {
-        Datasource.MutableDatasource mutable = readMutableDatasource();
-        Datasource datasource = Datasource.createFromMutable(mutable);
-        Results.NoResponse result = registerBlocking.datasourceNoRespond(datasource);
+        Datasource.Builder builder = readMutableDatasource();
+        Datasource datasource = builder.build();
+        Results.NoResponse result = register.datasourceNoRespond(datasource);
         ResultResponse response = new NoResponseResultResponse(result);
         return ok(Json.toJson(response));
     }
 
     /**
-     * An action that reads a Datasource.MutableDatasource from a sent form, creates a Datasource object from
+     * An action that reads a Datasource.Builder from a sent form, creates a Datasource object from
      * it. Finally the register is informed, that the sent datasource should be removed.
      * @return A Results.Remove serialized to a JSON object.
      */
     public  Result remove() {
-        Datasource.MutableDatasource mutable = readMutableDatasource();
-        Datasource datasource = Datasource.createFromMutable(mutable);
-        Results.Remove remove = registerBlocking.removeDatasource(datasource);
+        Datasource.Builder builder = readMutableDatasource();
+        Datasource datasource = builder.build();
+        Results.Remove remove = register.removeDatasource(datasource);
         ResultResponse response = new RemoveResultResponse(remove);
         return ok(Json.toJson(response));
     }
@@ -103,17 +108,18 @@ public class RegisterController extends Controller {
     }
 
     /**
-     * Tries to read a Datasource.MutableDatasource from a sent form request.
-     * @return The read Datasource.MutableDatasource or null, if no Datasource.MutableDatasource object could
+     * Tries to read a Datasource.Builder from a sent form request.
+     * @return The read Datasource.Builder or null, if no Datasource.Builder object could
      * be bound.
      */
-    private Datasource.MutableDatasource readMutableDatasource() {
+    private Datasource.Builder readMutableDatasource() {
         try {
-            Form<Datasource.MutableDatasource> requestData = formFactory.form(Datasource.MutableDatasource.class)
+            Form<Datasource.Builder> requestData = formFactory.form(Datasource.Builder.class)
                 .bindFromRequest();
             return requestData.get();
         } catch (IllegalStateException e) {
             //There were binding errors; nothing valid was found
+            log.warn("Couldn't bind mutable datasource object", e);
             return null;
         }
     }
