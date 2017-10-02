@@ -5,6 +5,11 @@
 @import test.RemoveDatasourceFormular
 @import java.sql.Timestamp
 
+@*
+* A test page for the register. Allows to add and remove a datasource and allows to inform the register that a
+* datasource isn't responding.
+*@
+
 @(msg : String, datasources : List[Datasource], modifiedMap : Map[Datasource, Timestamp])
 
 @pageSceleton("Register Home",

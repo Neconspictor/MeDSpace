@@ -1,11 +1,7 @@
 package controllers;
 
-import de.unipassau.medspace.register.response.AddResultResponse;
-import de.unipassau.medspace.register.response.NoResponseResultResponse;
-import de.unipassau.medspace.register.response.RemoveResultResponse;
-import de.unipassau.medspace.register.response.ResultResponse;
+import controllers.response.*;
 import de.unipassau.medspace.register.*;
-import de.unipassau.medspace.register.Results;
 import de.unipassau.medspace.register.common.Datasource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +57,12 @@ public class RegisterController extends Controller {
      */
     public Result add() {
         Datasource.Builder builder = readMutableDatasource();
-        Results.Add result = register.addDatasource(builder.build());
-        ResultResponse response =  new AddResultResponse(result);
+
+        // early exit...
+        if (builder == null) return flawedOrMissingData();
+
+        boolean result = register.addDatasource(builder.build());
+        Response response =  new AddResponse(result);
         return ok(Json.toJson(response));
     }
 
@@ -73,9 +73,13 @@ public class RegisterController extends Controller {
      */
     public Result noResponse() {
         Datasource.Builder builder = readMutableDatasource();
+
+        // early exit...
+        if (builder == null) return flawedOrMissingData();
+
         Datasource datasource = builder.build();
-        Results.NoResponse result = register.datasourceNoRespond(datasource);
-        ResultResponse response = new NoResponseResultResponse(result);
+        Register.NoResponse result = register.datasourceNoRespond(datasource);
+        Response response = new NoResponseResponse(result);
         return ok(Json.toJson(response));
     }
 
@@ -86,9 +90,13 @@ public class RegisterController extends Controller {
      */
     public  Result remove() {
         Datasource.Builder builder = readMutableDatasource();
+
+        // early exit...
+        if (builder == null) return flawedOrMissingData();
+
         Datasource datasource = builder.build();
-        Results.Remove remove = register.removeDatasource(datasource);
-        ResultResponse response = new RemoveResultResponse(remove);
+        boolean remove = register.removeDatasource(datasource);
+        Response response = new RemoveResponse(remove);
         return ok(Json.toJson(response));
     }
 
@@ -105,6 +113,14 @@ public class RegisterController extends Controller {
                 routes.javascript.RegisterController.remove()
             )
         ).as("text/javascript");
+    }
+
+    /**
+     * Creates a JSON response that informs the client that the sent data is flawed or incomplete
+     * @return A JSON serialization of an error response message
+     */
+    private static Result flawedOrMissingData() {
+        return ok(Json.toJson(new Response(false, "Missing or wrong data was send.")));
     }
 
     /**

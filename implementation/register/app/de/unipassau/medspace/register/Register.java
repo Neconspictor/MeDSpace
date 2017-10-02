@@ -53,26 +53,24 @@ public class Register {
 
   /**
    * Adds a Datasource to this object.
-   * @param newValue The datasource to add to this register.
-   * @return A response object, that reports about what was done.
+   * @param datasource The datasource to add to this register.
+   * @return true if the datasource was successfully added; false otherwise.
    */
-  public Results.Add addDatasource(Datasource newValue) {
+  public boolean addDatasource(Datasource datasource) {
 
-    if (newValue == null) {
-      return Results.Add.NULL_NOT_VALID;
-    }
+    if (datasource == null) throw new IllegalArgumentException("datasource mustn't be null!");
 
     Timestamp newUpdate = new Timestamp(System.currentTimeMillis());
 
     Lock lock = readWriteLock.writeLock();
     try {
       lock.lock();
-      Timestamp old = datasources.get(newValue);
+      Timestamp old = datasources.get(datasource);
 
       // Datasource wasn't registered before?
       if (old == null) {
-        datasources.put(newValue, newUpdate);
-        return Results.Add.SUCCESS;
+        datasources.put(datasource, newUpdate);
+        return true;
       }
 
       // only update if no newer update exists
@@ -84,12 +82,14 @@ public class Register {
         // But in this case, Map.put don't replaces an existing key, only its value!
         // Thus, removing the datasource first is necessary, as the old value could contain outdated information
         // and should be removed.
-        datasources.remove(newValue);
+        datasources.remove(datasource);
 
-        datasources.put(newValue, newUpdate);
-        return  Results.Add.SUCCESS;
+        datasources.put(datasource, newUpdate);
+        return  true;
       }
-      return  Results.Add.NO_SUCCESS_NEWER_VERSION_EXISTS;
+
+      //The Datasource was updated and is newer; No replacing should be performed!
+      return  false;
 
     } finally {
       lock.unlock();
@@ -104,8 +104,8 @@ public class Register {
    * @param datasource The datasource that isn't responding anymore.
    * @return A response object, that reports about what was done.
    */
-  public Results.NoResponse datasourceNoRespond(Datasource datasource) {
-    if (datasource == null) return Results.NoResponse.NULL_NOT_VALID;
+  public NoResponse datasourceNoRespond(Datasource datasource) {
+    if (datasource == null) throw new IllegalArgumentException("datasource mustn't be null!");
     // For now just remove the datasource
     Lock lock = readWriteLock.readLock();
     Timestamp timestamp;
@@ -117,17 +117,17 @@ public class Register {
     }
 
     // datasource isn't registered?
-    if (timestamp == null) return Results.NoResponse.DATASOURCE_NOT_FOUND;
+    if (timestamp == null) return NoResponse.DATASOURCE_NOT_FOUND;
 
     Timestamp cooldownTime  = new Timestamp(timestamp.getTime() + COOL_DOWN_TIME);
     Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
     // Cooldown still active?
     if (currentTime.before(cooldownTime)) {
-      return Results.NoResponse.COOL_DOWN_ACTIVE;
+      return NoResponse.COOL_DOWN_ACTIVE;
     }
     removeDatasource(datasource);
-    return Results.NoResponse.REMOVED_DATASOURCE;
+    return NoResponse.REMOVED_DATASOURCE;
   }
 
   /**
@@ -153,22 +153,50 @@ public class Register {
   /**
    * Removes a given Datasource from the register.
    * @param datasource The Datasource that should be removed.
-   * @return A response object, that reports about what was done.
+   * @return true if the datasource could be removed or false if the datasource wasn't found.
    */
-  public Results.Remove removeDatasource(Datasource datasource) {
-
-    if (datasource == null) return Results.Remove.NULL_NOT_VALID;
+  public boolean removeDatasource(Datasource datasource) {
+    if (datasource == null) throw new IllegalArgumentException("datasource mustn't be null!");
 
     Lock lock = readWriteLock.writeLock();
     try {
       lock.lock();
       if (datasources.get(datasource) != null) {
         datasources.remove(datasource);
-        return Results.Remove.SUCCESS;
+        return true;
       }
-      return Results.Remove.DATASOURCE_NOT_FOUND;
+
+      // Datasource isn't registered and thus couldn't be removed.
+      return false;
     } finally {
       lock.unlock();
+    }
+  }
+
+  /**
+   * An enum that is used to store the result of {@link #datasourceNoRespond(Datasource)}
+   */
+  public enum NoResponse {
+    REMOVED_DATASOURCE("REMOVED_DATASOURCE"),
+    COOL_DOWN_ACTIVE("COOL_DOWN_ACTIVE"),
+    DATASOURCE_NOT_FOUND("DATASOURCE_NOT_FOUND");
+
+    /**
+     * String representation of the result.
+     */
+    private final String name;
+
+    /**
+     * Creates a new NoResponse
+     * @param name A string description of the result of a {@link #datasourceNoRespond(Datasource)} call
+     */
+    NoResponse(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return  name;
     }
   }
 }

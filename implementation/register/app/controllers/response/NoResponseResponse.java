@@ -1,21 +1,23 @@
-package de.unipassau.medspace.register.response;
+package controllers.response;
 
-import de.unipassau.medspace.register.Results.NoResponse;
+import de.unipassau.medspace.register.Register;
+import de.unipassau.medspace.register.Register.NoResponse;
+import de.unipassau.medspace.register.common.Datasource;
 
 /**
- * Created by David Goeth on 29.09.2017.
+ * A response message for the {@link Register#datasourceNoRespond(Datasource)} service.
  */
-public class NoResponseResultResponse extends ResultResponse {
+public class NoResponseResponse extends Response {
 
-  public NoResponseResultResponse(NoResponse noResponse) {
+  /**
+   * Creates a new {@link NoResponseResponse}
+   * @param noResponse The result of a {@link Register#datasourceNoRespond(Datasource)} call.
+   */
+  public NoResponseResponse(NoResponse noResponse) {
     switch(noResponse) {
       case REMOVED_DATASOURCE:
         result = true;
         response = "Removed not responding datasource.";
-        break;
-      case NULL_NOT_VALID:
-        result = false;
-        response = "Missing or wrong data was send.";
         break;
       case DATASOURCE_NOT_FOUND:
         result = false;
