@@ -40,4 +40,9 @@ public class Namespace {
   public String getPrefix() {
     return prefix;
   }
+
+  @Override
+  public String toString() {
+    return "Namespace:[ prefix: " + prefix + ", fullURI: " + fullURI + "]";
+  }
 }

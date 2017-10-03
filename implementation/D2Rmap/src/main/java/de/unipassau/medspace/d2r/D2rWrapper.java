@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A D2rWrapper is a wrapper for a sql database that uses D2r mapping for exporting data to rdf triples.
@@ -65,7 +66,7 @@ public class D2rWrapper<DocType> implements Wrapper {
   /**
    * Allows accessing namespaces by their prefixes.
    */
-  private HashMap<String, Namespace> namespaces;
+  private Map<String, Namespace> namespaces;
 
   /**
    * The namespaces additionally in this data structure to allow jena api access on the namespaces.
@@ -92,7 +93,7 @@ public class D2rWrapper<DocType> implements Wrapper {
    */
   public D2rWrapper(ConnectionPool connectionPool,
                     List<D2rMap> maps,
-                    HashMap<String, Namespace> namespaces) throws D2RException
+                    Map<String, Namespace> namespaces) throws D2RException
   {
     this.proxy = new D2rProxy(connectionPool);
 

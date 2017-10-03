@@ -74,7 +74,7 @@ public class SQLWrapperController extends Controller {
    * Provides the SQL Wrapper status and debug page.
    */
   public Result index() {
-    return ok(views.html.index.render(wrapperService, wrapperService.getConfig(), wrapperService.getConnectionPool(),
+    return ok(views.html.index.render(wrapperService, wrapperService.getD2rConfig(), wrapperService.getConnectionPool(),
         wrapperService.getMetaData()));
   }
 
@@ -100,7 +100,7 @@ public class SQLWrapperController extends Controller {
       return badRequest("keyword search query isn't valid: \"" + keywords + "\"");
     }
 
-    Configuration config = wrapperService.getConfig();
+    Configuration config = wrapperService.getD2rConfig();
     PrefixMapping mapping = wrapperService.getWrapper().getNamespacePrefixMapper();
     Lang lang = config.getOutputFormat();
     List<String> extensions = lang.getFileExtensions();

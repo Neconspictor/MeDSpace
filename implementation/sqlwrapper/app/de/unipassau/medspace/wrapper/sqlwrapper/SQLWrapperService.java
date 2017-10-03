@@ -3,7 +3,10 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
+import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
@@ -30,9 +33,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -52,9 +53,14 @@ public class SQLWrapperService {
   private ConnectionPool connectionPool;
 
   /**
-   * The D2R configuration.
+   * The general wrapper configuration.
    */
-  private Configuration config;
+  private GeneralWrapperConfig generalConfig;
+
+  /**
+   * D2R specific configuration.
+   */
+  private Configuration d2rConfig;
 
   /**
    * The D2R wrapper.
@@ -76,10 +82,11 @@ public class SQLWrapperService {
   public SQLWrapperService(ApplicationLifecycle lifecycle,
                            com.typesafe.config.Config playConfig) {
       try {
-        String mappingConfigFile = playConfig.getString("MeDSpaceMappingConfig");
-        startup(mappingConfigFile);
+        String wrapperConfigFile = playConfig.getString("MeDSpaceWrapperConfig");
+        String d2rConfigFile = playConfig.getString("MeDSpaceD2rConfig");
+        startup(wrapperConfigFile, d2rConfigFile);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
-        log.error("Couldn't read MeDSpace mapping config file: ", e);
+        log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
         log.info("Graceful shutdown is initiated...");
         gracefulShutdown(lifecycle, -1);
       } catch(Throwable e) {
@@ -106,8 +113,8 @@ public class SQLWrapperService {
    * Provides the D2R configuration.
    * @return The D2R configuration.
    */
-  public Configuration getConfig() {
-    return config;
+  public Configuration getD2rConfig() {
+    return d2rConfig;
   }
 
 
@@ -163,28 +170,46 @@ public class SQLWrapperService {
 
   /**
    * Does startup the sql wrapper.
-   * @param configFile The path to the MeDSpace D2r config file.
+   * @param wrapperConfigFile The path to the general wrapper config file.
+   * @param d2rConfigFile The path to the MeDSpace D2r config file.
    * @throws D2RException If the configuration file doesn't exists or is erroneous
    * @throws IOException If an IO-Error occurs.
    * @throws SQLException If the connection to the datasource could'nt be established.
    */
-  private void startup(String configFile) throws D2RException, IOException, SQLException {
+  private void startup(String wrapperConfigFile, String d2rConfigFile) throws D2RException, IOException, SQLException {
 
     log.info("initializing SQL Wrapper...");
+    log.info("Reading general wrapper configuration...");
     try {
-      config = new ConfigurationReader().readConfig(configFile);
+      generalConfig = new GeneralWrapperConfigReader().readConfig(wrapperConfigFile);
     } catch (IOException e) {
-      throw new D2RException("Error while reading the configuration file: " + configFile, e);
+      throw new IOException("Error while reading the general wrapper configuration file: " + wrapperConfigFile, e);
     }
+
+    if (!generalConfig.isUseIndex()) {
+      throw new D2RException("This wrapper needs an index, but no index directory is stated in the general wrapper configuration.");
+    }
+
+    log.info("Reading general wrapper configuration done: ");
+    log.info(generalConfig.toString());
+    log.info("Reading MeDSpace D2RMap configuration...");
+
+    try {
+      d2rConfig = new ConfigurationReader().readConfig(d2rConfigFile);
+    } catch (IOException e) {
+      throw new D2RException("Error while reading the configuration file: " + d2rConfigFile, e);
+    }
+
+    log.info("Reading MeDSpace D2RMap configuration done.");
 
 
     URI jdbcURI = null;
     try {
-      jdbcURI = new URI(config.getJdbc());
+      jdbcURI = new URI(d2rConfig.getJdbc());
     } catch (URISyntaxException e) {
-      String errorMessage = "Couldn't get an URI from the jdbc uri specified in the config file" + "\n";
+      String errorMessage = "Couldn't get an URI from the jdbc uri specified in the d2rConfig file" + "\n";
       errorMessage += "jdbc URI: " + jdbcURI + "\n";
-      errorMessage += "config file: " + configFile + "\n";
+      errorMessage += "d2rConfig file: " + d2rConfigFile + "\n";
       new D2RException(errorMessage, e);
     }
 
@@ -192,11 +217,11 @@ public class SQLWrapperService {
 
     connectionPool = new HikariConnectionPool(
         jdbcURI,
-        config.getJdbcDriver(),
-        config.getDatabaseUsername(),
-        config.getDatabasePassword(),
-        config.getMaxConnections(),
-        config.getDataSourceProperties());
+        d2rConfig.getJdbcDriver(),
+        d2rConfig.getDatabaseUsername(),
+        d2rConfig.getDatabasePassword(),
+        d2rConfig.getMaxConnections(),
+        d2rConfig.getDataSourceProperties());
 
     // check if the datasource manager can connect to the datasource.
     Connection conn = null;
@@ -210,9 +235,12 @@ public class SQLWrapperService {
       FileUtil.closeSilently(conn);
     }
 
-    Path indexPath = config.getIndexDirectory();
+    Path indexPath = generalConfig.getIndexDirectory();
 
-    wrapper = new D2rWrapper<Document>(connectionPool, config.getMaps(), config.getNamespaces());
+    Map<String, Namespace> namespaces = new HashMap<>(generalConfig.getNamespaces());
+    namespaces.putAll(d2rConfig.getNamespaces());
+
+    wrapper = new D2rWrapper<Document>(connectionPool, d2rConfig.getMaps(), namespaces);
 
     TripleIndexFactory<Document, MappedSqlTuple> indexFactory =
         new LuceneIndexFactory(wrapper, indexPath.toString());
@@ -263,5 +291,12 @@ public class SQLWrapperService {
    */
   public DatabaseMetaData getMetaData() {
     return metaData;
+  }
+
+  /**
+   * The general wrapper configuration.
+   */
+  public GeneralWrapperConfig getGeneralConfig() {
+    return generalConfig;
   }
 }
