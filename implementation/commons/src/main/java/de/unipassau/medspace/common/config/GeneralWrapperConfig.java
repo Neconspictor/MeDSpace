@@ -1,6 +1,7 @@
 package de.unipassau.medspace.common.config;
 
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.register.Datasource;
 import org.apache.jena.riot.Lang;
 
 import java.net.URL;
@@ -20,6 +21,10 @@ public class GeneralWrapperConfig {
   private GeneralWrapperConfig(GeneralWrapperConfigData data) {
     // Use the copy constructor so that data is not modifiable outside from this class (-> immutability).
     this.data = new GeneralWrapperConfigData(data);
+  }
+
+  public Datasource getDatasource() {
+    return data.datasource;
   }
 
   /**
@@ -69,6 +74,8 @@ public class GeneralWrapperConfig {
    */
   public static class GeneralWrapperConfigData {
 
+    private Datasource datasource;
+
     /**
      * The directory the wrapper should store indexed data.
      */
@@ -106,6 +113,9 @@ public class GeneralWrapperConfig {
      * @param data Used to initialize this object
      */
     public GeneralWrapperConfigData(GeneralWrapperConfigData data) {
+
+      //Datasource is immutable
+      datasource = data.datasource;
 
       // Path implementations are immutable
       indexDirectory = data.indexDirectory;
@@ -215,6 +225,14 @@ public class GeneralWrapperConfig {
       builder.append("]");
 
       return builder.toString();
+    }
+
+    public Datasource getDatasource() {
+      return datasource;
+    }
+
+    public void setDatasource(Datasource datasource) {
+      this.datasource = datasource;
     }
   }
 }

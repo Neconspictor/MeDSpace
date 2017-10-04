@@ -2,6 +2,7 @@ package de.unipassau.medspace.common.config;
 
 import de.unipassau.medspace.common.exception.ParseException;
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.util.XmlUtil;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFFormat;
@@ -23,9 +24,7 @@ import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Used to read a general wrapper config file.
@@ -166,7 +165,11 @@ public class GeneralWrapperConfigReader {
     if (root == null)
       throw new IOException("No root element was specified in the mapping");
 
-    // check if a index is wished and if it is the case, then read ut the index store directory
+    //Read the datasource object
+    list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Datasource.NAME);
+    readDatasourceElement(config, (Element) list.item(0));
+
+    // check if an index is wished and if it is the case, then read ut the index store directory
     list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Index.NAME);
     if (list.getLength() > 0)
       readIndexElement(config, (Element) list.item(0));
@@ -179,6 +182,46 @@ public class GeneralWrapperConfigReader {
     list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Register.NAME);
     readRegisterElement(config, (Element) list.item(0));
 
+  }
+
+  private void readDatasourceElement(GeneralWrapperConfigData config, Element elem) throws IOException {
+    String urlAttribute = elem.getAttribute(Constants.Datasource.URL_ATTRIBUTE);
+    String description = elem.getAttribute(Constants.Datasource.DESCRIPTION_ATTRIBUTE);
+
+    if (urlAttribute == null)
+      throw new IllegalArgumentException("url attribute mustn't be null!");
+
+    if (description == null)
+      description = "";
+
+    URL url;
+
+    try {
+      url = new URL(urlAttribute);
+    } catch (MalformedURLException e) {
+      throw new IOException("Couldn't convert Datasource url to a valid URL object: " + urlAttribute, e);
+    }
+
+    Datasource.Builder builder = new Datasource.Builder();
+
+    builder.setUrl(url);
+    builder.setDescription(description);
+    List<String> services = new ArrayList<>();
+
+    NodeList list = elem.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Datasource.Service.NAME);
+    int numNodes = list.getLength();
+    for (int i = 0; i < numNodes; i++) {
+      Element child = (Element) list.item(i);
+      String service = child.getTextContent();
+      services.add(service);
+    }
+
+    builder.setServices(services);
+    Datasource datasource = builder.build();
+
+    log.info("Read datasource: " + datasource);
+
+    config.setDatasource(datasource);
   }
 
   /**

@@ -39,6 +39,35 @@ public final class Constants {
   /**
    * Holds information about the complex type 'Index'
    */
+  public static final class Datasource {
+
+    /**
+     * Name of the element 'Datasource'
+     */
+    public static final String NAME = "Datasource";
+
+    /**
+     * Name of the attribute 'url'
+     */
+    public static final String URL_ATTRIBUTE = "url";
+
+    /**
+     * Name of the attribute 'description'
+     */
+    public static final String DESCRIPTION_ATTRIBUTE = "description";
+
+    public static final class Service {
+      /**
+       * Name of the element 'Service'
+       */
+      public static final String NAME = "Service";
+    }
+  }
+
+
+  /**
+   * Holds information about the complex type 'Index'
+   */
   public static final class Index {
 
     /**

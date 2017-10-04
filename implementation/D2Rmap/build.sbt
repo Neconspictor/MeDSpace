@@ -18,6 +18,14 @@ crossPaths := false
 // This forbids including Scala related libraries into the dependency
 autoScalaLibrary := false
 
+
+lazy val d2rmap = (project in file("."))
+  .aggregate(commons)
+  .dependsOn(commons)
+
+lazy val commons = RootProject(file("../commons"))
+
+
 // library dependencies. (orginization name) % (project name) % (version)
 libraryDependencies ++= Seq(
 	// Connector/J

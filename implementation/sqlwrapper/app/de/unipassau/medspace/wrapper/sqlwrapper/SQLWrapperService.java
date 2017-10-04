@@ -1,5 +1,6 @@
 package de.unipassau.medspace.wrapper.sqlwrapper;
 
+import com.google.common.collect.Lists;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
@@ -9,6 +10,7 @@ import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
@@ -22,13 +24,16 @@ import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
+import play.core.server.AkkaHttpServer;
 
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -86,6 +91,8 @@ public class SQLWrapperService {
                            TestClient testClient) {
 
     this.testClient = testClient;
+    log.info("http.address= " + playConfig.getString("play.server.http.address"));
+    log.info("http.port= " + playConfig.getString("play.server.http.port"));
       try {
         String wrapperConfigFile = playConfig.getString("MeDSpaceWrapperConfig");
         String d2rConfigFile = playConfig.getString("MeDSpaceD2rConfig");
@@ -104,8 +111,8 @@ public class SQLWrapperService {
 
       lifecycle.addStopHook(() -> {
         log.info("Shutdown is executing...");
+        deregister();
         wrapper.close();
-
         connectionPool.close();
         return CompletableFuture.completedFuture(null);
       });
@@ -241,7 +248,7 @@ public class SQLWrapperService {
     }
 
     //check connection to the register
-    boolean registered = testClient.register();
+    boolean registered = testClient.register(generalConfig.getDatasource(), generalConfig.getRegisterURL());
     if (registered) {
       log.info("Successfuly registered to the Register.");
     } else {
@@ -279,6 +286,7 @@ public class SQLWrapperService {
    */
   private void gracefulShutdown(ApplicationLifecycle lifecycle, int errorCode) {
 
+    deregister();
     lifecycle.stop();
 
     // Stopping the application lifecycle is enough to trigger a graceful shutdown of the
@@ -311,5 +319,14 @@ public class SQLWrapperService {
    */
   public GeneralWrapperConfig getGeneralConfig() {
     return generalConfig;
+  }
+
+  private void deregister() {
+    boolean success = testClient.deRegister(generalConfig.getDatasource(), generalConfig.getRegisterURL());
+
+    if (success)
+      log.info("Successfully deregistered from the register.");
+    else
+      log.error("Couldn't deregister from the register.");
   }
 }

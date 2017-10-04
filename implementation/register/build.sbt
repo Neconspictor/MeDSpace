@@ -8,6 +8,11 @@ version := "0.0-PreAlpha"
 
 lazy val register = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin)
+  .aggregate(commons)
+  .dependsOn(commons)
+  
+  
+lazy val commons = RootProject(file("../commons"))  
 
 scalaVersion := "2.12.2"
 

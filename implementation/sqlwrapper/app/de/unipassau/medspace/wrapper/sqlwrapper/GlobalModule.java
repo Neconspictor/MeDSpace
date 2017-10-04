@@ -33,6 +33,7 @@ public class GlobalModule extends AbstractModule {
   @Override
   protected void configure() {
     if (environment.asJava().isTest()) return;
+
     log.info("GlobuleModule configures dependencies...");
     bind(SystemConfig.class).asEagerSingleton();
     bind(TestClient.class).asEagerSingleton();

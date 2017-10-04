@@ -14,6 +14,7 @@
         <xsd:complexType>
             <xsd:sequence>
                 <!-->Elements that can occur any number of times and in any order<-->
+                <xsd:element name="Datasource" type="wrapper:Datasource" minOccurs="1" maxOccurs="1"/>
                 <xsd:element name="Index" type="wrapper:Index" minOccurs="0" maxOccurs="1"/>
                 <xsd:choice maxOccurs="unbounded">
                     <xsd:element name="Namespace" type="wrapper:Namespace" minOccurs="0" maxOccurs="unbounded"/>
@@ -24,6 +25,28 @@
         </xsd:complexType>
     </xsd:element>
 
+    <!-->
+        Specifies the directory the wrapper should store indexed data.
+
+        @attribute directory:  The directory the wrapper should store the index
+    <-->
+    <xsd:complexType name="Datasource">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="Service" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="url" type="xsd:string" use="required"/>
+        <xsd:attribute name="description" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+
+    <!-->
+        Specifies the directory the wrapper should store indexed data.
+
+        @attribute directory:  The directory the wrapper should store the index
+    <-->
+    <xsd:complexType name="Index">
+        <xsd:attribute name="directory" type="xsd:string" use="required"/>
+    </xsd:complexType>
 
     <!-->
         A type for defining RDF namespaces
@@ -35,15 +58,6 @@
     <xsd:complexType name="Namespace">
         <xsd:attribute name="prefix" type="xsd:string" use="required"/>
         <xsd:attribute name="namespace" type="xsd:string" use="required"/>
-    </xsd:complexType>
-
-    <!-->
-        Specifies the directory the wrapper should store indexed data.
-
-        @attribute directory:  The directory the wrapper should store the index
-    <-->
-    <xsd:complexType name="Index">
-        <xsd:attribute name="directory" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <!-->
