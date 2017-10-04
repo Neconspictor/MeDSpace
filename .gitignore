@@ -35,11 +35,17 @@ implementation/sqlwrapper/project/*/*
 implementation/sqlwrapper/_work/*
 implementation/sqlwrapper/medspace/*
 
-//
+// register build
 implementation/register/target/*
 implementation/register/logs/*
 implementation/register/.idea/*
 implementation/register/project/*/*
+
+// commons build
+implementation/commons/target/*
+implementation/commons/logs/*
+implementation/commons/.idea/*
+implementation/commons/project/*/*
 
 //thesis
 thesis/latex source/rootFile.pdf

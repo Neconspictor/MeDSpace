@@ -22,6 +22,8 @@ libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"
 // https://mvnrepository.com/artifact/dnsjava/dnsjava
 libraryDependencies += "dnsjava" % "dnsjava" % "2.1.8"
 
+libraryDependencies += ws
+
 //batScriptTemplateLocation := file("run.bat" )
 
 javacOptions ++= Seq("-Xlint:unchecked")

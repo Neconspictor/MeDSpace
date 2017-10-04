@@ -72,6 +72,8 @@ public class SQLWrapperService {
    */
   private DatabaseMetaData metaData;
 
+  private TestClient testClient;
+
 
   /**
    * Creates a new SQLWrapperService.
@@ -80,7 +82,10 @@ public class SQLWrapperService {
    */
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
-                           com.typesafe.config.Config playConfig) {
+                           com.typesafe.config.Config playConfig,
+                           TestClient testClient) {
+
+    this.testClient = testClient;
       try {
         String wrapperConfigFile = playConfig.getString("MeDSpaceWrapperConfig");
         String d2rConfigFile = playConfig.getString("MeDSpaceD2rConfig");
@@ -233,6 +238,14 @@ public class SQLWrapperService {
     } finally {
       log.debug("Closing Connection...");
       FileUtil.closeSilently(conn);
+    }
+
+    //check connection to the register
+    boolean registered = testClient.register();
+    if (registered) {
+      log.info("Successfuly registered to the Register.");
+    } else {
+      throw new D2RException("Couldn't register to the Register!");
     }
 
     Path indexPath = generalConfig.getIndexDirectory();

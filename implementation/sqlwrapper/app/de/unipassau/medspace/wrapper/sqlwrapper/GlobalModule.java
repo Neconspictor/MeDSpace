@@ -35,6 +35,7 @@ public class GlobalModule extends AbstractModule {
     if (environment.asJava().isTest()) return;
     log.info("GlobuleModule configures dependencies...");
     bind(SystemConfig.class).asEagerSingleton();
+    bind(TestClient.class).asEagerSingleton();
     bind(SQLWrapperService.class).asEagerSingleton();
     log.info("done.");
   }
