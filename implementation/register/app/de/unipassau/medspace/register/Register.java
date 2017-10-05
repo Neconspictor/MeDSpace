@@ -1,6 +1,6 @@
 package de.unipassau.medspace.register;
 
-import de.unipassau.medspace.register.common.Datasource;
+import de.unipassau.medspace.common.register.Datasource;
 
 import java.sql.Timestamp;
 import java.util.*;

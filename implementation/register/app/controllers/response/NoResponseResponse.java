@@ -1,8 +1,9 @@
 package controllers.response;
 
+import de.unipassau.medspace.common.message.Response;
+import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.register.Register;
 import de.unipassau.medspace.register.Register.NoResponse;
-import de.unipassau.medspace.register.common.Datasource;
 
 /**
  * A response message for the {@link Register#datasourceNoRespond(Datasource)} service.
@@ -16,16 +17,16 @@ public class NoResponseResponse extends Response {
   public NoResponseResponse(NoResponse noResponse) {
     switch(noResponse) {
       case REMOVED_DATASOURCE:
-        result = true;
-        response = "Removed not responding datasource.";
+        success = true;
+        message = "Removed not responding datasource.";
         break;
       case DATASOURCE_NOT_FOUND:
-        result = false;
-        response = "Datasource isn't registered, thus nothing done.";
+        success = false;
+        message = "Datasource isn't registered, thus nothing done.";
         break;
       case COOL_DOWN_ACTIVE:
-        result = false;
-        response = "Datasource wasn't removed. Its cooldown is still active.";
+        success = false;
+        message = "Datasource wasn't removed. Its cooldown is still active.";
         break;
       default:
         throw new IllegalStateException("Unknown enum: " + noResponse.toString());

@@ -1,15 +1,15 @@
-@import de.unipassau.medspace.register.common.Datasource
+
 @import java.util.List
 @import test.DatasourceFormular
 @import test.NoResponseFormular
 @import test.RemoveDatasourceFormular
 @import java.sql.Timestamp
+@import de.unipassau.medspace.common.register.Datasource
 
 @*
 * A test page for the register. Allows to add and remove a datasource and allows to inform the register that a
 * datasource isn't responding.
 *@
-
 @(msg : String, datasources : List[Datasource], modifiedMap : Map[Datasource, Timestamp])
 
 @pageSceleton("Register Home",

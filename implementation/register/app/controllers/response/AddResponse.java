@@ -1,6 +1,7 @@
 package controllers.response;
 
-import de.unipassau.medspace.register.common.Datasource;
+import de.unipassau.medspace.common.message.Response;
+import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.register.Register;
 
 /**
@@ -13,12 +14,12 @@ public class AddResponse extends Response {
    * @param success true if the add service call was successful.
    */
   public AddResponse(boolean success) {
-    if (success) {
-      result = true;
-      response = "Successfully added a new datasource or updated an existing one.";
+
+    this.success = success;
+    if (this.success) {
+      message = "Successfully added a new datasource or updated an existing one.";
     } else {
-      result = false;
-      response = "The datasource couldn't be updated as there exists a newer version of it.";
+      message = "The datasource couldn't be updated as there exists a newer version of it.";
     }
   }
 }

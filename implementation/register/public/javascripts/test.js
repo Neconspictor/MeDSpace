@@ -19,10 +19,10 @@ jQuery.ajax({
 function appendAlertBox(data, selector) {
     var alertBox;
 
-    if (data.result) {
-        alertBox = createAlert("alert-success", "Success!", data.response);
+    if (data.success) {
+        alertBox = createAlert("alert-success", "Success!", data.message);
     } else {
-        alertBox = createAlert("alert-danger", "Error!", data.response);
+        alertBox = createAlert("alert-danger", "Error!", data.message);
     }
 
     var alertPlace = $(selector);

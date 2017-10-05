@@ -10,37 +10,37 @@ public class Response {
   /**
    * Used to store whether a service call was successful.
    */
-  protected  boolean result;
+  protected  boolean success;
 
   /**
    * A description of the result.
    */
-  protected  String response;
+  protected  String message;
 
   public Response() {
-    result = false;
-    response = null;
+    success = false;
+    message = null;
   }
 
-  public Response(boolean result, String response) {
-    this.response = response;
-    this.result = result;
+  public Response(boolean success, String message) {
+    this.message = message;
+    this.success = success;
   }
 
 
   /**
-   * Provides the response message, that describes in more detail the result of the service call.
+   * Provides the response message, that describes in more detail the success of the service call.
    * @return The response message.
    */
-  public String getResponse() {
-    return response;
+  public String getMessage() {
+    return message;
   }
 
   /**
    * Checks whether the service call was successful.
    * @return true if the service call was successful.
    */
-  public boolean getResult() {
-    return result;
+  public boolean getSuccess() {
+    return success;
   }
 }

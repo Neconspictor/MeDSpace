@@ -1,6 +1,5 @@
 package de.unipassau.medspace.wrapper.sqlwrapper;
 
-import com.google.common.collect.Lists;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
@@ -10,7 +9,6 @@ import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
@@ -24,16 +22,13 @@ import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
-import play.core.server.AkkaHttpServer;
 
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -77,7 +72,7 @@ public class SQLWrapperService {
    */
   private DatabaseMetaData metaData;
 
-  private TestClient testClient;
+  private RegisterClient registerClient;
 
 
   /**
@@ -88,9 +83,9 @@ public class SQLWrapperService {
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
                            com.typesafe.config.Config playConfig,
-                           TestClient testClient) {
+                           RegisterClient registerClient) {
 
-    this.testClient = testClient;
+    this.registerClient = registerClient;
     log.info("http.address= " + playConfig.getString("play.server.http.address"));
     log.info("http.port= " + playConfig.getString("play.server.http.port"));
       try {
@@ -159,7 +154,7 @@ public class SQLWrapperService {
   /**
    * Performs a keyword search on the underlying datasource or on the index if one is used.
    * @param keywords The keywords to search for.
-   * @return A stream of rdf triples representing the result of the keyword search.
+   * @return A stream of rdf triples representing the success of the keyword search.
    * @throws IOException If an IO-Error occurs.
    * @throws NotValidArgumentException If 'keywords' is null.
    */
@@ -248,7 +243,7 @@ public class SQLWrapperService {
     }
 
     //check connection to the register
-    boolean registered = testClient.register(generalConfig.getDatasource(), generalConfig.getRegisterURL());
+    boolean registered = registerClient.register(generalConfig.getDatasource(), generalConfig.getRegisterURL());
     if (registered) {
       log.info("Successfuly registered to the Register.");
     } else {
@@ -322,7 +317,7 @@ public class SQLWrapperService {
   }
 
   private void deregister() {
-    boolean success = testClient.deRegister(generalConfig.getDatasource(), generalConfig.getRegisterURL());
+    boolean success = registerClient.deRegister(generalConfig.getDatasource(), generalConfig.getRegisterURL());
 
     if (success)
       log.info("Successfully deregistered from the register.");
