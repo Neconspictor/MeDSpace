@@ -47,6 +47,13 @@ implementation/commons/logs/*
 implementation/commons/.idea/*
 implementation/commons/project/*/*
 
+
+// commons_network build
+implementation/commons_network/target/*
+implementation/commons_network/logs/*
+implementation/commons_network/.idea/*
+implementation/commons_network/project/*/*
+
 //thesis
 thesis/latex source/rootFile.pdf
 thesis/sqlwrapper_doc/MeDSpace_D2RMap_Language_Specification.pdf

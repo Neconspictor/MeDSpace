@@ -10,10 +10,13 @@ lazy val sql_wrapper = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin) //, LauncherJarPlugin
   .aggregate(commons)
   .dependsOn(commons)
+  .aggregate(commons_network)
+  .dependsOn(commons_network)
   .aggregate(d2rmap)
   .dependsOn(d2rmap)
 
 lazy val commons = RootProject(file("../commons"))
+lazy val commons_network = RootProject(file("../commons_network"))
 lazy val d2rmap = RootProject(file("../D2Rmap"))
 
 scalaVersion := "2.12.2"

@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import controllers.response.*;
 import de.unipassau.medspace.common.message.Response;
 import de.unipassau.medspace.common.register.Datasource;
@@ -65,6 +66,17 @@ public class RegisterController extends Controller {
         boolean result = register.addDatasource(builder.build());
         Response response =  new AddResponse(result);
         return ok(Json.toJson(response));
+    }
+
+    /**
+     * An action that provides the set of registered datasources.
+     * @return The set of registered datasources serialized to JSON.
+     */
+    public Result getDatasources() {
+        Map<Datasource, Timestamp> map = register.getDatasources();
+        Set<Datasource> datasources = map.keySet();
+        JsonNode serialized = Json.toJson(datasources);
+        return ok(serialized);
     }
 
     /**
