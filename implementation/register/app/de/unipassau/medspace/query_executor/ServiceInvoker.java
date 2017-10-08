@@ -5,13 +5,22 @@ import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.network.JsonResponse;
 import de.unipassau.medspace.common.network.Util;
 import de.unipassau.medspace.common.register.Datasource;
+import org.apache.jena.atlas.web.TypedInputStream;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.shared.PrefixMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.libs.ws.*;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -96,7 +105,25 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     log.warn("QUERY String: " + queryString);
     log.warn("STATUS: " + result.getStatus() + " - " + status);
     log.warn("CONTENT-TYPE: " + result.getContentType());
-    log.warn("BODY: " + result.getBody());
+    //log.warn("BODY: " + result.getBody());
+
+    InputStream in = new ByteArrayInputStream(result.getBody().getBytes());
+    TypedInputStream typedInput = new TypedInputStream(in, result.getContentType());
+    Iterator<Triple> triples = RDFDataMgr.createIteratorTriples(typedInput.getInputStream(),
+                                                               Lang.TURTLE, typedInput.getBaseURI());
+
+    Model model = ModelFactory.createDefaultModel();
+    RDFDataMgr.read(model, in, Lang.TURTLE);
+    PrefixMapping mapping = PrefixMapping.Factory.create()
+        .setNsPrefixes(model.getNsPrefixMap())
+        .lock();
+
+    StmtIterator it = model.listStatements();
+    while (it.hasNext()) {
+      Triple triple = it.nextStatement().asTriple();
+      log.warn("Read triple: " + triple.toString(mapping));
+    }
+
   }
 
   private URL constructServiceURL(URL base, String service) {
