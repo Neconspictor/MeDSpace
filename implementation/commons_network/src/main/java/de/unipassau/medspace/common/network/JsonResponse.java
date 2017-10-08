@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * A simple data container for storing Json data and an optional exception that was thrown while
  * retrieving the data.
  */
-public class Response {
+public class JsonResponse {
   private JsonNode data; // public modifier as this class contains no logic.
   private Exception exception;
 

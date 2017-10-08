@@ -18,11 +18,11 @@ public final class Util {
 
   private static Logger log = LoggerFactory.getLogger(Util.class);
 
-  public static Response executeAndWait(Supplier<CompletionStage<? extends WSResponse>>
+  public static JsonResponse executeAndWaitJson(Supplier<CompletionStage<? extends WSResponse>>
                                             function, int triesOnFailure) {
     assert triesOnFailure >= 1;
 
-    Response response = new Response();
+    JsonResponse response = new JsonResponse();
 
     // try at most three times to get a message
     // If the retrieving is successful leave the loop (-> no more tries)
@@ -48,11 +48,39 @@ public final class Util {
     return response;
   }
 
-  public static Response getAndWait(WSRequest request, int triesOnFailure) {
+  public static WSResponse executeAndWait(Supplier<CompletionStage<? extends WSResponse>>
+                                                    function, int triesOnFailure) {
+    assert triesOnFailure >= 1;
+
+    WSResponse response = null;
+
+    // try at most three times to get a message
+    // If the retrieving is successful leave the loop (-> no more tries)
+    for (int i = 1; i <= triesOnFailure; ++i) {
+      try {
+        // reset defensively the data
+
+        CompletionStage<? extends WSResponse> responsePromise = function.get();
+        response = responsePromise.toCompletableFuture().get();
+
+      } catch (ExecutionException | InterruptedException e) {
+        log.warn("Couldn't retrieve data at try " +  i);
+        log.debug("Cause", e);
+      }
+    }
+
+    return response;
+  }
+
+  public static WSResponse getAndWait(WSRequest request, int triesOnFailure) {
     return executeAndWait(() -> request.get(), triesOnFailure);
   }
 
-  public static Response postAndWait(WSRequest request, JsonNode body, int triesOnFailure) {
-    return executeAndWait(()-> request.post(body), triesOnFailure);
+  public static JsonResponse getAndWaitJson(WSRequest request, int triesOnFailure) {
+    return executeAndWaitJson(() -> request.get(), triesOnFailure);
+  }
+
+  public static JsonResponse postAndWaitJson(WSRequest request, JsonNode body, int triesOnFailure) {
+    return executeAndWaitJson(()-> request.post(body), triesOnFailure);
   }
 }

@@ -123,6 +123,8 @@ public class Datasource implements Comparable<Datasource> {
 
   /**
    * Provides read access to the set of services this datasource provides.
+   * <br>
+   * <strong>Note:</strong> The services are all in <strong>lower case</strong>
    * @return An unmodifiable set of the services of this datasource.
    */
   public Set<String> getServices() {
@@ -185,6 +187,7 @@ public class Datasource implements Comparable<Datasource> {
     public Datasource build() {
       Set<String> set = new HashSet<>();
       if (services != null) {
+        services.replaceAll(String::toLowerCase);
         set.addAll(services);
       }
       return new Datasource(url, description, set);
@@ -237,7 +240,7 @@ public class Datasource implements Comparable<Datasource> {
     }
 
     /**
-     * Sets the list of services for this datasource.
+     * Sets the list of services for this datasource and lower cases each element.
      * @param services The new list of services.
      */
     public void setServices(List<String> services) {

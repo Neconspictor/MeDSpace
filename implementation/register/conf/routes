@@ -24,3 +24,5 @@ GET     /assets/*file                controllers.Assets.versioned(path="/public"
 
 # QueryExecutor stuff
 GET     /queryExecutorTest           controllers.QueryExecutorController.queryExecutorTest
+
+GET /util/getPortAction              controllers.UtilController.getPortAction
