@@ -46,8 +46,9 @@ public class Register {
   /**
    * Creates a new Register.
    */
-  public Register() {
-    this.datasources = new TreeMap<>();
+  public Register(Map<Datasource, Timestamp> datasources) {
+    if (datasources == null) datasources = new HashMap<>();
+    this.datasources = new TreeMap<>(datasources);
     this.readWriteLock = new ReentrantReadWriteLock();
   }
 

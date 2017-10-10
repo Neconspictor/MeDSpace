@@ -9,6 +9,8 @@ import akka.stream.javadsl.Source;
 import akka.util.ByteString;
 import akka.util.ByteStringBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.network.JsonResponse;
 import de.unipassau.medspace.common.network.Util;
@@ -20,6 +22,7 @@ import org.apache.jena.riot.RDFParser;
 import org.apache.jena.riot.lang.PipedRDFIterator;
 import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.apache.jena.shared.PrefixMapping;
+import org.joda.time.Years;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
@@ -31,6 +34,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
@@ -140,6 +145,22 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     } catch (ExecutionException |InterruptedException e) {
       log.error("Error while fecthing datasource response", e);
     }
+
+    /*Person person = new Person.Builder()
+        .setForename("David")
+        .setName("Goeth")
+        .setAddress("Schärdinger Str. 2")
+        .setDateOfBirth(LocalDate.of(1993, 5, 21))
+        .build();
+
+    JsonNode node = Json.toJson(person);
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.writer().writeValue(new File("./myTempFile"), node);
+
+    JsonNode readNode = mapper.reader().readTree(new FileInputStream("./myTempFile"));
+    Person readPerson = Json.fromJson(readNode, Person.class);
+
+    log.warn("Readed person: " + person.toString());*/
 
     /*InputStream in = new ByteArrayInputStream(result.getBody().getBytes());
     TypedInputStream typedInput = new TypedInputStream(in, result.getContentType());

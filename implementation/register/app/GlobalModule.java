@@ -1,6 +1,7 @@
 import com.google.inject.AbstractModule;
 
 import de.unipassau.medspace.query_executor.ServiceInvoker;
+import de.unipassau.medspace.register.RegisterLifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.Configuration;
@@ -34,6 +35,7 @@ public class GlobalModule extends AbstractModule {
     if (environment.asJava().isTest()) return;
 
     log.info("GlobuleModule configures dependencies...");
+    bind(RegisterLifecycle.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();
     log.info("done.");
   }

@@ -1,6 +1,9 @@
 package controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import controllers.response.*;
 import de.unipassau.medspace.common.message.Response;
 import de.unipassau.medspace.common.register.Datasource;
@@ -14,6 +17,13 @@ import play.mvc.*;
 import play.routing.JavaScriptReverseRouter;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -35,9 +45,9 @@ public class RegisterController extends Controller {
     private static Logger log = LoggerFactory.getLogger(RegisterController.class);
 
     @Inject
-    public RegisterController(FormFactory formFactory) {
+    public RegisterController(FormFactory formFactory, RegisterLifecycle lifecycle) throws IOException {
         this.formFactory = formFactory;
-        register = new Register();
+        register = lifecycle.getRegister();
     }
 
     /**

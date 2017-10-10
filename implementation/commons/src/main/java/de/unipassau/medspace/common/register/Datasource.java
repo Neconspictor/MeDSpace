@@ -1,8 +1,12 @@
 package de.unipassau.medspace.common.register;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -140,10 +144,10 @@ public class Datasource implements Comparable<Datasource> {
     return url.hashCode();
   }
 
-  @Override
+  /*@Override
   public String toString() {
     return "[" + url + ", '" + description + "', services: " + services  + "]";
-  }
+  }*/
 
   @Override
   public int compareTo(Datasource other) {
@@ -177,6 +181,12 @@ public class Datasource implements Comparable<Datasource> {
       url = null;
       description = null;
       services = null;
+    }
+
+    public Builder(Datasource datasource) {
+      url = datasource.url;
+      description = datasource.description;
+      services = new ArrayList<>(datasource.services);
     }
 
     /**
