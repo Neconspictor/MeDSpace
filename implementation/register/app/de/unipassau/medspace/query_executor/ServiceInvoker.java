@@ -1,5 +1,13 @@
 package de.unipassau.medspace.query_executor;
 
+import akka.Done;
+import akka.japi.function.Function;
+import akka.japi.function.Procedure;
+import akka.stream.*;
+import akka.stream.javadsl.Sink;
+import akka.stream.javadsl.Source;
+import akka.util.ByteString;
+import akka.util.ByteStringBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.network.JsonResponse;
@@ -7,12 +15,10 @@ import de.unipassau.medspace.common.network.Util;
 import de.unipassau.medspace.common.register.Datasource;
 import org.apache.jena.atlas.web.TypedInputStream;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFParser;
+import org.apache.jena.riot.lang.PipedRDFIterator;
+import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.apache.jena.shared.PrefixMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +29,12 @@ import javax.inject.Inject;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by David Goeth on 06.10.2017.
@@ -40,10 +49,12 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
   private static final String REGISTER_GET_DATASOURCES_SUBPATH = "getDatasources";
 
   private final WSClient ws;
+  private final Materializer materializer;
 
   @Inject
-  public ServiceInvoker(WSClient ws) {
+  public ServiceInvoker(WSClient ws, Materializer materializer) {
     this.ws = ws;
+    this.materializer = materializer;
   }
 
   public List<Datasource> invokeRegisterGetDatasources(URL registerBase) throws IOException {
@@ -107,12 +118,54 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     log.warn("CONTENT-TYPE: " + result.getContentType());
     //log.warn("BODY: " + result.getBody());
 
-    InputStream in = new ByteArrayInputStream(result.getBody().getBytes());
-    TypedInputStream typedInput = new TypedInputStream(in, result.getContentType());
-    Iterator<Triple> triples = RDFDataMgr.createIteratorTriples(typedInput.getInputStream(),
-                                                               Lang.TURTLE, typedInput.getBaseURI());
+    Source<ByteString, ?> source = result.getBodyAsSource();
 
-    Model model = ModelFactory.createDefaultModel();
+    //Source.<ByteString>actorRef(256, OverflowStrategy.dropNew())
+
+    source.map((Function<ByteString, byte[]>) param -> param.toArray());
+
+    // The sink that writes to the output stream
+    ByteStringBuilder builder = new ByteStringBuilder();
+
+    Sink<ByteString,  CompletionStage<Done>> outputWriter =
+        Sink.<ByteString>foreach((ByteString bytes) -> {
+          builder.append(bytes);
+
+        });
+    try {
+      source.runWith(outputWriter, materializer)
+      .whenComplete((value, error) -> {
+        log.warn("Fetching done. Result:\n" + builder.result().utf8String());
+      }).toCompletableFuture().get();
+    } catch (ExecutionException |InterruptedException e) {
+      log.error("Error while fecthing datasource response", e);
+    }
+
+    /*InputStream in = new ByteArrayInputStream(result.getBody().getBytes());
+    TypedInputStream typedInput = new TypedInputStream(in, result.getContentType());
+   /* Iterator<Triple> triples = RDFDataMgr.createIteratorTriples(typedInput.getInputStream(),
+                                                               Lang.TURTLE, typedInput.getBaseURI());*/
+
+    /*PipedRDFIterator<Triple> itTest = new PipedRDFIterator<>();
+    PipedTriplesStream out = new PipedTriplesStream(itTest);
+    RDFParser.create()
+        .source(in)
+        .base(typedInput.getBaseURI())
+        .lang(Lang.TURTLE)
+        .context(null)
+        .parse(out);
+
+    Iterator<Triple> triples = itTest;
+
+    PrefixMapping mapping = PrefixMapping.Factory.create()
+        .setNsPrefixes(itTest.getPrefixes().getMappingCopyStr());
+
+    while(triples.hasNext()) {
+      Triple triple = triples.next();
+      log.warn("Read triple: " + triple.toString(mapping));
+    }*/
+
+   /* Model model = ModelFactory.createDefaultModel();
     RDFDataMgr.read(model, in, Lang.TURTLE);
     PrefixMapping mapping = PrefixMapping.Factory.create()
         .setNsPrefixes(model.getNsPrefixMap())
@@ -122,7 +175,7 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     while (it.hasNext()) {
       Triple triple = it.nextStatement().asTriple();
       log.warn("Read triple: " + triple.toString(mapping));
-    }
+    }*/
 
   }
 
