@@ -13,7 +13,7 @@ import java.util.*;
  * A Datasource contains all relevant information, the register needs to know of each wrapper.
  * The ost important property is the URI, as it is the location to communicate with the (datasource) wrapper.
  * <br>
- * <strong>NOTE:</strong> This class is <strong>immutable</string>.
+ * <strong>NOTE:</strong> This class is <strong>immutable</strong>.
  */
 public class Datasource implements Comparable<Datasource> {
 

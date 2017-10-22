@@ -30,7 +30,7 @@ public interface ConnectionPool extends Closeable {
 
   /**
    * Provides the masimum size of connections that can be managed by this connection pool.
-   * @return
+   * @return The masimum size of connections that can be managed by this connection pool.
    */
   int getMaxPoolSize();
 

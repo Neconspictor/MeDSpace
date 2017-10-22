@@ -96,7 +96,7 @@ public class SearchResult implements Closeable {
 
   /**
    * Provides the number of documents that can be retrieved from this search result.
-   * @return
+   * @return the number of documents that can be retrieved from this search result.
    */
   public int getSize() {
     return topDocs.scoreDocs.length;
@@ -115,7 +115,7 @@ public class SearchResult implements Closeable {
    * NOTE: This number doesn't specifiy the number of documents that can be retrieved from this SearchResult.
    * If used a totalHitCount while constructing the SearchResult, this number can be larger than the documents inside
    * this SearchResult. To get the number of included documents, use {@link #getSize}
-   * @return
+   * @return The number of total documents of the index that match the query.
    */
   public int getTotalLength() {
     return topDocs.totalHits;

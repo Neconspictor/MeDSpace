@@ -193,7 +193,7 @@ public class SQLWrapperService {
       throw new IOException("Error while reading the general wrapper configuration file: " + wrapperConfigFile, e);
     }
 
-    if (!generalConfig.isUseIndex()) {
+    if (!generalConfig.isIndexUsed()) {
       throw new D2RException("This wrapper needs an index, but no index directory is stated in the general wrapper configuration.");
     }
 

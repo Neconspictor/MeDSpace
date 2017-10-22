@@ -45,7 +45,7 @@ public class GeneralWrapperConfigReader {
   private Set<Lang> supportedStreamLanguages;
 
   /**
-   * Constructs a new {@ink GeneralWrapperConfigReader}.
+   * Constructs a new {@link GeneralWrapperConfigReader}.
    */
   public GeneralWrapperConfigReader() {
     supportedStreamLanguages = new HashSet<>();

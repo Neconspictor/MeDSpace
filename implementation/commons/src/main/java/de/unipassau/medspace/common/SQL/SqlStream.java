@@ -127,7 +127,7 @@ public class SqlStream implements Stream<SQLResultTuple> {
 
   /**
    * Provides the number of columns of the retrieved sql result set.
-   * @return
+   * @return The number of columns of the retrieved sql result set.
    */
   public int getColumnCount() {
     return numColumns;

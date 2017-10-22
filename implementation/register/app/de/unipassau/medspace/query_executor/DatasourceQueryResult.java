@@ -28,11 +28,11 @@ public class DatasourceQueryResult {
   private CompletableFuture<File> resultFuture;
   private File resultFile = null;
   private boolean isOpen = true;
+  private String contentType;
 
   public DatasourceQueryResult(Query query, Datasource datasource, Source<ByteString, ?> source,
-                               Materializer materializer) throws IOException {
+                               String contentType, Materializer materializer) throws IOException {
     this.query = query;
-
 
     //assure that the base directory exists
     FileUtil.createDirectory(base);
@@ -69,6 +69,8 @@ public class DatasourceQueryResult {
         })
         .thenApply(v -> resultFile)
         .toCompletableFuture();
+
+    this.contentType = contentType;
   }
 
   public CompletableFuture<File> future() {
@@ -121,5 +123,9 @@ public class DatasourceQueryResult {
       hexString.append(hex);
     }
     return hexString.toString();
+  }
+
+  public String getContentType() {
+    return contentType;
   }
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!-->Map specifies wraps the D2R mapping<-->
+<wrapper:Config xmlns:wrapper="http://www.medspace.com/wrapper-config-specification"
+>
+
+	<wrapper:Datasource
+			url="http://localhost:9200"
+			description="A Wrapper for a MySQL Database."
+	>
+		<wrapper:Service>SEARCH</wrapper:Service>
+	</wrapper:Datasource>
+
+	<!-->
+		Specifies where the wrapper should store indexed data
+		<wrapper:Index directory="./_work/medspace/index"/>
+	<-->
+	<wrapper:Index directory="./_work/medspace/index"/>
+
+	<!-->
+		RDF namespaces
+		@attribute prefix:		The prefix to use in the rdf triples
+		@attribute namespace:	The namespace represented by the prefix
+	<-->
+	<wrapper:Namespace prefix="test" namespace="http://localhost/patient_test_namespace#"/>
+	<wrapper:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>
+	<wrapper:Namespace prefix="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+	<wrapper:Namespace prefix="dc" namespace="http://purl.org/dc/elements/1.1/"/>
+	<wrapper:Namespace prefix="xsd" namespace="http://www.w3.org/2001/XMLSchema#"/>
+	<wrapper:Namespace prefix="language" namespace="http://localhost/patient_test_namespace/languages#"/>
+	<wrapper:Namespace prefix="maritalStatus" namespace="http://localhost/patient_test_namespace/maritalstatus#"/>
+	<wrapper:Namespace prefix="sex" namespace="http://localhost/patient_test_namespace/sex#"/>
+	<wrapper:Namespace prefix="patient" namespace="http://localhost/patient_test_namespace/patient#"/>
+
+	<!-->
+    	Which rdf serialization language should be used?
+    	For more information about the supported rdf formats see:
+    	https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang
+	<-->
+	<wrapper:OutputFormat>TURTLE</wrapper:OutputFormat>
+
+	<wrapper:Register url="http://localhost:9500"/>
+
+</wrapper:Config>

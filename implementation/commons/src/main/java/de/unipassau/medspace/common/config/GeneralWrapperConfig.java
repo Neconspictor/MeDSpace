@@ -50,15 +50,17 @@ public class GeneralWrapperConfig {
 
   /**
    * The url of the register the wrapper should connect to.
+   * @return The url to the register.
    */
   public URL getRegisterURL() {
     return data.registerURL;
   }
 
   /**
-   * Specifies, if the wrapper should use an index.
+   * Checks, if the wrapper uses an index.
+   * @return true, if the wrapper uses and index.
    */
-  public boolean isUseIndex() {
+  public boolean isIndexUsed() {
     return data.useIndex;
   }
 
@@ -170,21 +172,24 @@ public class GeneralWrapperConfig {
     }
 
     /**
-     * The directory the wrapper should store indexed data.
+     * Provides the directory the wrapper should store the indexed data.
+     * @return The directory the wrapper should store the indexed data.
      */
     public Path getIndexDirectory() {
       return indexDirectory;
     }
 
     /**
-     * A prefix namespace mapping read from the config file.
+     * Provides the prefix namespace mapping read from the config file.
+     * @return The prefix namespace mapping read from the config file.
      */
     public Map<String, Namespace> getNamespaces() {
       return namespaces;
     }
 
     /**
-     * The export rdf language.
+     * Provides the export rdf language.
+     * @return The export rdf language.
      */
     public Lang getOutputFormat() {
       return outputFormat;
@@ -192,6 +197,7 @@ public class GeneralWrapperConfig {
 
     /**
      * The url of the register the wrapper should connect to.
+     * @return The url of the register
      */
     public URL getRegisterURL() {
       return registerURL;
@@ -199,6 +205,7 @@ public class GeneralWrapperConfig {
 
     /**
      * Specifies, if the wrapper should use an index.
+     * @return true, if the wrapper uses an index.
      */
     public boolean isUseIndex() {
       return useIndex;

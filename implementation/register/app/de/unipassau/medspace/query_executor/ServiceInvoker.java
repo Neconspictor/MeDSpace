@@ -1,12 +1,8 @@
 package de.unipassau.medspace.query_executor;
 
-import akka.Done;
-import akka.japi.function.Function;
 import akka.stream.*;
-import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
-import akka.util.ByteStringBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.network.JsonResponse;
@@ -25,8 +21,6 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by David Goeth on 06.10.2017.
@@ -80,7 +74,7 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     return datasources;
   }
 
-  public void queryDatasource(Datasource datasource, Query query) throws UnsupportedServiceException, IOException {
+  public DatasourceQueryResult queryDatasource(Datasource datasource, Query query) throws UnsupportedServiceException, IOException {
     Service service = query.getService();
     String queryString = query.getQueryString();
 
@@ -102,9 +96,9 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     }
 
     String status = result.getStatusText();
-    log.warn("QUERY String: " + queryString);
-    log.warn("STATUS: " + result.getStatus() + " - " + status);
-    log.warn("CONTENT-TYPE: " + result.getContentType());
+    log.warn("QUERY String from source " + datasource.getUrl() + ": " + queryString);
+    log.warn("STATUS from source " + datasource.getUrl() + ": " + result.getStatus() + " - " + status);
+    log.warn("CONTENT-TYPE from source " + datasource.getUrl() + ": " + result.getContentType());
     //log.warn("BODY: " + result.getBody());
 
     Source<ByteString, ?> source = result.getBodyAsSource();
@@ -113,25 +107,10 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
         query,
         datasource,
         source,
+        result.getContentType(),
         materializer);
 
-    queryResult.future().whenComplete((file, error) -> {
-      if (error != null) {
-        log.error("Couldn't fetch query result", error);
-        return;
-      }
-      try {
-        processQueryResult(file);
-      } catch (IOException e) {
-        log.error("Error while reading query result file", e);
-      }
-
-      try {
-        queryResult.cleanup();
-      } catch (IOException e) {
-        log.error("Couldn't cleanup query result", e);
-      }
-    });
+    return queryResult;
 
     /*source.map((Function<ByteString, byte[]>) param -> param.toArray());
 
@@ -204,24 +183,6 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
       log.warn("Read triple: " + triple.toString(mapping));
     }*/
 
-  }
-
-  private void processQueryResult(File file) throws IOException{
-    InputStream in = null;
-    try {
-      in = new FileInputStream(file.getPath());
-      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-      String line = reader.readLine();
-      while(line != null) {
-        log.warn("Read result line: " + line);
-        line = reader.readLine();
-      }
-    } catch (FileNotFoundException e) {
-      throw new RuntimeException("QueryResult file not findable", e);
-    } finally {
-      if (in != null)
-        in.close();
-    }
   }
 
   private URL constructServiceURL(URL base, Service service) {
