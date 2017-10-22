@@ -11,6 +11,9 @@ import play.mvc.Result;
 import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -35,8 +38,19 @@ public class QueryExecutorController extends Controller {
     queryExecutor = new QueryExecutor(serviceInvoker, new URL("http://localhost:" + port));
   }
 
-  public Result queryExecutorTest() {
-    queryExecutor.keywordService();
+  public Result queryExecutorTest(String query) {
+    log.warn("query param: " + query);
+
+    queryExecutor.keywordService(getKeywords(query));
     return ok();
+  }
+
+  private List<String> getKeywords(String query) {
+    List<String> result = new ArrayList<>();
+    StringTokenizer tokenizer = new StringTokenizer(query);
+    while(tokenizer.hasMoreTokens()) {
+      result.add(tokenizer.nextToken());
+    }
+    return result;
   }
 }

@@ -2,6 +2,54 @@
  * Created by necon on 27.09.2017.
  */
 
+function Service(name) {
+    this.name = name;
+}
+
+Service.prototype = {
+    getName: function() {
+        return this.name;
+    },
+    setName: function(name) {
+        this.name = name;
+    }
+}
+
+function Datasource() {
+    this.url = "";
+    this.description = "";
+    this.services = [];
+};
+
+Datasource.prototype = {
+
+    getURL: function() {
+        return this.url;
+    },
+
+    getDescription: function() {
+        return this.description;
+    },
+
+    getServices: function() {
+        return this.services;
+    },
+
+    setURL: function(url) {
+        this.url = url;
+    },
+    setDescription: function(desc) {
+        this.description = desc;
+    },
+    setServices: function(services) {
+        this.services = services;
+    },
+
+    addService: function (service) {
+      this.services.push(service);
+    }
+};
+
 // include registerCommon.js
 jQuery.ajax({
     type:'GET',
@@ -37,13 +85,38 @@ function appendErrorBox(jqXHR, textStatus, errorThrown, selector) {
     removeAfter(alertPlace.find(".alert"), 5000);
 }
 
+function createDatasource(formContainer) {
+    var url = formContainer.find(".url");
+    var description = formContainer.find(".description");
+    var services = formContainer.find(".fieldItem");
+
+    var datasource = new Datasource();
+
+    if (url.length > 0)
+        datasource.setURL(url[0].value);
+    if (description.length > 0)
+        datasource.setDescription(description[0].value);
+
+    for (var i = 0; i < services.length; ++i) {
+        var inputField = $(services[i]).find("input")[0];
+        var service = new Service(inputField.value);
+        datasource.addService(service);
+    }
+
+    return datasource;
+}
+
 //  Submits the Info form to Controller
 //  formContainer: (jQuery) The form model to submit
 function submitInfo(formContainer) {
+
+    var datasource = createDatasource(formContainer);
+
     $.ajax({
         url: jsRoutes.controllers.RegisterController.add().url,
         type: 'post',
-        data: formContainer.serialize(),
+        data: JSON.stringify(datasource),
+        contentType: "application/json",
         success: function (data) {
             // Clear the input tags
             formContainer.find("input[type='text']").each(function (i, element) {
@@ -59,10 +132,12 @@ function submitInfo(formContainer) {
 }
 
 function submitNoResponseForm(formContainer) {
+    var datasource = createDatasource(formContainer);
     $.ajax({
         url: jsRoutes.controllers.RegisterController.noResponse().url,
         type: 'post',
-        data: formContainer.serialize(),
+        data: JSON.stringify(datasource),
+        contentType: "application/json",
         success: function (data) {
             // Clear the input tags
             formContainer.find("input[type='text']").each(function (i, element) {
@@ -78,10 +153,12 @@ function submitNoResponseForm(formContainer) {
 }
 
 function submitRemoveDatasourceForm(formContainer) {
+    var datasource = createDatasource(formContainer);
     $.ajax({
         url: jsRoutes.controllers.RegisterController.remove().url,
         type: 'post',
-        data: formContainer.serialize(),
+        data: JSON.stringify(datasource),
+        contentType: "application/json",
         success: function (data) {
             // Clear the input tags
             formContainer.find("input[type='text']").each(function (i, element) {
@@ -130,7 +207,7 @@ $(document).ready(function () {
         }
 
        //var submitButton = $(".btn-submit");
-        var infoForm = $(".input-append");
+        var infoForm = $(this).closest(".input-append");
         submitInfo(infoForm);
     });
 

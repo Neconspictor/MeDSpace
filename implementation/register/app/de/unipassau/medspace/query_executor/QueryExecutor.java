@@ -2,6 +2,7 @@ package de.unipassau.medspace.query_executor;
 
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.register.Datasource;
+import de.unipassau.medspace.common.register.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +30,17 @@ public class QueryExecutor {
     this.registerBase = registerBase;
   }
 
-  public void keywordService() {
+  public void keywordService(List<String> keywords) {
     List<Datasource> datasources;
+
+    String queryString = "keywords=";
+
+    for (String keyword : keywords) {
+      queryString += keyword + " ";
+    }
+
+    queryString = queryString.trim();
+
     try {
       datasources = retrieveFromRegister();
     } catch (IOException e) {
@@ -38,10 +48,14 @@ public class QueryExecutor {
       return;
     }
 
+    Service service = new Service("search");
+    Query query =  new Query(service, queryString);
+
     for (Datasource datasource : datasources) {
       log.info(datasource.toString());
+
       try {
-        serviceInvoker.queryDatasource(datasource, "SEARCH", "keywords=male female spanish");
+        serviceInvoker.queryDatasource(datasource, query);
       } catch (IOException | UnsupportedServiceException e) {
         log.error("Error while querying datasource " + datasource.getUrl(), e);
       }

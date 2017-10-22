@@ -3,6 +3,7 @@ package de.unipassau.medspace.common.config;
 import de.unipassau.medspace.common.exception.ParseException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.register.Datasource;
+import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.common.util.XmlUtil;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFFormat;
@@ -206,14 +207,14 @@ public class GeneralWrapperConfigReader {
 
     builder.setUrl(url);
     builder.setDescription(description);
-    List<String> services = new ArrayList<>();
+    List<Service> services = new ArrayList<>();
 
     NodeList list = elem.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Datasource.Service.NAME);
     int numNodes = list.getLength();
     for (int i = 0; i < numNodes; i++) {
       Element child = (Element) list.item(i);
-      String service = child.getTextContent();
-      services.add(service);
+      String serviceName = child.getTextContent();
+      services.add(new Service(serviceName));
     }
 
     builder.setServices(services);

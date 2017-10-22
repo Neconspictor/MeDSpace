@@ -48,7 +48,7 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
     if (datasource == null) throw new NullPointerException("datasource mustn't be null!");
     if (registerBase == null) throw new NullPointerException("registerBase mustn't be null!");
 
-    JsonNode serialized = Json.toJson(datasource);
+    JsonNode serialized = Json.toJson(new Datasource.Builder(datasource));
 
     URL addServiceURL;
     try {

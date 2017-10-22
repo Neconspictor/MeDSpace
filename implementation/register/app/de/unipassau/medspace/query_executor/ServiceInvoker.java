@@ -2,27 +2,17 @@ package de.unipassau.medspace.query_executor;
 
 import akka.Done;
 import akka.japi.function.Function;
-import akka.japi.function.Procedure;
 import akka.stream.*;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
 import akka.util.ByteStringBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.network.JsonResponse;
 import de.unipassau.medspace.common.network.Util;
 import de.unipassau.medspace.common.register.Datasource;
-import org.apache.jena.atlas.web.TypedInputStream;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFParser;
-import org.apache.jena.riot.lang.PipedRDFIterator;
-import org.apache.jena.riot.lang.PipedTriplesStream;
-import org.apache.jena.shared.PrefixMapping;
-import org.joda.time.Years;
+import de.unipassau.medspace.common.register.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
@@ -32,10 +22,7 @@ import javax.inject.Inject;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
@@ -51,7 +38,7 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
    */
   private static final Logger log = LoggerFactory.getLogger(ServiceInvoker.class);
 
-  private static final String REGISTER_GET_DATASOURCES_SUBPATH = "getDatasources";
+  private static final Service REGISTER_GET_DATASOURCES_SUBPATH = new Service("get-datasources");
 
   private final WSClient ws;
   private final Materializer materializer;
@@ -82,25 +69,22 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     // We cannot deserialize the result directly to Datasource objects, as the class is immutable and has a
     // private constructor.
     // Instead we use its builder which has the same member fields
-    List<Datasource.Builder> list;
+    List<Datasource> datasources;
     try {
-      list = Json.mapper().readValue(data, new TypeReference<List<Datasource.Builder>>(){});
+      datasources = Json.mapper().readValue(data, new TypeReference<List<Datasource>>(){});
     } catch (IOException e) {
       log.debug("JsonResponse object: ", data);
       throw new IOException("Couldn't convert server message to an JsonResponse object", e);
     }
 
-    List<Datasource> datasources = new ArrayList<>();
-    for (Datasource.Builder builder : list) {
-      datasources.add(builder.build());
-    }
-
     return datasources;
   }
 
-  public void queryDatasource(Datasource datasource, String service, String queryString) throws UnsupportedServiceException, IOException {
-    service = service.toLowerCase();
-    if (!datasource.getServices().contains(service)) {
+  public void queryDatasource(Datasource datasource, Query query) throws UnsupportedServiceException, IOException {
+    Service service = query.getService();
+    String queryString = query.getQueryString();
+
+    if (!Service.supportsService(service, datasource)) {
       throw new UnsupportedServiceException(datasource.getUrl() + " doesn't support service '" + service + "'");
     }
 
@@ -125,9 +109,31 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
 
     Source<ByteString, ?> source = result.getBodyAsSource();
 
-    //Source.<ByteString>actorRef(256, OverflowStrategy.dropNew())
+    DatasourceQueryResult queryResult = new DatasourceQueryResult(
+        query,
+        datasource,
+        source,
+        materializer);
 
-    source.map((Function<ByteString, byte[]>) param -> param.toArray());
+    queryResult.future().whenComplete((file, error) -> {
+      if (error != null) {
+        log.error("Couldn't fetch query result", error);
+        return;
+      }
+      try {
+        processQueryResult(file);
+      } catch (IOException e) {
+        log.error("Error while reading query result file", e);
+      }
+
+      try {
+        queryResult.cleanup();
+      } catch (IOException e) {
+        log.error("Couldn't cleanup query result", e);
+      }
+    });
+
+    /*source.map((Function<ByteString, byte[]>) param -> param.toArray());
 
     // The sink that writes to the output stream
     ByteStringBuilder builder = new ByteStringBuilder();
@@ -144,7 +150,7 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
       }).toCompletableFuture().get();
     } catch (ExecutionException |InterruptedException e) {
       log.error("Error while fecthing datasource response", e);
-    }
+    }*/
 
     /*Person person = new Person.Builder()
         .setForename("David")
@@ -200,9 +206,27 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
 
   }
 
-  private URL constructServiceURL(URL base, String service) {
+  private void processQueryResult(File file) throws IOException{
+    InputStream in = null;
     try {
-      return new URL(base, service);
+      in = new FileInputStream(file.getPath());
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      String line = reader.readLine();
+      while(line != null) {
+        log.warn("Read result line: " + line);
+        line = reader.readLine();
+      }
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException("QueryResult file not findable", e);
+    } finally {
+      if (in != null)
+        in.close();
+    }
+  }
+
+  private URL constructServiceURL(URL base, Service service) {
+    try {
+      return new URL(base, service.getName());
     } catch (MalformedURLException e) {
       throw new IllegalStateException("Couldn't construct service url", e);
     }

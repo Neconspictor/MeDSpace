@@ -1,13 +1,10 @@
 package de.unipassau.medspace.register;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.unipassau.medspace.common.register.Datasource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +13,9 @@ import play.libs.Json;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -39,7 +33,8 @@ public class RegisterLifecycle {
 
     log.info("Load saved datasources to register...");
     SimpleModule simpleModule = new SimpleModule();
-    simpleModule.addKeyDeserializer(Datasource.Builder.class, new DatasourceKeyDeserializer());
+    simpleModule.addKeyDeserializer(Datasource.class, new DatasourceKeyDeserializer());
+    simpleModule.addKeySerializer(Datasource.class, new DatasourceKeySerializer());
     Json.mapper().registerModule(simpleModule);
 
 
@@ -54,7 +49,8 @@ public class RegisterLifecycle {
     lifecycle.addStopHook(() -> {
       log.info("shutdown is executing...");
       try {
-        saveToDisk(getRegister());
+        register.close();
+        saveToDisk(register);
       } catch (IOException e) {
         log.error("Couldn't store registered datasources to disk", e);
       }
@@ -69,7 +65,6 @@ public class RegisterLifecycle {
 
   private Map<Datasource, Timestamp> loadFromDisk() throws IOException {
     File datasourceFile = new File(DATASOURCES_STORE_LOCAL_PATH);
-    Map<Datasource.Builder, Timestamp> datasourceBuilders = null;
     Map<Datasource, Timestamp> datasources = new HashMap<>();
 
     if (datasourceFile.exists()) {
@@ -80,24 +75,10 @@ public class RegisterLifecycle {
         root = mapper.reader().readTree(in);
       }
 
-      Iterator<JsonNode> elements = root.elements();
-      while(elements.hasNext()) {
-        JsonNode elem = elements.next();
-        Datasource.Builder builder = Json.fromJson(elem.get("key"), Datasource.Builder.class);
-        Timestamp timestamp = Json.fromJson(elem.get("value"), Timestamp.class);
-        datasources.put(builder.build(), timestamp);
-      }
-
-      /*datasourceBuilders = Json.mapper()
+      datasources = Json.mapper()
           .reader()
-          .forType(new TypeReference<Map<Datasource.Builder,Timestamp>>() {})
+          .forType(new TypeReference<Map<Datasource,Timestamp>>() {})
           .readValue(root);
-
-      //now build the final datasource map
-      datasourceBuilders.forEach((builder, timestamp) -> {
-        datasources.put(builder.build(), timestamp);
-      });*/
-
     }
 
     return datasources;
@@ -106,24 +87,10 @@ public class RegisterLifecycle {
   private void saveToDisk(Register register) throws IOException {
     log.info("Save registered datasources to disk...");
     Map<Datasource, Timestamp> datasources = register.getDatasources();
-    Map<Datasource.Builder, Timestamp> datasourceBuilders = new HashMap<>();
-    datasources.forEach((datasource, timestamp) -> {
-      datasourceBuilders.put(new Datasource.Builder(datasource), timestamp);
-    });
+
     try (FileOutputStream out = new FileOutputStream(DATASOURCES_STORE_LOCAL_PATH)) {
-      //JsonNode node = Json.toJson(datasourceBuilders);
-
-      ArrayNode root = Json.newArray();
-
-      for (Map.Entry<Datasource.Builder, Timestamp> entry : datasourceBuilders.entrySet()) {
-        JsonNode key = Json.toJson(entry.getKey());
-        JsonNode value = Json.toJson(entry.getValue());
-        ObjectNode pair = Json.newObject();
-        pair.putPOJO("key", entry.getKey())
-                   .putPOJO("value", entry.getValue());
-        root.add(pair);
-      }
-      Json.mapper().writer().writeValue(out, root);
+      JsonNode node = Json.toJson(datasources);
+      Json.mapper().writer().writeValue(out, node);
     }
   }
 
@@ -133,13 +100,25 @@ public class RegisterLifecycle {
 
   public static class DatasourceKeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
     @Override
-    public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-      // The key is a Datasource-Builder object
-      key = key.substring(1, key.length() - 1);
+    public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException {
       return Json.mapper()
           .reader()
-          .forType(Datasource.Builder.class)
+          .forType(Datasource.class)
           .readValue(key);
+    }
+  }
+
+  public static class DatasourceKeySerializer extends StdSerializer<Datasource> {
+
+    protected DatasourceKeySerializer() {
+      super(Datasource.class, false);
+    }
+
+    @Override
+    public void serialize(Datasource value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+      JsonNode node  = Json.toJson(value);
+      String json = Json.mapper().writeValueAsString(node);
+      gen.writeFieldName(json);
     }
   }
 }

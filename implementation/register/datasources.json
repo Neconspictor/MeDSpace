@@ -1,1 +1,1 @@
-[{"key":{"url":"http://localhost:9200","description":"A Wrapper for a MySQL Database.","services":["search"]},"value":1507665914920}]
+{"{\"url\":\"http://localhost:9200\",\"description\":\"A Wrapper for a MySQL Database.\",\"services\":[{\"name\":\"search\"}]}":1507984750604}

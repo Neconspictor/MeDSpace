@@ -8,21 +8,21 @@ GET     /                            controllers.RegisterController.index
 +nocsrf
 POST     /add                        controllers.RegisterController.add
 
-GET /getDatasources                  controllers.RegisterController.getDatasources
+GET /get-datasources                  controllers.RegisterController.getDatasources
 
 +nocsrf
 POST     /remove                     controllers.RegisterController.remove
 
 +nocsrf
-POST     /noResponse                 controllers.RegisterController.noResponse
+POST     /no-response                 controllers.RegisterController.noResponse
 
-GET     /javascriptRoutes            controllers.RegisterController.javascriptRoutes
+GET     /javascript-routes            controllers.RegisterController.javascriptRoutes
 
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)
 
 # QueryExecutor stuff
-GET     /queryExecutorTest           controllers.QueryExecutorController.queryExecutorTest
+GET     /query-executor-test           controllers.QueryExecutorController.queryExecutorTest(query ?="")
 
-GET /util/getPortAction              controllers.UtilController.getPortAction
+GET /util/get-port-action              controllers.UtilController.getPortAction

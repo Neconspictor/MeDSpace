@@ -64,5 +64,9 @@ libraryDependencies ++= Seq(
 	"org.apache.lucene" % "lucene-analyzers-common" % "6.6.0",
 
 	// Mockrunner JDBC
-	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2"
+	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2",
+
+		// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+		"com.fasterxml.jackson.core" % "jackson-core" % "2.8.10"
+
 )

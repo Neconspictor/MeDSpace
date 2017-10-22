@@ -1,6 +1,8 @@
 package de.unipassau.medspace.register;
 
 import de.unipassau.medspace.common.register.Datasource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -18,10 +20,17 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Register {
 
   /**
+   * Logger instance for this class.
+   */
+  private static final Logger log = LoggerFactory.getLogger(RegisterLifecycle.class);
+
+  /**
    * A map, that assigns each registered datasource a timestamp,
    * which records he time the datasource was added to the register.
    */
   private final Map<Datasource, Timestamp> datasources;
+
+  private boolean isClosed = false;
 
   /**
    * Used to allow multiple readers to access the register's methods non-blocking.
@@ -66,6 +75,7 @@ public class Register {
     Lock lock = readWriteLock.writeLock();
     try {
       lock.lock();
+      if (isClosed) return false;
       Timestamp old = datasources.get(datasource);
 
       // Datasource wasn't registered before?
@@ -112,6 +122,7 @@ public class Register {
     Timestamp timestamp;
     try {
       lock.lock();
+      if (isClosed) return NoResponse.DATASOURCE_NOT_FOUND;
       timestamp = datasources.get(datasource);
     } finally {
       lock.unlock();
@@ -162,6 +173,7 @@ public class Register {
     Lock lock = readWriteLock.writeLock();
     try {
       lock.lock();
+      if (isClosed) return false;
       if (datasources.get(datasource) != null) {
         datasources.remove(datasource);
         return true;
@@ -169,6 +181,20 @@ public class Register {
 
       // Datasource isn't registered and thus couldn't be removed.
       return false;
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public void close() {
+    if (isClosed) {
+      log.warn("Register already closed.");
+      return;
+    }
+    Lock lock = readWriteLock.writeLock();
+    try {
+      lock.lock();
+      isClosed = true;
     } finally {
       lock.unlock();
     }

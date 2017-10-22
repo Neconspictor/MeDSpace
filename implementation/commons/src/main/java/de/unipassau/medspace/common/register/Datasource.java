@@ -1,12 +1,10 @@
 package de.unipassau.medspace.common.register;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.KeyDeserializer;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -32,7 +30,7 @@ public class Datasource implements Comparable<Datasource> {
   /**
    * A list of services that the datasource wrapper provides.
    */
-  private final Set<String> services;
+  private final Set<Service> services;
 
   /**
    * Logger instance for this class.
@@ -45,7 +43,7 @@ public class Datasource implements Comparable<Datasource> {
    * @param desc The description of the datasource wrapper. Can be null
    * @param services A list of supported services, the datasource wrapper supplies.
    */
-  private Datasource(URL url, String desc, Set<String> services) {
+  public Datasource(URL url, String desc, Set<Service> services) {
 
     if (url == null) {
       throw new IllegalArgumentException("URI isn't allowed to be null");
@@ -80,6 +78,13 @@ public class Datasource implements Comparable<Datasource> {
    */
   public static Datasource copyUpdateTimeStamp(Datasource other) throws MalformedURLException {
     return new Datasource(other.url, other.description, other.services);
+  }
+
+  @JsonCreator
+  public static Datasource create(@JsonProperty("url") URL url,
+                                  @JsonProperty("description") String desc,
+                                  @JsonProperty("services") Set<Service> services) {
+    return new Datasource(url, desc, services);
   }
 
   /**
@@ -131,7 +136,7 @@ public class Datasource implements Comparable<Datasource> {
    * <strong>Note:</strong> The services are all in <strong>lower case</strong>
    * @return An unmodifiable set of the services of this datasource.
    */
-  public Set<String> getServices() {
+  public Set<Service> getServices() {
     // create an unmodifiable set. As the list of services won't change after its creation
     // it is safe to use a wrapper instead of a copy!
     return Collections.unmodifiableSet(services);
@@ -144,10 +149,10 @@ public class Datasource implements Comparable<Datasource> {
     return url.hashCode();
   }
 
-  /*@Override
+  @Override
   public String toString() {
-    return "[" + url + ", '" + description + "', services: " + services  + "]";
-  }*/
+    return "Datasource:[" + url + ", '" + description + "', services: " + services  + "]";
+  }
 
   @Override
   public int compareTo(Datasource other) {
@@ -175,7 +180,7 @@ public class Datasource implements Comparable<Datasource> {
     /**
      * A list of services this datasource provides.
      */
-    private List<String> services;
+    private List<Service> services;
 
     public Builder() {
       url = null;
@@ -195,11 +200,8 @@ public class Datasource implements Comparable<Datasource> {
      * no valid datasource object could be created.
      */
     public Datasource build() {
-      Set<String> set = new HashSet<>();
-      if (services != null) {
-        services.replaceAll(String::toLowerCase);
-        set.addAll(services);
-      }
+      Set<Service> set = new HashSet<>();
+      if (services != null) set.addAll(services);
       return new Datasource(url, description, set);
     }
 
@@ -245,7 +247,7 @@ public class Datasource implements Comparable<Datasource> {
      * Provides the list of services this datasource supplies.
      * @return The list of services of this datasource.
      */
-    public List<String> getServices() {
+    public List<Service> getServices() {
       return services;
     }
 
@@ -253,7 +255,7 @@ public class Datasource implements Comparable<Datasource> {
      * Sets the list of services for this datasource and lower cases each element.
      * @param services The new list of services.
      */
-    public void setServices(List<String> services) {
+    public void setServices(List<Service> services) {
       this.services = services;
     }
   }

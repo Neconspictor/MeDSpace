@@ -1,0 +1,125 @@
+package de.unipassau.medspace.query_executor;
+
+import akka.Done;
+import akka.stream.Materializer;
+import akka.stream.javadsl.Sink;
+import akka.stream.javadsl.Source;
+import akka.util.ByteString;
+import de.unipassau.medspace.common.register.Datasource;
+import de.unipassau.medspace.common.util.FileUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.*;
+
+/**
+ * Created by David Goeth on 14.10.2017.
+ */
+public class DatasourceQueryResult {
+
+  private static final String base = "./_work/query-executor/temp/";
+
+  private final Query query;
+  private CompletableFuture<File> resultFuture;
+  private File resultFile = null;
+  private boolean isOpen = true;
+
+  public DatasourceQueryResult(Query query, Datasource datasource, Source<ByteString, ?> source,
+                               Materializer materializer) throws IOException {
+    this.query = query;
+
+
+    //assure that the base directory exists
+    FileUtil.createDirectory(base);
+
+    File file;
+
+    do {
+      String encoded = encodeString(datasource.getUrl().toExternalForm()
+          + query.hashCode()
+          +  System.nanoTime());
+
+      file = new File(base + "Result" +  encoded);
+    } while(file.exists());
+
+    file.createNewFile();
+
+    OutputStream outputStream = java.nio.file.Files.newOutputStream(file.toPath());
+
+    // The sink that writes to the output stream
+    Sink<ByteString, CompletionStage<Done>> outputWriter =
+        Sink.<ByteString>foreach(bytes -> outputStream.write(bytes.toArray()));
+
+    final File finalCopy = file;
+
+    // materialize and run the stream
+    resultFuture = source.runWith(outputWriter, materializer)
+        .whenComplete((value, error) -> {
+          // Close the output stream whether there was an error or not
+          try {
+            setResultFile(finalCopy);
+            outputStream.close();
+          }
+          catch(IOException e) {}
+        })
+        .thenApply(v -> resultFile)
+        .toCompletableFuture();
+  }
+
+  public CompletableFuture<File> future() {
+    return resultFuture;
+  }
+
+  public Query getQuery() {
+    return query;
+  }
+
+  public synchronized void cleanup() throws IOException {
+    if (!isOpen) return;
+    isOpen = false;
+    if (resultFile == null) {
+      boolean cancelled = resultFuture.cancel(true);
+      if (!cancelled) throw new IOException("Couldn't cancel resultFuture!");
+      return;
+    }
+    try {
+      Files.delete(resultFile.toPath());
+    } catch (SecurityException e) {
+      throw new IOException("Couldn't delete result file", e);
+    }
+  }
+
+  private synchronized void setResultFile(File file) {
+    resultFile = file;
+  }
+
+  private String encodeString(String source) {
+
+    MessageDigest digest = null;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException("Couldn't instantiate SHA-256 algorithm", e);
+    }
+
+    byte[] encodedHash = digest.digest(
+        source.getBytes(StandardCharsets.UTF_8));
+
+    return bytesToHex(encodedHash);
+  }
+
+  private static String bytesToHex(byte[] hash) {
+    StringBuffer hexString = new StringBuffer();
+    for (int i = 0; i < hash.length; i++) {
+      String hex = Integer.toHexString(0xff & hash[i]);
+      if(hex.length() == 1) hexString.append('0');
+      hexString.append(hex);
+    }
+    return hexString.toString();
+  }
+}

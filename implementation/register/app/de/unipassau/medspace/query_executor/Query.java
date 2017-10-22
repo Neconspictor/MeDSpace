@@ -1,24 +1,26 @@
 package de.unipassau.medspace.query_executor;
 
-import de.unipassau.medspace.common.register.Datasource;
+import de.unipassau.medspace.common.register.Service;
 
 /**
  * A dummy class for a base Query class
  */
 public class Query {
 
-  private final String name;
+  private final Service service;
 
-  public Query(String name) {
-    this.name = name.toLowerCase();
+  private final String queryString;
+
+  public Query(Service service, String queryString) {
+    this.service = service;
+    this.queryString = queryString;
   }
 
-  public static boolean supportsQuery(Query query, Datasource datasource) {
-    return datasource.getServices().stream().anyMatch(service ->
-        service.toLowerCase().equals(query.name));
+  public Service getService() {
+    return service;
   }
 
-  public String getName() {
-    return name;
+  public String getQueryString() {
+    return queryString;
   }
 }

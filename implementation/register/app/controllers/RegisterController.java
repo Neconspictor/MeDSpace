@@ -1,9 +1,6 @@
 package controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import controllers.response.*;
 import de.unipassau.medspace.common.message.Response;
 import de.unipassau.medspace.common.register.Datasource;
@@ -17,13 +14,7 @@ import play.mvc.*;
 import play.routing.JavaScriptReverseRouter;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -68,12 +59,12 @@ public class RegisterController extends Controller {
      * @return A Results.Add serialized to a JSON object.
      */
     public Result add() {
-        Datasource.Builder builder = readMutableDatasource();
+        Datasource datasource = readDatasource();
 
         // early exit...
-        if (builder == null) return flawedOrMissingData();
+        if (datasource == null) return flawedOrMissingData();
 
-        boolean result = register.addDatasource(builder.build());
+        boolean result = register.addDatasource(datasource);
         Response response =  new AddResponse(result);
         return ok(Json.toJson(response));
     }
@@ -95,12 +86,11 @@ public class RegisterController extends Controller {
      * @return A Results.NoResponse serialized to a JSON object.
      */
     public Result noResponse() {
-        Datasource.Builder builder = readMutableDatasource();
+        Datasource datasource = readDatasource();
 
         // early exit...
-        if (builder == null) return flawedOrMissingData();
+        if (datasource == null) return flawedOrMissingData();
 
-        Datasource datasource = builder.build();
         Register.NoResponse result = register.datasourceNoRespond(datasource);
         Response response = new NoResponseResponse(result);
         return ok(Json.toJson(response));
@@ -112,12 +102,11 @@ public class RegisterController extends Controller {
      * @return A Results.Remove serialized to a JSON object.
      */
     public  Result remove() {
-        Datasource.Builder builder = readMutableDatasource();
+        Datasource datasource = readDatasource();
 
         // early exit...
-        if (builder == null) return flawedOrMissingData();
+        if (datasource == null) return flawedOrMissingData();
 
-        Datasource datasource = builder.build();
         boolean remove = register.removeDatasource(datasource);
         Response response = new RemoveResponse(remove);
         return ok(Json.toJson(response));
@@ -151,15 +140,15 @@ public class RegisterController extends Controller {
      * @return The read Datasource.Builder or null, if no Datasource.Builder object could
      * be bound.
      */
-    private Datasource.Builder readMutableDatasource() {
-        try {
-            Form<Datasource.Builder> requestData = formFactory.form(Datasource.Builder.class)
-                .bindFromRequest();
-            return requestData.get();
-        } catch (IllegalStateException e) {
-            //There were binding errors; nothing valid was found
-            log.warn("Couldn't bind mutable datasource object", e);
+    private Datasource readDatasource() {
+        JsonNode root = request().body().asJson();
+        if (root == null) {
+            log.warn("Couldn't read datasource object");
             return null;
         }
+        Datasource.Builder builder = Json.fromJson(root, Datasource.Builder.class);
+        //Form<Datasource.Builder> requestData = formFactory.form(Datasource.Builder.class)
+        //   .bindFromRequest();
+        return builder.build();
     }
 }
