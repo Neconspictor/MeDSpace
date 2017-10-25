@@ -4,8 +4,26 @@ import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.rdf.FileTripleStream;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
+import org.apache.jena.atlas.lib.Sink;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.system.StreamRDFLib;
+import org.apache.jena.riot.system.StreamRDFWrapper;
 import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.sparql.core.Quad;
+import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.tdb.store.DatasetGraphTDB;
+import org.apache.jena.tdb.store.GraphNonTxnTDB;
+import org.apache.jena.tdb.sys.TDBInternal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +31,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The Query executor is responsible to execute a query on a database.
@@ -23,6 +42,8 @@ public class QueryExecutor {
    * Logger instance for this class.
    */
   private static Logger log = LoggerFactory.getLogger(QueryExecutor.class);
+
+  private static String dir = "./_work/query-executor/test/dataset1";
 
   private final ServiceInvoker serviceInvoker;
   private final URL registerBase;
@@ -61,10 +82,29 @@ public class QueryExecutor {
         DatasourceQueryResult queryResult = serviceInvoker.queryDatasource(datasource, query);
         queryResult.future().whenComplete((file, error) ->
           queryResultWhenCompleted(queryResult, datasource.getUrl(),file, error));
+        queryResult.future().get();
       } catch (IOException | UnsupportedServiceException e) {
         log.error("Error while querying datasource " + datasource.getUrl(), e);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
       }
     }
+
+    Dataset dataset = TDBFactory.createDataset(dir);
+
+    dataset.begin(ReadWrite.READ);
+    Model model = dataset.getDefaultModel();
+    StmtIterator it = model.listStatements();
+    PrefixMapping mapping = model.getGraph().getPrefixMapping();
+    while(it.hasNext()) {
+      Statement stmt = it.nextStatement();
+      Triple triple = stmt.asTriple();
+      log.warn("Read triple: " + triple.toString(mapping));
+    }
+    dataset.end();
+    dataset.close();
   }
 
   private List<Datasource> retrieveFromRegister() throws IOException {
@@ -90,36 +130,56 @@ public class QueryExecutor {
   }
 
   private void processQueryResult(File file, URL source, String contentType) throws IOException{
-
-    FileTripleStream stream = null;
+    TripleSink sink = new TripleSink(dir);
 
     try {
-      stream = new FileTripleStream(file, contentType);
-      PrefixMapping mapping = stream.getPrefixMapping();
-      while(stream.hasNext()) {
-        Triple triple = stream.next();
-        log.warn("Read triple from source " + source + ": " + triple.toString(mapping));
-      }
-    } catch (URISyntaxException e) {
+      StreamRDF stream = StreamRDFLib.sinkTriples(sink);
+      RDFDataMgr.parse(stream, file.getAbsolutePath(), Lang.NTRIPLES) ;
+    } catch (Exception e) {
       throw new IOException("Couldn't create triple stream", e);
     } finally {
-      if (stream != null) stream.close();
+      sink.close();
+    }
+  }
+
+  private static class TripleSink implements Sink<Triple> {
+
+    private Dataset dataset;
+
+    public TripleSink(String directory) {
+      dataset = TDBFactory.createDataset(directory);
     }
 
-    /*InputStream in = null;
-    try {
-      in = new FileInputStream(file.getPath());
-      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-      String line = reader.readLine();
-      while(line != null) {
-        log.warn("Read result line from source " + source + ": " + line);
-        line = reader.readLine();
-      }
-    } catch (FileNotFoundException e) {
-      throw new RuntimeException("QueryResult file not findable", e);
-    } finally {
-      if (in != null)
-        in.close();
-    }*/
+    @Override
+    public void send(Triple item) {
+      /*dataset.begin(ReadWrite.WRITE);
+
+      Model model = dataset.getDefaultModel();
+      Graph graph = model.getGraph();
+      graph.add(item);
+
+      dataset.commit();
+      dataset.end();*/
+
+      dataset.begin(ReadWrite.WRITE);
+      DatasetGraphTDB dsg;
+      dsg = TDBInternal.getDatasetGraphTDB(dataset);
+      GraphNonTxnTDB test = dsg.getDefaultGraphTDB();
+      test.add(item);
+      dataset.commit();
+      dataset.end();
+    }
+
+    @Override
+    public void flush() {
+      //dataset.end();
+      //dsg.end();
+    }
+
+    @Override
+    public void close() {
+      dataset.close();
+      //dsg.close();
+    }
   }
 }
