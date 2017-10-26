@@ -40,7 +40,8 @@ implementation/register/target/*
 implementation/register/logs/*
 implementation/register/.idea/*
 implementation/register/project/*/*
-implementation/_work/*
+implementation/register/_work/*
+implementation/register/datasources.json
 
 // commons build
 implementation/commons/target/*
