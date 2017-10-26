@@ -1,5 +1,6 @@
 import com.google.inject.AbstractModule;
 
+import de.unipassau.medspace.query_executor.QueryExecutorLifecycle;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import de.unipassau.medspace.register.RegisterLifecycle;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class GlobalModule extends AbstractModule {
 
     log.info("GlobuleModule configures dependencies...");
     bind(RegisterLifecycle.class).asEagerSingleton();
+    bind(QueryExecutorLifecycle.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();
     log.info("done.");
   }

@@ -1,35 +1,23 @@
 package de.unipassau.medspace.query_executor;
 
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
-import de.unipassau.medspace.common.rdf.FileTripleStream;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
-import org.apache.jena.atlas.lib.Sink;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.system.StreamRDFLib;
-import org.apache.jena.riot.system.StreamRDFWrapper;
-import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.sparql.core.DatasetGraph;
-import org.apache.jena.sparql.core.Quad;
-import org.apache.jena.tdb.TDBFactory;
-import org.apache.jena.tdb.store.DatasetGraphTDB;
-import org.apache.jena.tdb.store.GraphNonTxnTDB;
-import org.apache.jena.tdb.sys.TDBInternal;
+import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.eclipse.rdf4j.rio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -47,11 +35,13 @@ public class QueryExecutor {
 
   private final ServiceInvoker serviceInvoker;
   private final URL registerBase;
+  private final Repository db;
 
-  public QueryExecutor(ServiceInvoker serviceInvoker, URL registerBase) {
+  public QueryExecutor(ServiceInvoker serviceInvoker, URL registerBase, Repository db) {
 
     this.serviceInvoker = serviceInvoker;
     this.registerBase = registerBase;
+    this.db = db;
   }
 
   public void keywordService(List<String> keywords) {
@@ -81,7 +71,7 @@ public class QueryExecutor {
       try {
         DatasourceQueryResult queryResult = serviceInvoker.queryDatasource(datasource, query);
         queryResult.future().whenComplete((file, error) ->
-          queryResultWhenCompleted(queryResult, datasource.getUrl(),file, error));
+          queryResultWhenCompleted(queryResult, datasource.getUrl(),file, db, error));
         queryResult.future().get();
       } catch (IOException | UnsupportedServiceException e) {
         log.error("Error while querying datasource " + datasource.getUrl(), e);
@@ -91,95 +81,160 @@ public class QueryExecutor {
         e.printStackTrace();
       }
     }
-
-    Dataset dataset = TDBFactory.createDataset(dir);
-
-    dataset.begin(ReadWrite.READ);
-    Model model = dataset.getDefaultModel();
-    StmtIterator it = model.listStatements();
-    PrefixMapping mapping = model.getGraph().getPrefixMapping();
-    while(it.hasNext()) {
-      Statement stmt = it.nextStatement();
-      Triple triple = stmt.asTriple();
-      log.warn("Read triple: " + triple.toString(mapping));
-    }
-    dataset.end();
-    dataset.close();
   }
 
   private List<Datasource> retrieveFromRegister() throws IOException {
     return serviceInvoker.invokeRegisterGetDatasources(registerBase);
   }
 
-  private void queryResultWhenCompleted(DatasourceQueryResult result, URL source, File file, Throwable error) {
+  private void queryResultWhenCompleted(DatasourceQueryResult result, URL source, File file, Repository db, Throwable error) {
     if (error != null) {
       log.error("Couldn't fetch query result", error);
       return;
     }
-    try {
-      processQueryResult(file,source, result.getContentType());
+    /*try {
+      //processQueryResult(file,source, result.getContentType());
     } catch (IOException e) {
       log.error("Error while reading query result file", e);
-    }
+    }*/
+
+    ValueFactory factory = SimpleValueFactory.getInstance();
+    Resource namedGraph = factory.createIRI(source.toString());
 
     try {
+      writeFileToRepository(file, source, RDFFormat.TURTLE, db, namedGraph);
+      queryRepository(System.out, db, namedGraph);
       result.cleanup();
     } catch (IOException e) {
       log.error("Couldn't cleanup query result", e);
     }
   }
 
-  private void processQueryResult(File file, URL source, String contentType) throws IOException{
-    TripleSink sink = new TripleSink(dir);
+  private static void queryRepository(OutputStream out, Repository db, Resource... contexts) throws IOException {
+    // Open a connection to the database
+    try (RepositoryConnection conn = db.getConnection()) {
+      try (ClosableRDFWriter writer = new ClosableRDFWriter(RDFFormat.TURTLE, System.out)) {
 
-    try {
-      StreamRDF stream = StreamRDFLib.sinkTriples(sink);
-      RDFDataMgr.parse(stream, file.getAbsolutePath(), Lang.NTRIPLES) ;
-    } catch (Exception e) {
-      throw new IOException("Couldn't create triple stream", e);
-    } finally {
-      sink.close();
+        try(RepositoryResult<Namespace> result = conn.getNamespaces()) {
+          while(result.hasNext()) {
+            Namespace namespace = result.next();
+            writer.handleNamespace(namespace.getPrefix(), namespace.getName());
+          }
+        }
+
+        try (RepositoryResult<Statement> result = conn.getStatements(null, null, null, contexts);) {
+          while (result.hasNext()) {
+            Statement st = result.next();
+            writer.handleStatement(st);
+          }
+        }
+      }
     }
   }
 
-  private static class TripleSink implements Sink<Triple> {
+  private static void writeFileToRepository(File file, URL baseURI, RDFFormat format, Repository db, Resource... contexts) throws IOException {
+    try (RepositoryConnection conn = db.getConnection()) {
+      //RDFParser rdfParser = new TurtleParser();
+      //RDFHandler repositoryWriter = new RepositoryWriter(conn, contexts);
+      //rdfParser.setRDFHandler(repositoryWriter);
 
-    private Dataset dataset;
+      //ByteArrayOutputStream out = new ByteArrayOutputStream();
+      //Rio.write(model, out, RDFFormat.TURTLE);
+      //rdfParser.parse(new ByteArrayInputStream(out.toByteArray()), "");
+      conn.add(file, baseURI.toString(), format, contexts);
+    }
+  }
 
-    public TripleSink(String directory) {
-      dataset = TDBFactory.createDataset(directory);
+  private static class RepositoryWriter implements RDFHandler {
+
+    private final RepositoryConnection connection;
+    private final ArrayList<Resource> namedGraphs;
+
+    private RepositoryWriter(RepositoryConnection connection, Resource... namedGraphs) {
+      this.connection = connection;
+      this.namedGraphs = new ArrayList<>();
+
+      for (Resource namedGraph : namedGraphs) {
+        if (namedGraph != null) {
+          this.namedGraphs.add(namedGraph);
+        }
+      }
     }
 
     @Override
-    public void send(Triple item) {
-      /*dataset.begin(ReadWrite.WRITE);
+    public void startRDF() throws RDFHandlerException {}
 
-      Model model = dataset.getDefaultModel();
-      Graph graph = model.getGraph();
-      graph.add(item);
+    @Override
+    public void endRDF() throws RDFHandlerException {}
 
-      dataset.commit();
-      dataset.end();*/
-
-      dataset.begin(ReadWrite.WRITE);
-      DatasetGraphTDB dsg;
-      dsg = TDBInternal.getDatasetGraphTDB(dataset);
-      GraphNonTxnTDB test = dsg.getDefaultGraphTDB();
-      test.add(item);
-      dataset.commit();
-      dataset.end();
+    @Override
+    public void handleNamespace(String prefix, String uri) throws RDFHandlerException {
+      connection.setNamespace(prefix, uri);
     }
 
     @Override
-    public void flush() {
-      //dataset.end();
-      //dsg.end();
+    public void handleStatement(Statement st) throws RDFHandlerException {
+      Resource context = st.getContext();
+      List<Resource> namedGraphs = new ArrayList<>(this.namedGraphs);
+
+      if (context != null)
+        namedGraphs.add(context);
+
+      Resource[] resources = new Resource[namedGraphs.size()];
+      resources = namedGraphs.toArray(resources);
+      connection.add(st, resources);
     }
 
     @Override
-    public void close() {
-      dataset.close();
-      //dsg.close();
+    public void handleComment(String comment) throws RDFHandlerException {}
+  }
+
+  private static class ClosableRDFWriter implements AutoCloseable {
+
+    private final RDFWriter writer;
+
+    public ClosableRDFWriter(RDFFormat format, OutputStream out) throws IOException {
+      writer = Rio.createWriter(format, out);
+      writer.setWriterConfig(new WriterConfig());
+
+      try{
+        writer.startRDF();
+      } catch (RDFHandlerException e) {
+        throw new IOException("Couldn't start RDF writer stream", e);
+      }
+    }
+
+    public void handleNamespace(String prefix, String uri) throws IOException {
+      try{
+        writer.handleNamespace(prefix, uri);
+      } catch (RDFHandlerException e) {
+        throw new IOException("Couldn't handle namespace", e);
+      }
+    }
+
+    public void handleStatement(Statement st) throws IOException {
+      try{
+        writer.handleStatement(st);
+      } catch (RDFHandlerException e) {
+        throw new IOException("Couldn't handle statement", e);
+      }
+    }
+
+    public void handleComment(String comment) throws IOException {
+      try{
+        writer.handleComment(comment);
+      } catch (RDFHandlerException e) {
+        throw new IOException("Couldn't handle comment", e);
+      }
+    }
+
+    @Override
+    public void close() throws IOException {
+      try{
+        writer.endRDF();
+      } catch (RDFHandlerException e) {
+        throw new IOException("Couldn't stop RDF writer stream", e);
+      }
     }
   }
 }
