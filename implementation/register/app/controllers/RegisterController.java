@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.response.*;
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.message.Response;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.register.*;
@@ -59,10 +60,13 @@ public class RegisterController extends Controller {
      * @return A Results.Add serialized to a JSON object.
      */
     public Result add() {
-        Datasource datasource = readDatasource();
-
-        // early exit...
-        if (datasource == null) return flawedOrMissingData();
+        Datasource datasource;
+        try {
+            datasource = readDatasource();
+        } catch (IOException e) {
+            log.error("Couldn't get datasource", e);
+            return flawedOrMissingData();
+        }
 
         boolean result = register.addDatasource(datasource);
         Response response =  new AddResponse(result);
@@ -86,10 +90,13 @@ public class RegisterController extends Controller {
      * @return A Results.NoResponse serialized to a JSON object.
      */
     public Result noResponse() {
-        Datasource datasource = readDatasource();
-
-        // early exit...
-        if (datasource == null) return flawedOrMissingData();
+        Datasource datasource;
+        try {
+            datasource = readDatasource();
+        } catch (IOException e) {
+            log.error("Couldn't get datasource", e);
+            return flawedOrMissingData();
+        }
 
         Register.NoResponse result = register.datasourceNoRespond(datasource);
         Response response = new NoResponseResponse(result);
@@ -102,10 +109,13 @@ public class RegisterController extends Controller {
      * @return A Results.Remove serialized to a JSON object.
      */
     public  Result remove() {
-        Datasource datasource = readDatasource();
-
-        // early exit...
-        if (datasource == null) return flawedOrMissingData();
+        Datasource datasource;
+        try {
+            datasource = readDatasource();
+        } catch (IOException e) {
+            log.error("Couldn't get datasource", e);
+            return flawedOrMissingData();
+        }
 
         boolean remove = register.removeDatasource(datasource);
         Response response = new RemoveResponse(remove);
@@ -140,7 +150,7 @@ public class RegisterController extends Controller {
      * @return The read Datasource.Builder or null, if no Datasource.Builder object could
      * be bound.
      */
-    private Datasource readDatasource() {
+    private Datasource readDatasource() throws IOException {
         JsonNode root = request().body().asJson();
         if (root == null) {
             log.warn("Couldn't read datasource object");
@@ -149,6 +159,10 @@ public class RegisterController extends Controller {
         Datasource.Builder builder = Json.fromJson(root, Datasource.Builder.class);
         //Form<Datasource.Builder> requestData = formFactory.form(Datasource.Builder.class)
         //   .bindFromRequest();
-        return builder.build();
+        try {
+            return builder.build();
+        } catch (NotValidArgumentException e) {
+            throw new IOException("Couldn't build a datasource object", e);
+        }
     }
 }

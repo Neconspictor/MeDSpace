@@ -30,6 +30,12 @@ libraryDependencies += "dnsjava" % "dnsjava" % "2.1.8"
 
 libraryDependencies += ws
 
+// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime
+libraryDependencies += "org.eclipse.rdf4j" % "rdf4j-runtime" % "2.2.2"
+
+// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
+libraryDependencies += "org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
+
 //batScriptTemplateLocation := file("run.bat" )
 
 javacOptions ++= Seq("-Xlint:unchecked")

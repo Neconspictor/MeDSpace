@@ -10,6 +10,7 @@ import de.unipassau.medspace.d2r.config.Configuration;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.shared.PrefixMapping;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,6 +103,7 @@ public class SQLWrapperController extends Controller {
 
     Configuration config = wrapperService.getD2rConfig();
     PrefixMapping mapping = wrapperService.getWrapper().getNamespacePrefixMapper();
+    RDFFormat format = wrapperService.getGeneralConfig().getOutputFormat();
     Lang lang = config.getOutputFormat();
     List<String> extensions = lang.getFileExtensions();
     String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);

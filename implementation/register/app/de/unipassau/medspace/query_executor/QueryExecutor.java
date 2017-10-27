@@ -3,6 +3,7 @@ package de.unipassau.medspace.query_executor;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
+import de.unipassau.medspace.common.util.FileUtil;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -38,7 +39,6 @@ public class QueryExecutor {
   private final Repository db;
 
   public QueryExecutor(ServiceInvoker serviceInvoker, URL registerBase, Repository db) {
-
     this.serviceInvoker = serviceInvoker;
     this.registerBase = registerBase;
     this.db = db;
@@ -73,12 +73,8 @@ public class QueryExecutor {
         queryResult.future().whenComplete((file, error) ->
           queryResultWhenCompleted(queryResult, datasource.getUrl(),file, db, error));
         queryResult.future().get();
-      } catch (IOException | UnsupportedServiceException e) {
-        log.error("Error while querying datasource " + datasource.getUrl(), e);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (ExecutionException e) {
-        e.printStackTrace();
+      } catch (ExecutionException | InterruptedException | IOException | UnsupportedServiceException e) {
+        log.error("Couldn't query datasource " + datasource.getUrl(), e);
       }
     }
   }
@@ -92,55 +88,66 @@ public class QueryExecutor {
       log.error("Couldn't fetch query result", error);
       return;
     }
-    /*try {
-      //processQueryResult(file,source, result.getContentType());
-    } catch (IOException e) {
-      log.error("Error while reading query result file", e);
-    }*/
 
     ValueFactory factory = SimpleValueFactory.getInstance();
     Resource namedGraph = factory.createIRI(source.toString());
 
     try {
       writeFileToRepository(file, source, RDFFormat.TURTLE, db, namedGraph);
-      queryRepository(System.out, db, namedGraph);
-      result.cleanup();
+      queryRepository(System.out, RDFFormat.TURTLE, db, namedGraph);
     } catch (IOException e) {
       log.error("Couldn't cleanup query result", e);
+    } finally {
+      FileUtil.closeSilently(result, true);
     }
   }
 
-  private static void queryRepository(OutputStream out, Repository db, Resource... contexts) throws IOException {
+  /**
+   * Queries an rdf repository and writes the query result to an output stream.
+   * @param out The output stream the query result should be written to.
+   * @param format The rdf format that should be used for writing the query result to the output stream.
+   * @param db The repository to be queried.
+   * @param contexts Optional named graphs that should be used in the query.
+   * @throws IOException If an io error occurs.
+   */
+  private static void queryRepository(OutputStream out, RDFFormat format, Repository db, Resource... contexts) throws IOException {
+
     // Open a connection to the database
     try (RepositoryConnection conn = db.getConnection()) {
-      try (ClosableRDFWriter writer = new ClosableRDFWriter(RDFFormat.TURTLE, System.out)) {
 
+      // write the rdf data to the repository
+      try (ClosableRDFWriter writer = new ClosableRDFWriter(format, out)) {
+
+        // write namespaces
         try(RepositoryResult<Namespace> result = conn.getNamespaces()) {
           while(result.hasNext()) {
             Namespace namespace = result.next();
-            writer.handleNamespace(namespace.getPrefix(), namespace.getName());
+            writer.writeNamespace(namespace.getPrefix(), namespace.getName());
           }
         }
 
-        try (RepositoryResult<Statement> result = conn.getStatements(null, null, null, contexts);) {
+        // write statements
+        try (RepositoryResult<Statement> result = conn.getStatements(null, null, null, contexts)) {
           while (result.hasNext()) {
             Statement st = result.next();
-            writer.handleStatement(st);
+            writer.writeStatement(st);
           }
         }
       }
     }
   }
 
+  /**
+   * Writes rdf content from a file to an rdf repository.
+   * @param file The file containing rdf data
+   * @param baseURI The base URI the rdf data uses
+   * @param format The rdf format used in the file
+   * @param db The repository to write the rdf data to.
+   * @param contexts Named graphs the rdf statements should be assigned to.
+   * @throws IOException If an IO-Error occurs.
+   */
   private static void writeFileToRepository(File file, URL baseURI, RDFFormat format, Repository db, Resource... contexts) throws IOException {
     try (RepositoryConnection conn = db.getConnection()) {
-      //RDFParser rdfParser = new TurtleParser();
-      //RDFHandler repositoryWriter = new RepositoryWriter(conn, contexts);
-      //rdfParser.setRDFHandler(repositoryWriter);
-
-      //ByteArrayOutputStream out = new ByteArrayOutputStream();
-      //Rio.write(model, out, RDFFormat.TURTLE);
-      //rdfParser.parse(new ByteArrayInputStream(out.toByteArray()), "");
       conn.add(file, baseURI.toString(), format, contexts);
     }
   }
@@ -189,10 +196,22 @@ public class QueryExecutor {
     public void handleComment(String comment) throws RDFHandlerException {}
   }
 
+  /**
+   * This class is a wrapper for an RDF4J RDFWriter.
+   */
   private static class ClosableRDFWriter implements AutoCloseable {
 
+    /**
+     * The wrapped rdf writer.
+     */
     private final RDFWriter writer;
 
+    /**
+     * Creates a new {@link ClosableRDFWriter}.
+     * @param format The rdf format that should be used for writing rdf.
+     * @param out The rdf write destination.
+     * @throws IOException If an io error occurs.
+     */
     public ClosableRDFWriter(RDFFormat format, OutputStream out) throws IOException {
       writer = Rio.createWriter(format, out);
       writer.setWriterConfig(new WriterConfig());
@@ -204,7 +223,13 @@ public class QueryExecutor {
       }
     }
 
-    public void handleNamespace(String prefix, String uri) throws IOException {
+    /**
+     * Writes a given namespace to the output stream, this object holds.
+     * @param prefix The prefix of the namespace.
+     * @param uri The uri of the namespace.
+     * @throws IOException If an io error occurs.
+     */
+    public void writeNamespace(String prefix, String uri) throws IOException {
       try{
         writer.handleNamespace(prefix, uri);
       } catch (RDFHandlerException e) {
@@ -212,7 +237,12 @@ public class QueryExecutor {
       }
     }
 
-    public void handleStatement(Statement st) throws IOException {
+    /**
+     * Writes an rdf statement.
+     * @param st The rdf statement.
+     * @throws IOException If an io error occurs.
+     */
+    public void writeStatement(Statement st) throws IOException {
       try{
         writer.handleStatement(st);
       } catch (RDFHandlerException e) {
@@ -220,7 +250,12 @@ public class QueryExecutor {
       }
     }
 
-    public void handleComment(String comment) throws IOException {
+    /**
+     * Writes a comment.
+     * @param comment The comment to write.
+     * @throws IOException If an io error occurs.
+     */
+    public void writeComment(String comment) throws IOException {
       try{
         writer.handleComment(comment);
       } catch (RDFHandlerException e) {
@@ -228,6 +263,10 @@ public class QueryExecutor {
       }
     }
 
+    /**
+     * Closes this writer.
+     * @throws IOException If an io error occurs.
+     */
     @Override
     public void close() throws IOException {
       try{

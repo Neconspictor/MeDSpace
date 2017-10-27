@@ -1,3 +1,4 @@
+import sbt.Keys.libraryDependencies
 // Project name (artifact name in Maven)
 name := "medspace_commons"
 
@@ -66,7 +67,13 @@ libraryDependencies ++= Seq(
 	// Mockrunner JDBC
 	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2",
 
-		// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-		"com.fasterxml.jackson.core" % "jackson-core" % "2.8.10"
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	"com.fasterxml.jackson.core" % "jackson-core" % "2.8.10",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime
+	"org.eclipse.rdf4j" % "rdf4j-runtime" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
+	"org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
 
 )

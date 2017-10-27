@@ -2,6 +2,8 @@ package de.unipassau.medspace.common.register;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,20 @@ import java.util.*;
  */
 public class Datasource implements Comparable<Datasource> {
 
+  public static List<RDFFormat> supportedFormats = Arrays.asList(RDFFormat.BINARY,
+      RDFFormat.JSONLD,
+      RDFFormat.N3,
+      RDFFormat.NQUADS,
+      RDFFormat.NTRIPLES,
+      RDFFormat.RDFA,
+      RDFFormat.RDFJSON,
+      RDFFormat.RDFXML,
+      RDFFormat.TRIG,
+      RDFFormat.TRIX,
+      RDFFormat.TURTLE);
+
+  public static final RDFFormat DEFAULT_FORMAT = RDFFormat.TURTLE;
+
   /**
    * Defines the location to query the wrapper.
    */
@@ -26,6 +42,8 @@ public class Datasource implements Comparable<Datasource> {
    * An optional description of the datasource. E.g. it can be described what kind of data are accessible.
    */
   private final String description;
+
+  private final String rdfFormat;
 
   /**
    * A list of services that the datasource wrapper provides.
@@ -41,12 +59,24 @@ public class Datasource implements Comparable<Datasource> {
    * Creates a new Datasource object.
    * @param url The URL to the datasource wrapper.
    * @param desc The description of the datasource wrapper. Can be null
+   * @param rdfFormat The rdf format the datasource uses for rdf content publishing.
    * @param services A list of supported services, the datasource wrapper supplies.
+   * @throws NotValidArgumentException If rdfFormat isn't a supported rdf format.
+   * @throws IllegalArgumentException If url or rdfFormat are null
    */
-  public Datasource(URL url, String desc, Set<Service> services) {
+  public Datasource(URL url, String desc, String rdfFormat, Set<Service> services) throws
+      IllegalArgumentException, NotValidArgumentException {
 
     if (url == null) {
       throw new IllegalArgumentException("URI isn't allowed to be null");
+    }
+
+    if (rdfFormat == null) {
+      throw new IllegalArgumentException("Format isn't allowed to be null!");
+    }
+
+    if (!isSupported(rdfFormat)) {
+      throw new NotValidArgumentException("rdf format isn't supported");
     }
 
     if (services == null) {
@@ -68,6 +98,9 @@ public class Datasource implements Comparable<Datasource> {
       this.description = desc;
     }
 
+
+    this.rdfFormat = rdfFormat;
+
     if (log.isDebugEnabled())
       log.debug("New Datasource object created: " + this.toString());
   }
@@ -76,15 +109,25 @@ public class Datasource implements Comparable<Datasource> {
    * Creates a copy from the provided Datasource, but updates the time stamp.
    * @param other The Datasource to copy.
    */
-  public static Datasource copyUpdateTimeStamp(Datasource other) throws MalformedURLException {
-    return new Datasource(other.url, other.description, other.services);
+  public static Datasource copyUpdateTimeStamp(Datasource other) throws MalformedURLException, NotValidArgumentException {
+    return new Datasource(other.url, other.description, other.rdfFormat, other.services);
   }
 
   @JsonCreator
   public static Datasource create(@JsonProperty("url") URL url,
                                   @JsonProperty("description") String desc,
-                                  @JsonProperty("services") Set<Service> services) {
-    return new Datasource(url, desc, services);
+                                  @JsonProperty("rdfFormat") String rdfFormat,
+                                  @JsonProperty("services") Set<Service> services) throws NotValidArgumentException {
+    if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT.getName();
+    return new Datasource(url, desc, rdfFormat, services);
+  }
+
+  public static boolean isSupported(String format) {
+
+    final String upperCase = format.toUpperCase();
+
+    return supportedFormats.stream().anyMatch((supportedFormat) ->
+        supportedFormat.getName().toUpperCase().equals(upperCase));
   }
 
   /**
@@ -130,6 +173,10 @@ public class Datasource implements Comparable<Datasource> {
     return description;
   }
 
+  public String getRdfFormat() {
+    return rdfFormat;
+  }
+
   /**
    * Provides read access to the set of services this datasource provides.
    * <br>
@@ -151,7 +198,9 @@ public class Datasource implements Comparable<Datasource> {
 
   @Override
   public String toString() {
-    return "Datasource:[" + url + ", '" + description + "', services: " + services  + "]";
+    return "Datasource:[" + url + ", '" + description
+        + "', format: " + rdfFormat
+        + ", services: " + services  + "]";
   }
 
   @Override
@@ -178,6 +227,11 @@ public class Datasource implements Comparable<Datasource> {
     private String description;
 
     /**
+     * The rdf format the datasource uses for publishing rdf data.
+     */
+    private String rdfFormat;
+
+    /**
      * A list of services this datasource provides.
      */
     private List<Service> services;
@@ -199,10 +253,11 @@ public class Datasource implements Comparable<Datasource> {
      * @return A Datasource object, that represents the same datasource as the mutable one. Or null, if
      * no valid datasource object could be created.
      */
-    public Datasource build() {
+    public Datasource build() throws NotValidArgumentException {
       Set<Service> set = new HashSet<>();
       if (services != null) set.addAll(services);
-      return new Datasource(url, description, set);
+      if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT.getName();
+      return new Datasource(url, description, rdfFormat, set);
     }
 
     /**
@@ -236,11 +291,10 @@ public class Datasource implements Comparable<Datasource> {
     }
 
     /**
-     * Sets the description for this datasource.
-     * @param description The new description.
+     * The rdf format the datasource uses for publishing rdf data.
      */
-    public void setDescription(String description) {
-      this.description = description;
+    public String getRdfFormat() {
+      return rdfFormat;
     }
 
     /**
@@ -249,6 +303,22 @@ public class Datasource implements Comparable<Datasource> {
      */
     public List<Service> getServices() {
       return services;
+    }
+
+    /**
+     * Sets the description for this datasource.
+     * @param description The new description.
+     */
+    public void setDescription(String description) {
+      this.description = description;
+    }
+
+    /**
+     * Sets the rdf format the datasource uses for publishing rdf data.
+     * @param rdfFormat The rdf export format.
+     */
+    public void setRdfFormat(String rdfFormat) {
+      this.rdfFormat = rdfFormat;
     }
 
     /**

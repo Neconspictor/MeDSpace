@@ -1,14 +1,15 @@
 package de.unipassau.medspace.common.config;
 
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.exception.ParseException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.common.util.XmlUtil;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.system.StreamRDFWriter;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -37,27 +38,11 @@ public class GeneralWrapperConfigReader {
    */
   private static Logger log = LoggerFactory.getLogger(GeneralWrapperConfigReader.class);
 
-  /**
-   * Contains all supported org.apache.jena.riot.Lang objects that are supported by the jena framework
-   * to be used for streaming. Not all rdf serialization formats supports to stream the triple result set,
-   * so not all jena rdf languages are supported.
-   */
-  private Set<Lang> supportedStreamLanguages;
 
   /**
    * Constructs a new {@link GeneralWrapperConfigReader}.
    */
-  public GeneralWrapperConfigReader() {
-    supportedStreamLanguages = new HashSet<>();
-    Collection<RDFFormat> formats = StreamRDFWriter.registered();
-    for (RDFFormat format : formats) {
-      supportedStreamLanguages.add(format.getLang());
-    }
-
-    // delete rdf/null, as it only outputs an empty rdf graph
-    // -> not very useful for exporting data.
-    supportedStreamLanguages.remove(Lang.RDFNULL);
-  }
+  public GeneralWrapperConfigReader() {}
 
   /**
    * Creates a new ConfigurationReader and initializes it with default values.
@@ -66,15 +51,15 @@ public class GeneralWrapperConfigReader {
   public static GeneralWrapperConfigData createDefaultConfig() {
     GeneralWrapperConfigData config = new GeneralWrapperConfigData();
 
-    Lang lang;
+    RDFFormat format;
 
     try {
-      lang = getLangFromString(Constants.OutputFormat.STANDARD_OUTPUT_FORMAT);
+      format = getFormatFromString(Constants.OutputFormat.STANDARD_OUTPUT_FORMAT);
     } catch (IllegalArgumentException e) {
-      throw new IllegalStateException("Default output language couldn't be mapped to a Lang object!");
+      throw new IllegalStateException("Default output language couldn't be mapped to a RDFFormat object!");
     }
 
-    config.setOutputFormat(lang);
+    config.setOutputFormat(format);
     return config;
   }
 
@@ -185,7 +170,7 @@ public class GeneralWrapperConfigReader {
 
   }
 
-  private void readDatasourceElement(GeneralWrapperConfigData config, Element elem) throws IOException {
+  private void readDatasourceElement(GeneralWrapperConfigData config, Element elem) throws IOException, ParseException {
     String urlAttribute = elem.getAttribute(Constants.Datasource.URL_ATTRIBUTE);
     String description = elem.getAttribute(Constants.Datasource.DESCRIPTION_ATTRIBUTE);
 
@@ -218,7 +203,12 @@ public class GeneralWrapperConfigReader {
     }
 
     builder.setServices(services);
-    Datasource datasource = builder.build();
+    Datasource datasource = null;
+    try {
+      datasource = builder.build();
+    } catch (NotValidArgumentException e) {
+      throw new ParseException("Couldn't create datasource", e);
+    }
 
     log.info("Read datasource: " + datasource);
 
@@ -261,30 +251,46 @@ public class GeneralWrapperConfigReader {
    */
   private void readOutputFormatElement(GeneralWrapperConfigData config, Element elem) throws ParseException {
     String format = elem.getTextContent();
-    Lang lang = null;
+    RDFFormat exportFormat;
 
     assert format != null;
 
     try {
-      lang = getLangFromString(format);
+      exportFormat = getFormatFromString(format);
     } catch (IllegalArgumentException e) {
       throw new ParseException("Error while retrieving rdf language", e);
     }
 
-    if (!supportedStreamLanguages.contains(lang)) {
-      StringBuilder supportedLangs = new StringBuilder();
-      for (Lang l : supportedStreamLanguages) {
-        supportedLangs.append(l.getLabel());
-        supportedLangs.append("\n");
-      }
+    if (!Datasource.isSupported(format)) {
 
-      supportedLangs.delete(supportedLangs.length() -1, supportedLangs.length());
+      List<String> supportedFormats = getNamesFromSupportedFormats();
 
-      throw new ParseException("RDF language isn't supported for streaming rdf triples: " + lang.getLabel() +
-          "\nSupported languages are:\n" + supportedLangs.toString());
+      throw new ParseException("RDF language isn't supported for streaming rdf triples: " + format +
+          "\nSupported languages are:\n" + supportedFormats.toString());
     }
 
-    config.setOutputFormat(lang);
+    config.setOutputFormat(exportFormat);
+  }
+
+  private static List<String> getNamesFromSupportedFormats() {
+    final List<String> result = new ArrayList<>();
+    Datasource.supportedFormats.stream().forEach((format) -> {
+      result.add(format.getName());
+    });
+
+    return result;
+  }
+
+  private static RDFFormat getFormatFromString(String format) {
+    final String uppercase = format.toUpperCase();
+    Optional<RDFFormat> optional =  Datasource.supportedFormats.stream().filter((supportedFormat) -> {
+      return supportedFormat.getName().toUpperCase().equals(uppercase);
+    }).findFirst();
+
+    if (!optional.isPresent()) {
+      throw new IllegalArgumentException("Format not supported: " + format);
+    }
+    return optional.get();
   }
 
   /**

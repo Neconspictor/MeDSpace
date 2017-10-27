@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 /**
  * Created by David Goeth on 14.10.2017.
  */
-public class DatasourceQueryResult {
+public class DatasourceQueryResult implements AutoCloseable {
 
   private static final String base = "./_work/query-executor/temp/";
 
@@ -127,5 +127,10 @@ public class DatasourceQueryResult {
 
   public String getContentType() {
     return contentType;
+  }
+
+  @Override
+  public void close() throws Exception {
+    cleanup();
   }
 }

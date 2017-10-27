@@ -72,7 +72,13 @@ libraryDependencies ++= Seq(
 	"org.apache.lucene" % "lucene-analyzers-common" % "6.6.0",
 
 	// Mockrunner JDBC
-	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2"
+	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime
+	"org.eclipse.rdf4j" % "rdf4j-runtime" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
+	"org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
 )
 
 mainClass in (Compile,run) := Some("de.unipassau.medspace.TestProcessor")
