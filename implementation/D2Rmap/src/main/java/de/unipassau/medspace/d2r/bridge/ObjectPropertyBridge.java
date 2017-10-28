@@ -14,6 +14,8 @@ import de.unipassau.medspace.d2r.exception.D2RException;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +132,28 @@ public class ObjectPropertyBridge
     return referredResource;
   }
 
+  @Override
+  public Value getValueRDF4J(SQLResultTuple tuple, QNameNormalizer normalizer) {
+    if (!initialized) {
+      throw new IllegalStateException("init must be called before executing this function.");
+    }
+
+    org.eclipse.rdf4j.model.Resource referredResource = null;
+
+    assert (referredClass != null || pattern != null);
+
+    if (referredClass != null) {
+      referredResource = getFromClassRDF4J(tuple);
+    }
+    else if (pattern != null) {
+      String value = getFromPattern(tuple);
+      value = normalizer.normalize(value);
+      referredResource = factory.createIRI(value);
+    }
+
+    return referredResource;
+  }
+
   /**
    * Provides the id of the referred D2rMap.
    * @return The id of the referred D2rMap. or null, id no D2rMap is referred.
@@ -207,6 +231,28 @@ public class ObjectPropertyBridge
     String resourceID = resourceIDBuilder.toString();
     String uri = referredClass.urify(resourceID);
     return ResourceFactory.createResource(uri);
+  }
+
+  /**
+   * Creates a rdf resource from a given SQLResultTuple. The result will be an instance of the
+   * referred D2rMap.
+   * @param tuple The sql result tuple to createDoc the rdf resource from.
+   * @return An rdf resource which is an instance of the referred D2rMap specified by the class member 'referredClass'.
+   */
+  private org.eclipse.rdf4j.model.Resource getFromClassRDF4J(SQLResultTuple tuple) {
+    assert referredClass != null;
+
+    // extract the resource id from the tuple
+    StringBuilder resourceIDBuilder = new StringBuilder();
+    for (String columnName : referredColumns) {
+      String columnValue = D2rUtil.getColumnValue(columnName, tuple);
+      resourceIDBuilder.append(columnValue);
+    }
+
+    // build the resource having its id
+    String resourceID = resourceIDBuilder.toString();
+    String iri = referredClass.urify(resourceID);
+    return factory.createIRI(iri);
   }
 
   /**

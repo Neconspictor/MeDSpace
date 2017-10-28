@@ -3,6 +3,7 @@ package de.unipassau.medspace.d2r.config;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.d2r.D2rMap;
 import org.apache.jena.riot.Lang;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.javatuples.Pair;
 
 import java.nio.file.Path;
@@ -66,6 +67,11 @@ public class Configuration {
   private Lang outputFormat;
 
   /**
+   * The export rdf language.
+   */
+  private RDFFormat outputFormatRDF4J;
+
+  /**
    * Specifies, if the wrapper should use an index.
    */
   private boolean useIndex;
@@ -79,6 +85,7 @@ public class Configuration {
     maps = new ArrayList<>();
     namespaces = new HashMap<>();
     outputFormat = null;
+    outputFormatRDF4J = null;
     useIndex = false;
   }
 
@@ -172,6 +179,14 @@ public class Configuration {
   }
 
   /**
+   * Provides the rdf output language.
+   * @return The rdf output language.
+   */
+  public RDFFormat getOutputFormatRDF4J() {
+    return outputFormatRDF4J;
+  }
+
+  /**
    * Checks, if a wrapper should use an index.
    * @return Should the wrapper use an index?
    */
@@ -250,6 +265,15 @@ public class Configuration {
   public void setOutputFormat(Lang outputFormat) {
     assert outputFormat != null;
     this.outputFormat = outputFormat;
+  }
+
+  /**
+   * Sets the rdf export language.
+   * @param outputFormat The rdf export language.
+   */
+  public void setOutputFormatRDF4J(RDFFormat outputFormat) {
+    assert outputFormat != null;
+    this.outputFormatRDF4J = outputFormat;
   }
 
   /**

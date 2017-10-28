@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Used to read a D2rMap config file.
@@ -59,6 +61,12 @@ public class ConfigurationReader {
     // delete rdf/null, as it only outputs an empty rdf graph
     // -> not very useful for exporting data.
     supportedStreamLanguages.remove(Lang.RDFNULL);
+
+    Set<org.eclipse.rdf4j.rio.RDFFormat> formatsRDF4J = org.eclipse.rdf4j.rio.RDFParserRegistry.getInstance().getKeys();
+    Set<String> formatsRDF4JNames = formatsRDF4J.stream() // get a Stream<RDFFormat>
+        .map((format)-> format.getName().toUpperCase()) // convert to a Stream<String> by the formats' names,
+        // but convert them to uppercase strings
+        .collect(Collectors.toSet()); // collect the stream to a set
   }
 
   /**

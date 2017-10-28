@@ -3,6 +3,9 @@ package de.unipassau.medspace.d2r.bridge;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import org.apache.jena.rdf.model.*;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +41,8 @@ abstract public class Bridge {
      */
     private static Logger log = LoggerFactory.getLogger(Bridge.class);
 
+    protected static final ValueFactory factory = SimpleValueFactory.getInstance();
+
     /**
      * Provides the language tag, the values of created properties should assigned to.
      * @return the language tag.
@@ -57,6 +62,13 @@ abstract public class Bridge {
         return prop;
     }
 
+    public IRI createPropertyRDF4J(QNameNormalizer normalizer) {
+        String propURI = normalizer.normalize(propertyQName);
+        IRI property = factory.createIRI(propURI);
+        org.eclipse.rdf4j.model.Literal test = factory.createLiteral(0);
+        return property;
+    }
+
     /**
      * Provides the pattern to createDoc the value of the properties.
      * @return The value pattern for the properties created by this D2r Bridge.
@@ -74,6 +86,8 @@ abstract public class Bridge {
      * @return  The propertyQName value represented as an rdf node.
      */
     public abstract RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
+
+    public abstract Value getValueRDF4J(SQLResultTuple tuple, QNameNormalizer normalizer);
 
     /**
      * Provides the used datatype (if any is used) or null otherwise.

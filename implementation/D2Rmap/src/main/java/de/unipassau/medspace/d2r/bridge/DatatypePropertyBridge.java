@@ -9,6 +9,8 @@ import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Value;
 
 /**
  * D2r Bridge for properties with a data type (Literals).
@@ -41,6 +43,29 @@ public class DatatypePropertyBridge extends Bridge {
     }  else {
       // no lang tag and dataType set; assume xsd:string is the data type
       literal = ResourceFactory.createTypedLiteral(value);
+    }
+    return literal;
+  }
+
+  @Override
+  public Value getValueRDF4J(SQLResultTuple tuple, QNameNormalizer normalizer) {
+    // Generate propertyQName value
+    org.eclipse.rdf4j.model.Literal literal = null;
+    String value = D2rUtil.parsePattern(getPattern(),
+        D2R.PATTERN_DELIMINATOR, tuple);
+
+    // The lang tag specifies indirectly the dataType (rdf:langeString)
+    // Thus the lang tag has a higher priority than the dataType tag
+    if ((value != null) && (getLangTag() != null)) {
+      literal = factory.createLiteral(value, getLangTag());
+    } else if ((value != null) && (getDataType() != null)) {
+      // if no lang tag is set but the dataType tag createDoc a typed literal
+      String dataType = normalizer.normalize(this.dataType);
+      IRI dataTypeIRI = factory.createIRI(dataType);
+      literal = factory.createLiteral(value, dataTypeIRI);
+    }  else {
+      // no lang tag and dataType set; assume xsd:string is the data type
+      literal = factory.createLiteral(value);
     }
     return literal;
   }

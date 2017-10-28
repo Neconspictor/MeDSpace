@@ -12,6 +12,10 @@ import de.unipassau.medspace.common.SQL.SelectStatement;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 
+import org.apache.jena.rdf.model.Resource;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +67,8 @@ public class D2rMap implements Serializable {
    */
   private static Logger log = LoggerFactory.getLogger(D2rMap.class);
 
+  private static final ValueFactory factory = SimpleValueFactory.getInstance();
+
   /**
    * Default constructor. Creates a new D2rMap.
    */
@@ -101,7 +107,9 @@ public class D2rMap implements Serializable {
    */
   public List<Triple> createTriples(SQLResultTuple tuple) {
     List<Triple> triples = new ArrayList<>();
+    List<Statement> statements = new ArrayList<>();
     Resource resource;
+    org.eclipse.rdf4j.model.Resource resourceRDF4J;
 
     // set instance id
     StringBuilder resourceIDBuilder = new StringBuilder();
@@ -117,6 +125,8 @@ public class D2rMap implements Serializable {
     uri = normalizer.normalize(uri);
     resource = ResourceFactory.createResource(uri);
 
+    resourceRDF4J = factory.createIRI(uri);
+
     if (resource == null || resourceID.equals("")) {
       log.warn("Warning: Couldn't createDoc resource " + resourceID + " in map " + getId() +
           ".");
@@ -130,6 +140,16 @@ public class D2rMap implements Serializable {
       if (prop != null && value != null) {
         Triple triple = Triple.create(resource.asNode(), prop.asNode(), value.asNode());
         triples.add(triple);
+      }
+    }
+
+    for (Bridge bridge : getBridges()) {
+      // generate propertyQName
+      IRI prop = bridge.createPropertyRDF4J(normalizer);
+      Value value = bridge.getValueRDF4J(tuple, normalizer);
+      if (prop != null && value != null) {
+        Statement stmt = factory.createStatement(resourceRDF4J, prop, value);
+        statements.add(stmt);
       }
     }
 
