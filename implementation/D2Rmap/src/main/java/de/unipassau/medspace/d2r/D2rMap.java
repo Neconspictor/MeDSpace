@@ -6,13 +6,12 @@ import java.sql.*;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
+import de.unipassau.medspace.common.rdf.Triple;
+import de.unipassau.medspace.common.rdf.rdf4j.TripleFactory;
 import de.unipassau.medspace.d2r.bridge.Bridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.SQL.SelectStatement;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.*;
 
-import org.apache.jena.rdf.model.Resource;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -107,9 +106,7 @@ public class D2rMap implements Serializable {
    */
   public List<Triple> createTriples(SQLResultTuple tuple) {
     List<Triple> triples = new ArrayList<>();
-    List<Statement> statements = new ArrayList<>();
     Resource resource;
-    org.eclipse.rdf4j.model.Resource resourceRDF4J;
 
     // set instance id
     StringBuilder resourceIDBuilder = new StringBuilder();
@@ -123,9 +120,7 @@ public class D2rMap implements Serializable {
     // define URI and generate instance
     String uri = getBaseURI() + resourceID;
     uri = normalizer.normalize(uri);
-    resource = ResourceFactory.createResource(uri);
-
-    resourceRDF4J = factory.createIRI(uri);
+    resource = factory.createIRI(uri);
 
     if (resource == null || resourceID.equals("")) {
       log.warn("Warning: Couldn't createDoc resource " + resourceID + " in map " + getId() +
@@ -133,7 +128,7 @@ public class D2rMap implements Serializable {
       return null;
     }
 
-    for (Bridge bridge : getBridges()) {
+    /*for (Bridge bridge : getBridges()) {
       // generate propertyQName
       Property prop = bridge.createProperty(normalizer);
       RDFNode value = bridge.getValue(tuple, normalizer);
@@ -141,15 +136,15 @@ public class D2rMap implements Serializable {
         Triple triple = Triple.create(resource.asNode(), prop.asNode(), value.asNode());
         triples.add(triple);
       }
-    }
+    }*/
 
     for (Bridge bridge : getBridges()) {
       // generate propertyQName
       IRI prop = bridge.createPropertyRDF4J(normalizer);
       Value value = bridge.getValueRDF4J(tuple, normalizer);
       if (prop != null && value != null) {
-        Statement stmt = factory.createStatement(resourceRDF4J, prop, value);
-        statements.add(stmt);
+        Statement stmt = factory.createStatement(resource, prop, value);
+        triples.add(TripleFactory.create(stmt));
       }
     }
 

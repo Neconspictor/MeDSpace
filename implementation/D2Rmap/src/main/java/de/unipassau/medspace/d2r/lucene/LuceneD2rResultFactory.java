@@ -2,12 +2,13 @@ package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SelectStatement;
+import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
-import org.apache.jena.graph.Triple;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;

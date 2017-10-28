@@ -1,9 +1,10 @@
 package de.unipassau.medspace.common.lucene;
 
+import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
-import org.apache.jena.graph.Triple;
+
 import org.apache.lucene.document.Document;
 
 import java.io.IOException;

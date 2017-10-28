@@ -7,6 +7,7 @@ import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
@@ -17,7 +18,7 @@ import de.unipassau.medspace.d2r.config.Configuration;
 import de.unipassau.medspace.d2r.config.ConfigurationReader;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
-import org.apache.jena.graph.Triple;
+
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

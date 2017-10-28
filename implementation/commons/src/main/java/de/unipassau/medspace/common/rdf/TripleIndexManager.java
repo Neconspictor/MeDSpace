@@ -5,7 +5,6 @@ import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.indexing.IndexSearcher;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.util.Converter;
-import org.apache.jena.graph.Triple;
 
 import java.io.IOException;
 

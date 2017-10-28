@@ -24,10 +24,7 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,6 +45,10 @@ public class ConfigurationReader {
    */
   private Set<Lang> supportedStreamLanguages;
 
+  private static Set<org.eclipse.rdf4j.rio.RDFFormat> formatsRDF4J;
+
+  private static Set<String> formatsRDF4JNames;
+
   /**
    * Constructs a new ConfigurationReader.
    */
@@ -62,8 +63,8 @@ public class ConfigurationReader {
     // -> not very useful for exporting data.
     supportedStreamLanguages.remove(Lang.RDFNULL);
 
-    Set<org.eclipse.rdf4j.rio.RDFFormat> formatsRDF4J = org.eclipse.rdf4j.rio.RDFParserRegistry.getInstance().getKeys();
-    Set<String> formatsRDF4JNames = formatsRDF4J.stream() // get a Stream<RDFFormat>
+    formatsRDF4J = org.eclipse.rdf4j.rio.RDFParserRegistry.getInstance().getKeys();
+    formatsRDF4JNames = formatsRDF4J.stream() // get a Stream<RDFFormat>
         .map((format)-> format.getName().toUpperCase()) // convert to a Stream<String> by the formats' names,
         // but convert them to uppercase strings
         .collect(Collectors.toSet()); // collect the stream to a set
@@ -78,14 +79,17 @@ public class ConfigurationReader {
     config.getNamespaces().put(D2R.RDFNS_PREFIX, new Namespace(D2R.RDFNS_PREFIX, D2R.RDFNS));
 
     Lang lang = null;
+    org.eclipse.rdf4j.rio.RDFFormat format = null;
 
     try {
       lang = getLangFromString(D2R.Root.OutputFormat.STANDARD_OUTPUT_FORMAT);
+      format = getFormatFromString(D2R.Root.OutputFormat.STANDARD_OUTPUT_FORMAT);
     } catch (D2RException e) {
       throw new IllegalStateException("Default output language couldn't be mapped to a Lang object!");
     }
 
     config.setOutputFormat(lang);
+    config.setOutputFormatRDF4J(format);
     return config;
   }
 
@@ -150,6 +154,17 @@ public class ConfigurationReader {
       throw new D2RException("Unknown language format: " + format);
 
     return lang;
+  }
+
+  private static org.eclipse.rdf4j.rio.RDFFormat getFormatFromString(String formatString) throws D2RException {
+    Optional<org.eclipse.rdf4j.rio.RDFFormat> optional = formatsRDF4J.stream()
+        .filter((format) -> format.getName().toUpperCase().equals(formatString))
+        .findFirst();
+
+    if (!optional.isPresent()) {
+      throw new D2RException("Unknown language format: " + formatString);
+    }
+    return optional.get();
   }
 
   /**
@@ -398,11 +413,13 @@ public class ConfigurationReader {
   private void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
     String format = elem.getTextContent();
     Lang lang = null;
+    org.eclipse.rdf4j.rio.RDFFormat formatRDF4J = null;
 
     assert format != null;
 
     try {
       lang = getLangFromString(format);
+      formatRDF4J = getFormatFromString(format);
     } catch (D2RException e) {
       throw new D2RException("Error while retrieving rdf language", e);
     }
@@ -420,7 +437,20 @@ public class ConfigurationReader {
       "\nSupported languages are:\n" + supportedLangs.toString());
     }
 
+    if (!formatsRDF4J.contains(formatRDF4J)) {
+      StringBuilder builder = new StringBuilder();
+      for (String supportedFormat : formatsRDF4JNames) {
+        builder.append(supportedFormat);
+        builder.append("\n");
+      }
+      builder.delete(builder.length() -1, builder.length());
+
+      throw new D2RException("RDF language isn't supported for streaming rdf triples: " + format +
+          "\nSupported languages are:\n" + builder.toString());
+    }
+
     config.setOutputFormat(lang);
+    config.setOutputFormatRDF4J(formatRDF4J);
   }
 
   /**

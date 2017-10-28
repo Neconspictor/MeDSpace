@@ -5,6 +5,7 @@ import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.StreamCollection;
 import de.unipassau.medspace.common.stream.StreamFactory;
@@ -12,7 +13,7 @@ import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.stream.SqlToTripleStream;
-import org.apache.jena.graph.Triple;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

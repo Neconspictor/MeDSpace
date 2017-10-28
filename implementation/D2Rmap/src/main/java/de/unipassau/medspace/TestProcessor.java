@@ -2,10 +2,12 @@ package de.unipassau.medspace;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
+import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
-import de.unipassau.medspace.common.stream.JenaRDFInputStream;
+import de.unipassau.medspace.common.stream.TripleInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
@@ -22,10 +24,6 @@ import java.util.*;
 
 
 import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.riot.*;
-import org.apache.jena.shared.PrefixMapping;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +54,7 @@ public class TestProcessor {
       log.info("D2R proxy created ....");
       log.info("D2R file read ....");
 
-      Lang lang = Lang.TURTLE;
+      String format = "Turtle";
 
 
 
@@ -85,13 +83,12 @@ public class TestProcessor {
       Instant startTime = Instant.now();
 
       Stream<Triple> triples = searcher.searchForKeywords(Arrays.asList("male", "female"));
-      //triples = wrapper.getAllData();
-      PrefixMapping mapping = wrapper.getNamespacePrefixMapper();
+      Set<Namespace> namespaces = wrapper.getNamespaces();
 
       boolean hasTriples = triples.hasNext();
 
       if (hasTriples) {
-        InputStream tripleStream = new JenaRDFInputStream(triples, config.getOutputFormat(), mapping);
+        InputStream tripleStream = new TripleInputStream(triples, config.getOutputFormatString(), namespaces);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(tripleStream, StandardCharsets.UTF_8));
         String value = reader.readLine();
@@ -124,69 +121,6 @@ public class TestProcessor {
       FileUtil.closeSilently(wrapper);
       FileUtil.closeSilently(connectionPool);
       log.info("streams successfully closed");
-    }
-  }
-
-  private static class TripleData implements Stream<Triple> {
-
-
-    private Stream<MappedSqlTuple> stream;
-    private List<Triple> cache = new ArrayList<>();
-
-    public TripleData(Stream<MappedSqlTuple> stream) {
-      this.stream = stream;
-    }
-
-    @Override
-    public void close() throws IOException {
-      stream.close();
-    }
-
-    @Override
-    public boolean hasNext() throws IOException {
-      return stream.hasNext() || !cache.isEmpty();
-    }
-
-    @Override
-    public Triple next() throws IOException {
-      if (cache.isEmpty()) {
-        MappedSqlTuple tuple = stream.next();
-        cache.addAll(tuple.getMap().createTriples(tuple.getSource()));
-      }
-      return cache.remove(0);
-    }
-  }
-
-  private static class TripleTestStream implements Stream<Triple> {
-
-    private List<Triple> data;
-
-    public TripleTestStream() {
-      data = new ArrayList<>();
-      data.add(create("data1", "rdf:type", "data"));
-      data.add(create("data2", "rdf:type", "data"));
-    }
-
-    @Override
-    public void close() throws IOException {
-      data.clear();
-    }
-
-    @Override
-    public boolean hasNext() {
-      return !data.isEmpty();
-    }
-
-    @Override
-    public Triple next() {
-      return data.remove(0);
-    }
-
-    private static Triple create(String subjectStr, String predicateStr, String objectStr) {
-      Resource subject = ResourceFactory.createResource(subjectStr);
-      Property predicate = ResourceFactory.createProperty(predicateStr);
-      Resource object = ResourceFactory.createResource(objectStr);
-      return Triple.create(subject.asNode(), predicate.asNode(), object.asNode());
     }
   }
 }

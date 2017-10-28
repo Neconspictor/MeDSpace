@@ -1,10 +1,11 @@
 package de.unipassau.medspace.d2r.stream;
 
+import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleCacheStream;
 import de.unipassau.medspace.common.SQL.SqlStream;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.d2r.D2rMap;
-import org.apache.jena.graph.Triple;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

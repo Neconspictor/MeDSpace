@@ -186,6 +186,10 @@ public class Configuration {
     return outputFormatRDF4J;
   }
 
+  public String getOutputFormatString() {
+    return outputFormatRDF4J.toString();
+  }
+
   /**
    * Checks, if a wrapper should use an index.
    * @return Should the wrapper use an index?

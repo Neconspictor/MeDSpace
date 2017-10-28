@@ -1,7 +1,6 @@
 package de.unipassau.medspace.common.rdf;
 
 import de.unipassau.medspace.common.stream.Stream;
-import org.apache.jena.graph.Triple;
 
 import java.io.IOException;
 import java.util.LinkedList;

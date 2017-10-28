@@ -1,11 +1,12 @@
 package de.unipassau.medspace.common.wrapper;
 
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.shared.PrefixMapping;
+import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.Triple;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Defines a wrapper for a dataspace.
@@ -30,7 +31,7 @@ public interface Wrapper extends Closeable {
    * Provides a mapping of prefix and namespace URIs used to prefix triples returned by this wrapper.
    * @return a mapping of prefix and namespace URIs used to prefix triples returned by this wrapper.
    */
-  PrefixMapping getNamespacePrefixMapper();
+  Set<Namespace> getNamespaces();
 
   /**
    * Clears the index and reindexes again all data of the proxied datasource.

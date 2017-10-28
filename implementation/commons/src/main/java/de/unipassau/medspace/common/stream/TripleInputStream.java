@@ -1,15 +1,18 @@
 package de.unipassau.medspace.common.stream;
 
-import org.apache.jena.graph.Triple;
+
+import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.Triple;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.system.StreamRDFWriter;
-import org.apache.jena.shared.PrefixMapping;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * An input stream from a serialized de.unipassau.medspace.common.stream.Stream of jena rdf triples.
@@ -17,7 +20,7 @@ import java.util.Map;
  * serialization. For the serialization this class uses a serialization language and
  * an optional PrefixMapping for prefixing rdf namespaces.
  */
-public class JenaRDFInputStream extends InputStream {
+public class TripleInputStream extends InputStream {
 
   /**
    * Used to provide the serialized rdf triples.
@@ -41,27 +44,29 @@ public class JenaRDFInputStream extends InputStream {
   private StreamRDF rdfOut;
 
   /**
-   * Creates a new JenaRDFInputStream from a stream of jena rdf triples, a org.apache.jena.riot.Lang
+   * Creates a new TripleInputStream from a stream of jena rdf triples, a org.apache.jena.riot.Lang
    * to use as the serialization output format and org.apache.jena.shared.PrefixMapping that defines the namespace
    * prefixes to use in the serialization process of the rdf triples.
    * @param triples The stream of jena rdf triples that should be serialized. The result of the serialization can
    *                than be read from this input stream.
-   * @param lang The serialization output format. Note, that not all org.apache.jena.riot.Lang classes are supported,
+   * @param format The serialization output format. Note, that not all org.apache.jena.riot.Lang classes are supported,
    *             but only which one, that can be streamed. See
    *             <a href="https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang">
    *             https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang</a>
    *             for a list of supported languages.
-   * @param mapping The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
+   * @param namespaces The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
    */
-  public JenaRDFInputStream(Stream<Triple> triples, Lang lang, PrefixMapping mapping) {
+  public TripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces) {
     this.triples = triples;
     in = new ResettableByteArrayInputStream();
     out = new ByteArrayOutputStreamEx();
 
-    rdfOut = StreamRDFWriter.getWriterStream(out, lang);
+
+
+    rdfOut = StreamRDFWriter.getWriterStream(out, Lang.TURTLE);
     rdfOut.start();
-    if (mapping != null ) {
-      addMapping(mapping);
+    if (namespaces != null ) {
+      addMapping(namespaces);
     }
   }
 
@@ -89,7 +94,15 @@ public class JenaRDFInputStream extends InputStream {
         updateInputBuffer();
         return in.read();
       }
-      rdfOut.triple(triples.next());
+
+      Triple source = triples.next();
+
+      Node s = NodeFactory.createURI(source.getSubject());
+      Node p = NodeFactory.createURI(source.getPredicate());
+      Node o = NodeFactory.createLiteral(source.getObject());
+      org.apache.jena.graph.Triple triple = org.apache.jena.graph.Triple.create(s,p,o);
+
+      rdfOut.triple(triple);
     }
 
     return elem;
@@ -97,11 +110,11 @@ public class JenaRDFInputStream extends InputStream {
 
   /**
    * Adds a map of prefix/namespaces which should be used in serialization process.
-   * @param mapping The prefix/namespace map to add.
+   * @param namespaces The prefix/namespace map to add.
    */
-  private void addMapping(PrefixMapping mapping) {
-    for (Map.Entry<String, String> map : mapping.getNsPrefixMap().entrySet()) {
-      rdfOut.prefix(map.getKey(), map.getValue());
+  private void addMapping(Set<Namespace> namespaces) {
+    for (Namespace namespace : namespaces) {
+      rdfOut.prefix(namespace.getPrefix(), namespace.getFullURI());
     }
   }
 

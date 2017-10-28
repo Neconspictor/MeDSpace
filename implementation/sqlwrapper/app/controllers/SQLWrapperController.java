@@ -1,16 +1,15 @@
 package controllers;
 
+import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.Stream;
-import de.unipassau.medspace.common.stream.JenaRDFInputStream;
+import de.unipassau.medspace.common.stream.TripleInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.config.Configuration;
 
-import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.shared.PrefixMapping;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +27,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
 import play.twirl.api.Html;
 
 /**
@@ -102,17 +103,16 @@ public class SQLWrapperController extends Controller {
     }
 
     Configuration config = wrapperService.getD2rConfig();
-    PrefixMapping mapping = wrapperService.getWrapper().getNamespacePrefixMapper();
-    RDFFormat format = wrapperService.getGeneralConfig().getOutputFormat();
-    Lang lang = config.getOutputFormat();
-    List<String> extensions = lang.getFileExtensions();
+    Set<Namespace> namespaces = wrapperService.getWrapper().getNamespaces();
+    String format = config.getOutputFormatString();
+    List<String> extensions = config.getOutputFormat().getFileExtensions();
     String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);
-    InputStream tripleStream = new JenaRDFInputStream(triples, lang, mapping);
+    InputStream tripleStream = new TripleInputStream(triples, format, namespaces);
 
     String mimeType = Http.MimeTypes.TEXT;
     String dispositionValue = "inline";
 
-    if ((lang == Lang.RDFTHRIFT)) {
+    if ((config.getOutputFormat() == Lang.RDFTHRIFT)) {
       mimeType = Http.MimeTypes.BINARY;
       attach = true;
     }

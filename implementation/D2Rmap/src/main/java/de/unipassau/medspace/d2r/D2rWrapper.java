@@ -2,11 +2,8 @@ package de.unipassau.medspace.d2r;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.indexing.Index;
-import de.unipassau.medspace.common.rdf.TripleIndexFactory;
+import de.unipassau.medspace.common.rdf.*;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.rdf.Namespace;
-import de.unipassau.medspace.common.rdf.QNameNormalizer;
-import de.unipassau.medspace.common.rdf.TripleIndexManager;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.common.util.FileUtil;
@@ -14,18 +11,14 @@ import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.query.D2rKeywordSearcher;
 import de.unipassau.medspace.d2r.lucene.SqlToDocStream;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.shared.impl.PrefixMappingImpl;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A D2rWrapper is a wrapper for a sql database that uses D2r mapping for exporting data to rdf triples.
@@ -69,12 +62,6 @@ public class D2rWrapper<DocType> implements Wrapper {
   private Map<String, Namespace> namespaces;
 
   /**
-   * The namespaces additionally in this data structure to allow jena api access on the namespaces.
-   * isn't used in the Wrapper itself, but allows clients of the Wrapper to use the namespaces.
-   */
-  private PrefixMapping namespacePrefixMapper;
-
-  /**
    * Used to get a connection to the datasource. Primarily used to create the proxy to the datasource.
    */
   private ConnectionPool connectionPool;
@@ -111,12 +98,6 @@ public class D2rWrapper<DocType> implements Wrapper {
     }
 
     this.namespaces = namespaces;
-
-    namespacePrefixMapper = new PrefixMappingImpl();
-
-    for (Namespace namespace : namespaces.values()) {
-      namespacePrefixMapper.setNsPrefix(namespace.getPrefix(), namespace.getFullURI());
-    }
 
     this.connectionPool = connectionPool;
 
@@ -195,8 +176,8 @@ public class D2rWrapper<DocType> implements Wrapper {
   }
 
   @Override
-  public PrefixMapping getNamespacePrefixMapper() {
-    return namespacePrefixMapper;
+  public Set<Namespace> getNamespaces() {
+    return namespaces.values().stream().collect(Collectors.toSet());
   }
 
 
