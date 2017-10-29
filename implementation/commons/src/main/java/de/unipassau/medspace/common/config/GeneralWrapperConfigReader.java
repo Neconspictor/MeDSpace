@@ -8,7 +8,6 @@ import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.common.util.XmlUtil;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.system.StreamRDFWriter;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

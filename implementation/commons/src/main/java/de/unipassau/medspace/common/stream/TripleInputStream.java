@@ -1,8 +1,12 @@
 package de.unipassau.medspace.common.stream;
 
 
+import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.Triple;
+import de.unipassau.medspace.common.rdf.TripleWriter;
+import de.unipassau.medspace.common.rdf.TripleWriterFactory;
+import de.unipassau.medspace.common.util.FileUtil;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.riot.Lang;
@@ -43,6 +47,8 @@ public class TripleInputStream extends InputStream {
    */
   private StreamRDF rdfOut;
 
+  private TripleWriter writer;
+
   /**
    * Creates a new TripleInputStream from a stream of jena rdf triples, a org.apache.jena.riot.Lang
    * to use as the serialization output format and org.apache.jena.shared.PrefixMapping that defines the namespace
@@ -56,15 +62,18 @@ public class TripleInputStream extends InputStream {
    *             for a list of supported languages.
    * @param namespaces The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
    */
-  public TripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces) {
+  public TripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces, TripleWriterFactory factory)
+      throws IOException, NotValidArgumentException {
+
     this.triples = triples;
     in = new ResettableByteArrayInputStream();
     out = new ByteArrayOutputStreamEx();
 
-
-
     rdfOut = StreamRDFWriter.getWriterStream(out, Lang.TURTLE);
     rdfOut.start();
+
+    this.writer = factory.create(out, format);
+
     if (namespaces != null ) {
       addMapping(namespaces);
     }
@@ -74,9 +83,21 @@ public class TripleInputStream extends InputStream {
    * Closes the underlying triple stream and finishes pending serialization process.
    * @throws IOException If an IO-Error occurs.
    */
-  public void close() throws IOException{
+  public void close() throws IOException {
+
       rdfOut.finish();
-      triples.close();
+      try {
+        triples.close();
+        writer.close();
+        out.close();
+        in.close();
+      } catch (IOException e) {
+        FileUtil.closeSilently(triples);
+        FileUtil.closeSilently(writer);
+        FileUtil.closeSilently(out);
+        FileUtil.closeSilently(in);
+        throw e;
+      }
   }
 
 
@@ -90,8 +111,9 @@ public class TripleInputStream extends InputStream {
       updateInputBuffer();
 
       if (!triples.hasNext()) {
-        rdfOut.finish();
         updateInputBuffer();
+        rdfOut.finish();
+        //writer.close();
         return in.read();
       }
 
@@ -112,9 +134,10 @@ public class TripleInputStream extends InputStream {
    * Adds a map of prefix/namespaces which should be used in serialization process.
    * @param namespaces The prefix/namespace map to add.
    */
-  private void addMapping(Set<Namespace> namespaces) {
+  private void addMapping(Set<Namespace> namespaces) throws IOException {
     for (Namespace namespace : namespaces) {
       rdfOut.prefix(namespace.getPrefix(), namespace.getFullURI());
+      writer.write(namespace.getPrefix(), namespace.getFullURI());
     }
   }
 

@@ -2,6 +2,8 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.google.inject.AbstractModule;
 
+import de.unipassau.medspace.common.rdf.RDFProvider;
+import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.Configuration;
@@ -38,6 +40,7 @@ public class GlobalModule extends AbstractModule {
     bind(SystemConfig.class).asEagerSingleton();
     bind(RegisterClient.class).asEagerSingleton();
     bind(SQLWrapperService.class).asEagerSingleton();
+    bind(RDFProvider.class).to(RDF4J_RDFProvider.class).asEagerSingleton();
     log.info("done.");
   }
 }

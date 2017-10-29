@@ -1,7 +1,9 @@
 package controllers;
 
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
+import de.unipassau.medspace.common.rdf.TripleWriterFactory;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.Stream;
@@ -9,7 +11,6 @@ import de.unipassau.medspace.common.stream.TripleInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.config.Configuration;
 
-import org.apache.jena.riot.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,16 +53,24 @@ public class SQLWrapperController extends Controller {
    */
   private final FormFactory formFactory;
 
+  private final TripleWriterFactory tripleWriterFactory;
+
+  private final RDFProvider rdfProvider;
+
   /**
    * Creates a new SQLWrapperController
    * @param wrapperService
    * @param formFactory
+   * @param rdfProvider
    */
   @Inject
   SQLWrapperController(SQLWrapperService wrapperService,
-                       FormFactory formFactory) {
+                       FormFactory formFactory,
+                       RDFProvider rdfProvider) {
     this.wrapperService = wrapperService;
     this.formFactory = formFactory;
+    this.tripleWriterFactory = rdfProvider.getWriterFactory();
+    this.rdfProvider = rdfProvider;
   }
 
   /**
@@ -105,19 +114,26 @@ public class SQLWrapperController extends Controller {
     Configuration config = wrapperService.getD2rConfig();
     Set<Namespace> namespaces = wrapperService.getWrapper().getNamespaces();
     String format = config.getOutputFormatString();
-    List<String> extensions = config.getOutputFormat().getFileExtensions();
+    List<String> extensions = rdfProvider.getFileExtensions(format);
     String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);
-    InputStream tripleStream = new TripleInputStream(triples, format, namespaces);
-
-    String mimeType = Http.MimeTypes.TEXT;
-    String dispositionValue = "inline";
-
-    if ((config.getOutputFormat() == Lang.RDFTHRIFT)) {
-      mimeType = Http.MimeTypes.BINARY;
-      attach = true;
+    InputStream tripleStream;
+    try {
+      tripleStream = new TripleInputStream(triples, format, namespaces, tripleWriterFactory);
+    } catch (NotValidArgumentException | IOException e) {
+      log.error("Couldn't construct triple input stream", e);
+      return internalServerError("Couldn't construct triple input stream");
     }
 
-    if (attach) {
+    String mimeType = rdfProvider.getDefaultMimeType(format);
+    if (mimeType == null) mimeType = Http.MimeTypes.TEXT;
+    String dispositionValue = "inline";
+
+    /*if ((config.getOutputFormat() == Lang.RDFTHRIFT)) {
+      mimeType = Http.MimeTypes.BINARY;
+      attach = true;
+    }*/
+
+    if (mimeType.equals(Http.MimeTypes.BINARY)) {
       Date date = new Date();
       String filename = "SearchResult" + date.getTime() + "." + fileExtension;
       dispositionValue = "attachement; filename=" + filename;
@@ -131,7 +147,7 @@ public class SQLWrapperController extends Controller {
    * @return Status report whether the registration was successful.
    */
   public Result registerDataSourceTest() {
-    String clientHostName = null;
+    String clientHostName;
     Http.Request request = request();
     DynamicForm form = formFactory.form().bindFromRequest(request, "description");
     String desc  = form.get("description");

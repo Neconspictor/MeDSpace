@@ -6,6 +6,8 @@ import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.rdf.TripleWriterFactory;
+import de.unipassau.medspace.common.rdf.rdf4j.RDF4JTripleWriterFactory;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.TripleInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
@@ -36,6 +38,8 @@ public class TestProcessor {
   public static void main(String[] args) throws IOException {
     ConnectionPool connectionPool = null;
     D2rWrapper<Document> wrapper = null;
+
+    TripleWriterFactory tripleWriterFactory = new RDF4JTripleWriterFactory();
 
     try {
       log.info("D2R test started ....");
@@ -88,7 +92,10 @@ public class TestProcessor {
       boolean hasTriples = triples.hasNext();
 
       if (hasTriples) {
-        InputStream tripleStream = new TripleInputStream(triples, config.getOutputFormatString(), namespaces);
+        InputStream tripleStream = new TripleInputStream(triples,
+            config.getOutputFormatString(),
+            namespaces,
+            tripleWriterFactory);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(tripleStream, StandardCharsets.UTF_8));
         String value = reader.readLine();
