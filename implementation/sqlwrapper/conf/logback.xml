@@ -24,10 +24,10 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="play" level="INFO" />
+  <logger name="play" level="DEBUG" />
   <logger name="application" level="DEBUG" />
 
-  <logger name="de.unipassau.medspace" level="INFO" />
+  <logger name="de.unipassau.medspace" level="DEBUG" />
   <logger name="de.unipassau.medspace.wrapper.sqlwrapper.GlobalModule" level="DEBUG" />
   <logger name="de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService" level="DEBUG" />
 
@@ -43,7 +43,7 @@
   <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
 
-  <root level="WARN">
+  <root level="DEBUG">
     <appender-ref ref="ASYNCFILE" />
     <appender-ref ref="ASYNCSTDOUT" />
   </root>

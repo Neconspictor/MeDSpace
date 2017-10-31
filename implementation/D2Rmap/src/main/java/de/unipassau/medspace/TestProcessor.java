@@ -2,12 +2,10 @@ package de.unipassau.medspace;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
-import de.unipassau.medspace.common.rdf.Namespace;
-import de.unipassau.medspace.common.rdf.Triple;
-import de.unipassau.medspace.common.rdf.TripleIndexFactory;
+import de.unipassau.medspace.common.rdf.*;
 import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.rdf.TripleWriterFactory;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4JTripleWriterFactory;
+import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.TripleInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
@@ -39,12 +37,13 @@ public class TestProcessor {
     ConnectionPool connectionPool = null;
     D2rWrapper<Document> wrapper = null;
 
-    TripleWriterFactory tripleWriterFactory = new RDF4JTripleWriterFactory();
+    RDFProvider provider = new RDF4J_RDFProvider();
+    TripleWriterFactory tripleWriterFactory = provider.getWriterFactory();
 
     try {
       log.info("D2R test started ....");
 
-      Configuration config = new ConfigurationReader().readConfig(D2RMap);
+      Configuration config = new ConfigurationReader(provider).readConfig(D2RMap);
       URI jdbcURI = new URI(config.getJdbc());
 
       connectionPool = new HikariConnectionPool(
@@ -93,7 +92,7 @@ public class TestProcessor {
 
       if (hasTriples) {
         InputStream tripleStream = new TripleInputStream(triples,
-            config.getOutputFormatString(),
+            config.getOutputFormat(),
             namespaces,
             tripleWriterFactory);
 

@@ -19,7 +19,7 @@ import java.util.Set;
  * serialization. For the serialization this class uses a serialization language and
  * an optional PrefixMapping for prefixing rdf namespaces.
  */
-public class TripleInputStream extends InputStream {
+public class TestTripleInputStream extends InputStream {
 
   /**
    * Used to provide the serialized rdf triples.
@@ -52,7 +52,7 @@ public class TripleInputStream extends InputStream {
    *             for a list of supported languages.
    * @param namespaces The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
    */
-  public TripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces, TripleWriterFactory factory)
+  public TestTripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces, TripleWriterFactory factory)
       throws IOException, NotValidArgumentException {
 
     this.triples = triples;
@@ -64,6 +64,12 @@ public class TripleInputStream extends InputStream {
     if (namespaces != null ) {
       addMapping(namespaces);
     }
+
+    while(triples.hasNext()) {
+      writer.write(triples.next());
+    }
+
+    writer.close();
   }
 
   /**
@@ -72,12 +78,15 @@ public class TripleInputStream extends InputStream {
    */
   public void close() throws IOException {
 
-    if (!writer.isClosed())
-      FileUtil.closeSilently(writer, false);
-
-    FileUtil.closeSilently(triples, false);
-    FileUtil.closeSilently(out, false);
-    FileUtil.closeSilently(in, false);
+    try {
+      //triples.close();
+      writer.close();
+      //out.close();
+      //in.close();
+    } catch (IOException e) {
+      FileUtil.closeSilently(triples);
+      throw e;
+    }
   }
 
 
@@ -87,9 +96,14 @@ public class TripleInputStream extends InputStream {
 
     // elem == -1, i.d. in has to be filled with new data
     while (elem == -1) {
+      elem = in.read();
       updateInputBuffer();
-      elem =  in.read();
-      if (elem == -1) return in.read();
+
+      if (!triples.hasNext()) {
+        updateInputBuffer();
+        //writer.close();
+        return in.read();
+      }
     }
 
     return elem;
@@ -109,26 +123,8 @@ public class TripleInputStream extends InputStream {
    * Updates the input buffer.
    * @throws IllegalStateException if this method is called if the used input stream has still data to read.
    */
-  private void updateInputBuffer() throws IOException {
-
-    if (in.available() != 0)
-      return;
-
+  private void updateInputBuffer() {
     int pos = out.size();
-
-    while (triples.hasNext() && pos == 0) {
-      Triple triple = triples.next();
-      writer.write(triple);
-      pos = out.size();
-    }
-    if (!triples.hasNext()) {
-
-      if (!writer.isClosed())
-        writer.close();
-
-      pos = out.size();
-    }
-
     if (pos == 0) return;
 
     if (in.available() != 0) throw new IllegalStateException("Not all bytes consumed yet!");

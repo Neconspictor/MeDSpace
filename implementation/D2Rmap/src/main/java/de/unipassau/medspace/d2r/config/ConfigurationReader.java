@@ -1,16 +1,15 @@
 package de.unipassau.medspace.d2r.config;
 
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.RDFFactory;
+import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.bridge.DatatypePropertyBridge;
 import de.unipassau.medspace.d2r.bridge.ObjectPropertyBridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.util.XmlUtil;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.system.StreamRDFWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -25,8 +24,6 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Used to read a D2rMap config file.
@@ -38,58 +35,34 @@ public class ConfigurationReader {
    */
   private static Logger log = LoggerFactory.getLogger(ConfigurationReader.class);
 
-  /**
-   * Contains all supported org.apache.jena.riot.Lang objects that are supported by the jena framework
-   * to be used for streaming. Not all rdf serialization formats supports to stream the triple result set,
-   * so not all jena rdf languages are supported.
-   */
-  private Set<Lang> supportedStreamLanguages;
+  private RDFProvider provider;
 
-  private static Set<org.eclipse.rdf4j.rio.RDFFormat> formatsRDF4J;
+  private RDFFactory rdfFactory;
 
-  private static Set<String> formatsRDF4JNames;
 
   /**
    * Constructs a new ConfigurationReader.
    */
-  public ConfigurationReader() {
-    supportedStreamLanguages = new HashSet<>();
-    Collection<RDFFormat> formats = StreamRDFWriter.registered();
-    for (RDFFormat format : formats) {
-      supportedStreamLanguages.add(format.getLang());
-    }
-
-    // delete rdf/null, as it only outputs an empty rdf graph
-    // -> not very useful for exporting data.
-    supportedStreamLanguages.remove(Lang.RDFNULL);
-
-    formatsRDF4J = org.eclipse.rdf4j.rio.RDFParserRegistry.getInstance().getKeys();
-    formatsRDF4JNames = formatsRDF4J.stream() // get a Stream<RDFFormat>
-        .map((format)-> format.getName().toUpperCase()) // convert to a Stream<String> by the formats' names,
-        // but convert them to uppercase strings
-        .collect(Collectors.toSet()); // collect the stream to a set
+  public ConfigurationReader(RDFProvider provider) {
+    this.provider = provider;
+    this.rdfFactory = provider.getFactory();
   }
 
   /**
    * Creates a new ConfigurationReader and initializes it with default values specified in {@link D2R}.
    * @return
    */
-  public static Configuration createDefaultConfig() {
+  public Configuration createDefaultConfig() {
     Configuration config = new Configuration();
     config.getNamespaces().put(D2R.RDFNS_PREFIX, new Namespace(D2R.RDFNS_PREFIX, D2R.RDFNS));
 
-    Lang lang = null;
-    org.eclipse.rdf4j.rio.RDFFormat format = null;
+    String format = D2R.Root.OutputFormat.STANDARD_OUTPUT_FORMAT;
 
-    try {
-      lang = getLangFromString(D2R.Root.OutputFormat.STANDARD_OUTPUT_FORMAT);
-      format = getFormatFromString(D2R.Root.OutputFormat.STANDARD_OUTPUT_FORMAT);
-    } catch (D2RException e) {
+    if (!provider.isValid(format)) {
       throw new IllegalStateException("Default output language couldn't be mapped to a Lang object!");
     }
 
-    config.setOutputFormat(lang);
-    config.setOutputFormatRDF4J(format);
+    config.setOutputFormat(format);
     return config;
   }
 
@@ -140,34 +113,6 @@ public class ConfigurationReader {
   }
 
   /**
-   * Parses a string that represents an jena rdf language to the representing java object.
-   * @param format The string that represent a jena rdf language.
-   * @return The rdf language.
-   * @throws D2RException If the string couldn't be parsed.
-   */
-  private static Lang getLangFromString(String format) throws D2RException {
-    assert format != null;
-
-    Lang lang = RDFLanguages.shortnameToLang(format);
-
-    if (lang == null)
-      throw new D2RException("Unknown language format: " + format);
-
-    return lang;
-  }
-
-  private static org.eclipse.rdf4j.rio.RDFFormat getFormatFromString(String formatString) throws D2RException {
-    Optional<org.eclipse.rdf4j.rio.RDFFormat> optional = formatsRDF4J.stream()
-        .filter((format) -> format.getName().toUpperCase().equals(formatString))
-        .findFirst();
-
-    if (!optional.isPresent()) {
-      throw new D2RException("Unknown language format: " + formatString);
-    }
-    return optional.get();
-  }
-
-  /**
    * Parses a list of datasource properties from a given D2rMap root element and adds it to the specified Configuration.
    * @param root The root element of a valid D2rMap config.
    * @param config The configuration the read datasource properties should be added to.
@@ -189,7 +134,7 @@ public class ConfigurationReader {
    * @param mapElement The ClassMap element.
    * @throws D2RException If a parse error occurs.
    */
-  private static void readClassMapBridges(Configuration config, Element mapElement) throws D2RException {
+  private void readClassMapBridges(Configuration config, Element mapElement) throws D2RException {
 
     String id = mapElement.getAttribute(D2R.ClassMap.ID_ATTRIBUTE);
     id = id.trim().toUpperCase();
@@ -210,7 +155,7 @@ public class ConfigurationReader {
     if (mapElement.hasAttribute(D2R.ClassMap.TYPE_ATTRIBUTE)) {
       // add rdf:type bridge
       String value = mapElement.getAttribute(D2R.ClassMap.TYPE_ATTRIBUTE);
-      ObjectPropertyBridge typeBridge = new ObjectPropertyBridge(null, maps);
+      ObjectPropertyBridge typeBridge = new ObjectPropertyBridge(rdfFactory, null, maps);
       typeBridge.setPropertyQName("rdf:type");
       typeBridge.setPattern(value);
       map.addBridge(typeBridge);
@@ -234,9 +179,9 @@ public class ConfigurationReader {
    * @throws IOException If an IO-Error occurs.
    * @throws D2RException If a parse error occurs.
    */
-  private static void readClassMapElement(Configuration config, Element mapElement) throws IOException, D2RException {
+  private void readClassMapElement(Configuration config, Element mapElement) throws IOException, D2RException {
     List<D2rMap> maps = config.getMaps();
-    D2rMap cMap = new D2rMap();
+    D2rMap cMap = new D2rMap(rdfFactory);
 
     // sql and groupBy attributes are required
     String sqlQuery = mapElement.getAttribute(D2R.ClassMap.SQL_ATTRIBUTE);
@@ -311,8 +256,8 @@ public class ConfigurationReader {
    * @param elem Represents a DataTypePropertyBridge element
    * @param map The D2rMap the read DataTypePropertyBridge should be added to.
    */
-  private static void readDataTypePropertyElement(Element elem, D2rMap map) {
-    DatatypePropertyBridge bridge = new DatatypePropertyBridge();
+  private void readDataTypePropertyElement(Element elem, D2rMap map) {
+    DatatypePropertyBridge bridge = new DatatypePropertyBridge(rdfFactory);
     bridge.setPropertyQName(elem.getAttribute(D2R.DataTypePropertyBridge.PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.DataTypePropertyBridge.PATTERN_ATTRIBUTE));
     bridge.setDataType(elem.getAttribute(D2R.DataTypePropertyBridge.DATA_TYPE_ATTRIBUTE));
@@ -393,11 +338,11 @@ public class ConfigurationReader {
    * @param maps Used to create the new ObjectPropertyBridge.
    * @throws D2RException If the ObjectPropertyBridge couldn't be parsed.
    */
-  private static void readObjectPropertyElement(Element elem, D2rMap map, List<D2rMap> maps) throws D2RException {
+  private void readObjectPropertyElement(Element elem, D2rMap map, List<D2rMap> maps) throws D2RException {
 
     final String referredClassID = elem.getAttribute(D2R.ObjectPropertyBridge.REFERRED_CLASS_ATTRIBUTE);
 
-    ObjectPropertyBridge bridge = new ObjectPropertyBridge(referredClassID, maps);
+    ObjectPropertyBridge bridge = new ObjectPropertyBridge(rdfFactory, referredClassID, maps);
     bridge.setPropertyQName(elem.getAttribute(D2R.ObjectPropertyBridge.PROPERTY_ATTRIBUTE));
     bridge.setPattern(elem.getAttribute(D2R.ObjectPropertyBridge.PATTERN_ATTRIBUTE));
     bridge.setReferredColumns(elem.getAttribute(D2R.ObjectPropertyBridge.REFERRED_GROUPBY_ATTRIBUTE));
@@ -412,45 +357,17 @@ public class ConfigurationReader {
    */
   private void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
     String format = elem.getTextContent();
-    Lang lang = null;
-    org.eclipse.rdf4j.rio.RDFFormat formatRDF4J = null;
 
     assert format != null;
 
-    try {
-      lang = getLangFromString(format);
-      formatRDF4J = getFormatFromString(format);
-    } catch (D2RException e) {
-      throw new D2RException("Error while retrieving rdf language", e);
+    if (!provider.isValid(format)) {
+      String supportedFormats = provider.getSupportedFormatsPrettyPrint();
+
+      throw new D2RException("RDF language isn't supported: " + format +
+      "\nSupported languages are:\n" + supportedFormats);
     }
 
-    if (!supportedStreamLanguages.contains(lang)) {
-      StringBuilder supportedLangs = new StringBuilder();
-      for (Lang l : supportedStreamLanguages) {
-        supportedLangs.append(l.getLabel());
-        supportedLangs.append("\n");
-      }
-
-      supportedLangs.delete(supportedLangs.length() -1, supportedLangs.length());
-
-      throw new D2RException("RDF language isn't supported for streaming rdf triples: " + lang.getLabel() +
-      "\nSupported languages are:\n" + supportedLangs.toString());
-    }
-
-    if (!formatsRDF4J.contains(formatRDF4J)) {
-      StringBuilder builder = new StringBuilder();
-      for (String supportedFormat : formatsRDF4JNames) {
-        builder.append(supportedFormat);
-        builder.append("\n");
-      }
-      builder.delete(builder.length() -1, builder.length());
-
-      throw new D2RException("RDF language isn't supported for streaming rdf triples: " + format +
-          "\nSupported languages are:\n" + builder.toString());
-    }
-
-    config.setOutputFormat(lang);
-    config.setOutputFormatRDF4J(formatRDF4J);
+    config.setOutputFormat(format);
   }
 
   /**

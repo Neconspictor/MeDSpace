@@ -73,7 +73,10 @@ libraryDependencies ++= Seq(
 	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime
 	"org.eclipse.rdf4j" % "rdf4j-runtime" % "2.2.2",
 
-	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-queryresultio-binary
+	"org.eclipse.rdf4j" % "rdf4j-queryresultio-binary" % "2.2.2" % "runtime",
+
+// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
 	"org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
 
 )

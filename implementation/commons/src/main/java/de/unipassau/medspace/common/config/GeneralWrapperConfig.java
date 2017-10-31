@@ -2,8 +2,6 @@ package de.unipassau.medspace.common.config;
 
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.register.Datasource;
-import org.apache.jena.riot.Lang;
-import org.eclipse.rdf4j.rio.RDFFormat;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -45,7 +43,7 @@ public class GeneralWrapperConfig {
   /**
    * The export rdf language.
    */
-  public RDFFormat getOutputFormat() {
+  public String getOutputFormat() {
     return data.outputFormat;
   }
 
@@ -92,7 +90,7 @@ public class GeneralWrapperConfig {
     /**
      * The export rdf language.
      */
-    private RDFFormat outputFormat;
+    private String outputFormat;
 
     /**
      * The url of the register the wrapper should connect to.
@@ -159,7 +157,7 @@ public class GeneralWrapperConfig {
      * Sets the rdf export language.
      * @param outputFormat The rdf export language.
      */
-    public void setOutputFormat(RDFFormat outputFormat) {
+    public void setOutputFormat(String outputFormat) {
       assert outputFormat != null;
       this.outputFormat = outputFormat;
     }
@@ -192,7 +190,7 @@ public class GeneralWrapperConfig {
      * Provides the export rdf language.
      * @return The export rdf language.
      */
-    public RDFFormat getOutputFormat() {
+    public String getOutputFormat() {
       return outputFormat;
     }
 
@@ -227,7 +225,7 @@ public class GeneralWrapperConfig {
         builder.append("    (prefix: " + entry.getKey() + ", namespace: " + entry.getValue() + "),\n");
       }
       builder.append("  ],\n");
-      builder.append("  outputFormat: " + outputFormat.toString() + ",\n");
+      builder.append("  outputFormat: " + outputFormat + ",\n");
       builder.append("  registerURL: " + registerURL + ",\n");
       builder.append("  useIndex: " + useIndex + "\n");
       builder.append("]");

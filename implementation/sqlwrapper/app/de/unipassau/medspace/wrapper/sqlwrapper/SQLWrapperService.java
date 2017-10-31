@@ -7,6 +7,7 @@ import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
@@ -48,6 +49,8 @@ public class SQLWrapperService {
    */
   private static Logger log = LoggerFactory.getLogger(SQLWrapperService.class);
 
+  private static boolean ignoreRegistering = false;
+
   /**
    * Used to establish connection to the datasource.
    */
@@ -84,7 +87,8 @@ public class SQLWrapperService {
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
                            com.typesafe.config.Config playConfig,
-                           RegisterClient registerClient) {
+                           RegisterClient registerClient,
+                           RDFProvider provider) {
 
     this.registerClient = registerClient;
     log.info("http.address= " + playConfig.getString("play.server.http.address"));
@@ -92,7 +96,7 @@ public class SQLWrapperService {
       try {
         String wrapperConfigFile = playConfig.getString("MeDSpaceWrapperConfig");
         String d2rConfigFile = playConfig.getString("MeDSpaceD2rConfig");
-        startup(wrapperConfigFile, d2rConfigFile);
+        startup(provider, wrapperConfigFile, d2rConfigFile);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
         log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
         log.info("Graceful shutdown is initiated...");
@@ -107,7 +111,7 @@ public class SQLWrapperService {
 
       lifecycle.addStopHook(() -> {
         log.info("Shutdown is executing...");
-        deregister();
+        if (!ignoreRegistering) deregister();
         wrapper.close();
         connectionPool.close();
         return CompletableFuture.completedFuture(null);
@@ -115,6 +119,10 @@ public class SQLWrapperService {
 
     //lifecycle.stop();
     //System.exit(-1);
+  }
+
+  public static void setIgnoreRegistering(boolean ignore) {
+    ignoreRegistering = ignore;
   }
 
   /**
@@ -184,12 +192,12 @@ public class SQLWrapperService {
    * @throws IOException If an IO-Error occurs.
    * @throws SQLException If the connection to the datasource could'nt be established.
    */
-  private void startup(String wrapperConfigFile, String d2rConfigFile) throws D2RException, IOException, SQLException {
+  private void startup(RDFProvider provider, String wrapperConfigFile, String d2rConfigFile) throws D2RException, IOException, SQLException {
 
     log.info("initializing SQL Wrapper...");
     log.info("Reading general wrapper configuration...");
     try {
-      generalConfig = new GeneralWrapperConfigReader().readConfig(wrapperConfigFile);
+      generalConfig = new GeneralWrapperConfigReader(provider).readConfig(wrapperConfigFile);
     } catch (IOException e) {
       throw new IOException("Error while reading the general wrapper configuration file: " + wrapperConfigFile, e);
     }
@@ -203,7 +211,7 @@ public class SQLWrapperService {
     log.info("Reading MeDSpace D2RMap configuration...");
 
     try {
-      d2rConfig = new ConfigurationReader().readConfig(d2rConfigFile);
+      d2rConfig = new ConfigurationReader(provider).readConfig(d2rConfigFile);
     } catch (IOException e) {
       throw new D2RException("Error while reading the configuration file: " + d2rConfigFile, e);
     }
@@ -244,11 +252,13 @@ public class SQLWrapperService {
     }
 
     //check connection to the register
-    boolean registered = registerClient.register(generalConfig.getDatasource(), generalConfig.getRegisterURL());
-    if (registered) {
-      log.info("Successfuly registered to the Register.");
-    } else {
-      throw new D2RException("Couldn't register to the Register!");
+    if (!ignoreRegistering) {
+      boolean registered = registerClient.register(generalConfig.getDatasource(), generalConfig.getRegisterURL());
+      if (registered) {
+        log.info("Successfuly registered to the Register.");
+      } else {
+        throw new D2RException("Couldn't register to the Register!");
+      }
     }
 
     Path indexPath = generalConfig.getIndexDirectory();

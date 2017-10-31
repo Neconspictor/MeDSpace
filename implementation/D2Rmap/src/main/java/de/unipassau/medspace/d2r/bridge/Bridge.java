@@ -2,10 +2,10 @@ package de.unipassau.medspace.d2r.bridge;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
-import org.apache.jena.rdf.model.*;
-import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import de.unipassau.medspace.common.rdf.RDFObject;
+import de.unipassau.medspace.common.rdf.RDFFactory;
+
+import de.unipassau.medspace.common.rdf.RDFResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +36,18 @@ abstract public class Bridge {
      */
     protected String propertyQName;
 
+    protected RDFFactory primitiveValueFactory;
+
     /**
      * Logger instance for this class.
      */
     private static Logger log = LoggerFactory.getLogger(Bridge.class);
 
-    protected static final ValueFactory factory = SimpleValueFactory.getInstance();
+
+    public Bridge(RDFFactory primitiveValueFactory) {
+        this.primitiveValueFactory = primitiveValueFactory;
+    }
+
 
     /**
      * Provides the language tag, the values of created properties should assigned to.
@@ -51,22 +57,15 @@ abstract public class Bridge {
         return langTag;
     }
 
+
     /**
      * Creates a new propertyQName and normlizes it qualified name by a give normalizer.
      * @param normalizer The normalizer to normalize the qualified name of the created propertyQName.
      * @return A new propertyQName instance of this D2r Bridge.
      */
-    public Property createProperty(QNameNormalizer normalizer) {
+    public RDFResource createProperty(QNameNormalizer normalizer) {
         String propURI = normalizer.normalize(propertyQName);
-        Property prop = ResourceFactory.createProperty(propURI);
-        return prop;
-    }
-
-    public IRI createPropertyRDF4J(QNameNormalizer normalizer) {
-        String propURI = normalizer.normalize(propertyQName);
-        IRI property = factory.createIRI(propURI);
-        org.eclipse.rdf4j.model.Literal test = factory.createLiteral(0);
-        return property;
+        return primitiveValueFactory.createResource(propURI);
     }
 
     /**
@@ -85,9 +84,7 @@ abstract public class Bridge {
      * @param normalizer The qualified name normalizer to normalize the resulting propertyQName value.
      * @return  The propertyQName value represented as an rdf node.
      */
-    public abstract RDFNode getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
-
-    public abstract Value getValueRDF4J(SQLResultTuple tuple, QNameNormalizer normalizer);
+    public abstract RDFObject getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
 
     /**
      * Provides the used datatype (if any is used) or null otherwise.

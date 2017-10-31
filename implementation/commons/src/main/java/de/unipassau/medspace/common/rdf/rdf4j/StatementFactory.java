@@ -1,5 +1,6 @@
 package de.unipassau.medspace.common.rdf.rdf4j;
 
+import de.unipassau.medspace.common.rdf.RDFValue;
 import de.unipassau.medspace.common.rdf.Triple;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -11,10 +12,14 @@ public class StatementFactory {
 
   protected static final ValueFactory factory = SimpleValueFactory.getInstance();
 
-  public Statement create(Triple triple) {
-    Resource subject = factory.createIRI(triple.getSubject());
-    IRI predicate = factory.createIRI(triple.getPredicate());
-    Value object = (Value) () -> triple.getSubject();
-    return factory.createStatement(subject, predicate, object);
+  public Statement createFromWrapped(Triple triple) {
+
+    if (! (triple instanceof WrappedStatement)) {
+      throw new IllegalArgumentException("Triple has to be of type " + WrappedStatement.class);
+    }
+
+    WrappedStatement wrapped = (WrappedStatement) triple;
+
+    return wrapped.getStatement();
   }
 }

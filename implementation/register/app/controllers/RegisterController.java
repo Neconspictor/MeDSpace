@@ -8,7 +8,6 @@ import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.register.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.*;

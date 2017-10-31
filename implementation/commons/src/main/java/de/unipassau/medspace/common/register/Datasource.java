@@ -19,19 +19,7 @@ import java.util.*;
  */
 public class Datasource implements Comparable<Datasource> {
 
-  public static List<RDFFormat> supportedFormats = Arrays.asList(RDFFormat.BINARY,
-      RDFFormat.JSONLD,
-      RDFFormat.N3,
-      RDFFormat.NQUADS,
-      RDFFormat.NTRIPLES,
-      RDFFormat.RDFA,
-      RDFFormat.RDFJSON,
-      RDFFormat.RDFXML,
-      RDFFormat.TRIG,
-      RDFFormat.TRIX,
-      RDFFormat.TURTLE);
-
-  public static final RDFFormat DEFAULT_FORMAT = RDFFormat.TURTLE;
+  public static final String DEFAULT_FORMAT = "TURTLE";
 
   /**
    * Defines the location to query the wrapper.
@@ -75,9 +63,9 @@ public class Datasource implements Comparable<Datasource> {
       throw new IllegalArgumentException("Format isn't allowed to be null!");
     }
 
-    if (!isSupported(rdfFormat)) {
+    /*if (!isSupported(rdfFormat)) {
       throw new NotValidArgumentException("rdf format isn't supported");
-    }
+    }*/
 
     if (services == null) {
       this.services = new HashSet<>();
@@ -118,16 +106,8 @@ public class Datasource implements Comparable<Datasource> {
                                   @JsonProperty("description") String desc,
                                   @JsonProperty("rdfFormat") String rdfFormat,
                                   @JsonProperty("services") Set<Service> services) throws NotValidArgumentException {
-    if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT.getName();
+    if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT;
     return new Datasource(url, desc, rdfFormat, services);
-  }
-
-  public static boolean isSupported(String format) {
-
-    final String upperCase = format.toUpperCase();
-
-    return supportedFormats.stream().anyMatch((supportedFormat) ->
-        supportedFormat.getName().toUpperCase().equals(upperCase));
   }
 
   /**
@@ -256,7 +236,7 @@ public class Datasource implements Comparable<Datasource> {
     public Datasource build() throws NotValidArgumentException {
       Set<Service> set = new HashSet<>();
       if (services != null) set.addAll(services);
-      if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT.getName();
+      if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT;
       return new Datasource(url, description, rdfFormat, set);
     }
 

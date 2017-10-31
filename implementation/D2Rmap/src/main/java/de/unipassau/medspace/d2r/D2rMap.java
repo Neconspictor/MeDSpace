@@ -5,16 +5,11 @@ import java.util.*;
 import java.sql.*;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
-import de.unipassau.medspace.common.rdf.QNameNormalizer;
-import de.unipassau.medspace.common.rdf.Triple;
-import de.unipassau.medspace.common.rdf.rdf4j.TripleFactory;
+import de.unipassau.medspace.common.rdf.*;
 import de.unipassau.medspace.d2r.bridge.Bridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 
-import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,20 +56,21 @@ public class D2rMap implements Serializable {
    */
   private QNameNormalizer normalizer;
 
+  private RDFFactory rdfFactory;
+
   /**
    * Logger instance of this class.
    */
   private static Logger log = LoggerFactory.getLogger(D2rMap.class);
 
-  private static final ValueFactory factory = SimpleValueFactory.getInstance();
-
   /**
    * Default constructor. Creates a new D2rMap.
    */
-  public D2rMap() {
+  public D2rMap(RDFFactory rdfFactory) {
     bridges = new ArrayList<>();
     resourceIdColumns = new ArrayList<>();
     normalizer = qName -> qName;
+    this.rdfFactory = rdfFactory;
   }
 
 
@@ -106,7 +102,7 @@ public class D2rMap implements Serializable {
    */
   public List<Triple> createTriples(SQLResultTuple tuple) {
     List<Triple> triples = new ArrayList<>();
-    Resource resource;
+    RDFResource resource;
 
     // set instance id
     StringBuilder resourceIDBuilder = new StringBuilder();
@@ -120,7 +116,7 @@ public class D2rMap implements Serializable {
     // define URI and generate instance
     String uri = getBaseURI() + resourceID;
     uri = normalizer.normalize(uri);
-    resource = factory.createIRI(uri);
+    resource = rdfFactory.createResource(uri);
 
     if (resource == null || resourceID.equals("")) {
       log.warn("Warning: Couldn't createDoc resource " + resourceID + " in map " + getId() +
@@ -128,23 +124,13 @@ public class D2rMap implements Serializable {
       return null;
     }
 
-    /*for (Bridge bridge : getBridges()) {
-      // generate propertyQName
-      Property prop = bridge.createProperty(normalizer);
-      RDFNode value = bridge.getValue(tuple, normalizer);
-      if (prop != null && value != null) {
-        Triple triple = Triple.create(resource.asNode(), prop.asNode(), value.asNode());
-        triples.add(triple);
-      }
-    }*/
-
     for (Bridge bridge : getBridges()) {
       // generate propertyQName
-      IRI prop = bridge.createPropertyRDF4J(normalizer);
-      Value value = bridge.getValueRDF4J(tuple, normalizer);
+      RDFResource prop = bridge.createProperty(normalizer);
+      RDFObject value = bridge.getValue(tuple, normalizer);
       if (prop != null && value != null) {
-        Statement stmt = factory.createStatement(resource, prop, value);
-        triples.add(TripleFactory.create(stmt));
+        Triple triple = rdfFactory.createTriple(resource, prop, value);
+        triples.add(triple);
       }
     }
 

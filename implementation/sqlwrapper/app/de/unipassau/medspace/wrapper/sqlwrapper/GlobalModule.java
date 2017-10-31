@@ -41,6 +41,9 @@ public class GlobalModule extends AbstractModule {
     bind(RegisterClient.class).asEagerSingleton();
     bind(SQLWrapperService.class).asEagerSingleton();
     bind(RDFProvider.class).to(RDF4J_RDFProvider.class).asEagerSingleton();
+
+    SQLWrapperService.setIgnoreRegistering(false);
+
     log.info("done.");
   }
 }

@@ -1,6 +1,5 @@
 package controllers;
 
-import controllers.*;
 import play.libs.Json;
 import play.mvc.Call;
 import play.mvc.Controller;

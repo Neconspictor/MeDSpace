@@ -1,6 +1,5 @@
 package de.unipassau.medspace.query_executor;
 
-import de.unipassau.medspace.register.RegisterLifecycle;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;

@@ -58,7 +58,7 @@ public final class D2R {
       /**
        * Standard output format - should be used if no output format element is stated.
        */
-      public static final String STANDARD_OUTPUT_FORMAT = "NTRIPLES";
+      public static final String STANDARD_OUTPUT_FORMAT = "N-TRIPLES";
     }
   }
 

@@ -3,12 +3,11 @@ package de.unipassau.medspace.common.config;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.exception.ParseException;
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.common.util.XmlUtil;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-import org.eclipse.rdf4j.rio.RDFFormat;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -37,24 +36,26 @@ public class GeneralWrapperConfigReader {
    */
   private static Logger log = LoggerFactory.getLogger(GeneralWrapperConfigReader.class);
 
+  private RDFProvider provider;
+
 
   /**
    * Constructs a new {@link GeneralWrapperConfigReader}.
    */
-  public GeneralWrapperConfigReader() {}
+  public GeneralWrapperConfigReader(RDFProvider provider) {
+    this.provider = provider;
+  }
 
   /**
    * Creates a new ConfigurationReader and initializes it with default values.
    * @return A pre-filled builder to a GeneralWrapperConfig.
    */
-  public static GeneralWrapperConfigData createDefaultConfig() {
+  public GeneralWrapperConfigData createDefaultConfig() {
     GeneralWrapperConfigData config = new GeneralWrapperConfigData();
 
-    RDFFormat format;
+    String format = Constants.OutputFormat.STANDARD_OUTPUT_FORMAT;
 
-    try {
-      format = getFormatFromString(Constants.OutputFormat.STANDARD_OUTPUT_FORMAT);
-    } catch (IllegalArgumentException e) {
+    if (!provider.isValid(format)) {
       throw new IllegalStateException("Default output language couldn't be mapped to a RDFFormat object!");
     }
 
@@ -107,24 +108,6 @@ public class GeneralWrapperConfigReader {
 
     return config.build();
   }
-
-  /**
-   * Parses a string that represents an jena rdf language to the representing java object.
-   * @param format The string that represent a jena rdf language.
-   * @return The rdf language.
-   * @throws IllegalArgumentException If the string couldn't be parsed.
-   */
-  private static Lang getLangFromString(String format) {
-    assert format != null;
-
-    Lang lang = RDFLanguages.shortnameToLang(format);
-
-    if (lang == null)
-      throw new IllegalArgumentException("Unknown language format: " + format);
-
-    return lang;
-  }
-
 
   /**
    * Parses a general wrapper config from a given XML document and stores its content in the specified Configuration.
@@ -250,46 +233,17 @@ public class GeneralWrapperConfigReader {
    */
   private void readOutputFormatElement(GeneralWrapperConfigData config, Element elem) throws ParseException {
     String format = elem.getTextContent();
-    RDFFormat exportFormat;
-
     assert format != null;
 
-    try {
-      exportFormat = getFormatFromString(format);
-    } catch (IllegalArgumentException e) {
-      throw new ParseException("Error while retrieving rdf language", e);
-    }
+    if (!provider.isValid(format)) {
 
-    if (!Datasource.isSupported(format)) {
-
-      List<String> supportedFormats = getNamesFromSupportedFormats();
+      String supportedFormats = provider.getSupportedFormatsPrettyPrint();
 
       throw new ParseException("RDF language isn't supported for streaming rdf triples: " + format +
-          "\nSupported languages are:\n" + supportedFormats.toString());
+          "\nSupported languages are:\n" + supportedFormats);
     }
 
-    config.setOutputFormat(exportFormat);
-  }
-
-  private static List<String> getNamesFromSupportedFormats() {
-    final List<String> result = new ArrayList<>();
-    Datasource.supportedFormats.stream().forEach((format) -> {
-      result.add(format.getName());
-    });
-
-    return result;
-  }
-
-  private static RDFFormat getFormatFromString(String format) {
-    final String uppercase = format.toUpperCase();
-    Optional<RDFFormat> optional =  Datasource.supportedFormats.stream().filter((supportedFormat) -> {
-      return supportedFormat.getName().toUpperCase().equals(uppercase);
-    }).findFirst();
-
-    if (!optional.isPresent()) {
-      throw new IllegalArgumentException("Format not supported: " + format);
-    }
-    return optional.get();
+    config.setOutputFormat(format);
   }
 
   /**

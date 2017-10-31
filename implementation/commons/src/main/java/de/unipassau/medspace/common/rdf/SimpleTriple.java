@@ -7,9 +7,9 @@ public class SimpleTriple implements Triple {
 
   private final String subject;
   private final String predicate;
-  private final String object;
+  private final RDFValue object;
 
-  public SimpleTriple(String subject, String predicate, String object) {
+  public SimpleTriple(String subject, String predicate, RDFValue object) {
     this.subject = subject;
     this.predicate = predicate;
     this.object = object;
@@ -26,7 +26,7 @@ public class SimpleTriple implements Triple {
   }
 
   @Override
-  public String getObject() {
+  public RDFValue getObject() {
     return object;
   }
 }

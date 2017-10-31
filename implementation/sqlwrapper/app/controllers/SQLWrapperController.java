@@ -4,6 +4,7 @@ import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleWriterFactory;
+import de.unipassau.medspace.common.stream.TestTripleInputStream;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.Stream;
@@ -113,7 +114,7 @@ public class SQLWrapperController extends Controller {
 
     Configuration config = wrapperService.getD2rConfig();
     Set<Namespace> namespaces = wrapperService.getWrapper().getNamespaces();
-    String format = config.getOutputFormatString();
+    String format = config.getOutputFormat();
     List<String> extensions = rdfProvider.getFileExtensions(format);
     String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);
     InputStream tripleStream;
@@ -124,19 +125,22 @@ public class SQLWrapperController extends Controller {
       return internalServerError("Couldn't construct triple input stream");
     }
 
-    String mimeType = rdfProvider.getDefaultMimeType(format);
-    if (mimeType == null) mimeType = Http.MimeTypes.TEXT;
+    String mimeType = Http.MimeTypes.TEXT;
+    String formatMimeType = rdfProvider.getDefaultMimeType(format);
+
+    if (formatMimeType == null) formatMimeType = mimeType;
+
     String dispositionValue = "inline";
 
-    /*if ((config.getOutputFormat() == Lang.RDFTHRIFT)) {
-      mimeType = Http.MimeTypes.BINARY;
+    if (formatMimeType.equals(Http.MimeTypes.BINARY)) {
       attach = true;
-    }*/
+    }
 
-    if (mimeType.equals(Http.MimeTypes.BINARY)) {
+    if (attach) {
       Date date = new Date();
       String filename = "SearchResult" + date.getTime() + "." + fileExtension;
       dispositionValue = "attachement; filename=" + filename;
+      mimeType = formatMimeType;
     }
 
     return ok(tripleStream).as(mimeType).withHeader("Content-Disposition", dispositionValue);

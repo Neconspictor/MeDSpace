@@ -8,6 +8,8 @@ import java.io.IOException;
  */
 public interface TripleWriter extends Closeable {
 
+  boolean isClosed();
+
   void write(Triple triple) throws IOException;
 
   void write(String prefix, String iri) throws IOException;
