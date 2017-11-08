@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.config;
 
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.exception.ParseException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
@@ -188,7 +188,7 @@ public class GeneralWrapperConfigReader {
     Datasource datasource = null;
     try {
       datasource = builder.build();
-    } catch (NotValidArgumentException e) {
+    } catch (NoValidArgumentException e) {
       throw new ParseException("Couldn't create datasource", e);
     }
 

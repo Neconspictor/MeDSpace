@@ -1,4 +1,4 @@
-package de.unipassau.medspace.query_executor;
+package de.unipassau.medspace;
 
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -9,26 +9,27 @@ import org.slf4j.LoggerFactory;
 import play.inject.ApplicationLifecycle;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Created by David Goeth on 26.10.2017.
+ * Created by David Goeth on 07.11.2017.
  */
-public class QueryExecutorLifecycle {
-  private static final Logger log = LoggerFactory.getLogger(QueryExecutorLifecycle.class);
+public class DataCollectorLifecycle implements Provider<Repository> {
+
+  private static final Logger log = LoggerFactory.getLogger(DataCollectorLifecycle.class);
+
   private final Repository db;
 
   @Inject
-  public QueryExecutorLifecycle(ApplicationLifecycle lifecycle) throws IOException {
-
-    File dataDir = new File("./_work/query_executor/native_store/");
+  public DataCollectorLifecycle(ApplicationLifecycle lifecycle) {
+    File dataDir = new File("./_work/data_collector/native_store/");
     db = new SailRepository(new NativeStore(dataDir));
     try{
       db.initialize();
     } catch (RepositoryException e) {
-      log.error("Couldn't initialize data_collector!");
+      log.error("Couldn't initialize Repository!");
     }
 
     lifecycle.addStopHook(() -> {
@@ -36,16 +37,17 @@ public class QueryExecutorLifecycle {
       try {
         db.shutDown();
       } catch (RepositoryException e) {
-        log.error("Couldn't shutdown data_collector!", e);
+        log.error("Couldn't shutdown Repository!", e);
       }
       log.info("shutdown cleanup done.");
       return CompletableFuture.completedFuture(null);
     });
 
-    log.info("QueryExecutorLifecycle is initialized.");
+    log.info("DataCollectorLifecycle is initialized.");
   }
 
-  public Repository getRepository() {
+  @Override
+  public Repository get() {
     return db;
   }
 }

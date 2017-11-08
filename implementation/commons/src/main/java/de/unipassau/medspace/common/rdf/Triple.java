@@ -9,5 +9,5 @@ public interface Triple {
 
   String getPredicate();
 
-  RDFValue getObject();
+  String getObject();
 }

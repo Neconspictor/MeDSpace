@@ -1,7 +1,7 @@
 package de.unipassau.medspace.common.stream;
 
 
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleWriter;
@@ -53,7 +53,7 @@ public class TripleInputStream extends InputStream {
    * @param namespaces The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
    */
   public TripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces, TripleWriterFactory factory)
-      throws IOException, NotValidArgumentException {
+      throws IOException, NoValidArgumentException {
 
     this.triples = triples;
     in = new ResettableByteArrayInputStream();

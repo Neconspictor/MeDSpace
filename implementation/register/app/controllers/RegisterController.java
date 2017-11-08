@@ -2,7 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.response.*;
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.message.Response;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.register.*;
@@ -160,7 +160,7 @@ public class RegisterController extends Controller {
         //   .bindFromRequest();
         try {
             return builder.build();
-        } catch (NotValidArgumentException e) {
+        } catch (NoValidArgumentException e) {
             throw new IOException("Couldn't build a datasource object", e);
         }
     }

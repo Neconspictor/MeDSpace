@@ -2,8 +2,7 @@ package de.unipassau.medspace.common.register;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
-import org.eclipse.rdf4j.rio.RDFFormat;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,11 +48,11 @@ public class Datasource implements Comparable<Datasource> {
    * @param desc The description of the datasource wrapper. Can be null
    * @param rdfFormat The rdf format the datasource uses for rdf content publishing.
    * @param services A list of supported services, the datasource wrapper supplies.
-   * @throws NotValidArgumentException If rdfFormat isn't a supported rdf format.
+   * @throws NoValidArgumentException If rdfFormat isn't a supported rdf format.
    * @throws IllegalArgumentException If url or rdfFormat are null
    */
   public Datasource(URL url, String desc, String rdfFormat, Set<Service> services) throws
-      IllegalArgumentException, NotValidArgumentException {
+      IllegalArgumentException, NoValidArgumentException {
 
     if (url == null) {
       throw new IllegalArgumentException("URI isn't allowed to be null");
@@ -64,7 +63,7 @@ public class Datasource implements Comparable<Datasource> {
     }
 
     /*if (!isSupported(rdfFormat)) {
-      throw new NotValidArgumentException("rdf format isn't supported");
+      throw new NoValidArgumentException("rdf format isn't supported");
     }*/
 
     if (services == null) {
@@ -97,7 +96,7 @@ public class Datasource implements Comparable<Datasource> {
    * Creates a copy from the provided Datasource, but updates the time stamp.
    * @param other The Datasource to copy.
    */
-  public static Datasource copyUpdateTimeStamp(Datasource other) throws MalformedURLException, NotValidArgumentException {
+  public static Datasource copyUpdateTimeStamp(Datasource other) throws MalformedURLException, NoValidArgumentException {
     return new Datasource(other.url, other.description, other.rdfFormat, other.services);
   }
 
@@ -105,7 +104,7 @@ public class Datasource implements Comparable<Datasource> {
   public static Datasource create(@JsonProperty("url") URL url,
                                   @JsonProperty("description") String desc,
                                   @JsonProperty("rdfFormat") String rdfFormat,
-                                  @JsonProperty("services") Set<Service> services) throws NotValidArgumentException {
+                                  @JsonProperty("services") Set<Service> services) throws NoValidArgumentException {
     if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT;
     return new Datasource(url, desc, rdfFormat, services);
   }
@@ -233,7 +232,7 @@ public class Datasource implements Comparable<Datasource> {
      * @return A Datasource object, that represents the same datasource as the mutable one. Or null, if
      * no valid datasource object could be created.
      */
-    public Datasource build() throws NotValidArgumentException {
+    public Datasource build() throws NoValidArgumentException {
       Set<Service> set = new HashSet<>();
       if (services != null) set.addAll(services);
       if (rdfFormat == null) rdfFormat = DEFAULT_FORMAT;

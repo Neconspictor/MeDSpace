@@ -26,7 +26,7 @@ public class SimpleTriple implements Triple {
   }
 
   @Override
-  public RDFValue getObject() {
-    return object;
+  public String getObject() {
+    return object.toString();
   }
 }

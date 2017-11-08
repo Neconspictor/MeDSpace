@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.rdf.rdf4j;
 
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.RDFFactory;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.TripleWriterFactory;
@@ -76,7 +76,7 @@ public class RDF4J_RDFProvider  implements RDFProvider {
 
     try {
       rdf4jFormat = RDF4JLanguageFormats.getFormatFromString(format);
-    } catch (NotValidArgumentException e) {
+    } catch (NoValidArgumentException e) {
       log.debug("Couldn't retrieve rdf format from string '" + format + "'");
       return null;
     }

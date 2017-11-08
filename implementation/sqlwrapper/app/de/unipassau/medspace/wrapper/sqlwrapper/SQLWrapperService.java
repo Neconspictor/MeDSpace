@@ -5,7 +5,7 @@ import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
@@ -165,12 +165,12 @@ public class SQLWrapperService {
    * @param keywords The keywords to search for.
    * @return A stream of rdf triples representing the success of the keyword search.
    * @throws IOException If an IO-Error occurs.
-   * @throws NotValidArgumentException If 'keywords' is null.
+   * @throws NoValidArgumentException If 'keywords' is null.
    */
-  public Stream<Triple> search(String keywords) throws IOException, NotValidArgumentException {
+  public Stream<Triple> search(String keywords) throws IOException, NoValidArgumentException {
 
     if (keywords == null) {
-      throw new NotValidArgumentException("keywords mustn't be null");
+      throw new NoValidArgumentException("keywords mustn't be null");
     }
 
     StringTokenizer tokenizer = new StringTokenizer(keywords, ", ", false);

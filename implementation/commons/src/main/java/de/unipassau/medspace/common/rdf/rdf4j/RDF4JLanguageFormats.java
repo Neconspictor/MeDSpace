@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.rdf.rdf4j;
 
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParserRegistry;
 
@@ -17,11 +17,11 @@ public class RDF4JLanguageFormats {
 
   public static final String formatsPrettyPrint = constructPrettyPrint();
 
-  public static RDFFormat getFormatFromString(String format) throws NotValidArgumentException {
+  public static RDFFormat getFormatFromString(String format) throws NoValidArgumentException {
     RDFFormat result = getFormatNoException(format);
 
     if (result == null) {
-      throw new NotValidArgumentException("Unknown language format: " + format);
+      throw new NoValidArgumentException("Unknown language format: " + format);
     }
     return result;
   }

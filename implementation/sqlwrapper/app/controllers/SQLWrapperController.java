@@ -1,12 +1,12 @@
 package controllers;
 
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleWriterFactory;
 import de.unipassau.medspace.common.stream.TestTripleInputStream;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.TripleInputStream;
 import de.unipassau.medspace.common.util.FileUtil;
@@ -107,7 +107,7 @@ public class SQLWrapperController extends Controller {
       FileUtil.closeSilently(triples);
       log.error("Error while querying the D2rWrapper", e);
       return internalServerError("Internal server error");
-    } catch (NotValidArgumentException e) {
+    } catch (NoValidArgumentException e) {
       FileUtil.closeSilently(triples);
       return badRequest("keyword search query isn't valid: \"" + keywords + "\"");
     }
@@ -120,7 +120,7 @@ public class SQLWrapperController extends Controller {
     InputStream tripleStream;
     try {
       tripleStream = new TripleInputStream(triples, format, namespaces, tripleWriterFactory);
-    } catch (NotValidArgumentException | IOException e) {
+    } catch (NoValidArgumentException | IOException e) {
       log.error("Couldn't construct triple input stream", e);
       return internalServerError("Couldn't construct triple input stream");
     }

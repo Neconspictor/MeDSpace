@@ -1,6 +1,5 @@
 package de.unipassau.medspace.common.rdf.rdf4j;
 
-import de.unipassau.medspace.common.rdf.RDFValue;
 import de.unipassau.medspace.common.rdf.Triple;
 import org.eclipse.rdf4j.model.Statement;
 
@@ -17,17 +16,17 @@ public class WrappedStatement implements Triple {
 
   @Override
   public String getSubject() {
-    return null;
+    return statement.getSubject().toString();
   }
 
   @Override
   public String getPredicate() {
-    return null;
+    return statement.getPredicate().toString();
   }
 
   @Override
-  public RDFValue getObject() {
-    return null;
+  public String getObject() {
+    return statement.getObject().toString();
   }
 
   public Statement getStatement() {

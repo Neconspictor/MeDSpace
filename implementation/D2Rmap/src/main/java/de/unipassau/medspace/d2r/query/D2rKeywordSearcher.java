@@ -3,7 +3,7 @@ package de.unipassau.medspace.d2r.query;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 import de.unipassau.medspace.common.SQL.SqlStream;
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.stream.Stream;
@@ -48,7 +48,7 @@ public class D2rKeywordSearcher implements KeywordSearcher<Triple> {
 
   @Override
   public Stream<Triple> searchForKeywords(List<String> keywords) throws IOException,
-      NotValidArgumentException {
+      NoValidArgumentException {
     StreamCollection<Triple> result = new StreamCollection<>();
 
     // Generate instances for all maps

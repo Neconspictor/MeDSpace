@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.lucene;
 
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import org.apache.lucene.analysis.Analyzer;
@@ -57,10 +57,10 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
 
   @Override
   public Stream<Document> searchForKeywords(List<String> keywords) throws IOException,
-      NotValidArgumentException {
+      NoValidArgumentException {
 
     if (keywords.size() == 0) {
-      throw new NotValidArgumentException("No keywords to search for");
+      throw new NoValidArgumentException("No keywords to search for");
     }
 
     // escape  keywords
@@ -74,7 +74,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
     try {
       query = constructQuery(fields, keywords);
     } catch (ParseException e) {
-      throw new NotValidArgumentException("One of the keywords isn't valid", e);
+      throw new NoValidArgumentException("One of the keywords isn't valid", e);
     }
 
     try {

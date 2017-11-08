@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.rdf;
 
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,5 +10,5 @@ import java.io.OutputStream;
  */
 public interface TripleWriterFactory {
 
-  TripleWriter create(OutputStream out, String format) throws IOException, NotValidArgumentException;
+  TripleWriter create(OutputStream out, String format) throws IOException, NoValidArgumentException;
 }

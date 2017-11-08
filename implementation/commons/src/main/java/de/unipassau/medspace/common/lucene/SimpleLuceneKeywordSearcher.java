@@ -1,6 +1,6 @@
 package de.unipassau.medspace.common.lucene;
 
-import de.unipassau.medspace.common.exception.NotValidArgumentException;
+import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.stream.Stream;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -26,10 +26,10 @@ public class SimpleLuceneKeywordSearcher extends LuceneKeywordSearcher {
 
   @Override
   public Stream<Document> searchForKeywords(List<String> keywords) throws IOException,
-      NotValidArgumentException {
+      NoValidArgumentException {
 
     if (keywords.size() == 0) {
-      throw new NotValidArgumentException("No keywords to search for");
+      throw new NoValidArgumentException("No keywords to search for");
     }
 
 

@@ -25,4 +25,6 @@ GET     /assets/*file                controllers.Assets.versioned(path="/public"
 # QueryExecutor stuff
 GET     /query-executor-test           controllers.QueryExecutorController.queryExecutorTest(query ?="")
 
-GET /util/get-port-action              controllers.UtilController.getPortAction
+# DataCollector stuff
+GET     /data-collector/createUniqueQueryResultId     controllers.DataCollectorController.createUniqueQueryResultID()
+GET     /data-collector/addPartialQueryResult     controllers.DataCollectorController.addPartialQueryResult()

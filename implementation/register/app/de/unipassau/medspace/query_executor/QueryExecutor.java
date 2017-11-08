@@ -103,10 +103,10 @@ public class QueryExecutor {
   }
 
   /**
-   * Queries an rdf repository and writes the query result to an output stream.
+   * Queries an rdf data_collector and writes the query result to an output stream.
    * @param out The output stream the query result should be written to.
    * @param format The rdf format that should be used for writing the query result to the output stream.
-   * @param db The repository to be queried.
+   * @param db The data_collector to be queried.
    * @param contexts Optional named graphs that should be used in the query.
    * @throws IOException If an io error occurs.
    */
@@ -115,7 +115,7 @@ public class QueryExecutor {
     // Open a connection to the database
     try (RepositoryConnection conn = db.getConnection()) {
 
-      // write the rdf data to the repository
+      // write the rdf data to the data_collector
       try (ClosableRDFWriter writer = new ClosableRDFWriter(format, out)) {
 
         // write namespaces
@@ -138,11 +138,11 @@ public class QueryExecutor {
   }
 
   /**
-   * Writes rdf content from a file to an rdf repository.
+   * Writes rdf content from a file to an rdf data_collector.
    * @param file The file containing rdf data
    * @param baseURI The base URI the rdf data uses
    * @param format The rdf format used in the file
-   * @param db The repository to write the rdf data to.
+   * @param db The data_collector to write the rdf data to.
    * @param contexts Named graphs the rdf statements should be assigned to.
    * @throws IOException If an IO-Error occurs.
    */
