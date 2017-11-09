@@ -1,6 +1,8 @@
 import com.google.inject.AbstractModule;
 
 import de.unipassau.medspace.DataCollectorLifecycle;
+import de.unipassau.medspace.common.rdf.RDFProvider;
+import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.data_collector.DataCollector;
 import de.unipassau.medspace.data_collector.rdf4j.RDF4J_DataCollector;
 import de.unipassau.medspace.query_executor.QueryExecutorLifecycle;
@@ -40,6 +42,7 @@ public class GlobalModule extends AbstractModule {
     if (environment.asJava().isTest()) return;
 
     log.info("GlobuleModule configures dependencies...");
+    bind(RDFProvider.class).to(RDF4J_RDFProvider.class).asEagerSingleton();
     bind(RegisterLifecycle.class).asEagerSingleton();
     bind(QueryExecutorLifecycle.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();

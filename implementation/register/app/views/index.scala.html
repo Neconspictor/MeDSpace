@@ -3,6 +3,7 @@
 @import test.DatasourceFormular
 @import test.NoResponseFormular
 @import test.RemoveDatasourceFormular
+@import test.DataCollectorFileUpload
 @import java.sql.Timestamp
 @import de.unipassau.medspace.common.register.Datasource
 
@@ -26,6 +27,10 @@
   @NoResponseFormular()
 
   @RemoveDatasourceFormular()
+
+  <h2>Data Collector Test</h2>
+
+  @DataCollectorFileUpload()
 
   <h2>Registered Datasources</h2>
 

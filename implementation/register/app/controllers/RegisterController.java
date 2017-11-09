@@ -131,7 +131,9 @@ public class RegisterController extends Controller {
                 routes.javascript.Assets.versioned(),
                 routes.javascript.RegisterController.add(),
                 routes.javascript.RegisterController.noResponse(),
-                routes.javascript.RegisterController.remove()
+                routes.javascript.RegisterController.remove(),
+                routes.javascript.DataCollectorController.addPartialQueryResult(),
+                routes.javascript.DataCollectorController.createUniqueQueryResultID()
             )
         ).as("text/javascript");
     }

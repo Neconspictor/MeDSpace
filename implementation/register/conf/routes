@@ -27,4 +27,6 @@ GET     /query-executor-test           controllers.QueryExecutorController.query
 
 # DataCollector stuff
 GET     /data-collector/createUniqueQueryResultId     controllers.DataCollectorController.createUniqueQueryResultID()
-GET     /data-collector/addPartialQueryResult     controllers.DataCollectorController.addPartialQueryResult()
+
++nocsrf
+POST     /data-collector/addPartialQueryResult     controllers.DataCollectorController.addPartialQueryResult(resultID, rdfFormat, baseURI)

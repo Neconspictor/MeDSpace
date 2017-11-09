@@ -183,6 +183,68 @@ function createServiceInputField() {
     ].join('\n');
 }
 
+function sendInChunks2(file) {
+
+    // file is an instance of File, e.g. from a file input.
+    var xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("POST",
+        jsRoutes.controllers.DataCollectorController.addPartialQueryResult(
+            "666", "TURTLE", "http://medspace.com/indexTest").url,
+        true);
+
+    xmlHttpRequest.setRequestHeader("Content-Type", file.type);
+
+// Send the binary data.
+// Since a File is a Blob, we can send it directly.
+    xmlHttpRequest.send(file);
+}
+
+
+function sendInChunks(file){
+    var loaded = 0;
+    var step = 1024//1024*1024; size of one chunk
+    var total = file.size;  // total size of file
+    var start = 0;          // starting position
+    var reader = new FileReader();
+    var blob = file.slice(start,step); //a single chunk in starting of step size
+    reader.readAsArrayBuffer(blob);
+    //reader.readAsBinaryString(blob);   // reading that chunk. when it read it, onload will be invoked
+
+    reader.onload = function(e){
+        var d = {file:reader.result}
+        $.ajax({
+            url: jsRoutes.controllers.DataCollectorController.addPartialQueryResult("666", "TURTLE", "http://medspace.com/indexTest").url,
+            type:"POST",
+            data: d.toString(),// d is the chunk got by readAsBinaryString(...)
+            processData: false,
+            success: function (data) {
+                appendAlertBox(data, "#remove-datasource-alert-box");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                appendErrorBox(jqXHR, textStatus, errorThrown, "#remove-datasource-alert-box");
+            }
+        }).done(function(r){           // if 'd' is uploaded successfully then ->
+            //$('.record_reply_g').html(r);   //updating status in html view
+
+            loaded += step;                 //increasing loaded which is being used as start position for next chunk
+            //$('.upload_rpogress').html((loaded/total) * 100);
+
+            if(loaded <= total){            // if file is not completely uploaded
+                blob = file.slice(loaded,loaded+step);  // getting next chunk
+                reader.readAsArrayBuffer(blob);        //reading it through file reader which will call onload again. So it will happen recursively until file is completely uploaded.
+            } else {                       // if file is uploaded completely
+                loaded = total;            // just changed loaded which could be used to show status.
+            }
+        })
+    };
+}
+
+function sendDataCollectorAddPartielQueryResult(formContainer) {
+    var inputField = formContainer.find("input")[0];
+    var test = inputField.files[0];
+    sendInChunks2(test);
+}
+
 
 $(document).ready(function () {
     //$("a").tooltip();
@@ -221,5 +283,11 @@ $(document).ready(function () {
         e.preventDefault();
         var form = $(this).closest("#no-response-form");
         submitNoResponseForm(form);
+    });
+
+    $(document).on('click', '#data-collector-file-upload-btn', function (e) {
+        e.preventDefault();
+        var form = $(this).closest("#data-collector-file-upload-form");
+        sendDataCollectorAddPartielQueryResult(form);
     });
 });
