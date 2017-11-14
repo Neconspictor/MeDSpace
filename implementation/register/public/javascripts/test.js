@@ -190,13 +190,15 @@ function sendInChunks2(file) {
     xmlHttpRequest.open("POST",
         jsRoutes.controllers.DataCollectorController.addPartialQueryResult(
             "666", "TURTLE", "http://medspace.com/indexTest").url,
-        true);
+        false);
 
     xmlHttpRequest.setRequestHeader("Content-Type", file.type);
 
 // Send the binary data.
 // Since a File is a Blob, we can send it directly.
     xmlHttpRequest.send(file);
+    xmlHttpRequest.open("GET", jsRoutes.controllers.DataCollectorController.deleteQueryResult("666").url, false);
+    //xmlHttpRequest.send();
 }
 
 

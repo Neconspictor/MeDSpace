@@ -26,7 +26,9 @@ GET     /assets/*file                controllers.Assets.versioned(path="/public"
 GET     /query-executor-test           controllers.QueryExecutorController.queryExecutorTest(query ?="")
 
 # DataCollector stuff
-GET     /data-collector/createUniqueQueryResultId     controllers.DataCollectorController.createUniqueQueryResultID()
+GET     /data-collector/createQueryResult     controllers.DataCollectorController.createQueryResult()
 
 +nocsrf
 POST     /data-collector/addPartialQueryResult     controllers.DataCollectorController.addPartialQueryResult(resultID, rdfFormat, baseURI)
+
+GET     /data-collector/deleteQueryResult          controllers.DataCollectorController.deleteQueryResult(resultID)

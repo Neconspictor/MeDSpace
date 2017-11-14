@@ -1,7 +1,10 @@
-package de.unipassau.medspace;
+package de.unipassau.medspace.data_collector;
 
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
+import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.repository.manager.util.RepositoryManagerListener;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.slf4j.Logger;
@@ -16,18 +19,22 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by David Goeth on 07.11.2017.
  */
-public class DataCollectorLifecycle implements Provider<Repository> {
+public class DataCollectorLifecycle implements Provider<RepositoryManager> {
 
   private static final Logger log = LoggerFactory.getLogger(DataCollectorLifecycle.class);
 
-  private final Repository db;
+  private final RepositoryManager manager;
 
   @Inject
   public DataCollectorLifecycle(ApplicationLifecycle lifecycle) {
+
     File dataDir = new File("./_work/data_collector/native_store/");
-    db = new SailRepository(new NativeStore(dataDir));
+    manager = new LocalRepositoryManager(dataDir);
+
+    //db = new SailRepository(new NativeStore(dataDir));
     try{
-      db.initialize();
+      //db.initialize();
+      manager.initialize();
     } catch (RepositoryException e) {
       log.error("Couldn't initialize Repository!");
     }
@@ -35,7 +42,8 @@ public class DataCollectorLifecycle implements Provider<Repository> {
     lifecycle.addStopHook(() -> {
       log.info("shutdown is executing...");
       try {
-        db.shutDown();
+        //db.shutDown();
+        manager.shutDown();
       } catch (RepositoryException e) {
         log.error("Couldn't shutdown Repository!", e);
       }
@@ -47,7 +55,7 @@ public class DataCollectorLifecycle implements Provider<Repository> {
   }
 
   @Override
-  public Repository get() {
-    return db;
+  public RepositoryManager get() {
+    return manager;
   }
 }

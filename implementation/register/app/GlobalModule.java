@@ -1,6 +1,6 @@
 import com.google.inject.AbstractModule;
 
-import de.unipassau.medspace.DataCollectorLifecycle;
+import de.unipassau.medspace.data_collector.DataCollectorLifecycle;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.data_collector.DataCollector;
@@ -9,6 +9,7 @@ import de.unipassau.medspace.query_executor.QueryExecutorLifecycle;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import de.unipassau.medspace.register.RegisterLifecycle;
 import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.Configuration;
@@ -47,7 +48,7 @@ public class GlobalModule extends AbstractModule {
     bind(QueryExecutorLifecycle.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();
     bind(DataCollectorLifecycle.class).asEagerSingleton();
-    bind(Repository.class).toProvider(DataCollectorLifecycle.class).asEagerSingleton();
+    bind(RepositoryManager.class).toProvider(DataCollectorLifecycle.class).asEagerSingleton();
     bind(DataCollector.class).to(RDF4J_DataCollector.class).asEagerSingleton();
     log.info("done.");
   }

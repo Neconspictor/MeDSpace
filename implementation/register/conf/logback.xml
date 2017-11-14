@@ -28,6 +28,7 @@
   <logger name="application" level="DEBUG" />
   <logger name="de.unipassau.medspace.register" level="DEBUG" />
   <logger name="de.unipassau.medspace.query_executor" level="DEBUG" />
+  <logger name="de.unipassau.medspace.data_collector" level="DEBUG" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />

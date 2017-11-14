@@ -133,7 +133,8 @@ public class RegisterController extends Controller {
                 routes.javascript.RegisterController.noResponse(),
                 routes.javascript.RegisterController.remove(),
                 routes.javascript.DataCollectorController.addPartialQueryResult(),
-                routes.javascript.DataCollectorController.createUniqueQueryResultID()
+                routes.javascript.DataCollectorController.createQueryResult(),
+                routes.javascript.DataCollectorController.deleteQueryResult()
             )
         ).as("text/javascript");
     }

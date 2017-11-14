@@ -14,25 +14,34 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.eclipse.rdf4j.repository.config.RepositoryConfig;
+import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.sail.nativerdf.config.NativeStoreConfig;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by David Goeth on 07.11.2017.
  */
 public class RDF4J_DataCollector extends DataCollector {
 
-  private final Repository db;
+  private final RepositoryManagerWrapper manager;
 
   private final static String NAMED_GRAPH_BASE_IRI = "http://medspace.com/data_collector_ids/#";
 
   @Inject
-  public RDF4J_DataCollector(Repository db) {
-    this.db = db;
+  public RDF4J_DataCollector(RepositoryManager manager) {
+    this.manager = new RepositoryManagerWrapper(manager);
   }
 
 
@@ -40,23 +49,53 @@ public class RDF4J_DataCollector extends DataCollector {
   public void addPartialQueryResult(BigInteger resultID, InputStream rdfData, String rdfFormat, String baseURI) throws
       NoValidArgumentException, IOException {
 
-    RDFFormat format = RDF4JLanguageFormats.getFormatFromString(rdfFormat);
-    Resource namedGraph = getNamedGraph(resultID);
+    String repoName = resultID.toString();
+    Repository repo = null;
 
-    try (RepositoryConnection conn = db.getConnection()) {
-      conn.add(rdfData, baseURI, format, new Resource[]{namedGraph});
+    try {
+      repo = manager.getRepository(repoName);
+    } catch (RepositoryException e) {}
+
+    if (repo == null) {
+      throw new NoValidArgumentException("resultID isn't a registered query result. To create a new query result " +
+          "invoke the 'createQueryResult' service");
+    }
+
+    RDFFormat format = RDF4JLanguageFormats.getFormatFromString(rdfFormat);
+
+    Lock lock = manager.getLock(repo);
+
+    lock.lock();
+
+    try (RepositoryConnection conn = repo.getConnection()) {
+      conn.add(rdfData, baseURI, format);
+    } catch (IllegalStateException | RepositoryException e) {
+      throw new IOException("Couldn't add rdf data to the query result repository.", e);
+    } finally {
+      lock.unlock();
     }
   }
 
   @Override
-  public void deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException{
+  public BigInteger createQueryResult() {
+    BigInteger id = super.createQueryResult();
+    manager.addResultID(id);
 
-    Resource namedGraph = getNamedGraph(resultID);
-    try (RepositoryConnection conn = db.getConnection()) {
-      conn.clear(namedGraph);
-    } catch (RepositoryException e) {
-      throw new IOException("Error while trying to delete query result with id=" + resultID, e);
+    return id;
+  }
+
+  @Override
+  public boolean deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException{
+
+
+    String repoName = resultID.toString();
+    Repository repo = manager.getRepository(repoName);
+    if (repo == null) {
+      return false;
     }
+
+    manager.removeRepository(repoName);
+    return true;
   }
 
   @Override
@@ -64,8 +103,10 @@ public class RDF4J_DataCollector extends DataCollector {
 
     Resource namedGraph = getNamedGraph(resultID);
 
+    Repository repo = manager.getRepository(resultID.toString());
+
     try {
-      RepositoryConnection conn = db.getConnection();
+      RepositoryConnection conn = repo.getConnection();
       RepositoryResult<Statement> result = conn.getStatements(null, null, null, namedGraph);
       return new RepositoryResultStream(result, conn);
     } catch (RepositoryException e) {
@@ -76,7 +117,6 @@ public class RDF4J_DataCollector extends DataCollector {
   private Resource getNamedGraph(BigInteger resultID) {
     return SimpleValueFactory.getInstance().createIRI(NAMED_GRAPH_BASE_IRI + resultID);
   }
-
 
   private class RepositoryResultStream implements Stream<Triple> {
 
@@ -124,6 +164,79 @@ public class RDF4J_DataCollector extends DataCollector {
       } catch (RepositoryException e) {
         throw new IOException("Couldn't close repository connection", e);
       }
+    }
+  }
+
+  //TODO proper synchronization
+  private static class RepositoryManagerWrapper {
+
+    private final RepositoryManager manager;
+    private Map<Repository, ReadWriteLock> repoLockMap;
+
+    public  RepositoryManagerWrapper(RepositoryManager manager) {
+      this.manager = manager;
+      repoLockMap = new ConcurrentHashMap<>();
+    }
+
+    public Repository getRepository(String identity) {
+      Repository repo = manager.getRepository(identity);
+      if (repo != null)
+        repoLockMap.putIfAbsent(repo, new ReentrantReadWriteLock());
+
+      return repo;
+    }
+
+    public Lock getLock(Repository repo) {
+        ReadWriteLock readWriteLock = repoLockMap.get(repo);
+
+        if (readWriteLock == null) {
+          throw new IllegalArgumentException("No lock found!");
+        }
+
+        return readWriteLock.readLock();
+    }
+
+    public synchronized void addResultID(BigInteger resultID) {
+
+      String repoName = resultID.toString();
+      Repository repo = null;
+
+      try {
+        repo = manager.getRepository(repoName);
+      } catch (RepositoryException e) {}
+
+      // Already added?
+      if (repo != null) {
+        return;
+      }
+
+      RepositoryConfig config = new RepositoryConfig(resultID.toString());
+      config.setRepositoryImplConfig(new SailRepositoryConfig(new NativeStoreConfig()));
+      manager.addRepositoryConfig(config);
+    }
+
+
+    public void removeRepository(String repoName) throws IOException {
+
+      Lock lock;
+
+      Repository repo = manager.getRepository(repoName);
+
+      if (repo == null) {
+        throw new IOException("Repository with name '" + repoName + "' not registered.");
+      }
+
+      lock = repoLockMap.get(repo).writeLock();
+
+      lock.lock();
+        try {
+          repoLockMap.remove(repo);
+          manager.removeRepository(repoName);
+        } catch (IllegalStateException | RepositoryException e) {
+          throw new IOException("Couldn't remove repository '" + repoName + "'", e);
+        } finally {
+          lock.unlock();
+        }
     }
   }
 }

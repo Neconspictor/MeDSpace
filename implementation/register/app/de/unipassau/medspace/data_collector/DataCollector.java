@@ -21,16 +21,18 @@ public abstract class DataCollector {
   public DataCollector() {
   }
 
-  public BigInteger createUniqueQueryResultID() {
+  public BigInteger createQueryResult() {
     return nextID.incrementAndGet();
   }
 
   public abstract void addPartialQueryResult(BigInteger resultID, InputStream rdfData, String rdfFormat, String baseURI)
       throws NoValidArgumentException, IOException;
 
-  public abstract void deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException;
+  public abstract boolean deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException;
 
   public abstract Stream<Triple> queryResult(String rdfFormat, BigInteger resultID) throws IOException;
+
+  //TODO open and close repos to each query result
 
   private final class AtomicBigInteger {
 

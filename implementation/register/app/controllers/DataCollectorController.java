@@ -21,14 +21,14 @@ import play.mvc.Result;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
+
+import de.unipassau.medspace.common.util.StringUtil;
 
 /**
  * Created by David Goeth on 07.11.2017.
@@ -52,8 +52,8 @@ public class DataCollectorController extends Controller {
     this.provider = provider;
   }
 
-  public Result createUniqueQueryResultID() {
-    BigInteger id = dataCollector.createUniqueQueryResultID();
+  public Result createQueryResult() {
+    BigInteger id = dataCollector.createQueryResult();
     return ok(Json.toJson(new UniqueIdResponse(id)));
   }
 
@@ -66,6 +66,30 @@ public class DataCollectorController extends Controller {
 
     return CompletableFuture.supplyAsync(()-> addPartialQueryResultAction(resultID, rdfFormat, baseURI, file))
         .whenComplete((result, error)-> file.delete());
+  }
+
+  public Result deleteQueryResult(String resultID) {
+    BigInteger id;
+    try {
+      id = new BigInteger(resultID);
+    } catch (NumberFormatException e) {
+      return badRequest("resultID isn't a valid big integer");
+    }
+
+    boolean resultIdExists;
+
+    try {
+      resultIdExists = dataCollector.deleteQueryResult(id);
+    } catch (IOException | NoValidArgumentException e) {
+      String errorMessage = "Couldn't delete query result with id '" + id + "'";
+      log.error(errorMessage, e);
+      return internalServerError(errorMessage);
+    }
+
+    if (resultIdExists)
+      return ok("Query result with id '" + id + "' successfully deleted.");
+    else
+      return badRequest("Query result with id '" + id + "' doesn't exist");
   }
 
   private Result addPartialQueryResultAction(String resultID, String rdfFormat, String baseURI, File file) {
@@ -87,7 +111,7 @@ public class DataCollectorController extends Controller {
       dataCollector.addPartialQueryResult(id, in, rdfFormat, baseURI);
     } catch (IOException | NoValidArgumentException e) {
       log.error("An error occurred while collecting a partial query result", e);
-      return internalServerError("Couldn't collect partial query result");
+      return internalServerError("Couldn't collect partial query result: " + e.getMessage());
     }
 
     return ok(file.getAbsolutePath() + ", id= " + id + ", rdfFormat= '" + rdfFormat + "', baseURI= " + baseURI);
@@ -109,8 +133,6 @@ public class DataCollectorController extends Controller {
     @Override
     public Accumulator<ByteString, F.Either<Result, File>> apply(Http.RequestHeader request) {
 
-
-      Map map = request.getHeaders().toMap();
       String fileName = createUniqueFileName();
       final File file = new File(fileName);
 
@@ -130,18 +152,8 @@ public class DataCollectorController extends Controller {
       Random random = new Random();
       byte[] bytes = new byte[16];
       random.nextBytes(bytes);
-      String fileName = bytesToHex(bytes);
+      String fileName = StringUtil.bytesToHex(bytes);
       return TEMP + fileName;
-    }
-
-    private String bytesToHex(byte[] hash) {
-      StringBuffer hexString = new StringBuffer();
-      for (int i = 0; i < hash.length; i++) {
-        String hex = Integer.toHexString(0xff & hash[i]);
-        if(hex.length() == 1) hexString.append('0');
-        hexString.append(hex);
-      }
-      return hexString.toString();
     }
   }
 }
