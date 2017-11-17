@@ -183,13 +183,55 @@ function createServiceInputField() {
     ].join('\n');
 }
 
+function createQueryResult(file) {
+    return $.ajax({
+        url: jsRoutes.controllers.DataCollectorController.createQueryResult().url,
+        type: 'GET',
+        passedFile: file
+    });
+}
+
+function addPartialQueryResult(createQueryResultResponse) {
+    var id = createQueryResultResponse.id;
+    var file = this.passedFile;
+    return $.ajax({
+        url: jsRoutes.controllers.DataCollectorController.addPartialQueryResult(
+            id, "TURTLE", "http://medspace.com/indexTest").url,
+        type: 'POST',
+        data: file,
+        processData: false,
+        id: id
+    });
+}
+
+function deleteQueryResult(addPartialQueryResultResponse) {
+    var id = this.id;
+    return $.ajax({
+        url: jsRoutes.controllers.DataCollectorController.deleteQueryResult(id).url,
+        type: 'GET'
+    });
+}
+
+function sendInChunks3(file) {
+    createQueryResult(file)
+        .then(addPartialQueryResult)
+        .then(deleteQueryResult);
+}
+
 function sendInChunks2(file) {
 
     // file is an instance of File, e.g. from a file input.
     var xmlHttpRequest = new XMLHttpRequest();
+
+    xmlHttpRequest.open("GET", jsRoutes.controllers.DataCollectorController.createQueryResult().url,
+        false);
+    xmlHttpRequest.send();
+    var json = JSON.parse(xmlHttpRequest.response);
+    var id = json.id;
+
     xmlHttpRequest.open("POST",
         jsRoutes.controllers.DataCollectorController.addPartialQueryResult(
-            "666", "TURTLE", "http://medspace.com/indexTest").url,
+            id, "TURTLE", "http://medspace.com/indexTest").url,
         false);
 
     xmlHttpRequest.setRequestHeader("Content-Type", file.type);
@@ -197,7 +239,9 @@ function sendInChunks2(file) {
 // Send the binary data.
 // Since a File is a Blob, we can send it directly.
     xmlHttpRequest.send(file);
-    xmlHttpRequest.open("GET", jsRoutes.controllers.DataCollectorController.deleteQueryResult("666").url, false);
+
+
+    //xmlHttpRequest.open("GET", jsRoutes.controllers.DataCollectorController.deleteQueryResult("666").url, false);
     //xmlHttpRequest.send();
 }
 
@@ -241,10 +285,18 @@ function sendInChunks(file){
     };
 }
 
-function sendDataCollectorAddPartielQueryResult(formContainer) {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function sendDataCollectorAddPartielQueryResult(formContainer) {
     var inputField = formContainer.find("input")[0];
     var test = inputField.files[0];
-    sendInChunks2(test);
+    for (var j = 0; j < 1; ++j) {
+        for (var i = 0; i < 1; ++i)
+            sendInChunks3(test);
+           // await sleep(2000);
+    }
 }
 
 

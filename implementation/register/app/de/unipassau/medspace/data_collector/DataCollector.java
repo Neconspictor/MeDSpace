@@ -2,12 +2,14 @@ package de.unipassau.medspace.data_collector;
 
 import com.google.inject.Inject;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.stream.Stream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -29,6 +31,8 @@ public abstract class DataCollector {
       throws NoValidArgumentException, IOException;
 
   public abstract boolean deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException;
+
+  public abstract Set<Namespace> getNamespaces(BigInteger resultID) throws IOException;
 
   public abstract Stream<Triple> queryResult(String rdfFormat, BigInteger resultID) throws IOException;
 

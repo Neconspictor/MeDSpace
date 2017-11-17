@@ -36,7 +36,8 @@ public class QueryExecutorController extends Controller {
     //TODO the url (with port) should be stated in the config file for the QueryExecutor once it is split from the register
     int port = playConfig.getInt("play.server.http.port");
     log.warn("Readed port number: " +  port);
-    queryExecutor = new QueryExecutor(serviceInvoker, new URL("http://localhost:" + port), lifecycle.getRepository());
+    queryExecutor = new QueryExecutor(serviceInvoker, new URL("http://localhost:" + port),
+        new URL("http://localhost:" + port + "/data-collector"));
   }
 
   public Result queryExecutorTest(String query) {

@@ -5,9 +5,12 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
+import de.unipassau.medspace.common.network.HttpChunkedWriter;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.util.FileUtil;
+import de.unipassau.medspace.common.util.StringUtil;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,7 +23,7 @@ import java.util.concurrent.*;
 /**
  * Created by David Goeth on 14.10.2017.
  */
-public class DatasourceQueryResult implements AutoCloseable {
+public class DatasourceQueryResult implements Closeable {
 
   private static final String base = "./_work/query-executor/temp/";
 
@@ -40,7 +43,7 @@ public class DatasourceQueryResult implements AutoCloseable {
     File file;
 
     do {
-      String encoded = encodeString(datasource.getUrl().toExternalForm()
+      String encoded = StringUtil.encodeString(datasource.getUrl().toExternalForm()
           + query.hashCode()
           +  System.nanoTime());
 
@@ -48,25 +51,20 @@ public class DatasourceQueryResult implements AutoCloseable {
     } while(file.exists());
 
     file.createNewFile();
-
     OutputStream outputStream = java.nio.file.Files.newOutputStream(file.toPath());
-
-    // The sink that writes to the output stream
-    Sink<ByteString, CompletionStage<Done>> outputWriter =
-        Sink.<ByteString>foreach(bytes -> outputStream.write(bytes.toArray()));
-
     final File finalCopy = file;
 
-    // materialize and run the stream
-    resultFuture = source.runWith(outputWriter, materializer)
+    HttpChunkedWriter myWriter = new HttpChunkedWriter(source, outputStream, materializer);
+
+    resultFuture = myWriter.future()
         .whenComplete((value, error) -> {
-          // Close the output stream whether there was an error or not
-          try {
-            setResultFile(finalCopy);
-            outputStream.close();
-          }
-          catch(IOException e) {}
-        })
+        // Close the output stream whether there was an error or not
+        try {
+          setResultFile(finalCopy);
+          outputStream.close();
+        }
+        catch(IOException e) {}
+      })
         .thenApply(v -> resultFile)
         .toCompletableFuture();
 
@@ -100,37 +98,12 @@ public class DatasourceQueryResult implements AutoCloseable {
     resultFile = file;
   }
 
-  private String encodeString(String source) {
-
-    MessageDigest digest = null;
-    try {
-      digest = MessageDigest.getInstance("SHA-256");
-    } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException("Couldn't instantiate SHA-256 algorithm", e);
-    }
-
-    byte[] encodedHash = digest.digest(
-        source.getBytes(StandardCharsets.UTF_8));
-
-    return bytesToHex(encodedHash);
-  }
-
-  private static String bytesToHex(byte[] hash) {
-    StringBuffer hexString = new StringBuffer();
-    for (int i = 0; i < hash.length; i++) {
-      String hex = Integer.toHexString(0xff & hash[i]);
-      if(hex.length() == 1) hexString.append('0');
-      hexString.append(hex);
-    }
-    return hexString.toString();
-  }
-
   public String getContentType() {
     return contentType;
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     cleanup();
   }
 }

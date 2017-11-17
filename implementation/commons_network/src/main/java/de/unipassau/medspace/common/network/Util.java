@@ -5,7 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.ws.WSRequest;
 import play.libs.ws.WSResponse;
+import play.mvc.Http;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -82,5 +89,15 @@ public final class Util {
 
   public static JsonResponse postAndWaitJson(WSRequest request, JsonNode body, int triesOnFailure) {
     return executeAndWaitJson(()-> request.post(body), triesOnFailure);
+  }
+
+  public static WSResponse postFileAndWait(WSRequest request, File file, int triesOnFailure) {
+    return executeAndWait(()->request.post(file), triesOnFailure);
+  }
+
+  public static InputStream getGETInputStream(WSRequest request) throws IOException {
+    URLConnection connection = new URL(request.getUrl()).openConnection();
+    connection.setRequestProperty("Accept-Charset", "UTF-8");
+    return connection.getInputStream();
   }
 }

@@ -7,15 +7,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.network.JsonResponse;
 import de.unipassau.medspace.common.network.Util;
+import de.unipassau.medspace.common.network.data_collector.UniqueIdResponse;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.libs.ws.*;
+import play.mvc.Http;
 
 import javax.inject.Inject;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -34,6 +37,10 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
 
   private static final Service REGISTER_GET_DATASOURCES_SUBPATH = new Service("get-datasources");
 
+  private static final Service DATA_COLLECTOR_ADD_PARTIAL_QUERY_RESULT = new Service("addPartialQueryResult");
+
+  private static final Service DATA_COLLECTOR_CREATE_QUERY_RESULT = new Service("createQueryResult");
+
   private final WSClient ws;
   private final Materializer materializer;
 
@@ -43,8 +50,55 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     this.materializer = materializer;
   }
 
+  public void invokeDataCollectorAddPartialQueryResult(URL dataCollectorBase, String resultID, String rdfFormat,
+                                                       String baseURI, File file) throws IOException {
+
+    URL serviceURL = constructServiceURL(dataCollectorBase, DATA_COLLECTOR_ADD_PARTIAL_QUERY_RESULT);
+
+    WSRequest request = ws.url(serviceURL.toExternalForm())
+        .addQueryParameter("resultID", resultID)
+        .addQueryParameter("rdfFormat", rdfFormat)
+        .addQueryParameter("baseURI", baseURI)
+        .setRequestTimeout(Duration.of(200, ChronoUnit.SECONDS))
+        .setFollowRedirects(true);
+
+    WSResponse response = Util.postFileAndWait(request, file, 1);
+
+    if (Http.Status.OK != response.getStatus()) {
+      throw new IOException("Error while adding a partial query result to the data-collector: response message= "
+          + response.getBody());
+    }
+  }
+
+  public BigInteger invokeDataCollectorCreateQueryResultID(URL dataCollectorBase) throws IOException {
+    if (dataCollectorBase == null) throw new NullPointerException("dataCollector URL mustn't be null!");
+
+    URL serviceURL = constructServiceURL(dataCollectorBase, DATA_COLLECTOR_CREATE_QUERY_RESULT);
+
+    WSRequest request = ws.url(serviceURL.toExternalForm())
+        .setRequestTimeout(Duration.of(10, ChronoUnit.SECONDS))
+        .setFollowRedirects(true);
+
+    JsonResponse result = Util.getAndWaitJson(request, 1);
+
+    if (result.getException() != null) {
+      throw new IOException("Error while sending/retrieving data from the register", result.getException());
+    }
+
+    UniqueIdResponse reponse;
+
+    try {
+      reponse = Json.fromJson(result.getData(), UniqueIdResponse.class);
+    } catch (RuntimeException e) {
+      log.debug("JsonResponse object: ", result.getData());
+      throw new IOException("Couldn't convert server message to an JsonResponse object", e);
+    }
+
+    return reponse.getId();
+  }
+
   public List<Datasource> invokeRegisterGetDatasources(URL registerBase) throws IOException {
-    if (registerBase == null) throw new NullPointerException("datasource mustn't be null!");
+    if (registerBase == null) throw new NullPointerException("register URL mustn't be null!");
 
     URL serviceURL = constructServiceURL(registerBase, REGISTER_GET_DATASOURCES_SUBPATH);
 

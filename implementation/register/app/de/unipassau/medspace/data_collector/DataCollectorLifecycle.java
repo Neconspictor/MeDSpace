@@ -1,12 +1,8 @@
 package de.unipassau.medspace.data_collector;
 
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
-import org.eclipse.rdf4j.repository.manager.util.RepositoryManagerListener;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.inject.ApplicationLifecycle;
@@ -28,7 +24,7 @@ public class DataCollectorLifecycle implements Provider<RepositoryManager> {
   @Inject
   public DataCollectorLifecycle(ApplicationLifecycle lifecycle) {
 
-    File dataDir = new File("./_work/data_collector/native_store/");
+    File dataDir = new File("E:/bachelorThesisTest/_work/data_collector/native_store");
     manager = new LocalRepositoryManager(dataDir);
 
     //db = new SailRepository(new NativeStore(dataDir));

@@ -32,3 +32,5 @@ GET     /data-collector/createQueryResult     controllers.DataCollectorControlle
 POST     /data-collector/addPartialQueryResult     controllers.DataCollectorController.addPartialQueryResult(resultID, rdfFormat, baseURI)
 
 GET     /data-collector/deleteQueryResult          controllers.DataCollectorController.deleteQueryResult(resultID)
+
+GET     /data-collector/queryResult          controllers.DataCollectorController.queryResult(resultID, rdfFormat)

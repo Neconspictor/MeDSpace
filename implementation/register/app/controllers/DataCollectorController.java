@@ -6,7 +6,11 @@ import akka.stream.javadsl.Sink;
 import akka.util.ByteString;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.network.data_collector.UniqueIdResponse;
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
+import de.unipassau.medspace.common.rdf.Triple;
+import de.unipassau.medspace.common.stream.Stream;
+import de.unipassau.medspace.common.stream.TripleInputStream;
 import de.unipassau.medspace.data_collector.DataCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +26,10 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
@@ -90,6 +96,34 @@ public class DataCollectorController extends Controller {
       return ok("Query result with id '" + id + "' successfully deleted.");
     else
       return badRequest("Query result with id '" + id + "' doesn't exist");
+  }
+
+  public Result queryResult(String resultID, String rdfFormat) {
+    BigInteger id;
+    try {
+      id = new BigInteger(resultID);
+    } catch (NumberFormatException e) {
+      return badRequest("resultID isn't a valid big integer");
+    }
+
+    if (!provider.isValid(rdfFormat)) {
+      return badRequest("rdfFormat '" + rdfFormat + "' isn't a supported rdf format");
+    }
+
+    Stream<Triple> triples;
+    InputStream in;
+    try {
+      triples = dataCollector.queryResult(rdfFormat, id);
+      Set<Namespace> namespaces = dataCollector.getNamespaces(id);
+      // TODO get namesapces from the repository
+      in = new TripleInputStream(triples, rdfFormat, namespaces, provider.getWriterFactory());
+    } catch (IOException | NoValidArgumentException e) {
+      String errorMessage = "Error while retrieving query result for resultID=" + id;
+      log.error(errorMessage, e);
+      return internalServerError(errorMessage + ": " + e.getMessage());
+    }
+
+    return ok(in);
   }
 
   private Result addPartialQueryResultAction(String resultID, String rdfFormat, String baseURI, File file) {

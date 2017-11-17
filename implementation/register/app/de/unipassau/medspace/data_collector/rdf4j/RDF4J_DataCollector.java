@@ -1,6 +1,7 @@
 package de.unipassau.medspace.data_collector.rdf4j;
 
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4JLanguageFormats;
 import de.unipassau.medspace.common.rdf.rdf4j.WrappedStatement;
@@ -24,7 +25,9 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -99,18 +102,36 @@ public class RDF4J_DataCollector extends DataCollector {
   }
 
   @Override
-  public Stream<Triple> queryResult(String rdfFormat, BigInteger resultID) throws IOException {
+  public Set<Namespace> getNamespaces(BigInteger resultID) throws IOException {
+    Repository repo = manager.getRepository(resultID.toString());
+    Set<Namespace> namespaces = new HashSet<>();
 
-    Resource namedGraph = getNamedGraph(resultID);
+    try(RepositoryConnection conn = repo.getConnection()) {
+      try(RepositoryResult<org.eclipse.rdf4j.model.Namespace> result = conn.getNamespaces()) {
+
+        while(result.hasNext()) {
+          org.eclipse.rdf4j.model.Namespace modelNamespace = result.next();
+          namespaces.add(new Namespace(modelNamespace.getPrefix(), modelNamespace.getName()));
+        }
+      }
+    } catch (RepositoryException e) {
+      throw new IOException("Couldn't retrieve namespaces from repository for resultID=" + resultID,e);
+    }
+
+    return namespaces;
+  }
+
+  @Override
+  public Stream<Triple> queryResult(String rdfFormat, BigInteger resultID) throws IOException {
 
     Repository repo = manager.getRepository(resultID.toString());
 
     try {
       RepositoryConnection conn = repo.getConnection();
-      RepositoryResult<Statement> result = conn.getStatements(null, null, null, namedGraph);
+      RepositoryResult<Statement> result = conn.getStatements(null, null, null);
       return new RepositoryResultStream(result, conn);
     } catch (RepositoryException e) {
-     throw new IOException("Couldn't retrieve query result from repository",e);
+     throw new IOException("Couldn't retrieve query result from repository for resultID=" + resultID,e);
     }
   }
 
@@ -179,24 +200,22 @@ public class RDF4J_DataCollector extends DataCollector {
     }
 
     public Repository getRepository(String identity) {
-      Repository repo = manager.getRepository(identity);
-      if (repo != null)
-        repoLockMap.putIfAbsent(repo, new ReentrantReadWriteLock());
-
-      return repo;
+      return manager.getRepository(identity);
     }
 
-    public Lock getLock(Repository repo) {
+    public Lock getLock(Repository repo) throws IOException {
         ReadWriteLock readWriteLock = repoLockMap.get(repo);
 
         if (readWriteLock == null) {
-          throw new IllegalArgumentException("No lock found!");
+          throw new IOException("No lock found!");
         }
 
         return readWriteLock.readLock();
     }
 
-    public synchronized void addResultID(BigInteger resultID) {
+    // TODO this function is not thread-safe against  'removeRepository'; if it can be assured that this function is
+    // TODO only called once for each resultID at any time, it can be considered to be thread-safe
+    public void addResultID(BigInteger resultID) {
 
       String repoName = resultID.toString();
       Repository repo = null;
@@ -207,26 +226,37 @@ public class RDF4J_DataCollector extends DataCollector {
 
       // Already added?
       if (repo != null) {
-        return;
+        throw new IllegalArgumentException("resultID '" + resultID + "' already registered!");
       }
 
       RepositoryConfig config = new RepositoryConfig(resultID.toString());
       config.setRepositoryImplConfig(new SailRepositoryConfig(new NativeStoreConfig()));
       manager.addRepositoryConfig(config);
+
+      repo = manager.getRepository(repoName);
+      assert repo != null;
+      repoLockMap.putIfAbsent(repo, new ReentrantReadWriteLock());
     }
 
 
     public void removeRepository(String repoName) throws IOException {
 
       Lock lock;
+      Repository repo;
 
-      Repository repo = manager.getRepository(repoName);
+      //synchronized (this) {
+        repo = getRepository(repoName);
 
-      if (repo == null) {
-        throw new IOException("Repository with name '" + repoName + "' not registered.");
-      }
+        // repo is only null, if 'addResultID' wasn't called before!
+        if (repo == null) {
+          throw new IOException("Repository with name '" + repoName + "' not registered.");
+        }
 
-      lock = repoLockMap.get(repo).writeLock();
+        lock = repoLockMap.get(repo).writeLock();
+      //}
+
+      //From here synchronization isn't needed anymore, as 'repoLockMap' and 'manager' are thread-safe
+      // and they allow multiply remove actions
 
       lock.lock();
         try {
