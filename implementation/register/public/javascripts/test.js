@@ -204,6 +204,18 @@ function addPartialQueryResult(createQueryResultResponse) {
     });
 }
 
+function addPartialQueryResult2(createQueryResultResponse, file) {
+    var id = createQueryResultResponse.id;
+    return $.ajax({
+        url: jsRoutes.controllers.DataCollectorController.addPartialQueryResultInputStream(
+            id, "TURTLE", "http://medspace.com/indexTest").url,
+        type: 'POST',
+        data: file,
+        processData: false,
+        id: id
+    });
+}
+
 function deleteQueryResult(addPartialQueryResultResponse) {
     var id = this.id;
     return $.ajax({
@@ -213,9 +225,12 @@ function deleteQueryResult(addPartialQueryResultResponse) {
 }
 
 function sendInChunks3(file) {
-    createQueryResult(file)
-        .then(addPartialQueryResult)
-        .then(deleteQueryResult);
+    //createQueryResult(file)
+    //    .then(addPartialQueryResult);
+        //.then(deleteQueryResult);
+    var test = new Object();
+    test.id = 666;
+    addPartialQueryResult2(test, file);
 }
 
 function sendInChunks2(file) {

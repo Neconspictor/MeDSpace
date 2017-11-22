@@ -10,6 +10,10 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,14 +41,23 @@ public class QueryExecutorController extends Controller {
     int port = playConfig.getInt("play.server.http.port");
     log.warn("Readed port number: " +  port);
     queryExecutor = new QueryExecutor(serviceInvoker, new URL("http://localhost:" + port),
-        new URL("http://localhost:" + port + "/data-collector"));
+        new URL("http://localhost:" + port + "/data-collector/"));
   }
 
   public Result queryExecutorTest(String query) {
     log.warn("query param: " + query);
 
-    queryExecutor.keywordService(getKeywords(query));
-    return ok();
+    InputStream in = null;
+    try {
+      in = queryExecutor.keywordService(getKeywords(query));
+    } catch (IOException e) {
+      StringWriter strWriter = new StringWriter();
+      PrintWriter writer = new PrintWriter(strWriter);
+      e.printStackTrace(writer);
+      return internalServerError(strWriter.getBuffer().toString());
+    }
+
+    return ok(in);
   }
 
   private List<String> getKeywords(String query) {

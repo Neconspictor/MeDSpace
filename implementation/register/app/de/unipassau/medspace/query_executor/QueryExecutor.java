@@ -4,14 +4,7 @@ import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.common.util.FileUtil;
-import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +13,6 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -43,7 +35,7 @@ public class QueryExecutor {
     this.dataCollectorBase = dataCollectorBase;
   }
 
-  public void keywordService(List<String> keywords) {
+  public InputStream keywordService(List<String> keywords) throws IOException {
     List<Datasource> datasources;
 
     String queryString = "keywords=";
@@ -57,16 +49,14 @@ public class QueryExecutor {
     try {
       datasources = retrieveFromRegister();
     } catch (IOException e) {
-      log.error("Couldn't retrieve datasource list from the register!", e);
-      return;
+      throw new IOException("Couldn't retrieve datasource list from the register!", e);
     }
 
     BigInteger resultID;
     try {
       resultID = getResultID();
     } catch (IOException e) {
-      log.error("Couldn't create unique result id", e);
-      return;
+      throw new IOException("Couldn't create unique result id", e);
     }
 
     Service service = new Service("search");
@@ -75,15 +65,34 @@ public class QueryExecutor {
     for (Datasource datasource : datasources) {
       log.info(datasource.toString());
 
-      try (DatasourceQueryResult queryResult = serviceInvoker.queryDatasource(datasource, query)){
+      try (InputStream in = serviceInvoker.queryDatasourceInputStream(datasource, query)){
+        writeInputStreamToRepository(in, datasource.getUrl(), RDFFormat.TURTLE, resultID);
+      } catch (IOException | UnsupportedServiceException e) {
+        serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+        throw new IOException("Couldn't query datasource " + datasource.getUrl(), e);
+      }
+
+      /*try (DatasourceQueryResult queryResult = serviceInvoker.queryDatasource(datasource, query)){
         queryResult.future().whenComplete((file, error) -> {
             queryResultWhenCompleted(queryResult, datasource.getUrl(),file, resultID, error);
         });
         queryResult.future().get();
       } catch (ExecutionException | InterruptedException | IOException | UnsupportedServiceException e) {
-        log.error("Couldn't query datasource " + datasource.getUrl(), e);
-      }
+        serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+        throw new IOException("Couldn't query datasource " + datasource.getUrl(), e);
+      }*/
     }
+
+    InputStream in;
+
+    try {
+      in = serviceInvoker.invokeDataCollectorQueryQueryResult(dataCollectorBase, resultID, "TURTLE");
+    } catch (IOException e) {
+      serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+      throw new IOException("Couldn't get query result",e );
+    }
+
+    return new DataCollectorResultInputStream(in, resultID);
   }
 
   private List<Datasource> retrieveFromRegister() throws IOException {
@@ -113,14 +122,29 @@ public class QueryExecutor {
    * @param format The rdf format that should be used for writing the query result to the output stream.
    * @param resultID The id of the query result
    * @throws IOException If an io error occurs.
+   * @throws InterruptedIOException if a thread interruption occurs while executing this method.
    */
-  private static void queryRepository(OutputStream out, RDFFormat format, BigInteger resultID) throws IOException {
+  private void queryRepository(OutputStream out, RDFFormat format, BigInteger resultID) throws IOException,
+      InterruptedIOException {
 
+    InputStream in = serviceInvoker.invokeDataCollectorQueryQueryResult(dataCollectorBase, resultID, format.getName());
 
-    Set<Namespace> namespaces = null;
+    byte[] buffer = new byte[1024];
+    int len = in.read(buffer);
+    while(len != -1) {
+      out.write(buffer, 0, len);
+      if (Thread.interrupted())
+        throw new InterruptedIOException();
+
+      len = in.read(buffer);
+    }
+
+    in.close();
+
+   // Set<Namespace> namespaces = null;
 
 // write the rdf data to the data_collector
-    try (ClosableRDFWriter writer = new ClosableRDFWriter(format, out)) {
+    /*try (ClosableRDFWriter writer = new ClosableRDFWriter(format, out)) {
 
       // write namespaces
       for(Namespace namespace : namespaces)
@@ -133,7 +157,7 @@ public class QueryExecutor {
           writer.writeStatement(st);
         }
       }
-    }
+    }*/
 
     // Open a connection to the database
    /* try (RepositoryConnection conn = db.getConnection()) {
@@ -172,11 +196,51 @@ public class QueryExecutor {
                                             BigInteger resultID) throws IOException {
 
     serviceInvoker.invokeDataCollectorAddPartialQueryResult(dataCollectorBase, resultID.toString(),
-        format.toString(), baseURI.toExternalForm(), file);
+        format.getName(), baseURI.toExternalForm(), file);
+  }
+
+  private void writeInputStreamToRepository(InputStream in, URL baseURI, RDFFormat format,
+                                     BigInteger resultID) throws IOException {
+
+    serviceInvoker.invokeDataCollectorAddPartialQueryResultInputStream(dataCollectorBase, resultID.toString(),
+        format.getName(), baseURI.toExternalForm(), in);
   }
 
   private BigInteger getResultID() throws IOException {
     return serviceInvoker.invokeDataCollectorCreateQueryResultID(dataCollectorBase);
+  }
+
+
+  private class DataCollectorResultInputStream extends InputStream {
+
+    private final InputStream in;
+
+    private final BigInteger resultID;
+
+    public DataCollectorResultInputStream(InputStream in, BigInteger resultID) {
+      this.in = in;
+      this.resultID = resultID;
+    }
+
+    @Override
+    public int read() throws IOException {
+      return in.read();
+    }
+
+    @Override
+    public void close() throws IOException {
+      try {
+        in.close();
+      } finally {
+        try {
+          serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+        } catch (IOException e) {
+          log.error("Couldn't delete query result with resultID=" + resultID, e);
+        }
+      }
+
+      log.error("Closed DataCollectorResultInputStream with resultID=" + resultID);
+    }
   }
 
   /**

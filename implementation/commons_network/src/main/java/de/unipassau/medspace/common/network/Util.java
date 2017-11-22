@@ -1,18 +1,22 @@
 package de.unipassau.medspace.common.network;
 
+
+import akka.stream.IOResult;
+import akka.stream.javadsl.Source;
+import akka.stream.javadsl.StreamConverters;
+import akka.util.ByteString;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
-import play.mvc.Http;
+import play.libs.ws.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -92,12 +96,76 @@ public final class Util {
   }
 
   public static WSResponse postFileAndWait(WSRequest request, File file, int triesOnFailure) {
+
     return executeAndWait(()->request.post(file), triesOnFailure);
   }
 
+  public static WSResponse postInputStreamAndWait(WSRequest request, InputStream in, int triesOnFailure) {
+
+    Source<ByteString, ?> source = StreamConverters.fromInputStream(()->in);
+
+    //return executeAndWait(()->request.post(new MyBodyWritable(in)), triesOnFailure);
+    return executeAndWait(()->request.post(new SourceBodyWritable(source)), triesOnFailure);
+  }
+
   public static InputStream getGETInputStream(WSRequest request) throws IOException {
-    URLConnection connection = new URL(request.getUrl()).openConnection();
-    connection.setRequestProperty("Accept-Charset", "UTF-8");
+    StringBuilder builder = new StringBuilder();
+    String query = "";
+    Map<String, List<String>> parameters = request.getQueryParameters();
+    for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
+      List<String> values = entry.getValue();
+      if (values != null && values.size() > 0) {
+        String value  = java.net.URLEncoder.encode(values.get(0),"UTF-8");
+        builder.append(entry.getKey() + "=" + value + "&");
+      }
+    }
+
+    if (builder.length() > 0) {
+      builder = builder.delete(builder.length() - "&".length(), builder.length());
+      query = builder.toString();
+    }
+
+    String url = request.getUrl().toString() + "?" + query;
+
+    URLConnection connection = new URL(url).openConnection();
+    //connection.setRequestProperty("Accept-Charset", "UTF-8");
     return connection.getInputStream();
+  }
+
+  /*private static Source<ByteString, ?> fromInputStream(InputStream in) {
+
+
+    // Prepare a chunked text stream
+    Source<ByteString, ?> source = Source.<ByteString>actorRef(256, OverflowStrategy.backpressure())
+        .mapMaterializedValue(sourceActor -> {
+          byte[] buffer = new byte[256];
+          int len = in.read(buffer);
+          while(len != -1) {
+            sourceActor.tell(ByteString.fromArray(buffer), null);
+            len = in.read(buffer);
+          }
+
+          sourceActor.tell(new Status.Success(NotUsed.getInstance()), null);
+          return NotUsed.getInstance();
+        });
+  }*/
+
+  private static class MyBodyWritable implements BodyWritable<InputStream> {
+
+    private final WSBody<InputStream> body;
+
+    public MyBodyWritable(InputStream in) {
+      this.body = () -> in;
+    }
+
+    @Override
+    public WSBody<InputStream> body() {
+      return body;
+    }
+
+    @Override
+    public String contentType() {
+      return "UTF-8";
+    }
   }
 }

@@ -37,9 +37,13 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
 
   private static final Service REGISTER_GET_DATASOURCES_SUBPATH = new Service("get-datasources");
 
-  private static final Service DATA_COLLECTOR_ADD_PARTIAL_QUERY_RESULT = new Service("addPartialQueryResult");
+  private static final Service DATA_COLLECTOR_ADD_PARTIAL_QUERY_RESULT = new Service("add-partial-query-result");
 
-  private static final Service DATA_COLLECTOR_CREATE_QUERY_RESULT = new Service("createQueryResult");
+  private static final Service DATA_COLLECTOR_CREATE_QUERY_RESULT = new Service("create-query-result");
+
+  private static final Service DATA_COLLECTOR_DELETE_QUERY_RESULT = new Service("delete-query-result");
+
+  private static final Service DATA_COLLECTOR_QUERY_RESULT = new Service("query-result");
 
   private final WSClient ws;
   private final Materializer materializer;
@@ -70,19 +74,39 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     }
   }
 
+  public void invokeDataCollectorAddPartialQueryResultInputStream(URL dataCollectorBase, String resultID,
+                                                                 String rdfFormat, String baseURI,
+                                                                 InputStream in) throws IOException {
+
+    URL serviceURL = constructServiceURL(dataCollectorBase, DATA_COLLECTOR_ADD_PARTIAL_QUERY_RESULT);
+
+    WSRequest request = ws.url(serviceURL.toExternalForm())
+        .addQueryParameter("resultID", resultID)
+        .addQueryParameter("rdfFormat", rdfFormat)
+        .addQueryParameter("baseURI", baseURI)
+        .setRequestTimeout(Duration.of(200, ChronoUnit.SECONDS))
+        .setFollowRedirects(true);
+
+    WSResponse response = Util.postInputStreamAndWait(request, in, 1);
+
+    if (Http.Status.OK != response.getStatus()) {
+      throw new IOException("Error while adding a partial query result to the data-collector: response message= "
+          + response.getBody());
+    }
+  }
+
   public BigInteger invokeDataCollectorCreateQueryResultID(URL dataCollectorBase) throws IOException {
     if (dataCollectorBase == null) throw new NullPointerException("dataCollector URL mustn't be null!");
 
     URL serviceURL = constructServiceURL(dataCollectorBase, DATA_COLLECTOR_CREATE_QUERY_RESULT);
 
     WSRequest request = ws.url(serviceURL.toExternalForm())
-        .setRequestTimeout(Duration.of(10, ChronoUnit.SECONDS))
         .setFollowRedirects(true);
 
     JsonResponse result = Util.getAndWaitJson(request, 1);
 
     if (result.getException() != null) {
-      throw new IOException("Error while sending/retrieving data from the register", result.getException());
+      throw new IOException("Error while sending/retrieving data from the data-collector", result.getException());
     }
 
     UniqueIdResponse reponse;
@@ -95,6 +119,37 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     }
 
     return reponse.getId();
+  }
+
+  public void invokeDataCollectorDeleteQueryResult(URL dataCollectorBase, BigInteger resultID) throws IOException {
+    if (dataCollectorBase == null) throw new NullPointerException("dataCollector URL mustn't be null!");
+
+    URL serviceURL = constructServiceURL(dataCollectorBase, DATA_COLLECTOR_DELETE_QUERY_RESULT);
+
+    WSRequest request = ws.url(serviceURL.toExternalForm())
+        .addQueryParameter("resultID", resultID.toString())
+        .setFollowRedirects(true);
+
+    WSResponse response = Util.getAndWait(request, 1);
+
+    if (response.getStatus() != Http.Status.OK) {
+      String status = response.getStatusText();
+      String message = response.getBody();
+      String errorMessage = status + ": " + message;
+      throw new IOException("Data-Collector response error: " + errorMessage);
+    }
+  }
+
+  public InputStream invokeDataCollectorQueryQueryResult(URL dataCollectorBase, BigInteger resultID,
+                                                         String rdfFormat) throws IOException {
+
+    URL serviceURL = constructServiceURL(dataCollectorBase, DATA_COLLECTOR_QUERY_RESULT);
+    WSRequest request = ws.url(serviceURL.toExternalForm())
+        .addQueryParameter("resultID", resultID.toString())
+        .addQueryParameter("rdfFormat", rdfFormat)
+        .setFollowRedirects(true);
+    return Util.getGETInputStream(request);
+
   }
 
   public List<Datasource> invokeRegisterGetDatasources(URL registerBase) throws IOException {
@@ -128,7 +183,8 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     return datasources;
   }
 
-  public DatasourceQueryResult queryDatasource(Datasource datasource, Query query) throws UnsupportedServiceException, IOException {
+  public DatasourceQueryResult queryDatasource(Datasource datasource, Query query) throws UnsupportedServiceException,
+      IOException {
     Service service = query.getService();
     String queryString = query.getQueryString();
 
@@ -165,6 +221,25 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
         materializer);
 
     return queryResult;
+  }
+
+  public InputStream queryDatasourceInputStream(Datasource datasource, Query query) throws UnsupportedServiceException,
+      IOException {
+    Service service = query.getService();
+    String queryString = query.getQueryString();
+
+    if (!Service.supportsService(service, datasource)) {
+      throw new UnsupportedServiceException(datasource.getUrl() + " doesn't support service '" + service + "'");
+    }
+
+    URL serviceURL = constructServiceURL(datasource.getUrl(), service);
+
+    WSRequest request = ws.url(serviceURL.toExternalForm())
+        .setRequestTimeout(Duration.of(30, ChronoUnit.SECONDS))
+        .setQueryString(queryString)
+        .setFollowRedirects(true);
+
+    return Util.getGETInputStream(request);
   }
 
   private URL constructServiceURL(URL base, Service service) {

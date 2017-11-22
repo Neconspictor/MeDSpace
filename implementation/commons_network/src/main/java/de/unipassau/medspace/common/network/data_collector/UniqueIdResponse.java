@@ -7,7 +7,11 @@ import java.math.BigInteger;
  */
 public class UniqueIdResponse {
 
-  private final BigInteger id;
+  private BigInteger id;
+
+  public UniqueIdResponse() {
+    id = null;
+  }
 
   public UniqueIdResponse(BigInteger id) {
     this.id = id;
@@ -15,5 +19,9 @@ public class UniqueIdResponse {
 
   public BigInteger getId() {
     return id;
+  }
+
+  public void setId(BigInteger id) {
+    this.id = id;
   }
 }

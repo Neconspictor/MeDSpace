@@ -38,7 +38,7 @@ public abstract class DataCollector {
 
   //TODO open and close repos to each query result
 
-  private final class AtomicBigInteger {
+  protected final class AtomicBigInteger {
 
     private final AtomicReference<BigInteger> valueHolder = new AtomicReference<>();
 

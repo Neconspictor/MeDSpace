@@ -26,11 +26,11 @@ GET     /assets/*file                controllers.Assets.versioned(path="/public"
 GET     /query-executor-test           controllers.QueryExecutorController.queryExecutorTest(query ?="")
 
 # DataCollector stuff
-GET     /data-collector/createQueryResult     controllers.DataCollectorController.createQueryResult()
+GET     /data-collector/create-query-result     controllers.DataCollectorController.createQueryResult()
 
 +nocsrf
-POST     /data-collector/addPartialQueryResult     controllers.DataCollectorController.addPartialQueryResult(resultID, rdfFormat, baseURI)
+POST     /data-collector/add-partial-query-result     controllers.DataCollectorController.addPartialQueryResultInputStream(resultID, rdfFormat, baseURI)
 
-GET     /data-collector/deleteQueryResult          controllers.DataCollectorController.deleteQueryResult(resultID)
+GET     /data-collector/delete-query-result          controllers.DataCollectorController.deleteQueryResult(resultID)
 
-GET     /data-collector/queryResult          controllers.DataCollectorController.queryResult(resultID, rdfFormat)
+GET     /data-collector/query-result          controllers.DataCollectorController.queryResult(resultID, rdfFormat)
