@@ -207,7 +207,7 @@ function addPartialQueryResult(createQueryResultResponse) {
 function addPartialQueryResult2(createQueryResultResponse, file) {
     var id = createQueryResultResponse.id;
     return $.ajax({
-        url: jsRoutes.controllers.DataCollectorController.addPartialQueryResultInputStream(
+        url: jsRoutes.controllers.DataCollectorController.addPartialQueryResult(
             id, "TURTLE", "http://medspace.com/indexTest").url,
         type: 'POST',
         data: file,
@@ -225,12 +225,12 @@ function deleteQueryResult(addPartialQueryResultResponse) {
 }
 
 function sendInChunks3(file) {
-    //createQueryResult(file)
-    //    .then(addPartialQueryResult);
-        //.then(deleteQueryResult);
-    var test = new Object();
-    test.id = 666;
-    addPartialQueryResult2(test, file);
+    createQueryResult(file)
+        .then(addPartialQueryResult)
+        .then(deleteQueryResult);
+//    var test = new Object();
+//    test.id = 666;
+//    addPartialQueryResult2(test, file);
 }
 
 function sendInChunks2(file) {

@@ -5,7 +5,6 @@ import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleWriterFactory;
-import de.unipassau.medspace.common.stream.TestTripleInputStream;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.TripleInputStream;

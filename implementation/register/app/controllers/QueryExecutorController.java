@@ -44,12 +44,12 @@ public class QueryExecutorController extends Controller {
         new URL("http://localhost:" + port + "/data-collector/"));
   }
 
-  public Result queryExecutorTest(String query) {
+  public Result queryExecutorTest(String query, String rdfFormat) {
     log.warn("query param: " + query);
 
-    InputStream in = null;
+    InputStream in;
     try {
-      in = queryExecutor.keywordService(getKeywords(query));
+      in = queryExecutor.keywordService(getKeywords(query), rdfFormat);
     } catch (IOException e) {
       StringWriter strWriter = new StringWriter();
       PrintWriter writer = new PrintWriter(strWriter);
