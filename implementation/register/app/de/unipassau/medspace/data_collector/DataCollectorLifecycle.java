@@ -24,7 +24,7 @@ public class DataCollectorLifecycle implements Provider<RepositoryManager> {
   @Inject
   public DataCollectorLifecycle(ApplicationLifecycle lifecycle) {
 
-    File dataDir = new File("E:/bachelorThesisTest/_work/data_collector/native_store");
+    File dataDir = new File("C:/bachelorThesisTest/_work/data_collector/native_store");
     manager = new LocalRepositoryManager(dataDir);
 
     //db = new SailRepository(new NativeStore(dataDir));
