@@ -150,6 +150,31 @@ public class GeneralWrapperConfigReader {
     list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Register.NAME);
     readRegisterElement(config, (Element) list.item(0));
 
+    //Optionally there is a ConnectToRegister element
+    config.setConnectToRegister(true); // default value
+    list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.ConnectToRegister.NAME);
+    if (list.getLength() > 0)
+      readConnectToRegisterElement(config, (Element) list.item(0));
+
+
+  }
+
+  private void readConnectToRegisterElement(GeneralWrapperConfigData config, Element elem) throws ParseException {
+    String content = elem.getTextContent();
+
+    if (content == null || content.equals("")) {
+      throw new ParseException("Illegal value for 'ConnectToRegisterElement' element: " + content);
+    }
+
+    //The content is supposed to be a boolean
+    Boolean connectToRegister;
+    try {
+      connectToRegister = Boolean.parseBoolean(content);
+    } catch (IllegalArgumentException | NullPointerException e) {
+      throw new ParseException("Couldn't read boolean value for ConnectToRegister element: ", e);
+    }
+
+    config.setConnectToRegister(connectToRegister.booleanValue());
   }
 
   private void readDatasourceElement(GeneralWrapperConfigData config, Element elem) throws IOException, ParseException {

@@ -4,6 +4,7 @@ import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.d2r.D2rMap;
 import org.javatuples.Pair;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class Configuration {
   /**
    * The jdbc url to the datasource
    */
-  private String jdbc;
+  private URI jdbc;
 
   /**
    * The jdbc driver class that should be used.
@@ -126,7 +127,7 @@ public class Configuration {
    * Provides the jdbc url to access the datasource.
    * @return The jdbc URL to the datasource.
    */
-  public String getJdbc() {
+  public URI getJdbc() {
     return jdbc;
   }
 
@@ -198,7 +199,7 @@ public class Configuration {
    * Sets the jdbc URL to the datasource.
    * @param jdbc The jdbc URL to use.
    */
-  public void setJdbc(String jdbc) {
+  public void setJdbc(URI jdbc) {
     this.jdbc = jdbc;
   }
 

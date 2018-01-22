@@ -20,8 +20,19 @@ import com.typesafe.config.Config;
 @Singleton
 public class SystemConfig {
 
+  /**
+   * TODO
+   */
   private static Logger log = LoggerFactory.getLogger(SystemConfig.class);
+
+  /**
+   * TODO
+   */
   private File customWorkingDirectory;
+
+  /**
+   * TODO
+   */
   private String customWorkingDirectoryPath;
 
   /**

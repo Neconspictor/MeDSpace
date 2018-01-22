@@ -28,7 +28,7 @@
   <logger name="application" level="DEBUG" />
 
   <logger name="de.unipassau.medspace" level="DEBUG" />
-  <logger name="de.unipassau.medspace.wrapper.sqlwrapper.GlobalModule" level="DEBUG" />
+  <logger name="de.unipassau.medspace.wrapper.sqlwrapper.AppRoot" level="DEBUG" />
   <logger name="de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService" level="DEBUG" />
 
   <!-- Suppress warning bug from https://hibernate.atlassian.net/browse/HV-1323 -->

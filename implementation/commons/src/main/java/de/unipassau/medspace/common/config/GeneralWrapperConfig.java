@@ -63,6 +63,14 @@ public class GeneralWrapperConfig {
     return data.useIndex;
   }
 
+  /**
+   * TODO
+   * @return
+   */
+  public boolean getConnectToRegister() {
+    return data.connectToRegister;
+  }
+
   @Override
   public String toString() {
     return data.toString();
@@ -75,6 +83,9 @@ public class GeneralWrapperConfig {
    */
   public static class GeneralWrapperConfigData {
 
+    /**
+     * TODO
+     */
     private Datasource datasource;
 
     /**
@@ -102,11 +113,18 @@ public class GeneralWrapperConfig {
      */
     private boolean useIndex;
 
+    /**
+     * Specifies, whether the wrapper should establish a connection to the register
+     * and thus registering itself.
+     */
+    private boolean connectToRegister;
+
     public GeneralWrapperConfigData() {
       indexDirectory = null; // null hints, that no index directory should be used
       namespaces = new HashMap<>();
       outputFormat = null;
       useIndex = false;
+      connectToRegister = true;
     }
 
     /**
@@ -131,8 +149,14 @@ public class GeneralWrapperConfig {
       registerURL = data.registerURL;
 
       useIndex = data.useIndex;
+
+      connectToRegister = data.connectToRegister;
     }
 
+    /**
+     * TODO
+     * @return
+     */
     public GeneralWrapperConfig build() {
       return new GeneralWrapperConfig(this);
     }
@@ -210,6 +234,10 @@ public class GeneralWrapperConfig {
       return useIndex;
     }
 
+    /**
+     * TODO
+     * @param registerURL
+     */
     public void setRegisterURL(URL registerURL) {
       this.registerURL = registerURL;
     }
@@ -228,17 +256,42 @@ public class GeneralWrapperConfig {
       builder.append("  outputFormat: " + outputFormat + ",\n");
       builder.append("  registerURL: " + registerURL + ",\n");
       builder.append("  useIndex: " + useIndex + "\n");
+      builder.append("  connectToRegister: " + connectToRegister + "\n");
       builder.append("]");
 
       return builder.toString();
     }
 
+    /**
+     * TODO
+     * @return
+     */
     public Datasource getDatasource() {
       return datasource;
     }
 
+    /**
+     * TODO
+     * @param datasource
+     */
     public void setDatasource(Datasource datasource) {
       this.datasource = datasource;
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    public boolean getConnectToRegister() {
+      return connectToRegister;
+    }
+
+    /**
+     * TODO
+     * @param connectToRegister
+     */
+    public void setConnectToRegister(boolean connectToRegister) {
+      this.connectToRegister = connectToRegister;
     }
   }
 }

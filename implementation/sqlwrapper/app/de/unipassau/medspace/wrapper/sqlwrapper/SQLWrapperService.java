@@ -2,25 +2,16 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
-import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
-import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
-import de.unipassau.medspace.common.rdf.Namespace;
-import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
-import de.unipassau.medspace.common.rdf.TripleIndexFactory;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
-import de.unipassau.medspace.d2r.MappedSqlTuple;
 import de.unipassau.medspace.d2r.config.Configuration;
-import de.unipassau.medspace.d2r.config.ConfigurationReader;
 import de.unipassau.medspace.d2r.exception.D2RException;
-import de.unipassau.medspace.d2r.lucene.LuceneIndexFactory;
 
-import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
@@ -30,8 +21,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -49,8 +38,6 @@ public class SQLWrapperService {
    */
   private static Logger log = LoggerFactory.getLogger(SQLWrapperService.class);
 
-  private static boolean ignoreRegistering = false;
-
   /**
    * Used to establish connection to the datasource.
    */
@@ -62,75 +49,68 @@ public class SQLWrapperService {
   private GeneralWrapperConfig generalConfig;
 
   /**
-   * D2R specific configuration.
-   */
-  private Configuration d2rConfig;
-
-  /**
    * The D2R wrapper.
    */
-  private D2rWrapper<Document> wrapper;
+  private D2rWrapper<?> wrapper;
 
   /**
    * Read meta data from the datasource.
    */
   private DatabaseMetaData metaData;
 
+  /**
+   * TODO
+   */
   private RegisterClient registerClient;
+
+  /**
+   * TODO
+   */
+  private boolean connectToRegister;
 
 
   /**
    * Creates a new SQLWrapperService.
    * @param lifecycle Used to add shutdown hooks to the play framework.
-   * @param playConfig Used to read play specific configurations.
+   * @param registerClient Used for communication with the register.
+   * @param provider Used to read configurations.
    */
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
-                           com.typesafe.config.Config playConfig,
                            RegisterClient registerClient,
-                           RDFProvider provider) {
+                           ConfigProvider provider,
+                           ConnectionPool connectionPool,
+                           ShutdownService shutdownService,
+                           D2rWrapper<?> d2rWrapper) {
 
     this.registerClient = registerClient;
-    log.info("http.address= " + playConfig.getString("play.server.http.address"));
-    log.info("http.port= " + playConfig.getString("play.server.http.port"));
+    this.connectionPool = connectionPool;
+    this.wrapper = d2rWrapper;
+    this.generalConfig = provider.getGeneralWrapperConfig();
+
+    this.connectToRegister = generalConfig.getConnectToRegister();
+
       try {
-        String wrapperConfigFile = playConfig.getString("MeDSpaceWrapperConfig");
-        String d2rConfigFile = playConfig.getString("MeDSpaceD2rConfig");
-        startup(provider, wrapperConfigFile, d2rConfigFile);
+        startup(provider);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
         log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
         log.info("Graceful shutdown is initiated...");
-        gracefulShutdown(lifecycle, -1);
+        shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
       } catch(Throwable e) {
+
         // Catching Throwable is regarded to be a bad habit, but as we catch the Throwable only
         // for allowing the application to shutdown gracefully, it is ok to do so.
         log.error("Failed to initialize SQL Wrapper", e);
         log.info("Graceful shutdown is initiated...");
-        gracefulShutdown(lifecycle, -1);
+        shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
       }
 
       lifecycle.addStopHook(() -> {
         log.info("Shutdown is executing...");
-        if (!ignoreRegistering) deregister();
+        if (connectToRegister) deregister();
         wrapper.close();
-        connectionPool.close();
         return CompletableFuture.completedFuture(null);
       });
-
-    //lifecycle.stop();
-    //System.exit(-1);
-  }
-
-  public static void setIgnoreRegistering(boolean ignore) {
-    ignoreRegistering = ignore;
-  }
-
-  /**
-   * Provides the D2R configuration.
-   * @return The D2R configuration.
-   */
-  public Configuration getD2rConfig() {
-    return d2rConfig;
   }
 
 
@@ -138,7 +118,7 @@ public class SQLWrapperService {
    * Provides the D2R wrapper.
    * @return The D2R wrapper.
    */
-  public D2rWrapper getWrapper() {
+  public D2rWrapper<?> getWrapper() {
     return wrapper;
   }
 
@@ -186,58 +166,24 @@ public class SQLWrapperService {
 
   /**
    * Does startup the sql wrapper.
-   * @param wrapperConfigFile The path to the general wrapper config file.
-   * @param d2rConfigFile The path to the MeDSpace D2r config file.
+   * @param provider A provider used to access the wrapper and server configurations
    * @throws D2RException If the configuration file doesn't exists or is erroneous
    * @throws IOException If an IO-Error occurs.
    * @throws SQLException If the connection to the datasource could'nt be established.
    */
-  private void startup(RDFProvider provider, String wrapperConfigFile, String d2rConfigFile) throws D2RException, IOException, SQLException {
+  private void startup(ConfigProvider provider) throws D2RException, IOException, SQLException {
 
     log.info("initializing SQL Wrapper...");
-    log.info("Reading general wrapper configuration...");
-    try {
-      generalConfig = new GeneralWrapperConfigReader(provider).readConfig(wrapperConfigFile);
-    } catch (IOException e) {
-      throw new IOException("Error while reading the general wrapper configuration file: " + wrapperConfigFile, e);
-    }
 
     if (!generalConfig.isIndexUsed()) {
       throw new D2RException("This wrapper needs an index, but no index directory is stated in the general wrapper configuration.");
     }
 
-    log.info("Reading general wrapper configuration done: ");
-    log.info(generalConfig.toString());
-    log.info("Reading MeDSpace D2RMap configuration...");
+    Configuration d2rConfig = provider.getD2rConfig();
 
-    try {
-      d2rConfig = new ConfigurationReader(provider).readConfig(d2rConfigFile);
-    } catch (IOException e) {
-      throw new D2RException("Error while reading the configuration file: " + d2rConfigFile, e);
-    }
-
-    log.info("Reading MeDSpace D2RMap configuration done.");
-
-
-    URI jdbcURI = null;
-    try {
-      jdbcURI = new URI(d2rConfig.getJdbc());
-    } catch (URISyntaxException e) {
-      String errorMessage = "Couldn't get an URI from the jdbc uri specified in the d2rConfig file" + "\n";
-      errorMessage += "jdbc URI: " + jdbcURI + "\n";
-      errorMessage += "d2rConfig file: " + d2rConfigFile + "\n";
-      new D2RException(errorMessage, e);
-    }
+    URI jdbcURI = d2rConfig.getJdbc();
 
     log.info("Establish connection pool to: " + jdbcURI);
-
-    connectionPool = new HikariConnectionPool(
-        jdbcURI,
-        d2rConfig.getJdbcDriver(),
-        d2rConfig.getDatabaseUsername(),
-        d2rConfig.getDatabasePassword(),
-        d2rConfig.getMaxConnections(),
-        d2rConfig.getDataSourceProperties());
 
     // check if the datasource manager can connect to the datasource.
     Connection conn = null;
@@ -252,7 +198,7 @@ public class SQLWrapperService {
     }
 
     //check connection to the register
-    if (!ignoreRegistering) {
+    if (connectToRegister) {
       boolean registered = registerClient.register(generalConfig.getDatasource(), generalConfig.getRegisterURL());
       if (registered) {
         log.info("Successfuly registered to the Register.");
@@ -261,55 +207,7 @@ public class SQLWrapperService {
       }
     }
 
-    Path indexPath = generalConfig.getIndexDirectory();
-
-    Map<String, Namespace> namespaces = new HashMap<>(generalConfig.getNamespaces());
-    namespaces.putAll(d2rConfig.getNamespaces());
-
-    wrapper = new D2rWrapper<Document>(connectionPool, d2rConfig.getMaps(), namespaces);
-
-    TripleIndexFactory<Document, MappedSqlTuple> indexFactory =
-        new LuceneIndexFactory(wrapper, indexPath.toString());
-
-    wrapper.init(indexPath, indexFactory);
-
-    boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
-
-    if (shouldReindex) {
-      log.info("Indexing data...");
-      wrapper.reindexData();
-      log.info("Indexing done.");
-    }
-
-
     log.info("Initialized SQL Wrapper");
-  }
-
-  /**
-   * Does a graceful shutdown.
-   * @param lifecycle The application lifecycle of the play framework.
-   * @param errorCode An error code passed to the operating system.
-   */
-  private void gracefulShutdown(ApplicationLifecycle lifecycle, int errorCode) {
-
-    deregister();
-    lifecycle.stop();
-
-    // Stopping the application lifecycle is enough to trigger a graceful shutdown of the
-    // play framework. But the play framework rises a runtime exception that the server
-    // couldn't be started as the server is during a shutdown process.
-    // This side effect is undesired as this function is intended
-    // to do a graceful shutdown and thus shouldn't produce any misleading error messages.
-    // Thus, a call of System.exit is here justified.
-    System.exit(errorCode);
-  }
-
-  /**
-   * Provides the used connection pool.
-   * @return The used connection pool.
-   */
-  public ConnectionPool getConnectionPool() {
-    return connectionPool;
   }
 
   /**
@@ -321,12 +219,8 @@ public class SQLWrapperService {
   }
 
   /**
-   * The general wrapper configuration.
+   * TODO
    */
-  public GeneralWrapperConfig getGeneralConfig() {
-    return generalConfig;
-  }
-
   private void deregister() {
     boolean success = registerClient.deRegister(generalConfig.getDatasource(), generalConfig.getRegisterURL());
 

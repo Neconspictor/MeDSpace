@@ -2,6 +2,7 @@ package de.unipassau.medspace.common.SQL;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool;
 import de.unipassau.medspace.common.util.FileUtil;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public class HikariConnectionPool implements ConnectionPool {
    */
   private String userName;
 
+
   /**
    * Creates a new HikariConnectionPool.
    * @param jdbcURI The jdb uri to the database.
@@ -67,8 +69,16 @@ public class HikariConnectionPool implements ConnectionPool {
    * @param password The password necessary for authentication.
    * @param poolSize The wished maximum connection pool size.
    * @param datasourceProperties Properties that should be send to the database.
+   * @throws HikariPool.PoolInitializationException if the connection pool couldn't be created.
    */
-  public HikariConnectionPool(URI jdbcURI, Class driverClass, String userName, String password, int poolSize, List<Pair<String, String>> datasourceProperties) {
+  public HikariConnectionPool(URI jdbcURI,
+                              Class driverClass,
+                              String userName,
+                              String password,
+                              int poolSize,
+                              List<Pair<String, String>> datasourceProperties)
+      throws HikariPool.PoolInitializationException {
+
     assert poolSize > 0;
 
     dataSource = null;
@@ -116,7 +126,7 @@ public class HikariConnectionPool implements ConnectionPool {
   /**
    * Inits this connection pool.
    */
-  private void init() {
+  private void init() throws HikariPool.PoolInitializationException {
     HikariConfig hikariConfig = new HikariConfig();
     hikariConfig.setJdbcUrl(jdbcURI.toString());
     hikariConfig.setDriverClassName(driverClass.getName());

@@ -42,3 +42,5 @@ libraryDependencies += "org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
 //batScriptTemplateLocation := file("run.bat" )
 
 javacOptions ++= Seq("-Xlint:unchecked")
+
+PlayKeys.devSettings := Seq("play.server.http.port" -> "9200", "play.server.http.address" -> "localhost")

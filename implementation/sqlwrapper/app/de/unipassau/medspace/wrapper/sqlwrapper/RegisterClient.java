@@ -17,7 +17,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by David Goeth on 04.10.2017.
+ * TODO
  */
 public class RegisterClient implements WSBodyReadables, WSBodyWritables {
 
@@ -26,9 +26,19 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
    */
   private static Logger log = LoggerFactory.getLogger(RegisterClient.class);
 
+  /**
+   * TODO
+   */
   private static final String REGISTER_ADD_SERVICE_SUBPATH = "add";
+
+  /**
+   * TODO
+   */
   private static final String REGISTER_REMOVE_SERVICE_SUBPATH = "remove";
 
+  /**
+   * TODO
+   */
   private final WSClient ws;
 
   @Inject
@@ -36,14 +46,33 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
     this.ws = ws;
   }
 
+  /**
+   * TODO
+   * @param datasource
+   * @param registerBase
+   * @return
+   */
   public boolean deRegister(Datasource datasource, URL registerBase) {
     return invokeRegisterService(registerBase, REGISTER_REMOVE_SERVICE_SUBPATH, datasource);
   }
 
+  /**
+   * TODO
+   * @param datasource
+   * @param registerBase
+   * @return
+   */
   public boolean register(Datasource datasource, URL registerBase) {
     return invokeRegisterService(registerBase, REGISTER_ADD_SERVICE_SUBPATH, datasource);
   }
 
+  /**
+   * TODO
+   * @param registerBase
+   * @param serviceSubPath
+   * @param datasource
+   * @return
+   */
   private boolean invokeRegisterService(URL registerBase, String serviceSubPath, Datasource datasource) {
     if (datasource == null) throw new NullPointerException("datasource mustn't be null!");
     if (registerBase == null) throw new NullPointerException("registerBase mustn't be null!");
@@ -83,6 +112,13 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
     return response.getSuccess();
   }
 
+  /**
+   * TODO
+   * @param request
+   * @param body
+   * @param triesOnFailure
+   * @return
+   */
   private Result postAndWait(WSRequest request, JsonNode body, int triesOnFailure) {
 
     assert triesOnFailure >= 1;
@@ -118,7 +154,15 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
    * retrieving the data.
    */
   private static class Result {
+
+    /**
+     * TODO
+     */
     public JsonNode data; // public modifier as this class contains no logic.
+
+    /**
+     * TODO
+     */
     public Exception exception;
   }
 }

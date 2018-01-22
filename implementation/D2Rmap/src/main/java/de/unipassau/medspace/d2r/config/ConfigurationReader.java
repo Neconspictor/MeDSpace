@@ -20,6 +20,8 @@ import org.xml.sax.SAXParseException;
 
 import javax.xml.validation.Schema;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -211,9 +213,8 @@ public class ConfigurationReader {
    * class path.
    * @throws D2RException if another parse error occurs.
    */
-  private void readConfig(Document document, Configuration config) throws IOException,
-                                                                                 ClassNotFoundException,
-                                                                                 D2RException {
+  private void readConfig(Document document, Configuration config)
+      throws IOException, ClassNotFoundException, D2RException {
     // Read namespaces
     NodeList list = document.getElementsByTagNameNS(D2R.D2RNS, D2R.Namespace.NAME);
     int numNodes = list.getLength();
@@ -283,13 +284,24 @@ public class ConfigurationReader {
    * @param elem Represents a DBConnection element.
    * @throws ClassNotFoundException thrown if the jdbcDriver attribute couldn't be matched to a valid jdbc driver class.
    */
-  private static void readDBConnectionElement(Configuration config, Element elem) throws ClassNotFoundException {
+  private static void readDBConnectionElement(Configuration config, Element elem)
+      throws ClassNotFoundException, D2RException {
+
     NodeList authentifications = elem.getElementsByTagNameNS(D2R.D2RNS, D2R.DBAuthentification.NAME);
     if (authentifications.getLength() > 0)
       readDBAuthentificationElement(config, (Element)authentifications.item(0));
 
     // jdbcDSN and jdbcDriver are required attributes
-    config.setJdbc(elem.getAttribute(D2R.DBConnection.JDBC_DSN_ATTRIBUTE));
+    String jdbcStr = elem.getAttribute(D2R.DBConnection.JDBC_DSN_ATTRIBUTE);
+    URI jdbcURI;
+    try {
+      jdbcURI = new URI(jdbcStr);
+    } catch (URISyntaxException e) {
+      String errorMessage = "Couldn't get an URI from the jdbc uri: " + jdbcStr;
+      throw new D2RException(errorMessage, e);
+    }
+    config.setJdbc(jdbcURI);
+
     Class driver = Class.forName(elem.getAttribute(D2R.DBConnection.JDBC_DRIVER_ATTRIBUTE));
     config.setJdbcDriver(driver);
 

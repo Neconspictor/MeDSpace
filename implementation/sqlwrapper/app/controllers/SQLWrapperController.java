@@ -1,10 +1,12 @@
 package controllers;
 
+import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleWriterFactory;
+import de.unipassau.medspace.wrapper.sqlwrapper.ConfigProvider;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.TripleInputStream;
@@ -57,6 +59,10 @@ public class SQLWrapperController extends Controller {
 
   private final RDFProvider rdfProvider;
 
+  private final ConnectionPool connectionPool;
+
+  private final Configuration d2rConfig;
+
   /**
    * Creates a new SQLWrapperController
    * @param wrapperService
@@ -65,12 +71,16 @@ public class SQLWrapperController extends Controller {
    */
   @Inject
   SQLWrapperController(SQLWrapperService wrapperService,
+                       ConnectionPool connectionPool,
                        FormFactory formFactory,
-                       RDFProvider rdfProvider) {
+                       RDFProvider rdfProvider,
+                       ConfigProvider configProvider) {
     this.wrapperService = wrapperService;
     this.formFactory = formFactory;
     this.tripleWriterFactory = rdfProvider.getWriterFactory();
     this.rdfProvider = rdfProvider;
+    this.connectionPool = connectionPool;
+    this.d2rConfig = configProvider.getD2rConfig();
   }
 
   /**
@@ -85,7 +95,7 @@ public class SQLWrapperController extends Controller {
    * Provides the SQL Wrapper status and debug page.
    */
   public Result index() {
-    return ok(views.html.index.render(wrapperService, wrapperService.getD2rConfig(), wrapperService.getConnectionPool(),
+    return ok(views.html.index.render(wrapperService, d2rConfig, connectionPool,
         wrapperService.getMetaData()));
   }
 
@@ -111,9 +121,8 @@ public class SQLWrapperController extends Controller {
       return badRequest("keyword search query isn't valid: \"" + keywords + "\"");
     }
 
-    Configuration config = wrapperService.getD2rConfig();
     Set<Namespace> namespaces = wrapperService.getWrapper().getNamespaces();
-    String format = config.getOutputFormat();
+    String format = d2rConfig.getOutputFormat();
     List<String> extensions = rdfProvider.getFileExtensions(format);
     String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);
     InputStream tripleStream;

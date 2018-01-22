@@ -21,6 +21,7 @@
                 </xsd:choice>
                 <xsd:element name="OutputFormat" type="xsd:string" minOccurs="1" maxOccurs="1"/>
                 <xsd:element name="Register" type="wrapper:Register" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="ConnectToRegister" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>

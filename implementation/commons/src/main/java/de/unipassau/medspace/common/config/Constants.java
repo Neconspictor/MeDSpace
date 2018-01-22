@@ -133,4 +133,15 @@ public final class Constants {
      */
     public static final String URL_ATTRIBUTE = "url";
   }
+
+  /**
+   * Holds information about the element type 'ConnectToRegister'
+   */
+  public static final class ConnectToRegister {
+
+    /**
+     * Name of the element 'ConnectToRegister'
+     */
+    public static final String NAME = "ConnectToRegister";
+  }
 }

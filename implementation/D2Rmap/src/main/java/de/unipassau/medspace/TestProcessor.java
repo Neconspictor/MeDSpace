@@ -44,7 +44,7 @@ public class TestProcessor {
       log.info("D2R test started ....");
 
       Configuration config = new ConfigurationReader(provider).readConfig(D2RMap);
-      URI jdbcURI = new URI(config.getJdbc());
+      URI jdbcURI = new URI(config.getJdbc().toString());
 
       connectionPool = new HikariConnectionPool(
           jdbcURI,
