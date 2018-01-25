@@ -46,7 +46,7 @@ public class ConnectionPoolProvider implements Provider<ConnectionPool> {
           config.getJdbcDriver(),
           config.getDatabaseUsername(),
           config.getDatabasePassword(),
-          config.getMaxConnections(),
+          config.getPoolSize(),
           config.getDataSourceProperties());
     } catch (HikariPool.PoolInitializationException e) {
       log.error("Couldn't initialize connection pool", e);

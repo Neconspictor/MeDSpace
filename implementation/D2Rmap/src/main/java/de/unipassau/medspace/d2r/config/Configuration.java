@@ -47,7 +47,7 @@ public class Configuration {
   /**
    * The maximal size of the connection pool.
    */
-  private int maxConnections;
+  private int poolSize;
 
   /**
    * A prefix namespace mapping read from the config file.
@@ -124,8 +124,8 @@ public class Configuration {
    * Provides the maximal size of the connection pool a wrapper should use.
    * @return The maximal size of the connection pool a wrapper should use.
    */
-  public int getMaxConnections() {
-    return maxConnections;
+  public int getPoolSize() {
+    return poolSize;
   }
 
   /**
@@ -187,10 +187,10 @@ public class Configuration {
 
   /**
    * Sets the maximal connection pool size.
-   * @param maxConnections The maximal connection pool size.
+   * @param poolSize The (max) connection pool size.
    */
-  public void setMaxConnections(int maxConnections) {
-    this.maxConnections = maxConnections;
+  public void setPoolSize(int poolSize) {
+    this.poolSize = poolSize;
   }
 
 }

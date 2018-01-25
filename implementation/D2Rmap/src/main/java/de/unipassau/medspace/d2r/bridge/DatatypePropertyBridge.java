@@ -13,6 +13,16 @@ import de.unipassau.medspace.d2r.D2rUtil;
 public class DatatypePropertyBridge extends Bridge {
 
   /**
+   * Specifies the rdf data type of the properties created by this bridge
+   */
+  protected String dataType;
+
+  /**
+   * An optional rdf language tag created properties should have.
+   */
+  protected String langTag;
+
+  /**
    * TODO
    * @param primitiveValueFactory
    */
@@ -47,5 +57,53 @@ public class DatatypePropertyBridge extends Bridge {
       object = primitiveValueFactory.createLiteral(value);
     }
     return object;
+  }
+
+  /**
+   * Provides the used datatype (if any is used) or null otherwise.
+   * @return The used datatype or null if no datatype is used.
+   */
+  public String getDataType() {
+    return this.dataType;
+  }
+
+  /**
+   * Provides the language tag, the values of created properties should assigned to.
+   * @return the language tag.
+   */
+  public String getLangTag() {
+    return langTag;
+  }
+
+  /**
+   * Sets the rdf data type created propertyQName values should have.
+   * @param dataType The wished rdf data type.
+   */
+  public void setDataType(String dataType) {
+    if (dataType == null) {
+      this.dataType = null;
+      return;
+    }
+
+    this.dataType = dataType.trim();
+    if (this.dataType.equals("")) {
+      this.dataType = null;
+    }
+  }
+
+  /**
+   * Sets the rdf language tag, created propertyQName values should assigned to.
+   * @param langTag The wished language tag
+   */
+  public void setLangTag(String langTag) {
+    if (langTag == null) {
+      this.langTag = null;
+      return;
+    }
+
+    this.langTag = langTag.trim();
+    if (this.langTag.equals("")) {
+      this.langTag = null;
+    }
   }
 }

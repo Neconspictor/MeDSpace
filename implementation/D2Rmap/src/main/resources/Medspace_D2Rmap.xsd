@@ -10,16 +10,14 @@
 		The root element for the D2R mapping.
 		It defines the structure of a valid D2R config file.
 	<-->
-	<xsd:element name="Map">
+	<xsd:element name="Root">
 		<xsd:complexType>
 			<xsd:sequence>
 				<!-->Elements that have to stated exact once, but have to occur<-->
 				<xsd:element name="DBConnection" type="d2r:DBConnection" minOccurs="1" maxOccurs="1"/>
-				<!-->Elements that can occur any number of times and in any order<-->
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="Namespace" type="d2r:Namespace" minOccurs="0" maxOccurs="unbounded"/>
-					<xsd:element name="ClassMap" type="d2r:ClassMap" minOccurs="0" maxOccurs="unbounded"/>
-				</xsd:choice>
+				<!-->Elements that can occur any number of times <-->
+				<xsd:element name="Namespace" type="d2r:Namespace" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="ClassMap" type="d2r:ClassMap" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -50,7 +48,7 @@
 		</xsd:sequence>
 		<xsd:attribute name="jdbcDriver" type="xsd:string" use="required"/>
 		<xsd:attribute name="jdbcDSN" type="xsd:string" use="required"/>
-		<xsd:attribute name="maxConnections" type="xsd:integer" use="optional"/>
+		<xsd:attribute name="poolSize" type="xsd:int" use="optional"/>
 	</xsd:complexType>
 
 
@@ -91,6 +89,14 @@
 		<xsd:attribute name="id" type="xsd:string" use="required"/>
 		<xsd:attribute name="type" type="xsd:string" use="required"/>
 	</xsd:complexType>
+	
+	
+	
+	<xsd:complexType abstract="true" name="Bridge">
+		<xsd:attribute name="property" type="xsd:string" use="required"/>
+		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
 
 	<!-->
 		A DataTypePropertyBridge definepropertyQNameerty for a rdf resource. The value of propertyQNameerty
@@ -115,10 +121,12 @@
 		@attribute lang: Specifies a language tag for propertyQNameerty.
 	<-->
 	<xsd:complexType name="DataTypePropertyBridge">
-		<xsd:attribute name="property" type="xsd:string" use="required"/>
-		<xsd:attribute name="pattern" type="xsd:string" use="required"/>
-		<xsd:attribute name="dataType" type="xsd:string" use="optional"/>
-		<xsd:attribute name="lang" type="xsd:string" use="optional"/>
+		<xsd:complexContent>
+            <xsd:extension base="d2r:Bridge">
+				<xsd:attribute name="dataType" type="xsd:string" use="optional"/>
+				<xsd:attribute name="lang" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
 	<!-->
@@ -137,10 +145,12 @@
 									order.
 	<-->
 	<xsd:complexType name="ObjectPropertyBridge">
-		<xsd:attribute name="property" type="xsd:string" use="required"/>
-		<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
-		<xsd:attribute name="referredColumns" type="xsd:string" use="optional"/>
-		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
+		<xsd:complexContent>
+            <xsd:extension base="d2r:Bridge">
+				<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
+				<xsd:attribute name="referredColumns" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
 	<!-->
@@ -153,15 +163,6 @@
 	<xsd:complexType name="DataSourceProperty">
 		<xsd:attribute name="name" type="xsd:string" use="required"/>
 		<xsd:attribute name="value" type="xsd:string" use="required"/>
-	</xsd:complexType>
-
-	<!-->
-		Specifies the directory the wrapper should store indexed sql data.
-
-		@attribute directory:  The directory the wrapper should store the index
-	<-->
-	<xsd:complexType name="Index">
-		<xsd:attribute name="directory" type="xsd:string" use="required"/>
 	</xsd:complexType>
 	
 </xsd:schema> 

@@ -1,0 +1,1 @@
+xjc -p de.unipassau.medspace.d2r.config.parsing -d test -extension Medspace_D2Rmap.xsd

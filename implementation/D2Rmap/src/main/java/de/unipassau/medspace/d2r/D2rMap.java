@@ -96,6 +96,16 @@ public class D2rMap implements Serializable {
   }
 
   /**
+   * TODO
+   * @param id
+   * @return
+   */
+  public boolean compareIdTo(String id) {
+    if (id == null) return false;
+    return id.trim().toUpperCase().equals(this.id);
+  }
+
+  /**
    * Creates a list of rdf triples from a given sql result tuple.
    * @param tuple The sql result tuple to create rdf triples from.
    * @return A  list of rdf triples that represent the sql result tuple.

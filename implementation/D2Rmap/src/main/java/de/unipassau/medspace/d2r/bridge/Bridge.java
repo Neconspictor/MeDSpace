@@ -17,19 +17,9 @@ import org.slf4j.LoggerFactory;
 abstract public class Bridge {
 
     /**
-     * Specifies the rdf data type of the properties created by this bridge
-     */
-    protected String dataType;
-
-    /**
      * The pattern to createDoc properties from.
      */
     protected String pattern;
-
-    /**
-     * An optional rdf language tag created properties should have.
-     */
-    protected String langTag;
 
     /**
      * The qualified name of the propertyQName.
@@ -53,15 +43,6 @@ abstract public class Bridge {
      */
     public Bridge(RDFFactory primitiveValueFactory) {
         this.primitiveValueFactory = primitiveValueFactory;
-    }
-
-
-    /**
-     * Provides the language tag, the values of created properties should assigned to.
-     * @return the language tag.
-     */
-    public String getLangTag() {
-        return langTag;
     }
 
 
@@ -96,46 +77,6 @@ abstract public class Bridge {
      * @return  The propertyQName value represented as an rdf node.
      */
     public abstract RDFObject getValue(SQLResultTuple tuple, QNameNormalizer normalizer);
-
-    /**
-     * Provides the used datatype (if any is used) or null otherwise.
-     * @return The used datatype or null if no datatype is used.
-     */
-    public String getDataType() {
-        return this.dataType;
-    }
-
-    /**
-     * Sets the rdf data type created propertyQName values should have.
-     * @param dataType The wished rdf data type.
-     */
-    public void setDataType(String dataType) {
-        if (dataType == null) {
-            this.dataType = null;
-            return;
-        }
-
-        this.dataType = dataType.trim();
-        if (this.dataType.equals("")) {
-            this.dataType = null;
-        }
-    }
-
-    /**
-     * Sets the rdf language tag, created propertyQName values should assigned to.
-     * @param langTag The wished language tag
-     */
-    public void setLangTag(String langTag) {
-        if (langTag == null) {
-            this.langTag = null;
-            return;
-        }
-
-        this.langTag = langTag.trim();
-        if (this.langTag.equals("")) {
-            this.langTag = null;
-        }
-    }
 
     /**
      * Sets the pattern used to createDoc the propertyQName values.
