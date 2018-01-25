@@ -11,6 +11,7 @@
 
 @(service: SQLWrapperService,
         config: de.unipassau.medspace.d2r.config.Configuration,
+        generalConfig: de.unipassau.medspace.common.config.GeneralWrapperConfig,
         connectionPool: ConnectionPool,
         metaData: java.sql.DatabaseMetaData)
 
@@ -56,10 +57,10 @@
   <h2 id="debug_stats">Debug stats</h2>
   <h4>Index</h4>
 
-  Index is used: @config.isIndexUsed() <br>
+  Index is used: @generalConfig.isIndexUsed() <br>
 
-  @if(config.isIndexUsed()) {
-    Index Directory: @config.getIndexDirectory().toString() <br>
+  @if(generalConfig.isIndexUsed()) {
+    Index Directory: @generalConfig.getIndexDirectory().toString() <br>
   }
 
   <h4>Datasource</h4>

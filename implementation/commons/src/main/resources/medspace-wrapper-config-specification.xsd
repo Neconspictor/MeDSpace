@@ -2,9 +2,16 @@
 
 <xsd:schema
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+		
         targetNamespace="http://www.medspace.com/wrapper-config-specification"
         xmlns:wrapper="http://www.medspace.com/wrapper-config-specification"
-        elementFormDefault="qualified">
+        elementFormDefault="qualified"
+		
+		xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns="http://java.sun.com/xml/ns/jaxws"
+		jxb:extensionBindingPrefixes="xjc" jxb:version="2.0"
+		>
+		
 
     <!-->
         The root element for a general wrapper configuration file.
@@ -14,40 +21,31 @@
         <xsd:complexType>
             <xsd:sequence>
                 <!-->Elements that can occur any number of times and in any order<-->
-                <xsd:element name="Datasource" type="wrapper:Datasource" minOccurs="1" maxOccurs="1"/>
-                <xsd:element name="Index" type="wrapper:Index" minOccurs="0" maxOccurs="1"/>
-                <xsd:choice maxOccurs="unbounded">
-                    <xsd:element name="Namespace" type="wrapper:Namespace" minOccurs="0" maxOccurs="unbounded"/>
-                </xsd:choice>
+                <xsd:element name="Description" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="Services" type="wrapper:Services" minOccurs="0" maxOccurs="1"/>
+                <xsd:element name="IndexDirectoy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                <xsd:element name="Namespaces" type="wrapper:Namespaces" minOccurs="0" maxOccurs="1"/>
                 <xsd:element name="OutputFormat" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-                <xsd:element name="Register" type="wrapper:Register" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="RegisterUrl" type="wrapper:URL" minOccurs="1" maxOccurs="1"/>
                 <xsd:element name="ConnectToRegister" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
 
-    <!-->
-        Specifies the directory the wrapper should store indexed data.
 
-        @attribute directory:  The directory the wrapper should store the index
-    <-->
-    <xsd:complexType name="Datasource">
+
+    <xsd:complexType name="Namespaces">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="Namespace" type="wrapper:Namespace" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="Services">
         <xsd:choice maxOccurs="unbounded">
             <xsd:element name="Service" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:choice>
-        <xsd:attribute name="url" type="xsd:string" use="required"/>
-        <xsd:attribute name="description" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-
-    <!-->
-        Specifies the directory the wrapper should store indexed data.
-
-        @attribute directory:  The directory the wrapper should store the index
-    <-->
-    <xsd:complexType name="Index">
-        <xsd:attribute name="directory" type="xsd:string" use="required"/>
-    </xsd:complexType>
 
     <!-->
         A type for defining RDF namespaces
@@ -55,19 +53,36 @@
         @attribute prefix:		The prefix to use in the rdf triples.
 
         @attribute namespace:	The namespace represented by the prefix.
+		
+		<jxb:javaType name="java.net.URL" 
+			parseMethod="de.unipassau.medspace.common.util.URLConverter.parseURL" 
+			printMethod="de.unipassau.medspace.common.util.URLConverter.printURL" />
     <-->
     <xsd:complexType name="Namespace">
         <xsd:attribute name="prefix" type="xsd:string" use="required"/>
         <xsd:attribute name="namespace" type="xsd:string" use="required"/>
     </xsd:complexType>
+	
+	<xsd:simpleType name="URL"> 
+  <xsd:restriction base="xsd:string">
+ 
+  </xsd:restriction>
+</xsd:simpleType> 	
 
-    <!-->
-        Specifies the url of the register the wrapper should connect to.
 
-        @attribute url:  The url to the register
-    <-->
-    <xsd:complexType name="Register">
-        <xsd:attribute name="url" type="xsd:string" use="required"/>
-    </xsd:complexType>
+<xsd:annotation>
+    <xsd:appinfo>
+			
+		<jxb:bindings node="//xsd:simpleType[@name='URL']">
+			<jxb:javaType name="java.net.URL" 
+				parseMethod="de.unipassau.medspace.common.util.URLConverter.parseURL" 
+				printMethod="de.unipassau.medspace.common.util.URLConverter.printURL" />
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Namespace']">
+		</jxb:bindings>
+    </xsd:appinfo>
+</xsd:annotation>
 
+	
 </xsd:schema>

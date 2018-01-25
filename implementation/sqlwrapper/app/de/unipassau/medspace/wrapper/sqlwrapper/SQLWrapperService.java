@@ -3,9 +3,11 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
+import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
@@ -67,6 +69,11 @@ public class SQLWrapperService {
    * TODO
    */
   private boolean connectToRegister;
+
+  /**
+   * TODO
+   */
+  private Datasource wrapperDatasource;
 
 
   /**
@@ -176,12 +183,26 @@ public class SQLWrapperService {
     log.info("initializing SQL Wrapper...");
 
     if (!generalConfig.isIndexUsed()) {
-      throw new D2RException("This wrapper needs an index, but no index directory is stated in the general wrapper configuration.");
+      throw new D2RException("This wrapper needs an index, but no index directory is stated "
+          + "in the general wrapper configuration.");
     }
 
     Configuration d2rConfig = provider.getD2rConfig();
+    ServerConfig serverConfig = provider.getServerConfig();
 
     URI jdbcURI = d2rConfig.getJdbc();
+
+    Datasource.Builder builder = new Datasource.Builder();
+    builder.setDescription(generalConfig.getDescription());
+    builder.setRdfFormat(generalConfig.getOutputFormat());
+    builder.setServices(generalConfig.getServices());
+    builder.setUrl(serverConfig.getServerURL());
+
+    try{
+      wrapperDatasource = builder.build();
+    }catch (NoValidArgumentException e) {
+      throw new D2RException("Couldn't create datasource object for sql wrapper", e);
+    }
 
     log.info("Establish connection pool to: " + jdbcURI);
 
@@ -199,7 +220,7 @@ public class SQLWrapperService {
 
     //check connection to the register
     if (connectToRegister) {
-      boolean registered = registerClient.register(generalConfig.getDatasource(), generalConfig.getRegisterURL());
+      boolean registered = registerClient.register(wrapperDatasource, generalConfig.getRegisterURL());
       if (registered) {
         log.info("Successfuly registered to the Register.");
       } else {
@@ -222,7 +243,7 @@ public class SQLWrapperService {
    * TODO
    */
   private void deregister() {
-    boolean success = registerClient.deRegister(generalConfig.getDatasource(), generalConfig.getRegisterURL());
+    boolean success = registerClient.deRegister(wrapperDatasource, generalConfig.getRegisterURL());
 
     if (success)
       log.info("Successfully deregistered from the register.");

@@ -22,9 +22,6 @@ import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -64,7 +61,6 @@ public class ConfigurationReader {
       throw new IllegalStateException("Default output language couldn't be mapped to a Lang object!");
     }
 
-    config.setOutputFormat(format);
     return config;
   }
 
@@ -187,7 +183,7 @@ public class ConfigurationReader {
 
     // sql and groupBy attributes are required
     String sqlQuery = mapElement.getAttribute(D2R.ClassMap.SQL_ATTRIBUTE);
-    validateSqlQuery(sqlQuery, config.isIndexUsed());
+    validateSqlQuery(sqlQuery);
     cMap.setSql(sqlQuery);
     cMap.addResourceIdColumns(mapElement.getAttribute(D2R.ClassMap.RESOURCE_ID_COLUMNS_ATTRIBUTE));
 
@@ -233,15 +229,6 @@ public class ConfigurationReader {
     // DBConnection is a required element that exists exact one time
     list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.DBConnection.NAME);
     readDBConnectionElement(config, (Element)list.item(0));
-    
-    //OutputFormat is a required element that exists exact one time
-    list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.Root.OutputFormat.NAME);
-    readOutputFormatElement(config, (Element) list.item(0));
-
-    // check if a index is wished and if it is the case, then read ut the index store directory
-    list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.Index.NAME);
-    if (list.getLength() > 0)
-    readIndexElement(config, (Element) list.item(0));
 
     list = root.getElementsByTagNameNS(D2R.D2RNS, D2R.ClassMap.NAME);
     for (int i = 0; i < list.getLength(); ++i)
@@ -317,33 +304,6 @@ public class ConfigurationReader {
   }
 
   /**
-   * Reads the index directory from a given element and adds it to the given Configuration.
-   * @param config The configuration the read index directory should be added to.
-   * @param elem The element that represents an index element.
-   * @throws IOException If the index directory couldn't be parsed.
-   */
-  private static void readIndexElement(Configuration config, Element elem) throws IOException {
-    String directory = elem.getAttribute(D2R.Index.DIRECTORY_ATTRIBUTE);
-
-    if (directory == null) {
-      throw new IllegalArgumentException("index directory doesn't be null!");
-    }
-
-    Path path = null;
-
-    try {
-      //path = FileUtil.createDirectory(directory);
-      path = Paths.get(directory);
-    } catch (InvalidPathException e) {
-      throw new IOException("Error while trying to createDoc index directory path", e);
-    }
-
-
-    config.setUseIndex(true);
-    config.setIndexDirectory(path);
-  }
-
-  /**
    * Reads an ObjectPropertyBridge from a given element for a specific D2rMap.
    * @param elem The element that represents an ObjectPropertyBridge
    * @param map The D2rMap the parsed ObjectPropertyBridge should be added to.
@@ -359,27 +319,6 @@ public class ConfigurationReader {
     bridge.setPattern(elem.getAttribute(D2R.ObjectPropertyBridge.PATTERN_ATTRIBUTE));
     bridge.setReferredColumns(elem.getAttribute(D2R.ObjectPropertyBridge.REFERRED_GROUPBY_ATTRIBUTE));
     map.addBridge(bridge);
-  }
-
-  /**
-   * Parses the rdf output format language
-   * @param config The configuration the readed output format should be added to.
-   * @param elem The element that contains the output format.
-   * @throws D2RException If the rdf language couldn't be parsed from the content of the specified element.
-   */
-  private void readOutputFormatElement(Configuration config, Element elem) throws D2RException {
-    String format = elem.getTextContent();
-
-    assert format != null;
-
-    if (!provider.isValid(format)) {
-      String supportedFormats = provider.getSupportedFormatsPrettyPrint();
-
-      throw new D2RException("RDF language isn't supported: " + format +
-      "\nSupported languages are:\n" + supportedFormats);
-    }
-
-    config.setOutputFormat(format);
   }
 
   /**
@@ -399,17 +338,14 @@ public class ConfigurationReader {
 
   /**
    * Tests whether a given sql query is valid for a sql attribute from a ClassMap element.
-   * @param sqlQuery
-   * @param indexUsed
+   * @param sqlQuery TODO
    * @throws D2RException
    */
-  private static void validateSqlQuery(String sqlQuery, boolean indexUsed) throws D2RException {
+  private static void validateSqlQuery(String sqlQuery) throws D2RException {
     String ucQuery = sqlQuery.toUpperCase();
     if (ucQuery.contains("UNION")) {
-      if (!indexUsed) {
         //SelectStatement does not support UNION clauses, yet!
         throw new D2RException("SQL statement should not contain UNION: " + sqlQuery);
-      }
     }
   }
 }

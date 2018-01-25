@@ -5,7 +5,6 @@ import de.unipassau.medspace.d2r.D2rMap;
 import org.javatuples.Pair;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,11 +40,6 @@ public class Configuration {
   private Class jdbcDriver;
 
   /**
-   * The directory the wrapper should store indexed data.
-   */
-  private Path indexDirectory;
-
-  /**
    * The D2rMaps that were read from the config file.
    */
   private List<D2rMap> maps;
@@ -61,25 +55,12 @@ public class Configuration {
   private HashMap<String, Namespace> namespaces;
 
   /**
-   * The export rdf language.
-   */
-  private String outputFormat;
-
-  /**
-   * Specifies, if the wrapper should use an index.
-   */
-  private boolean useIndex;
-
-  /**
    * Creates a new Configuration.
    */
   public Configuration() {
     dataSourceProperties = new ArrayList<>();
-    indexDirectory = null; // null hints, that no index directory should be used
     maps = new ArrayList<>();
     namespaces = new HashMap<>();
-    outputFormat = null;
-    useIndex = false;
   }
 
   /**
@@ -113,14 +94,6 @@ public class Configuration {
    */
   public List<Pair<String, String>> getDataSourceProperties() {
     return dataSourceProperties;
-  }
-
-  /**
-   * Provides the index directory path.
-   * @return The index directory.
-   */
-  public Path getIndexDirectory() {
-    return indexDirectory;
   }
 
   /**
@@ -163,21 +136,6 @@ public class Configuration {
     return namespaces;
   }
 
-  /**
-   * Provides the rdf output language.
-   * @return The rdf output language.
-   */
-  public String getOutputFormat() {
-    return outputFormat;
-  }
-
-  /**
-   * Checks, if a wrapper should use an index.
-   * @return Should the wrapper use an index?
-   */
-  public boolean isIndexUsed() {
-    return useIndex;
-  }
 
   /**
    * Sets the database password.
@@ -212,14 +170,6 @@ public class Configuration {
   }
 
   /**
-   * Sets the index directory a wrapper should use for indexed data.
-   * @param indexDirectory The index directory.
-   */
-  public void setIndexDirectory(Path indexDirectory) {
-    this.indexDirectory = indexDirectory.normalize();
-  }
-
-  /**
    * Sets the list of D2rMaps.
    * @param maps The D2rMaps to use.
    */
@@ -243,20 +193,4 @@ public class Configuration {
     this.maxConnections = maxConnections;
   }
 
-  /**
-   * Sets the rdf export language.
-   * @param outputFormat The rdf export language.
-   */
-  public void setOutputFormat(String outputFormat) {
-    assert outputFormat != null;
-    this.outputFormat = outputFormat;
-  }
-
-  /**
-   * Sets whether an index should be used by a wrapper.
-   * @param useIndex Should an index be used?
-   */
-  public void setUseIndex(boolean useIndex) {
-    this.useIndex = useIndex;
-  }
 }

@@ -12,6 +12,10 @@ import de.unipassau.medspace.d2r.D2rUtil;
  */
 public class DatatypePropertyBridge extends Bridge {
 
+  /**
+   * TODO
+   * @param primitiveValueFactory
+   */
   public DatatypePropertyBridge(RDFFactory primitiveValueFactory) {
     super(primitiveValueFactory);
   }

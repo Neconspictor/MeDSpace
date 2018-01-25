@@ -18,10 +18,22 @@ import java.util.concurrent.CompletableFuture;
  */
 public class ConnectionPoolProvider implements Provider<ConnectionPool> {
 
+  /**
+   * Logger instance of this class.
+   */
   private static Logger log = LoggerFactory.getLogger(ConnectionPoolProvider.class);
 
+  /**
+   * TODO
+   */
   private ConnectionPool connectionPool;
 
+  /**
+   * TODO
+   * @param provider
+   * @param lifecycle
+   * @param shutdownService
+   */
   @Inject
   public ConnectionPoolProvider(ConfigProvider provider, ApplicationLifecycle lifecycle,
                                 ShutdownService shutdownService) {

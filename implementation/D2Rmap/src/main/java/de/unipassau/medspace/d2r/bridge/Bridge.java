@@ -36,6 +36,9 @@ abstract public class Bridge {
      */
     protected String propertyQName;
 
+    /**
+     * TODO
+     */
     protected RDFFactory primitiveValueFactory;
 
     /**
@@ -44,6 +47,10 @@ abstract public class Bridge {
     private static Logger log = LoggerFactory.getLogger(Bridge.class);
 
 
+    /**
+     * TODO
+     * @param primitiveValueFactory
+     */
     public Bridge(RDFFactory primitiveValueFactory) {
         this.primitiveValueFactory = primitiveValueFactory;
     }
@@ -76,6 +83,10 @@ abstract public class Bridge {
         return pattern;
     }
 
+    /**
+     * TODO
+     * @return
+     */
     public String getPropertyQName() { return propertyQName; }
 
     /**

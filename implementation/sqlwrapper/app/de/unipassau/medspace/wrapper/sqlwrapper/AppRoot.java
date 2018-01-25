@@ -19,6 +19,9 @@ import java.util.Locale;
  */
 public class AppRoot extends AbstractModule {
 
+  /**
+   * Logger instance of this class.
+   */
   private static Logger log = LoggerFactory.getLogger(AppRoot.class);
 
   /**

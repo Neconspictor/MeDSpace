@@ -39,6 +39,10 @@ libraryDependencies += "org.eclipse.rdf4j" % "rdf4j-queryresultio-binary" % "2.2
 // https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
 libraryDependencies += "org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
 
+// https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
+libraryDependencies += "javax.xml.bind" % "jaxb-api" % "2.2.11"
+
+
 //batScriptTemplateLocation := file("run.bat" )
 
 javacOptions ++= Seq("-Xlint:unchecked")

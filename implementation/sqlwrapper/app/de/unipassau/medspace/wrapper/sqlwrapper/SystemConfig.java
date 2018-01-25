@@ -6,11 +6,13 @@ import play.Environment;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.typesafe.config.Config;
+import play.api.Application;
 
 /**
  * This class is used to configure the environment of the play framework.
@@ -36,13 +38,31 @@ public class SystemConfig {
   private String customWorkingDirectoryPath;
 
   /**
+   * TODO
+   */
+  private File playRootDirectory;
+
+  /**
+   * TODO
+   */
+  private final Application application;
+
+  /**
    * Creates a new SystemConfig
    * @param environment The environment of the play framework.
+   * @param application TODO
    * @param playConfig The configuration of the play framework.
    */
   @Inject
   public SystemConfig(Environment environment,
+                      Application application,
                       Config playConfig) {
+
+    this.application = application;
+    this.playRootDirectory = application.path();
+    log.info("play root directory = " + playRootDirectory);
+    log.info("environment root path = " + application.environment().rootPath());
+
     String libDirectory = getPlayLibDirectory();
 
     // go one folder upwards

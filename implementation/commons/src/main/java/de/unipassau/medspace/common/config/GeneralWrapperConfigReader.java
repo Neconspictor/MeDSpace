@@ -1,30 +1,23 @@
 package de.unipassau.medspace.common.config;
 
-import de.unipassau.medspace.common.exception.NoValidArgumentException;
-import de.unipassau.medspace.common.exception.ParseException;
-import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.config.general_wrapper.RegisterUrlAdapter;
+import de.unipassau.medspace.common.config.general_wrapper.Config;
 import de.unipassau.medspace.common.rdf.RDFProvider;
-import de.unipassau.medspace.common.register.Datasource;
-import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.common.util.XmlUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig.GeneralWrapperConfigData;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
+import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
 
 /**
  * Used to read a general wrapper config file.
@@ -36,6 +29,9 @@ public class GeneralWrapperConfigReader {
    */
   private static Logger log = LoggerFactory.getLogger(GeneralWrapperConfigReader.class);
 
+  /**
+   * TODO
+   */
   private RDFProvider provider;
 
 
@@ -53,7 +49,7 @@ public class GeneralWrapperConfigReader {
   public GeneralWrapperConfigData createDefaultConfig() {
     GeneralWrapperConfigData config = new GeneralWrapperConfigData();
 
-    String format = Constants.OutputFormat.STANDARD_OUTPUT_FORMAT;
+    String format = Constants.STANDARD_OUTPUT_FORMAT;
 
     if (!provider.isValid(format)) {
       throw new IllegalStateException("Default output language couldn't be mapped to a RDFFormat object!");
@@ -64,37 +60,48 @@ public class GeneralWrapperConfigReader {
   }
 
   /**
-   * Reads a namespace element and adds it to the provided Configuration.
-   * @param config the Configuration the namespace element should be added to
-   * @param elem The namesapce element
-   */
-  public  static void readComplexTypeNamespace(GeneralWrapperConfigData config, Element elem) {
-    String prefix = elem.getAttribute(Constants.Namespace.PREFIX_ATTRIBUTE);
-    String namespace = elem.getAttribute(Constants.Namespace.NAMESPACE_ATTRIBUTE);
-
-    if (prefix.equals(""))
-      throw new IllegalStateException("prefix not set or empty.");
-    if (namespace.equals(""))
-      throw new IllegalStateException("namespace not set or empty.");
-
-    config.getNamespaces().put(prefix, new Namespace(prefix, namespace));
-  }
-
-  /**
    * Reads an general wrapper config file from the filesystem.
    * @param filename Filename of the general wrapper config file
    * @return The read configuration file
    * @throws IOException if an error occurs
    */
   public GeneralWrapperConfig readConfig(String filename) throws IOException {
-    GeneralWrapperConfigData config = createDefaultConfig();
+
+    Config config;
+    GeneralWrapperConfigData result = new GeneralWrapperConfigData();
+
     try {
       // Read document into DOM
       Schema schema = XmlUtil.createSchema(new String[]{Constants.WRAPPER_VALIDATION_SCHEMA});
-      Document document = XmlUtil.parseFromFile(filename, schema);
+      //Document document = XmlUtil.parseFromFile(filename, schema);
+
+      JAXBContext context = JAXBContext.newInstance(Config.class);
+
+      Unmarshaller unmarshaller = context.createUnmarshaller();
+      unmarshaller.setSchema(schema);
+      //RegisterUrlAdapter adapter = new RegisterUrlAdapter();
+      //unmarshaller.setAdapter(RegisterUrlAdapter.class, adapter);
+      config = (Config) unmarshaller.unmarshal(new File(filename));
+
+      result.setDescription(config.getDescription());
+      result.setConnectToRegister(config.isConnectToRegister());
+      result.setIndexDirectory(new File(config.getIndexDirectoy()).toPath());
+      result.setServices(config.getServices());
+      result.setNamespaces(config.getNamespaces());
+      result.setOutputFormat(config.getOutputFormat());
+      result.setRegisterURL(config.getRegisterUrl());
+      result.setUseIndex(config.getIndexDirectoy() != null);
+
+      /*Marshaller marshaller = context.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      File myTestFile = new File("myTestFile.xml");
+      myTestFile.createNewFile();
+      marshaller.marshal(config, myTestFile);*/
+
+
 
       //read the Document
-      readConfig(document, config);
+      //readConfig(document, config);
     }
     catch (SAXParseException spe) {
       throw new IOException("Error while parsing XML file: " + "line " +
@@ -102,195 +109,11 @@ public class GeneralWrapperConfigReader {
           ", uri: " + spe.getSystemId() + ", reason: " +
           spe.getMessage(), spe);
 
-    } catch (IOException | ParseException | SAXException e) {
+    } catch (IOException | JAXBException | SAXException e) {
       throw new IOException("Error while parsing XML file: ", e);
     }
 
-    return config.build();
+    return result.build();
   }
 
-  /**
-   * Parses a general wrapper config from a given XML document and stores its content in the specified Configuration.
-   * @param document The xml document that represents a valid general wrapper config file.
-   * @param config The configuration builder to fill.
-   * @throws IOException If the document does not contain a medspace-wrapper-config-specification wrapper root element
-   * or another IO-Error occurs.
-   * @throws ParseException if another parse error occurs.
-   */
-  private void readConfig(Document document, GeneralWrapperConfigData config) throws IOException, ParseException {
-    // Read namespaces
-    NodeList list = document.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Namespace.NAME);
-    int numNodes = list.getLength();
-    for (int i = 0; i < numNodes; i++) {
-      Element elem = (Element) list.item(i);
-      readComplexTypeNamespace(config, elem);
-    }
-
-    // Read the root element
-    list = document.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Root.NAME);
-    Element root = (Element) list.item(0);
-
-    if (root == null)
-      throw new IOException("No root element was specified in the mapping");
-
-    //Read the datasource object
-    list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Datasource.NAME);
-    readDatasourceElement(config, (Element) list.item(0));
-
-    // check if an index is wished and if it is the case, then read ut the index store directory
-    list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Index.NAME);
-    if (list.getLength() > 0)
-      readIndexElement(config, (Element) list.item(0));
-
-    //OutputFormat is a required element that exists exact one time
-    list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.OutputFormat.NAME);
-    readOutputFormatElement(config, (Element) list.item(0));
-
-    //The register element has to occur exactly one time.
-    list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Register.NAME);
-    readRegisterElement(config, (Element) list.item(0));
-
-    //Optionally there is a ConnectToRegister element
-    config.setConnectToRegister(true); // default value
-    list = root.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.ConnectToRegister.NAME);
-    if (list.getLength() > 0)
-      readConnectToRegisterElement(config, (Element) list.item(0));
-
-
-  }
-
-  private void readConnectToRegisterElement(GeneralWrapperConfigData config, Element elem) throws ParseException {
-    String content = elem.getTextContent();
-
-    if (content == null || content.equals("")) {
-      throw new ParseException("Illegal value for 'ConnectToRegisterElement' element: " + content);
-    }
-
-    //The content is supposed to be a boolean
-    Boolean connectToRegister;
-    try {
-      connectToRegister = Boolean.parseBoolean(content);
-    } catch (IllegalArgumentException | NullPointerException e) {
-      throw new ParseException("Couldn't read boolean value for ConnectToRegister element: ", e);
-    }
-
-    config.setConnectToRegister(connectToRegister.booleanValue());
-  }
-
-  private void readDatasourceElement(GeneralWrapperConfigData config, Element elem) throws IOException, ParseException {
-    String urlAttribute = elem.getAttribute(Constants.Datasource.URL_ATTRIBUTE);
-    String description = elem.getAttribute(Constants.Datasource.DESCRIPTION_ATTRIBUTE);
-
-    if (urlAttribute == null)
-      throw new IllegalArgumentException("url attribute mustn't be null!");
-
-    if (description == null)
-      description = "";
-
-    URL url;
-
-    try {
-      url = new URL(urlAttribute);
-    } catch (MalformedURLException e) {
-      throw new IOException("Couldn't convert Datasource url to a valid URL object: " + urlAttribute, e);
-    }
-
-    Datasource.Builder builder = new Datasource.Builder();
-
-    builder.setUrl(url);
-    builder.setDescription(description);
-    List<Service> services = new ArrayList<>();
-
-    NodeList list = elem.getElementsByTagNameNS(Constants.WRAPPER_NS, Constants.Datasource.Service.NAME);
-    int numNodes = list.getLength();
-    for (int i = 0; i < numNodes; i++) {
-      Element child = (Element) list.item(i);
-      String serviceName = child.getTextContent();
-      services.add(new Service(serviceName));
-    }
-
-    builder.setServices(services);
-    Datasource datasource = null;
-    try {
-      datasource = builder.build();
-    } catch (NoValidArgumentException e) {
-      throw new ParseException("Couldn't create datasource", e);
-    }
-
-    log.info("Read datasource: " + datasource);
-
-    config.setDatasource(datasource);
-  }
-
-  /**
-   * Reads the index directory from a given element and adds it to the given config builder.
-   * @param config The config builder the read index directory should be added to.
-   * @param elem The element that represents an index element.
-   * @throws IOException If the index directory couldn't be parsed.
-   */
-  private static void readIndexElement(GeneralWrapperConfigData config, Element elem) throws IOException {
-    String directory = elem.getAttribute(Constants.Index.DIRECTORY_ATTRIBUTE);
-
-    if (directory == null) {
-      throw new IllegalArgumentException("index directory attribute mustn't be null!");
-    }
-
-    Path path = null;
-
-    try {
-      //path = FileUtil.createDirectory(directory);
-      path = Paths.get(directory);
-    } catch (InvalidPathException e) {
-      throw new IOException("Error while trying to createDoc index directory path", e);
-    }
-
-
-    config.setUseIndex(true);
-    config.setIndexDirectory(path);
-  }
-
-
-  /**
-   * Parses the rdf output format language
-   * @param config The config builder the read output format should be added to.
-   * @param elem The element that contains the output format.
-   * @throws ParseException If the rdf language couldn't be parsed from the content of the specified element.
-   */
-  private void readOutputFormatElement(GeneralWrapperConfigData config, Element elem) throws ParseException {
-    String format = elem.getTextContent();
-    assert format != null;
-
-    if (!provider.isValid(format)) {
-
-      String supportedFormats = provider.getSupportedFormatsPrettyPrint();
-
-      throw new ParseException("RDF language isn't supported for streaming rdf triples: " + format +
-          "\nSupported languages are:\n" + supportedFormats);
-    }
-
-    config.setOutputFormat(format);
-  }
-
-  /**
-   * Reads a Register element and adds it to a config builder.
-   * @param config The config builder the read register url should be added to.
-   * @param elem Represents a valid Register element.
-   * @throws IllegalArgumentException If 'elem' isn't a valid Register element.
-   * @throws ParseException If no url could be created.
-   */
-  private static void readRegisterElement(GeneralWrapperConfigData config, Element elem) throws ParseException {
-    String urlAttribute = elem.getAttribute(Constants.Register.URL_ATTRIBUTE);
-
-    if (urlAttribute == null)
-      throw new IllegalArgumentException("Register url attribute mustn't be null!");
-
-    URL url;
-    try {
-      url = new URL(urlAttribute);
-    } catch (MalformedURLException e) {
-      throw new ParseException("Couldn't get URL to the register. Read source data: " + urlAttribute);
-    }
-
-    config.setRegisterURL(url);
-  }
 }

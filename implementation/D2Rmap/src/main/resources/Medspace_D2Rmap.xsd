@@ -15,9 +15,6 @@
 			<xsd:sequence>
 				<!-->Elements that have to stated exact once, but have to occur<-->
 				<xsd:element name="DBConnection" type="d2r:DBConnection" minOccurs="1" maxOccurs="1"/>
-				<xsd:element name="OutputFormat" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-				<!-->Elements that are optional<-->
-				<xsd:element name="Index" type="d2r:Index" minOccurs="0" maxOccurs="1"/>
 				<!-->Elements that can occur any number of times and in any order<-->
 				<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="Namespace" type="d2r:Namespace" minOccurs="0" maxOccurs="unbounded"/>

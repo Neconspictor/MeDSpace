@@ -44,6 +44,9 @@ public class ObjectPropertyBridge
    */
   protected boolean initialized = false;
 
+  /**
+   * Logger instance of this class.
+   */
   private static Logger log = LoggerFactory.getLogger(ObjectPropertyBridge.class);
 
 

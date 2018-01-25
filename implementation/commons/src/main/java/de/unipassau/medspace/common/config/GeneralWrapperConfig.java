@@ -1,12 +1,14 @@
 package de.unipassau.medspace.common.config;
 
+import com.google.common.collect.Lists;
 import de.unipassau.medspace.common.rdf.Namespace;
-import de.unipassau.medspace.common.register.Datasource;
+import de.unipassau.medspace.common.register.Service;
 
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,15 +17,34 @@ import java.util.Map;
  */
 public class GeneralWrapperConfig {
 
+  /**
+   * TODO
+   */
   private final GeneralWrapperConfigData data;
 
+  /**
+   * TODO
+   * @param data
+   */
   private GeneralWrapperConfig(GeneralWrapperConfigData data) {
     // Use the copy constructor so that data is not modifiable outside from this class (-> immutability).
     this.data = new GeneralWrapperConfigData(data);
   }
 
-  public Datasource getDatasource() {
-    return data.datasource;
+  /**
+   * TODO
+   * @return
+   */
+  public String getDescription() {
+    return data.description;
+  }
+
+  /**
+   * TODO
+   * @return
+   */
+  public List<Service> getServices() {
+    return Collections.unmodifiableList(data.services);
   }
 
   /**
@@ -86,7 +107,12 @@ public class GeneralWrapperConfig {
     /**
      * TODO
      */
-    private Datasource datasource;
+    private String description;
+
+    /**
+     * TODO
+     */
+    private List<Service> services;
 
     /**
      * The directory the wrapper should store indexed data.
@@ -133,8 +159,9 @@ public class GeneralWrapperConfig {
      */
     public GeneralWrapperConfigData(GeneralWrapperConfigData data) {
 
-      //Datasource is immutable
-      datasource = data.datasource;
+      description = data.description.trim();
+
+      services = Lists.newLinkedList(data.services);
 
       // Path implementations are immutable
       indexDirectory = data.indexDirectory;
@@ -173,7 +200,7 @@ public class GeneralWrapperConfig {
      * Sets the namespaces to use.
      * @param namespaces The namespaces to use.
      */
-    public void setNamespaces(HashMap<String, Namespace> namespaces) {
+    public void setNamespaces(Map<String, Namespace> namespaces) {
       this.namespaces = namespaces;
     }
 
@@ -246,8 +273,13 @@ public class GeneralWrapperConfig {
     public String toString() {
       StringBuilder builder = new StringBuilder();
       builder.append("GeneralConfig: [\n");
-
-      builder.append("  indexDirectory:  " + indexDirectory + ",\n");
+      builder.append("  description: '" + description + "',\n");
+      builder.append("  services: [\n");
+      for (Service service : services) {
+        builder.append("    " + service.toString() + ",\n");
+      }
+      builder.append("  ],\n");
+      builder.append("  indexDirectory: " + indexDirectory + ",\n");
       builder.append("  namespaces: [\n");
       for (Map.Entry<String, Namespace> entry : namespaces.entrySet()) {
         builder.append("    (prefix: " + entry.getKey() + ", namespace: " + entry.getValue() + "),\n");
@@ -266,16 +298,16 @@ public class GeneralWrapperConfig {
      * TODO
      * @return
      */
-    public Datasource getDatasource() {
-      return datasource;
+    public String getDescription() {
+      return description;
     }
 
     /**
      * TODO
-     * @param datasource
+     * @param description
      */
-    public void setDatasource(Datasource datasource) {
-      this.datasource = datasource;
+    public void setDescription(String description) {
+      this.description = description;
     }
 
     /**
@@ -292,6 +324,21 @@ public class GeneralWrapperConfig {
      */
     public void setConnectToRegister(boolean connectToRegister) {
       this.connectToRegister = connectToRegister;
+    }
+
+    /**
+     * TODO
+     */
+    public List<Service> getServices() {
+      return services;
+    }
+
+    /**
+     * TODO
+     * @param services
+     */
+    public void setServices(List<Service> services) {
+      this.services = services;
     }
   }
 }

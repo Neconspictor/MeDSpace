@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 /**
  * TODO
@@ -31,12 +30,33 @@ public class ConfigProvider {
   /**
    * TODO
    */
-  private static final String ADDRESS_ID = "play.server.http.address";
+  private static final String ADDRESS_ID_HTTP = "play.server.http.address";
 
   /**
    * TODO
    */
-  private static final String PORT_ID = "play.server.http.port";
+  private static final String PORT_ID_HTTP = "play.server.http.port";
+
+  /**
+   * TODO
+   */
+  private static final String ADDRESS_ID_HTTPS = "play.server.https.address";
+
+  /**
+   * TODO
+   */
+  private static final String PORT_ID_HTTPS = "play.server.https.port";
+
+
+  /**
+   * TODO
+   */
+  private static final String HTTP_PROTOCOL = "http://";
+
+  /**
+   * TODO
+   */
+  private static final String HTTPS_PROTOCOL = "https://";
 
   /**
    * TODO
@@ -98,17 +118,22 @@ public class ConfigProvider {
       ConfigException.Missing,
       ConfigException.WrongType {
 
-    String address = playConfig.getString(ADDRESS_ID);
-    int port = playConfig.getInt(PORT_ID);
+    String addressHTTP = playConfig.getString(ADDRESS_ID_HTTP);
+    String addressHTTPS = playConfig.getString(ADDRESS_ID_HTTP);
+    int portHTTP = playConfig.getInt(PORT_ID_HTTP);
+    int portHTTPS = playConfig.getInt(PORT_ID_HTTP);
     String wrapperConfigFile = playConfig.getString(WRAPPER_CONFIG_FILE_ID);
     String d2rConfigFile = playConfig.getString(D2R_CONFIG_FILE_ID);
 
-    log.debug(ADDRESS_ID + " = " + address);
-    log.debug(PORT_ID + " = " + port);
+    log.debug(ADDRESS_ID_HTTP + " = " + addressHTTP);
+    log.debug(PORT_ID_HTTP + " = " + portHTTP);
+    log.debug(ADDRESS_ID_HTTPS + " = " + addressHTTPS);
+    log.debug(PORT_ID_HTTPS + " = " + portHTTPS);
     log.debug(WRAPPER_CONFIG_FILE_ID + " = " + wrapperConfigFile);
     log.debug(D2R_CONFIG_FILE_ID + " = " + d2rConfigFile);
 
-    serverConfig = new ServerConfig(address, port);
+    //right now, only http is supported
+    serverConfig = new ServerConfig(HTTP_PROTOCOL, addressHTTP, portHTTP);
 
     File generalWrapperConfigFile = new File(wrapperConfigFile);
 

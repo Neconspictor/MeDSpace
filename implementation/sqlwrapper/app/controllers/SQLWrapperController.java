@@ -1,6 +1,7 @@
 package controllers;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
@@ -55,17 +56,34 @@ public class SQLWrapperController extends Controller {
    */
   private final FormFactory formFactory;
 
+  /**
+   * TODO
+   */
   private final TripleWriterFactory tripleWriterFactory;
 
+  /**
+   * TODO
+   */
   private final RDFProvider rdfProvider;
 
+  /**
+   * TODO
+   */
   private final ConnectionPool connectionPool;
 
+  /**
+   * TODO
+   */
   private final Configuration d2rConfig;
 
   /**
+   * TODO
+   */
+  private final GeneralWrapperConfig generalConfig;
+
+  /**
    * Creates a new SQLWrapperController
-   * @param wrapperService
+   * @param wrapperService TODO
    * @param formFactory
    * @param rdfProvider
    */
@@ -81,6 +99,7 @@ public class SQLWrapperController extends Controller {
     this.rdfProvider = rdfProvider;
     this.connectionPool = connectionPool;
     this.d2rConfig = configProvider.getD2rConfig();
+    generalConfig = configProvider.getGeneralWrapperConfig();
   }
 
   /**
@@ -95,7 +114,7 @@ public class SQLWrapperController extends Controller {
    * Provides the SQL Wrapper status and debug page.
    */
   public Result index() {
-    return ok(views.html.index.render(wrapperService, d2rConfig, connectionPool,
+    return ok(views.html.index.render(wrapperService, d2rConfig, generalConfig, connectionPool,
         wrapperService.getMetaData()));
   }
 
@@ -121,20 +140,20 @@ public class SQLWrapperController extends Controller {
       return badRequest("keyword search query isn't valid: \"" + keywords + "\"");
     }
 
+    String outputFormat = generalConfig.getOutputFormat();
     Set<Namespace> namespaces = wrapperService.getWrapper().getNamespaces();
-    String format = d2rConfig.getOutputFormat();
-    List<String> extensions = rdfProvider.getFileExtensions(format);
+    List<String> extensions = rdfProvider.getFileExtensions(outputFormat);
     String fileExtension = extensions.size() == 0 ? "txt" : extensions.get(0);
     InputStream tripleStream;
     try {
-      tripleStream = new TripleInputStream(triples, format, namespaces, tripleWriterFactory);
+      tripleStream = new TripleInputStream(triples, outputFormat, namespaces, tripleWriterFactory);
     } catch (NoValidArgumentException | IOException e) {
       log.error("Couldn't construct triple input stream", e);
       return internalServerError("Couldn't construct triple input stream");
     }
 
     String mimeType = Http.MimeTypes.TEXT;
-    String formatMimeType = rdfProvider.getDefaultMimeType(format);
+    String formatMimeType = rdfProvider.getDefaultMimeType(outputFormat);
 
     if (formatMimeType == null) formatMimeType = mimeType;
 

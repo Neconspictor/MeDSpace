@@ -70,6 +70,8 @@ public class WrapperProvider implements Provider<D2rWrapper<?>> {
 
     Path indexPath = generalConfig.getIndexDirectory();
 
+    // namespaces can be defined inside both wrapper configuration files
+    // Therefore put them all together
     Map<String, Namespace> namespaces = new HashMap<>(generalConfig.getNamespaces());
     namespaces.putAll(d2rConfig.getNamespaces());
 
