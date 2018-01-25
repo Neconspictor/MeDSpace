@@ -29,3 +29,6 @@ libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"
 libraryDependencies += "dnsjava" % "dnsjava" % "2.1.8"
 
 javacOptions ++= Seq("-Xlint:unchecked")
+
+unmanagedResourceDirectories in Test += baseDirectory.value / "app/resources"
+unmanagedResourceDirectories in Compile += baseDirectory.value / "app/resources"

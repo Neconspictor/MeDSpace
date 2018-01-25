@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+
+        targetNamespace="http://www.medspace.com/dataspace/config-specification"
+        xmlns:ds="http://www.medspace.com/dataspace/config-specification"
+        elementFormDefault="qualified"
+
+        xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns="http://java.sun.com/xml/ns/jaxws"
+        jxb:extensionBindingPrefixes="xjc" jxb:version="2.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+
+
+    <!-->
+        The root element for a general wrapper configuration file.
+        It defines the structure of a valid wrapper configuration file.
+    <-->
+    <xsd:element name="Root">
+        <xsd:complexType>
+            <xsd:sequence>
+                <!-->Elements that can occur any number of times and in any order<-->
+                <xsd:element name="QueryExecutor" type="ds:QueryExecutor" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="DataCollector" type="ds:DataCollector" minOccurs="1" maxOccurs="1"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+
+    <xsd:complexType name="QueryExecutor">
+        <xsd:sequence>
+            <xsd:element name="NativeStoreDirectory" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="DataCollectorSubPath" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="DataCollector">
+        <xsd:sequence>
+            <xsd:element name="NativeStoreDirectory" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="DataCollectorSubPath" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
