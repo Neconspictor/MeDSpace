@@ -59,11 +59,18 @@ public final class Util {
     return response;
   }
 
+  /**
+   * TODO
+   * @param function
+   * @param triesOnFailure
+   * @return
+   */
   public static WSResponse executeAndWait(Supplier<CompletionStage<? extends WSResponse>>
-                                                    function, int triesOnFailure) {
+                                                    function, int triesOnFailure) throws IOException {
     assert triesOnFailure >= 1;
 
     WSResponse response = null;
+    Exception thrownException = null;
 
     // try at most three times to get a message
     // If the retrieving is successful leave the loop (-> no more tries)
@@ -77,13 +84,19 @@ public final class Util {
       } catch (ExecutionException | InterruptedException e) {
         log.warn("Couldn't retrieve data at try " +  i);
         log.debug("Cause", e);
+        thrownException = e;
       }
+    }
+
+    //check errors
+    if (response == null) {
+      throw new IOException("Couldn't retrieve response. Last error was: ", thrownException);
     }
 
     return response;
   }
 
-  public static WSResponse getAndWait(WSRequest request, int triesOnFailure) {
+  public static WSResponse getAndWait(WSRequest request, int triesOnFailure) throws IOException {
     return executeAndWait(() -> request.get(), triesOnFailure);
   }
 
@@ -95,12 +108,12 @@ public final class Util {
     return executeAndWaitJson(()-> request.post(body), triesOnFailure);
   }
 
-  public static WSResponse postFileAndWait(WSRequest request, File file, int triesOnFailure) {
+  public static WSResponse postFileAndWait(WSRequest request, File file, int triesOnFailure) throws IOException {
 
     return executeAndWait(()->request.post(file), triesOnFailure);
   }
 
-  public static WSResponse postInputStreamAndWait(WSRequest request, InputStream in, int triesOnFailure) {
+  public static WSResponse postInputStreamAndWait(WSRequest request, InputStream in, int triesOnFailure) throws IOException {
 
     Source<ByteString, ?> source = StreamConverters.fromInputStream(()->in);
 

@@ -63,7 +63,7 @@ public class SqlToTripleStream extends TripleCacheStream<SQLResultTuple> {
   }
 
   @Override
-  protected List<Triple> createTriples(SQLResultTuple elem) {
+  protected List<Triple> createTriples(SQLResultTuple elem) throws IOException {
     return map.createTriples(elem);
   }
 }

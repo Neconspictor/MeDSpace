@@ -1,5 +1,6 @@
 package de.unipassau.medspace.d2r;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.sql.*;
@@ -110,7 +111,7 @@ public class D2rMap implements Serializable {
    * @param tuple The sql result tuple to create rdf triples from.
    * @return A  list of rdf triples that represent the sql result tuple.
    */
-  public List<Triple> createTriples(SQLResultTuple tuple) {
+  public List<Triple> createTriples(SQLResultTuple tuple) throws IOException {
     List<Triple> triples = new ArrayList<>();
     RDFResource resource;
 
@@ -129,9 +130,7 @@ public class D2rMap implements Serializable {
     resource = rdfFactory.createResource(uri);
 
     if (resource == null || resourceID.equals("")) {
-      log.warn("Warning: Couldn't createDoc resource " + resourceID + " in map " + getId() +
-          ".");
-      return null;
+      throw new IllegalStateException( "Couldn't create resource " + resourceID + " in map " + getId());
     }
 
     for (Bridge bridge : getBridges()) {

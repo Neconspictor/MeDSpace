@@ -5,10 +5,8 @@ import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.data_collector.DataCollector;
 import de.unipassau.medspace.data_collector.rdf4j.RDF4J_DataCollector;
-import de.unipassau.medspace.query_executor.QueryExecutorLifecycle;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import de.unipassau.medspace.register.RegisterLifecycle;
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +43,6 @@ public class GlobalModule extends AbstractModule {
     log.info("GlobuleModule configures dependencies...");
     bind(RDFProvider.class).to(RDF4J_RDFProvider.class).asEagerSingleton();
     bind(RegisterLifecycle.class).asEagerSingleton();
-    bind(QueryExecutorLifecycle.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();
     bind(DataCollectorLifecycle.class).asEagerSingleton();
     bind(RepositoryManager.class).toProvider(DataCollectorLifecycle.class).asEagerSingleton();

@@ -64,8 +64,18 @@ public class QueryExecutor {
       try (InputStream in = serviceInvoker.queryDatasourceInputStream(datasource, query)){
         writeInputStreamToRepository(in, datasource.getUrl(), datasource.getRdfFormat(), resultID);
       } catch (IOException | UnsupportedServiceException e) {
-        serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+
+        log.error("Couldn't query datasource " + datasource.getUrl(), e);
+
+        //TODO: We have to decide when to delete query result and throw exception!
+        /*try{
+          serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+        } catch (IOException e1) {
+          log.error("Couldn't delete query result:", e1);
+        }
+
         throw new IOException("Couldn't query datasource " + datasource.getUrl(), e);
+        */
       }
     }
 
@@ -74,7 +84,11 @@ public class QueryExecutor {
     try {
       in = serviceInvoker.invokeDataCollectorQueryQueryResult(dataCollectorBase, resultID, rdfFormat);
     } catch (IOException e) {
-      serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+      try{
+        serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+      } catch (IOException e1) {
+        log.error("Couldn't delete query result:", e1);
+      }
       throw new IOException("Couldn't get query result",e );
     }
 

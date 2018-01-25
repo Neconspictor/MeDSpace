@@ -31,7 +31,7 @@ public class DocToTripleStream extends TripleCacheStream<Document> {
   }
 
   @Override
-  protected List<Triple> createTriples(Document doc) {
+  protected List<Triple> createTriples(Document doc) throws IOException {
     return tripleConverter.convert(doc);
   }
 

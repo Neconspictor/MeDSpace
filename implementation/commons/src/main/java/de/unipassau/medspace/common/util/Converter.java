@@ -1,5 +1,7 @@
 package de.unipassau.medspace.common.util;
 
+import java.io.IOException;
+
 /**
  * A object converter creates a new object of type B from one source object of type A.
  */
@@ -10,5 +12,5 @@ public interface Converter<A, B> {
    * @param source The object to convert
    * @return The converted object.
    */
-  B convert(A source);
+  B convert(A source) throws IOException;
 }

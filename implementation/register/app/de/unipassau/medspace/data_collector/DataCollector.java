@@ -5,6 +5,8 @@ import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,14 +19,24 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class DataCollector {
 
-  protected final AtomicBigInteger nextID = new AtomicBigInteger(BigInteger.ZERO);
+  private static final Logger log = LoggerFactory.getLogger(DataCollector.class);
+
+  //protected final AtomicBigInteger nextID = new AtomicBigInteger(BigInteger.ZERO);
+  protected BigInteger nextID = BigInteger.ZERO;
+  protected final Object nextIdLock = new Object();
+
 
   @Inject
   public DataCollector() {
   }
 
   public BigInteger createQueryResult() {
-    return nextID.incrementAndGet();
+    synchronized (nextIdLock) {
+      log.debug("Old value of nextID: " + nextID);
+      nextID = nextID.add(BigInteger.ONE);
+      log.debug("New value of nextID: " + nextID);
+      return nextID;
+    }
   }
 
   public abstract void addPartialQueryResult(BigInteger resultID, InputStream rdfData, String rdfFormat, String baseURI)

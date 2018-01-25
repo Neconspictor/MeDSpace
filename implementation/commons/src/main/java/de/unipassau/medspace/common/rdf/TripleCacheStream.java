@@ -50,7 +50,7 @@ public abstract class TripleCacheStream<E> implements Stream<Triple> {
    * @param elem The object to convert.
    * @return A list of triples representing the converted object.
    */
-  protected abstract List<Triple> createTriples(E elem);
+  protected abstract List<Triple> createTriples(E elem) throws IOException;
 
   @Override
   public boolean hasNext() throws IOException {
@@ -62,7 +62,11 @@ public abstract class TripleCacheStream<E> implements Stream<Triple> {
   public Triple next() throws IOException {
     if (tripleCache.isEmpty()) {
       E nextElem = stream.next();
-      tripleCache.addAll(createTriples(nextElem));
+      List<Triple> triples = createTriples(nextElem);
+      if (triples == null) {
+        throw new IOException("Couldn't retrieve triples list from iem: " + nextElem);
+      }
+      tripleCache.addAll(triples);
     }
     return tripleCache.poll();
   }

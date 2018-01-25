@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Created by David Goeth on 07.11.2017.
+ * TODO
  */
 public class RDF4J_DataCollector extends DataCollector {
 
@@ -81,24 +81,26 @@ public class RDF4J_DataCollector extends DataCollector {
 
   @Override
   public BigInteger createQueryResult() {
-    BigInteger id = super.createQueryResult();
-    manager.addResultID(id);
-
-    return id;
+    synchronized (this) {
+      BigInteger id = super.createQueryResult();
+      manager.addResultID(id);
+      return id;
+    }
   }
 
   @Override
   public boolean deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException{
 
+    synchronized (this) {
+      String repoName = resultID.toString();
+      Repository repo = manager.getRepository(repoName);
+      if (repo == null) {
+        return false;
+      }
 
-    String repoName = resultID.toString();
-    Repository repo = manager.getRepository(repoName);
-    if (repo == null) {
-      return false;
+      manager.removeRepository(repoName);
+      return true;
     }
-
-    manager.removeRepository(repoName);
-    return true;
   }
 
   @Override

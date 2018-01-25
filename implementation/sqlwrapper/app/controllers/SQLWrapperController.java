@@ -8,6 +8,7 @@ import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleWriterFactory;
 import de.unipassau.medspace.wrapper.sqlwrapper.ConfigProvider;
+import de.unipassau.medspace.wrapper.sqlwrapper.LogWrapperInputStream;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.TripleInputStream;
@@ -170,7 +171,12 @@ public class SQLWrapperController extends Controller {
       mimeType = formatMimeType;
     }
 
-    return ok(tripleStream).as(mimeType).withHeader("Content-Disposition", dispositionValue);
+    // If an exception is thrown, play catches it and drops the connection
+    // Unfortunately no error logging or something similar is done.
+    // So we wrap the triple stream around an input stream, that will log any error before rethrowing the error.
+    LogWrapperInputStream logWrapper = new LogWrapperInputStream(tripleStream);
+
+    return ok(logWrapper).as(mimeType).withHeader("Content-Disposition", dispositionValue);
   }
 
   /**

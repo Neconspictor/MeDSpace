@@ -2,7 +2,6 @@ package controllers;
 
 import com.typesafe.config.Config;
 import de.unipassau.medspace.query_executor.QueryExecutor;
-import de.unipassau.medspace.query_executor.QueryExecutorLifecycle;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by David Goeth on 06.10.2017.
+ * TODO
  */
 public class QueryExecutorController extends Controller {
 
@@ -34,7 +33,7 @@ public class QueryExecutorController extends Controller {
     private static final  Logger log = LoggerFactory.getLogger(QueryExecutorController.class);
 
   @Inject
-  public QueryExecutorController(ServiceInvoker serviceInvoker, Config playConfig, QueryExecutorLifecycle lifecycle) throws MalformedURLException,
+  public QueryExecutorController(ServiceInvoker serviceInvoker, Config playConfig) throws MalformedURLException,
       ExecutionException, InterruptedException {
 
     //TODO the url (with port) should be stated in the config file for the QueryExecutor once it is split from the register

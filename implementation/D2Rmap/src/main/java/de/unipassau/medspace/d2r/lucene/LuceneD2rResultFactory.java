@@ -15,6 +15,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.javatuples.Pair;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -227,8 +228,10 @@ public class LuceneD2rResultFactory  {
    * @param doc The document to create triples from.
    * @return A list of rdf triples that represent the document.
    */
-  protected List<Triple> triplize(Document doc) {
+  protected List<Triple> triplize(Document doc) throws IOException {
+    if (doc == null) throw new IllegalStateException("Document mustn't be null!");
     MappedSqlTuple tuple = createElem(doc);
+    if (tuple == null) throw new IllegalStateException("Tuple mustn't be null!");
     D2rMap map = tuple.getMap();
     return map.createTriples(tuple.getSource());
   }
