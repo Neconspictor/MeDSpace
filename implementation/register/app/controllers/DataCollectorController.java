@@ -29,14 +29,23 @@ import java.util.concurrent.*;
 import scala.concurrent.duration.FiniteDuration;
 
 /**
- * Created by David Goeth on 07.11.2017.
+ * TODO
  */
 public class DataCollectorController extends Controller {
 
+  /**
+   * TODO
+   */
   private final DataCollector dataCollector;
 
+  /**
+   * TODO
+   */
   private final RDFProvider provider;
 
+  /**
+   * TODO
+   */
   private ExecutorService executor;
 
   /**
@@ -51,11 +60,23 @@ public class DataCollectorController extends Controller {
     executor = Executors.newFixedThreadPool(8);
   }
 
-  public Result createQueryResult() {
+  /**
+   * TODO
+   * @return
+   * @throws IOException
+   */
+  public Result createQueryResult() throws IOException {
     BigInteger id = dataCollector.createQueryResult();
     return ok(Json.toJson(new UniqueIdResponse(id)));
   }
 
+  /**
+   * TODO
+   * @param resultID
+   * @param rdfFormat
+   * @param baseURI
+   * @return
+   */
   @BodyParser.Of(InputStreamBodyParser.class)
   public CompletionStage<Result> addPartialQueryResult(String resultID, String rdfFormat, String baseURI) {
 
@@ -64,6 +85,11 @@ public class DataCollectorController extends Controller {
             addPartialQueryResultAction(resultID, rdfFormat, baseURI, in)), executor);
   }
 
+  /**
+   * TODO
+   * @param resultID
+   * @return
+   */
   public Result deleteQueryResult(String resultID) {
     BigInteger id;
     try {
@@ -88,6 +114,12 @@ public class DataCollectorController extends Controller {
       return badRequest("Query result with id '" + id + "' doesn't exist");
   }
 
+  /**
+   * TODO
+   * @param resultID
+   * @param rdfFormat
+   * @return
+   */
   public Result queryResult(String resultID, String rdfFormat) {
     BigInteger id;
     try {
@@ -116,6 +148,14 @@ public class DataCollectorController extends Controller {
     return ok(in);
   }
 
+  /**
+   * TODO
+   * @param resultID
+   * @param rdfFormat
+   * @param baseURI
+   * @param in
+   * @return
+   */
   private Result addPartialQueryResultAction(String resultID, String rdfFormat, String baseURI, InputStream in) {
     //BigInteger resultID, String rdfFormat, String baseURI
     //String resultIDString = request().getQueryString("resultID");
@@ -141,15 +181,30 @@ public class DataCollectorController extends Controller {
     return ok("Done!");
   }
 
+  /**
+   * TODO
+   */
   public static class InputStreamBodyParser implements BodyParser<InputStream> {
 
+    /**
+     * TODO
+     */
     private Executor executor;
 
+    /**
+     * TODO
+     * @param executor
+     */
     @Inject
     public InputStreamBodyParser(Executor executor) {
       this.executor = executor;
     }
 
+    /**
+     * TODO
+     * @param request
+     * @return
+     */
     @Override
     public Accumulator<ByteString, F.Either<Result, InputStream>> apply(Http.RequestHeader request) {
 

@@ -7,8 +7,6 @@ import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,7 +19,10 @@ public class LocalTestRepositoryManager {
    */
   private File root;
 
-  private Map<String, Repository> createdRepos;
+  /**
+   * TODO
+   */
+  private ConcurrentHashMap<String, Repository> createdRepos;
 
   /**
    * TODO
@@ -33,9 +34,14 @@ public class LocalTestRepositoryManager {
     this.createdRepos = new ConcurrentHashMap<>();
   }
 
-  public Repository open(String subPath) {
+  /**
+   * TODO
+   * @param subPath
+   * @return
+   */
+  public Repository open(String subPath) throws IOException {
     Repository repo = createdRepos.get(subPath);
-    if (repo == null) return null;
+    if (repo == null) throw new IOException("No repository with id " + subPath + " is registered!");
     if (!repo.isInitialized()) {
       repo.initialize();
     }
@@ -43,6 +49,10 @@ public class LocalTestRepositoryManager {
     return repo;
   }
 
+  /**
+   * TODO
+   * @param subPath
+   */
   public void close(String subPath) {
     Repository repo = createdRepos.get(subPath);
     if (repo == null) return;
@@ -51,7 +61,8 @@ public class LocalTestRepositoryManager {
     }
 
 
-    if (createdRepos.size() > 10) {
+    //TODO test stuff
+    /*if (createdRepos.size() > 10) {
       int size = createdRepos.size() - 10;
       Iterator<Map.Entry<String, Repository>> it = createdRepos.entrySet().iterator();
       while(it.hasNext()) {
@@ -65,7 +76,7 @@ public class LocalTestRepositoryManager {
           }
         }
       }
-    }
+    }*/
   }
 
 
@@ -79,6 +90,11 @@ public class LocalTestRepositoryManager {
     return createdRepos.get(subPath);
   }
 
+  /**
+   * TODO
+   * @param subPath
+   * @throws IOException
+   */
   public void create(String subPath) throws IOException {
 
     File subFolder = getSubFolder(root, subPath);
