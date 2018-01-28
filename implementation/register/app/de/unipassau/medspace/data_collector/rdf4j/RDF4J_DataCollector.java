@@ -43,7 +43,7 @@ public class RDF4J_DataCollector extends DataCollector {
   private final static String NAMED_GRAPH_BASE_IRI = "http://medspace.com/data_collector_ids/#";
 
   @Inject
-  public RDF4J_DataCollector(RepositoryManager manager) {
+  public RDF4J_DataCollector(LocalTestRepositoryManager manager) {
     this.manager = new RepositoryManagerWrapper(manager);
   }
 
@@ -66,41 +66,42 @@ public class RDF4J_DataCollector extends DataCollector {
 
     RDFFormat format = RDF4JLanguageFormats.getFormatFromString(rdfFormat);
 
-    Lock lock = manager.getLock(repo);
+    //Lock lock = manager.getLock(repo);
 
-    lock.lock();
+    //lock.lock();
 
     try (RepositoryConnection conn = repo.getConnection()) {
       conn.add(rdfData, baseURI, format);
     } catch (IllegalStateException | RepositoryException e) {
       throw new IOException("Couldn't add rdf data to the query result repository.", e);
     } finally {
-      lock.unlock();
+      //lock.unlock();
     }
   }
 
   @Override
   public BigInteger createQueryResult() {
-    synchronized (this) {
+    //synchronized (this) {
       BigInteger id = super.createQueryResult();
       manager.addResultID(id);
       return id;
-    }
+    //}
   }
 
   @Override
   public boolean deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException{
 
-    synchronized (this) {
+    //synchronized (this) {
       String repoName = resultID.toString();
       Repository repo = manager.getRepository(repoName);
       if (repo == null) {
         return false;
       }
 
-      manager.removeRepository(repoName);
+      //manager.removeRepository(repoName);
+      manager.closeRepository(repoName); //TODO test stuff!!!
       return true;
-    }
+    //}
   }
 
   @Override
@@ -193,16 +194,17 @@ public class RDF4J_DataCollector extends DataCollector {
   //TODO proper synchronization
   private static class RepositoryManagerWrapper {
 
-    private final RepositoryManager manager;
+    private final LocalTestRepositoryManager manager;
     private Map<Repository, ReadWriteLock> repoLockMap;
 
-    public  RepositoryManagerWrapper(RepositoryManager manager) {
+    public  RepositoryManagerWrapper(LocalTestRepositoryManager manager) {
       this.manager = manager;
       repoLockMap = new ConcurrentHashMap<>();
     }
 
-    public Repository getRepository(String identity) {
-      return manager.getRepository(identity);
+    public Repository getRepository(String identity) throws IOException {
+      //return manager.getRepository(identity);
+      return manager.open(identity);
     }
 
     public Lock getLock(Repository repo) throws IOException {
@@ -223,21 +225,30 @@ public class RDF4J_DataCollector extends DataCollector {
       Repository repo = null;
 
       try {
-        repo = manager.getRepository(repoName);
-      } catch (RepositoryException e) {}
+        repo = manager.get(repoName);
+      } catch (IOException e) {}
 
       // Already added?
       if (repo != null) {
         throw new IllegalArgumentException("resultID '" + resultID + "' already registered!");
       }
 
-      RepositoryConfig config = new RepositoryConfig(resultID.toString());
+      /*RepositoryConfig config = new RepositoryConfig(resultID.toString());
       config.setRepositoryImplConfig(new SailRepositoryConfig(new NativeStoreConfig()));
-      manager.addRepositoryConfig(config);
+      manager.addRepositoryConfig(config);*/
 
-      repo = manager.getRepository(repoName);
+      try {
+        manager.create(repoName);
+        repo = manager.get(repoName);
+      } catch (IOException e) {
+        throw new IllegalStateException("Repo for resultID '" + resultID + "' couldn't be created!");
+      }
       assert repo != null;
-      repoLockMap.putIfAbsent(repo, new ReentrantReadWriteLock());
+      //repoLockMap.putIfAbsent(repo, new ReentrantReadWriteLock());
+    }
+
+    public void closeRepository(String repoName) {
+      manager.close(repoName);
     }
 
 
@@ -254,20 +265,20 @@ public class RDF4J_DataCollector extends DataCollector {
           throw new IOException("Repository with name '" + repoName + "' not registered.");
         }
 
-        lock = repoLockMap.get(repo).writeLock();
+        //lock = repoLockMap.get(repo).writeLock();
       //}
 
       //From here synchronization isn't needed anymore, as 'repoLockMap' and 'manager' are thread-safe
       // and they allow multiply remove actions
 
-      lock.lock();
+      //lock.lock();
         try {
-          repoLockMap.remove(repo);
-          manager.removeRepository(repoName);
+          //repoLockMap.remove(repo);
+          manager.remove(repoName);
         } catch (IllegalStateException | RepositoryException e) {
           throw new IOException("Couldn't remove repository '" + repoName + "'", e);
         } finally {
-          lock.unlock();
+          //lock.unlock();
         }
     }
   }

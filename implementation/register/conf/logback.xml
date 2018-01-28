@@ -24,11 +24,11 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="play" level="DEBUG" />
-  <logger name="application" level="DEBUG" />
-  <logger name="de.unipassau.medspace.register" level="DEBUG" />
-  <logger name="de.unipassau.medspace.query_executor" level="DEBUG" />
-  <logger name="de.unipassau.medspace.data_collector" level="DEBUG" />
+  <logger name="play" level="ERROR" />
+  <logger name="application" level="ERROR" />
+  <logger name="de.unipassau.medspace.register" level="ERROR" />
+  <logger name="de.unipassau.medspace.query_executor" level="ERROR" />
+  <logger name="de.unipassau.medspace.data_collector" level="ERROR" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />
@@ -36,7 +36,7 @@
   <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
 
-  <root level="DEBUG">
+  <root level="ERROR">
     <appender-ref ref="ASYNCFILE" />
     <appender-ref ref="ASYNCSTDOUT" />
   </root>
