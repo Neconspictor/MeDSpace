@@ -8,6 +8,7 @@ import java.sql.*;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.rdf.*;
 import de.unipassau.medspace.d2r.bridge.Bridge;
+import de.unipassau.medspace.d2r.bridge.ObjectPropertyBridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 
@@ -27,9 +28,9 @@ public class D2rMap implements Serializable {
   private List<Bridge> bridges;
 
   /**
-   * The base URI rdf resources created by this class should have.
+   * TODO
    */
-  private String baseURI;
+  private Bridge rdfTypeProperty;
 
   /**
    * Defines a sql query, that is used to fetch the data from a sql database that wounding will be converted to rdf
@@ -48,9 +49,9 @@ public class D2rMap implements Serializable {
   private String id;
 
   /**
-   * The columns of the sql query, that combined form a unique id for the rdf resources to be created.
+   * A pattern that combined form a unique id for the rdf resources to be created.
    */
-  private List<String> resourceIdColumns;
+  private String resourceIdPattern;
 
   /**
    * Used to normalize the rdf triples.
@@ -69,7 +70,6 @@ public class D2rMap implements Serializable {
    */
   public D2rMap(RDFFactory rdfFactory) {
     bridges = new ArrayList<>();
-    resourceIdColumns = new ArrayList<>();
     normalizer = qName -> qName;
     this.rdfFactory = rdfFactory;
   }
@@ -81,19 +81,18 @@ public class D2rMap implements Serializable {
    */
   public void addBridge(Bridge bridge) {
     this.bridges.add(bridge);
+    if (bridge.getPropertyQName().equals("rdf:type")) {
+      this.rdfTypeProperty = bridge;
+    }
   }
 
+
   /**
-   * Adds columns from the given string to the resource id column list of this class.
-   * The resource id columns ure used to construct unique ids for rdf resources.
-   * @param  columns String containing all resource id columns. The columns are expected  to be separated by ','.
+   * TODO
+   * @param resourceIdPattern
    */
-  public void addResourceIdColumns(String columns) {
-    StringTokenizer tokenizer = new StringTokenizer(columns, ",");
-    while (tokenizer.hasMoreTokens()) {
-      String columnName = tokenizer.nextToken().toUpperCase().trim();
-      resourceIdColumns.add(columnName);
-    }
+  public void setResourceIdPattern(String resourceIdPattern) {
+    this.resourceIdPattern = resourceIdPattern;
   }
 
   /**
@@ -116,16 +115,12 @@ public class D2rMap implements Serializable {
     RDFResource resource;
 
     // set instance id
-    StringBuilder resourceIDBuilder = new StringBuilder();
-
-    for (String columnName : getResourceIdColumns()) {
-      String columnValue = D2rUtil.getColumnValue(columnName, tuple);
-      resourceIDBuilder.append(columnValue);
-    }
-    String resourceID = resourceIDBuilder.toString();
+    String resourceID = D2rUtil.parsePattern(getResourceIdPattern(),
+        D2R.PATTERN_DELIMINATOR,
+        tuple);
 
     // define URI and generate instance
-    String uri = getBaseURI() + resourceID;
+    String uri = rdfTypeProperty.getPattern() + "#" + resourceID;
     uri = normalizer.normalize(uri);
     resource = rdfFactory.createResource(uri);
 
@@ -150,8 +145,8 @@ public class D2rMap implements Serializable {
    * Provides the base URi that is used by this class to give created rdf triples a base URI.
    * @return The base URI of this D2rMap.
    */
-  public String getBaseURI() {
-    return baseURI;
+  public Bridge getRdfTypeProperty() {
+    return rdfTypeProperty;
   }
 
   /**
@@ -189,12 +184,13 @@ public class D2rMap implements Serializable {
   }
 
   /**
+   * TODO
    * Provides an unmodifiable list of resource id columns that is used to create unique URIs for rdf resources which are created by
    * this class.
    * @return An unmodifiable list of the resource id columns.
    */
-  public List<String> getResourceIdColumns() {
-    return Collections.unmodifiableList(resourceIdColumns);
+  public String getResourceIdPattern() {
+    return resourceIdPattern;
   }
 
   /**
@@ -212,21 +208,13 @@ public class D2rMap implements Serializable {
   }
 
   /**
-   * Sets the base URI this class should use as a base for all rdf triples created by this class.
-   * @param baseURI The base URI to use.
-   */
-  public void setBaseURI(String baseURI) {
-    this.baseURI = baseURI;
-  }
-
-  /**
    * Creates an URI for an rdf resource which is an instance of this D2rMap.
    *
    * @param resourceID An distinct id referring to an rdf resource of this D2rMap.
    * @return The URI for the provided resource id
    */
   public String urify(String resourceID) {
-    return normalizer.normalize(baseURI + resourceID);
+    return normalizer.normalize(rdfTypeProperty.getPattern() + resourceID);
   }
 
   /**

@@ -159,15 +159,25 @@ public class LuceneIndex implements Index<Document> {
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
     config.setCommitOnClose(true);
 
+    final int COMMIT_COUNT = 100000;
+    int counter = 0;
+
     try(IndexWriter w = new IndexWriter(index, config)) {
       while (data.hasNext()) {
         Document doc = data.next();
         w.addDocument(doc);
-        w.flush();
-        w.commit();
+
+        ++counter;
+        if (counter >= COMMIT_COUNT) {
+          counter = 0;
+          w.flush();
+          w.commit();
+        }
+        //w.flush();
+        //w.commit();
       }
-      w.flush();
-      w.commit();
+      //w.flush();
+      //w.commit();
     }
   }
 

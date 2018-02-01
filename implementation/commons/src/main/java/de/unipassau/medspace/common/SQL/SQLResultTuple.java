@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by David Goeth on 26.06.2017.
@@ -51,9 +52,19 @@ public class SQLResultTuple {
   public String getValue(String columnName) {
     Integer index = indices.get(columnName);
     if (index == null)
-      throw new IllegalArgumentException("Column name not found: " + columnName);
+      throw new IllegalArgumentException("Column name not found: " + columnName + ", indices are: " + mapToString(indices));
     return values[index];
   }
+
+  String mapToString(Map<String, Integer> map) {
+
+    StringBuilder builder = new StringBuilder();
+    for (Map.Entry<String, Integer> entry : map.entrySet()) {
+      builder.append("(" + entry.getKey() + ", " + entry.getValue() + "),\n");
+    }
+    return builder.toString();
+  }
+
   public String getValue(int index) {
     if (index < 0 || index >= columnCount)
       throw new IndexOutOfBoundsException("Index is not bounded to [0, " + columnCount + ") : index=" + index);

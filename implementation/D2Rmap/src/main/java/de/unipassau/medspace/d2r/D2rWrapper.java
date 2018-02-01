@@ -186,6 +186,8 @@ public class D2rWrapper<DocType> implements Wrapper {
 
     if (!indexUsed) throw new IOException("Cannot reindex data as no index is used!");
 
+    long before = System.currentTimeMillis();
+
     Index<DocType> index = indexManager.getIndex();
     Converter<MappedSqlTuple, DocType> converter =  indexManager.getConverterToDoc();
     SqlToDocStream<DocType> docStream = null;
@@ -201,6 +203,9 @@ public class D2rWrapper<DocType> implements Wrapper {
     } finally {
       FileUtil.closeSilently(docStream, true);
     }
+
+    long now = System.currentTimeMillis();
+    log.error("Needed time: " + (now - before)/1000.0f + " seconds");
   }
 
   @Override

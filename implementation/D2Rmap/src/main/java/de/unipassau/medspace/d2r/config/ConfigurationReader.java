@@ -197,19 +197,19 @@ public class ConfigurationReader {
     validateD2RMapId(id, config.getMaps());
     map.setId(id);
 
-    map.setBaseURI(mapParsing.getBaseURI());
     String sqlQuery = mapParsing.getSql();
     validateSqlQuery(sqlQuery);
     map.setSql(sqlQuery);
 
-    map.addResourceIdColumns(mapParsing.getResourceIdColumns());
+    String resourceIdPattern = mapParsing.getResourceIdPattern();
 
     //check that resource id columns aren't empty, has id creation
     //D2rMaps otherwise doesn't work!
-    int size = map.getResourceIdColumns().size();
-    if (size == 0) {
+    if (resourceIdPattern == null || resourceIdPattern.equals("")) {
       throw new D2RException("resourceIdColumns mustn't be empty!");
     }
+
+    map.setResourceIdPattern(resourceIdPattern);
 
     //map.getResourceIdColumns().clear(); //TODO test!
 

@@ -84,8 +84,7 @@
 			<xsd:element name="ObjectPropertyBridge" type="d2r:ObjectPropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:choice>
 		<xsd:attribute name="sql" type="xsd:string" use="required"/>
-		<xsd:attribute name="resourceIdColumns" type="xsd:string" use="required"/>
-		<xsd:attribute name="baseURI" type="xsd:string" use="required"/>
+		<xsd:attribute name="resourceIdPattern" type="xsd:string" use="required"/>
 		<xsd:attribute name="id" type="xsd:string" use="required"/>
 		<xsd:attribute name="type" type="xsd:string" use="required"/>
 	</xsd:complexType>

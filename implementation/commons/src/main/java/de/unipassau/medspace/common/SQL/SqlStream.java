@@ -184,7 +184,7 @@ public class SqlStream implements Stream<SQLResultTuple> {
      * @param query The query that should be executed on the datasource
      */
     public QueryParams(DataSource dataSource, String query) {
-      this(dataSource, 10, 0, query);
+      this(dataSource, 10000, 0, query);
     }
 
     /**

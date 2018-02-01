@@ -56,10 +56,8 @@ public class ClassMapParsing {
     protected List<BridgeParsing> dataTypePropertyBridgeOrObjectPropertyBridge;
     @XmlAttribute(name = "sql", required = true)
     protected String sql;
-    @XmlAttribute(name = "resourceIdColumns", required = true)
-    protected String resourceIdColumns;
-    @XmlAttribute(name = "baseURI", required = true)
-    protected String baseURI;
+    @XmlAttribute(name = "resourceIdPattern", required = true)
+    protected String resourceIdPattern;
     @XmlAttribute(name = "id", required = true)
     protected String id;
     @XmlAttribute(name = "type", required = true)
@@ -127,8 +125,8 @@ public class ClassMapParsing {
      *     {@link String }
      *     
      */
-    public String getResourceIdColumns() {
-        return resourceIdColumns;
+    public String getResourceIdPattern() {
+        return resourceIdPattern;
     }
 
     /**
@@ -140,31 +138,7 @@ public class ClassMapParsing {
      *     
      */
     public void setResourceIdColumns(String value) {
-        this.resourceIdColumns = value;
-    }
-
-    /**
-     * Gets the value of the baseURI property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getBaseURI() {
-        return baseURI;
-    }
-
-    /**
-     * Sets the value of the baseURI property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setBaseURI(String value) {
-        this.baseURI = value;
+        this.resourceIdPattern = value;
     }
 
     /**
