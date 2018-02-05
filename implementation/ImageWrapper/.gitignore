@@ -1,0 +1,29 @@
+*.aux
+*.bak
+*.bbl
+*.blg
+*.d2rtmp
+*.exe
+*.gz
+*.log
+*.out
+*.sav
+*.toc
+*.db
+*.jar
+
+// gradle
+*.gradle
+
+// idea
+*.iws
+*.ipr
+*.idea
+
+
+// sqlwrapper build
+target/*
+logs/*
+.idea/*
+project/*/*
+_work/*

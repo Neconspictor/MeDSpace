@@ -1,0 +1,319 @@
+<?xml version="1.0"?>
+<!-->Map specifies wraps the D2R mapping<-->
+<d2r:Root xmlns:d2r="http://www.medspace.com/D2Rmap"
+>
+
+	<!-->DBConnection holds information for connecting to the database
+	jdbcDriver="com.mysql.jdbc.Driver"
+	jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
+	
+	jdbcDriver="org.h2.Driver"
+	jdbcDSN="jdbc:h2:tcp://localhost:5000/./medspace;SCHEMA=MEDSPACE"
+	<-->
+
+	<!--poolSize="10" -->
+	<d2r:DBConnection
+			jdbcDriver="com.mysql.jdbc.Driver"
+			jdbcDSN="jdbc:mysql://localhost:3306/medspace_test?useSSL=false"
+			poolSize="10"
+	>
+
+		<!-->DBAuthentification is used to authenticate in the database with username and password<-->
+		<d2r:DBAuthentification username="medspace_client_test" password="k4N!rT"/>
+
+		<!--database specific properties-->
+		<d2r:DataSourceProperty name="cachePrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSize" value="250"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSqlLimit" value="2048"/>
+		<d2r:DataSourceProperty name="useServerPrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="useLocalSessionState" value="true"/>
+		<d2r:DataSourceProperty name="useLocalTransactionState" value="true"/>
+		<d2r:DataSourceProperty name="rewriteBatchedStatements" value="true"/>
+		<d2r:DataSourceProperty name="cacheResultSetMetadata" value="true"/>
+		<d2r:DataSourceProperty name="cacheServerConfiguration" value="true"/>
+		<d2r:DataSourceProperty name="elideSetAutoCommits" value="true"/>
+		<d2r:DataSourceProperty name="maintainTimeStats" value="false"/>
+	</d2r:DBConnection>
+
+
+	<!-->RDF namespaces
+		@attribute prefix:		The prefix to use in the rdf triples
+		@attribute namespace:	The namespace represented by the prefix
+	<-->
+	<d2r:Namespace prefix="test" namespace="http://localhost/medspace_test/"/>
+	<d2r:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>
+	<d2r:Namespace prefix="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+	<d2r:Namespace prefix="dc" namespace="http://purl.org/dc/elements/1.1/"/>
+	<d2r:Namespace prefix="xsd" namespace="http://www.w3.org/2001/XMLSchema#"/>
+	<d2r:Namespace prefix="adenocarcinoma" namespace="http://localhost/medspace_test/adenocarcinoma#"/>
+	<d2r:Namespace prefix="breastcancer" namespace="http://localhost/medspace_test/breastcancer#"/>
+
+	<d2r:Namespace prefix="breastcancer_has_receptor" namespace="http://localhost/medspace_test/breastcancer_has_receptor#"/>
+	<d2r:Namespace prefix="classification" namespace="http://localhost/medspace_test/classification#"/>
+	<d2r:Namespace prefix="clinical_data" namespace="http://localhost/medspace_test/clinical_data#"/>
+	<d2r:Namespace prefix="decision" namespace="http://localhost/medspace_test/decision#"/>
+	<d2r:Namespace prefix="doctor" namespace="http://localhost/medspace_test/doctor#"/>
+	<d2r:Namespace prefix="doctor_participate_rcp" namespace="http://localhost/medspace_test/doctor_participate_rcp#"/>
+	<d2r:Namespace prefix="doctor_treat_patient" namespace="http://localhost/medspace_test/doctor_treat_patient#"/>
+	<d2r:Namespace prefix="hospital" namespace="http://localhost/medspace_test/hospital#"/>
+	<d2r:Namespace prefix="patient" namespace="http://localhost/medspace_test/patient#"/>
+	<d2r:Namespace prefix="rcp" namespace="http://localhost/medspace_test/rcp#"/>
+	<d2r:Namespace prefix="rcp_cause" namespace="http://localhost/medspace_test/rcp_cause#"/>
+	<d2r:Namespace prefix="receptor" namespace="http://localhost/medspace_test/receptor#"/>
+	<d2r:Namespace prefix="therapy" namespace="http://localhost/medspace_test/therapy#"/>
+	<d2r:Namespace prefix="tnm" namespace="http://localhost/medspace_test/tnm#"/>
+	<d2r:Namespace prefix="treatment" namespace="http://localhost/medspace_test/treatment#"/>
+	<d2r:Namespace prefix="tumor" namespace="http://localhost/medspace_test/tumor#"/>
+	<d2r:Namespace prefix="vannuysindex" namespace="http://localhost/medspace_test/vannuysindex#"/>
+
+
+
+
+
+	<d2r:ClassMap
+			type="test:adenocarcinoma"
+			sql="SELECT * FROM adenocarcinoma"
+			resourceIdPattern="@@id@@"
+			id="adenocarcinoma">
+
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:id" pattern="@@adenocarcinoma.id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="adenocarcinoma:patient" referredClass="patient" referredColumns="adenocarcinoma.patient"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:metastasestype" pattern="@@adenocarcinoma.metastasestype@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:SBR_grading" pattern="@@adenocarcinoma.SBR_grading@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:resection_margin" pattern="@@adenocarcinoma.resection_margin@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:number_of_removed_lymphnodes" pattern="@@adenocarcinoma.number_of_removed_lymphnodes@@" dataType="xsd:integer"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:breastcancer"
+			sql="SELECT * FROM breastcancer"
+			resourceIdPattern="@@id@@"
+			id="breastcancer">
+
+		<d2r:DataTypePropertyBridge property="breastcancer:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="breastcancer:patient" referredClass="patient" referredColumns="breastcancer.patient"/>
+		<d2r:DataTypePropertyBridge property="breastcancer:quadrant" pattern="@@quadrant@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="breastcancer:breastside" pattern="@@breastside@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="breastcancer:microcalcification" pattern="@@microcalcification@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+	<d2r:ClassMap
+			type="test:breastcancer_has_receptor"
+			sql="SELECT * FROM breastcancer_has_receptor"
+			resourceIdPattern="@@tumor@@_@@receptor@@"
+			id="breastcancer_has_receptor">
+
+		<d2r:ObjectPropertyBridge property="breastcancer_has_receptor:tumor" referredClass="tumor" referredColumns="breastcancer_has_receptor.tumor"/>
+		<d2r:ObjectPropertyBridge property="breastcancer_has_receptor:receptor" referredClass="receptor" referredColumns="breastcancer_has_receptor.receptor"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:classification"
+			sql="SELECT * FROM classification"
+			resourceIdPattern="@@id@@"
+			id="classification">
+
+		<d2r:DataTypePropertyBridge property="classification:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="classification:tumor" referredClass="tumor" referredColumns="classification.tumor"/>
+		<d2r:ObjectPropertyBridge property="classification:patient" referredClass="patient" referredColumns="classification.patient"/>
+		<d2r:DataTypePropertyBridge property="classification:name" pattern="@@name@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:clinical_data"
+			sql="SELECT * FROM clinical_data"
+			resourceIdPattern="@@id@@"
+			id="clinical_data">
+
+		<d2r:DataTypePropertyBridge property="clinical_data:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="clinical_data:tumor" referredClass="tumor" referredColumns="clinical_data.tumor"/>
+		<d2r:DataTypePropertyBridge property="clinical_data:breastsize" pattern="@@breastsize@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="clinical_data:history" pattern="@@history@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:decision"
+			sql="SELECT * FROM decision"
+			resourceIdPattern="@@id@@"
+			id="decision">
+
+		<d2r:DataTypePropertyBridge property="decision:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="decision:description" pattern="@@description@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="decision:type" pattern="@@type@@" dataType="xsd:string"/>
+		<d2r:ObjectPropertyBridge property="decision:rcp" referredClass="rcp" referredColumns="decision.rcp"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:doctor"
+			sql="SELECT * FROM doctor"
+			resourceIdPattern="@@id@@"
+			id="doctor">
+
+		<d2r:DataTypePropertyBridge property="doctor:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="doctor:firstname" pattern="@@firstname@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="doctor:lastname" pattern="@@lastname@@" dataType="xsd:string"/>
+		<d2r:ObjectPropertyBridge property="doctor:hospital" referredClass="hospital" referredColumns="doctor.hospital"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:doctor_participate_rcp"
+			sql="SELECT * FROM doctor_participate_rcp"
+			resourceIdPattern="@@doctor@@_@@rcp@@"
+			id="doctor_participate_rcp">
+
+		<d2r:ObjectPropertyBridge property="doctor_participate_rcp:doctor" referredClass="doctor" referredColumns="doctor"/>
+		<d2r:ObjectPropertyBridge property="doctor_participate_rcp:rcp" referredClass="rcp" referredColumns="rcp"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:doctor_treat_patient"
+			sql="SELECT * FROM doctor_treat_patient"
+			resourceIdPattern="@@doctor@@_@@patient@@"
+			id="doctor_treat_patient">
+
+		<d2r:ObjectPropertyBridge property="doctor_treat_patient:doctor" referredClass="doctor" referredColumns="doctor"/>
+		<d2r:ObjectPropertyBridge property="doctor_treat_patient:patient" referredClass="patient" referredColumns="patient"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:hospital"
+			sql="SELECT * FROM hospital"
+			resourceIdPattern="@@id@@"
+			id="hospital">
+
+		<d2r:DataTypePropertyBridge property="hospital:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="hospital:place" pattern="@@place@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="hospital:name" pattern="@@name@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+	<d2r:ClassMap
+			type="test:patient"
+			sql="SELECT * FROM patient"
+			resourceIdPattern="@@id@@"
+			id="patient">
+
+		<d2r:DataTypePropertyBridge property="patient:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="patient:firstname" pattern="@@firstname@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="patient:lastname" pattern="@@lastname@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="patient:maidenname" pattern="@@maidenname@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="patient:birthday" pattern="@@birthday@@" dataType="xsd:date"/>
+		<d2r:DataTypePropertyBridge property="patient:sex" pattern="@@sex@@" dataType="xsd:Character"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:rcp"
+			sql="SELECT * FROM rcp"
+			resourceIdPattern="@@id@@"
+			id="rcp">
+
+		<d2r:DataTypePropertyBridge property="rcp:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="rcp:place" pattern="@@place@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="rcp:rcpdate" pattern="@@rcpdate@@" dataType="xsd:date"/>
+		<d2r:ObjectPropertyBridge property="rcp:patient" referredClass="patient" referredColumns="rcp.patient"/>
+	</d2r:ClassMap>
+
+	<d2r:ClassMap
+			type="test:rcp_cause"
+			sql="SELECT * FROM rcp_cause"
+			resourceIdPattern="@@id@@"
+			id="rcp_cause">
+
+		<d2r:DataTypePropertyBridge property="rcp_cause:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="rcp_cause:description" pattern="@@description@@" dataType="xsd:string"/>
+		<d2r:ObjectPropertyBridge property="rcp:rcp" referredClass="rcp" referredColumns="rcp_cause.rcp"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:receptor"
+			sql="SELECT * FROM receptor"
+			resourceIdPattern="@@id@@"
+			id="receptor">
+
+		<d2r:DataTypePropertyBridge property="receptor:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="receptor:description" pattern="@@description@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:therapy"
+			sql="SELECT * FROM therapy"
+			resourceIdPattern="@@id@@"
+			id="therapy">
+
+		<d2r:DataTypePropertyBridge property="therapy:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="therapy:rcp" referredClass="rcp" referredColumns="therapy.rcp"/>
+		<d2r:DataTypePropertyBridge property="therapy:place" pattern="@@place@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="therapy:comment" pattern="@@comment@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:tnm"
+			sql="SELECT * FROM tnm"
+			resourceIdPattern="@@id@@"
+			id="tnm">
+
+		<d2r:DataTypePropertyBridge property="tnm:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="tnm:tumor" referredClass="tumor" referredColumns="tnm.tumor"/>
+		<d2r:ObjectPropertyBridge property="tnm:patient" referredClass="patient" referredColumns="tnm.patient"/>
+		<d2r:DataTypePropertyBridge property="tnm:radicalism" pattern="@@radicalism@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="tnm:metastases" pattern="@@metastases@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="tnm:tumorsize" pattern="@@tumorsize@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="tnm:affected_lymphnodes" pattern="@@affected_lymphnodes@@" dataType="xsd:integer"/>
+	</d2r:ClassMap>
+
+	<d2r:ClassMap
+			type="test:treatment"
+			sql="SELECT * FROM treatment"
+			resourceIdPattern="@@id@@"
+			id="treatment">
+
+		<d2r:DataTypePropertyBridge property="treatment:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="treatment:rcp" referredClass="rcp" referredColumns="treatment.rcp"/>
+		<d2r:ObjectPropertyBridge property="treatment:therapy" referredClass="therapy" referredColumns="treatment.therapy"/>
+		<d2r:DataTypePropertyBridge property="treatment:duration" pattern="@@duration@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="treatment:sequence" pattern="@@sequence@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="treatment:description" pattern="@@description@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="treatment:type" pattern="@@type@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:tumor"
+			sql="SELECT * FROM tumor"
+			resourceIdPattern="@@id@@"
+			id="tumor">
+
+		<d2r:DataTypePropertyBridge property="tumor:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="tumor:patient" referredClass="patient" referredColumns="tumor.patient"/>
+		<d2r:DataTypePropertyBridge property="tumor:name" pattern="@@name@@" dataType="xsd:string"/>
+	</d2r:ClassMap>
+
+
+	<d2r:ClassMap
+			type="test:vannuysindex"
+			sql="SELECT * FROM vannuysindex"
+			resourceIdPattern="@@id@@"
+			id="vannuysindex">
+
+		<d2r:DataTypePropertyBridge property="vannuysindex:id" pattern="@@id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="vannuysindex:tumor" referredClass="tumor" referredColumns="vannuysindex.tumor"/>
+		<d2r:ObjectPropertyBridge property="vannuysindex:patient" referredClass="patient" referredColumns="vannuysindex.patient"/>
+		<d2r:DataTypePropertyBridge property="vannuysindex:surgeryreport" pattern="@@surgeryreport@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="vannuysindex:grading" pattern="@@grading@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="vannuysindex:resectionmargin" pattern="@@resectionmargin@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="vannuysindex:tumorsize" pattern="@@tumorsize@@" dataType="xsd:integer"/>
+	</d2r:ClassMap>
+
+
+</d2r:Root>

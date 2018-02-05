@@ -1,6 +1,7 @@
 package de.unipassau.medspace.common.wrapper;
 
-import org.apache.jena.graph.Triple;
+
+import de.unipassau.medspace.common.rdf.Triple;
 
 import java.util.List;
 

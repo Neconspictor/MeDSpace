@@ -1,0 +1,61 @@
+
+
+@import de.unipassau.medspace.common.SQL.ConnectionPool
+@import de.unipassau.medspace.wrapper.image_wrapper.play.ImageWrapperService
+@*
+* Defines the start page of the SQL Wrapper.
+* The start page is indented to provide a human readable page that lists the services of the SQL wrapper and
+* does provide some debug information of the SQL wrapper.
+*@
+
+@(service: ImageWrapperService,
+        generalConfig: de.unipassau.medspace.common.config.GeneralWrapperConfig)
+
+@pageSceleton("Image Wrapper",
+  routes.Assets.versioned("stylesheets/nothing.css").url,
+  routes.Assets.versioned("javascripts/nothing.js").url,
+  routes.Assets.versioned("images/favicon.png").url) {
+
+  <h1>Image Wrapper status page</h1>
+
+  <h2>Contents</h2>
+  <ul>
+    <li>
+      <a href="#test_page">Test Page</a>: A test page showing a possible client using this wrapper
+
+    </li>
+    <li>
+        <a href="#services">Services</a>: Implemented services
+    </li>
+    <li>
+        <a href="#debug_stats">Debug stats</a>: Detailed information about submodules of the wrapper
+    </li>
+  </ul>
+
+  <h2 id="test_page">Test Page</h2>
+  A Keyword search test page can be found at: <a href="@routes.ImageWrapperController.guiTest()">
+  @routes.ImageWrapperController.guiTest()</a>
+
+  <h2 id="services">Services</h2>
+  <h4>keyword search query service</h4>
+  <ul>
+    <li>param keywords: The keywords to search for</li>
+    <li>param attach (optional): Should the keyword seach result be attached as a file?
+      (Only relevant when using a browser as client)</li>
+  </ul>
+
+  <h4>Reindexing data</h4>
+  To reindex the indexed keyword execute the REST Service at: <a href="@routes.ImageWrapperController.reindex()">
+  @routes.ImageWrapperController.reindex()</a>
+
+  <h2 id="debug_stats">Debug stats</h2>
+  <h4>Index</h4>
+
+  Index is used: @generalConfig.isIndexUsed() <br>
+
+  @if(generalConfig.isIndexUsed()) {
+    Index Directory: @generalConfig.getIndexDirectory().toString() <br>
+  }
+
+  <h4>Datasource</h4>
+}

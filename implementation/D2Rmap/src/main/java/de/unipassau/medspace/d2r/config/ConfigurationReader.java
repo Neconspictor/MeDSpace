@@ -190,6 +190,12 @@ public class ConfigurationReader {
     }
   }
 
+  /**
+   * TODO
+   * @param mapParsing
+   * @param config
+   * @throws D2RException
+   */
   private void addMap(ClassMapParsing mapParsing, Configuration config) throws D2RException {
     D2rMap map = new D2rMap(rdfFactory);
 

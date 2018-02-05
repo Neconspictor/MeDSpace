@@ -58,6 +58,9 @@ public class D2rMap implements Serializable {
    */
   private QNameNormalizer normalizer;
 
+  /**
+   * TODO
+   */
   private RDFFactory rdfFactory;
 
   /**

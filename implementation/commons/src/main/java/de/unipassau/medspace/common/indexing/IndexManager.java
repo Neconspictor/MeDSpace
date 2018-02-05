@@ -6,7 +6,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * A IndexManager ia an utility for working with an index and searching on it.<br><br>
+ * A IndexManager is an utility for working with an index and searching on it.<br><br>
  * A IndexManager is created on the base on two generic object types: The document type (DocType)
  * and the object type (ObjectType). <br><br>
  * 1. DocType: Specifies the document type of the index to manage.<br>

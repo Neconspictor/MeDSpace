@@ -1,0 +1,43 @@
+<jxb:bindings 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+
+    <jxb:bindings schemaLocation="medspace-ddsm-specifcation.xsd">
+            <jxb:bindings node="//xsd:element[@name='Root']">
+                <jxb:class name="RootParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='Namespace']">
+                <jxb:class name="NamespaceParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='IcsFile']">
+                <jxb:class name="IcsFileParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='Image']">
+                <jxb:class name="ImageParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='Overlay']">
+                <jxb:class name="OverlayParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='Abnormality']">
+                <jxb:class name="AbnormalityParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='Calcification']">
+                <jxb:class name="CalcificationParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='Mass']">
+                <jxb:class name="MassParsing"/>
+            </jxb:bindings>
+			
+			<jxb:bindings node="//xsd:complexType[@name='DataTypeProperty']">
+                <jxb:class name="DataTypePropertyParsing"/>
+            </jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>

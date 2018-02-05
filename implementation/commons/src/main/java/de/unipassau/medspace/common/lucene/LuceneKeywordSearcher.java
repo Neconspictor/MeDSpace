@@ -93,7 +93,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
    */
   protected String escape(String query) {
 
-    // Eleminate the boolean operators OR, AND, NOT as they are only considered in upper case.
+    // Eliminate the boolean operators OR, AND, NOT as they are only considered in upper case.
     query = query.toLowerCase();
 
     // Escape special characters used in the lucene query parser: + - && || ! ( ) { } [ ] ^ " ~ \ * ? : /

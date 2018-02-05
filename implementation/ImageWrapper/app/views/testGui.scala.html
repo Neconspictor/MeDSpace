@@ -1,0 +1,48 @@
+
+@*
+* A test and mocking page for evaluating the functionality of the SQL Wrapper.
+*@
+
+@()
+
+@pageSceleton("MeDSpace - Testsuite for Medical Information (TEST GUI)",
+    routes.Assets.versioned("stylesheets/testGuiMain.css").url,
+    routes.Assets.versioned("javascripts/nothing.js").url,
+    routes.Assets.versioned("images/favicon.png").url) {
+
+
+<header>
+    <div class="logoHeader">
+        <div class="topFirstElement">
+            <span class="leftFloating logoText">MeDSpace</span>
+            <span class="leftFloating logoBottomText ">
+                <span class="tinyText">&mdash; Testsuite for Medical Information</span>
+            </span>
+        </div>
+    </div>
+        <!-- Main Menu-->
+    <div class="menu">
+        <ul>
+            <li class="ToolTip" data-tooltip="Browse dataspace by keywords"><a class="menuItem"
+            href="@routes.ImageWrapperController.guiTest()">Search</a>
+            </li>
+            <li class=""><a class="menuItem ToolTip" data-tooltip="Browse available data sources" href="#">Data Sources</a>
+            </li>
+        </ul>
+    </div>
+</header>
+
+
+    <!--<div class="verticalContentSeparatorSmall"></div>-->
+<div class= "centeredBlock">
+    <form class="queryField" action="@routes.ImageWrapperController.search("", false)" method="GET">
+        <input class="bigTextField" type="text" name="keywords" placeholder="Search Dataspace...">
+        @*<input type="hidden" name="attach" value="false" />*@
+        <button class="button grayGradient bigText" type="submit">Search</button>
+        <div>
+            Attach result as file
+            <input type="checkbox" name="attach" value="true">
+        </div>
+    </form>
+</div>
+}

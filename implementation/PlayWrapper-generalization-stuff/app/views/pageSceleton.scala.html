@@ -1,0 +1,24 @@
+@*
+ * Defines a HTML skeleton page for views.
+ * This template handles the rendering of the page header and body tags. It takes
+ * two arguments, a `String` for the title of the page and an `Html`
+ * object intended to be inserted into the body of the page.
+ *@
+@(title: String, style: String, script: String, icon: String)(content: Html)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        @* Here's where we render the page title `String`. *@
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@style">
+        <link rel="shortcut icon" type="image/png" href="@icon">
+    </head>
+    <body>
+        @* And here's where we render the `Html` object containing
+         * the page content. *@
+        @content
+
+        <script src="@script" type="text/javascript"></script>
+    </body>
+</html>

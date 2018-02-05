@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!-->Map specifies wraps the D2R mapping<-->
+<d2r:Root xmlns:d2r="http://www.medspace.com/D2Rmap"
+>
+
+	<!-->DBConnection holds information for connecting to the database
+	jdbcDriver="com.mysql.jdbc.Driver"
+	jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
+	
+	jdbcDriver="org.h2.Driver"
+	jdbcDSN="jdbc:h2:tcp://localhost:5000/./medspace;SCHEMA=MEDSPACE"
+	<-->
+
+	<!--poolSize="10" -->
+	<d2r:DBConnection
+			jdbcDriver="com.mysql.jdbc.Driver"
+			jdbcDSN="jdbc:mysql://localhost:3306/medspace_test?useSSL=false"
+			poolSize="10"
+	>
+
+		<!-->DBAuthentification is used to authenticate in the database with username and password<-->
+		<d2r:DBAuthentification username="medspace_client_test" password="k4N!rT"/>
+
+		<!--database specific properties-->
+		<d2r:DataSourceProperty name="cachePrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSize" value="250"/>
+		<d2r:DataSourceProperty name="prepStmtCacheSqlLimit" value="2048"/>
+		<d2r:DataSourceProperty name="useServerPrepStmts" value="true"/>
+		<d2r:DataSourceProperty name="useLocalSessionState" value="true"/>
+		<d2r:DataSourceProperty name="useLocalTransactionState" value="true"/>
+		<d2r:DataSourceProperty name="rewriteBatchedStatements" value="true"/>
+		<d2r:DataSourceProperty name="cacheResultSetMetadata" value="true"/>
+		<d2r:DataSourceProperty name="cacheServerConfiguration" value="true"/>
+		<d2r:DataSourceProperty name="elideSetAutoCommits" value="true"/>
+		<d2r:DataSourceProperty name="maintainTimeStats" value="false"/>
+	</d2r:DBConnection>
+
+
+	<!-->RDF namespaces
+		@attribute prefix:		The prefix to use in the rdf triples
+		@attribute namespace:	The namespace represented by the prefix
+	<-->
+	<d2r:Namespace prefix="test" namespace="http://localhost/medspace_test#"/>
+	<d2r:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>
+	<d2r:Namespace prefix="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+	<d2r:Namespace prefix="dc" namespace="http://purl.org/dc/elements/1.1/"/>
+	<d2r:Namespace prefix="xsd" namespace="http://www.w3.org/2001/XMLSchema#"/>
+	<d2r:Namespace prefix="adenocarcinoma" namespace="http://localhost/medspace_test/adenocarcinoma#"/>
+	<d2r:Namespace prefix="breastcancer" namespace="http://localhost/medspace_test/breastcancer#"/>
+	
+	<d2r:Namespace prefix="breastcancer_has_receptor" namespace="http://localhost/medspace_test/breastcancer_has_receptor#"/>
+	<d2r:Namespace prefix="classification" namespace="http://localhost/medspace_test/classification#"/>
+	<d2r:Namespace prefix="clinical_data" namespace="http://localhost/medspace_test/clinical_data#"/>
+	<d2r:Namespace prefix="decision" namespace="http://localhost/medspace_test/decision#"/>
+	<d2r:Namespace prefix="doctor" namespace="http://localhost/medspace_test/doctor#"/>
+	<d2r:Namespace prefix="doctor_participate_rcp" namespace="http://localhost/medspace_test/doctor_participate_rcp#"/>
+	<d2r:Namespace prefix="doctor_treat_patient" namespace="http://localhost/medspace_test/doctor_treat_patient#"/>
+	<d2r:Namespace prefix="hospital" namespace="http://localhost/medspace_test/hospital#"/>
+	<d2r:Namespace prefix="patient" namespace="http://localhost/medspace_test/patient#"/>
+	<d2r:Namespace prefix="rcp" namespace="http://localhost/medspace_test/rcp#"/>
+	<d2r:Namespace prefix="rcp_cause" namespace="http://localhost/medspace_test/rcp_cause#"/>
+	<d2r:Namespace prefix="receptor" namespace="http://localhost/medspace_test/receptor#"/>
+	<d2r:Namespace prefix="therapy" namespace="http://localhost/medspace_test/therapy#"/>
+	<d2r:Namespace prefix="tnm" namespace="http://localhost/medspace_test/tnm#"/>
+	<d2r:Namespace prefix="treatment" namespace="http://localhost/medspace_test/treatment#"/>
+	<d2r:Namespace prefix="tumor" namespace="http://localhost/medspace_test/tumor#"/>
+	<d2r:Namespace prefix="vannuysindex" namespace="http://localhost/medspace_test/vannuysindex#"/>
+	
+	
+	
+	
+	
+	<d2r:ClassMap 
+		type="adenocarcinoma:"
+		sql="SELECT * FROM adenocarcinoma"
+		baseURI="http://localhost/medspace_test/adenocarcinoma#"
+		resourceIdColumns="adenocarcinoma.id"
+		id="adenocarcinoma">
+		
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:id" pattern="@@adenocarcinoma.id@@" dataType="xsd:integer"/>
+		<d2r:ObjectPropertyBridge property="adenocarcinoma:patient" referredClass="patient" referredColumns="adenocarcinoma.patient"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:metastasestype" pattern="@@adenocarcinoma.metastasestype@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:SBR_grading" pattern="@@adenocarcinoma.SBR_grading@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:resection_margin" pattern="@@adenocarcinoma.resection_margin@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="adenocarcinoma:number_of_removed_lymphnodes" pattern="@@adenocarcinoma.number_of_removed_lymphnodes@@" dataType="xsd:integer"/>
+	</d2r:ClassMap>
+	
+	<d2r:ClassMap 
+		type="patient:"
+		sql="SELECT * FROM patient"
+		baseURI="http://localhost/medspace_test/patient#"
+		resourceIdColumns="patient.id"
+		id="patient">
+		
+		<d2r:DataTypePropertyBridge property="patient:id" pattern="@@patient.id@@" dataType="xsd:integer"/>
+		<d2r:DataTypePropertyBridge property="patient:firstname" pattern="@@patient.firstname@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="patient:lastname" pattern="@@patient.lastname@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="patient:maidenname" pattern="@@patient.maidenname@@" dataType="xsd:string"/>
+		<d2r:DataTypePropertyBridge property="patient:birthday" pattern="@@patient.birthday@@" dataType="xsd:date"/>
+		<d2r:DataTypePropertyBridge property="patient:sex" pattern="@@patient.sex@@" dataType="xsd:Character"/>
+	</d2r:ClassMap>
+
+
+</d2r:Root>
