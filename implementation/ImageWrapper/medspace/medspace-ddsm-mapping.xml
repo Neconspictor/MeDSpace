@@ -11,11 +11,12 @@
 	<ddsm:Namespace prefix="dc" namespace="http://purl.org/dc/elements/1.1/"/>
 	<ddsm:Namespace prefix="xsd" namespace="http://www.w3.org/2001/XMLSchema#"/>
 
-	<ddsm:Namespace prefix="ddsm_container" namespace="http://www.medspace.com/images/ddsm/ddsm_container#"/>
-    <ddsm:Namespace prefix="image" namespace="http://www.medspace.com/images/ddsm/ddsm_container/image#"/>
-    <ddsm:Namespace prefix="overlay" namespace="http://www.medspace.com/images/ddsm/ddsm_container/overlay#"/>
-    <ddsm:Namespace prefix="abnormality" namespace="http://www.medspace.com/images/ddsm/ddsm_container/overlay/abnormality#"/>
-    <ddsm:Namespace prefix="lesion_type" namespace="http://www.medspace.com/images/ddsm/ddsm_container/overlay/abnormality/lesion_type#"/>
+	<ddsm:Namespace prefix="ics_file" namespace="http://www.medspace.com/images/ddsm/ics_file#"/>
+    <ddsm:Namespace prefix="image" namespace="http://www.medspace.com/images/ddsm/image#"/>
+    <ddsm:Namespace prefix="overlay" namespace="http://www.medspace.com/images/ddsm/overlay#"/>
+    <ddsm:Namespace prefix="abnormality" namespace="http://www.medspace.com/images/ddsm/overlay/abnormality#"/>
+	<ddsm:Namespace prefix="calcification" namespace="http://www.medspace.com/images/ddsm/overlay/abnormality/calcification#"/>
+    <ddsm:Namespace prefix="mass" namespace="http://www.medspace.com/images/ddsm/overlay/abnormality/mass#"/>
 
 
     <!-->IcsFile
@@ -27,29 +28,29 @@
 		 the created DDSMContainer object
 	<-->
 
-    <ddsm:IcsFile rdfType="root:ddsm_container" classId="IcsFile">
-        <ddsm:dateOfStudy propertyType="ddsm_container:dateOfStudy" dataType="xsd:date"/>
-        <ddsm:patientAge propertyType="ddsm_container:patientAge" dataType="xsd:integer"/>
-        <ddsm:density propertyType="ddsm_container:density" dataType="xsd:integer"/>
-        <ddsm:dateDigitized propertyType="ddsm_container:dateDigitized" dataType="xsd:date"/>
-        <ddsm:digitizer propertyType="ddsm_container:digitizer" dataType="xsd:string" lang="en"/>
-        <ddsm:left_cc propertyType="ddsm_container:left_cc"/>
-        <ddsm:left_mlo propertyType="ddsm_container:left_mlo"/>
-        <ddsm:right_cc propertyType="ddsm_container:right_cc"/>
-        <ddsm:right_mlo propertyType="ddsm_container:right_mlo"/>
+    <ddsm:IcsFile rdfType="http://www.medspace.com/images/ddsm/ics_file" classId="IcsFile">
+        <ddsm:dateOfStudy propertyType="ics_file:dateOfStudy" dataType="xsd:date"/>
+        <ddsm:patientAge propertyType="ics_file:patientAge" dataType="xsd:integer"/>
+        <ddsm:density propertyType="ics_file:density" dataType="xsd:integer"/>
+        <ddsm:dateDigitized propertyType="ics_file:dateDigitized" dataType="xsd:date"/>
+        <ddsm:digitizer propertyType="ics_file:digitizer" dataType="xsd:string" lang="en"/>
+        <ddsm:left_cc propertyType="ics_file:left_cc"/>
+        <ddsm:left_mlo propertyType="ics_file:left_mlo"/>
+        <ddsm:right_cc propertyType="ics_file:right_cc"/>
+        <ddsm:right_mlo propertyType="ics_file:right_mlo"/>
     </ddsm:IcsFile>
 
-    <ddsm:Image rdfType="ddsm_container:image" classId="Image">
+    <ddsm:Image rdfType="http://www.medspace.com/images/ddsm/image" classId="Image">
         <ddsm:source propertyType="image:source" dataType="xsd:string"/>
         <ddsm:overlay propertyType="image:overlay"/>
     </ddsm:Image>
 
-    <ddsm:Overlay rdfType="ddsm_container:overlay" classId="Overlay">
+    <ddsm:Overlay rdfType="http://www.medspace.com/images/ddsm/overlay" classId="Overlay">
         <ddsm:totalAbnormalities propertyType="overlay:totalAbnormalities" dataType="xsd:integer"/>
         <ddsm:abnormality propertyType="overlay:abnormality"/>
     </ddsm:Overlay>
     
-    <ddsm:Abnormality rdfType="overlay:abnormality" classId="Abnormality">
+    <ddsm:Abnormality rdfType="http://www.medspace.com/images/ddsm/overlay/abnormality" classId="Abnormality">
         <ddsm:abnormality propertyType="abnormality:abnormality" dataType="xsd:integer"/>
         <ddsm:calcification propertyType="abnormality:calcification"/>
         <ddsm:mass propertyType="abnormality:mass"/>
@@ -59,14 +60,14 @@
         <ddsm:totalOutlines propertyType="abnormality:totalOutlines" dataType="xsd:integer"/>
     </ddsm:Abnormality>
 
-    <ddsm:Calcification rdfType="lesion_type:calcification" classId="Calcification">
-        <ddsm:type propertyType="lesion_type:type" dataType="xsd:string"/>
-        <ddsm:distribution propertyType="lesion_type:distribution" dataType="xsd:string"/>
+    <ddsm:Calcification rdfType="http://www.medspace.com/images/ddsm/overlay/abnormality/calcification" classId="Calcification">
+        <ddsm:type propertyType="calcification:type" dataType="xsd:string"/>
+        <ddsm:distribution propertyType="calcification:distribution" dataType="xsd:string"/>
     </ddsm:Calcification>
 
-    <ddsm:Mass rdfType="lesion_type:mass" classId="Mass">
-        <ddsm:shape propertyType="lesion_type:shape" dataType="xsd:string"/>
-        <ddsm:margins propertyType="lesion_type:margins" dataType="xsd:string"/>
+    <ddsm:Mass rdfType="http://www.medspace.com/images/ddsm/overlay/abnormality/mass" classId="Mass">
+        <ddsm:shape propertyType="mass:shape" dataType="xsd:string"/>
+        <ddsm:margins propertyType="mass:margins" dataType="xsd:string"/>
     </ddsm:Mass>
 
 </ddsm:Root>

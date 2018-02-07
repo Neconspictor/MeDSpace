@@ -53,10 +53,10 @@ public class Util {
 
     // create object
     RDFObject object;
-    if (property instanceof DataTypePropertyParsing) {
+    if (propertyParsing instanceof DataTypePropertyParsing) {
       object = Util.createLiteral(factory,
           normalizer,
-          (DataTypePropertyParsing) property,
+          (DataTypePropertyParsing) propertyParsing,
           value);
     } else {
       object = factory.createResource(value);

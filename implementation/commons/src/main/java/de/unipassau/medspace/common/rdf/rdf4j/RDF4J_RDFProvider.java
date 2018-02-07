@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by David Goeth on 29.10.2017.
+ * TODO
  */
 public class RDF4J_RDFProvider  implements RDFProvider {
 

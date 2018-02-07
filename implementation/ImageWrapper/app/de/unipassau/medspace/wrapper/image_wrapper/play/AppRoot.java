@@ -3,6 +3,7 @@ package de.unipassau.medspace.wrapper.image_wrapper.play;
 import com.google.inject.AbstractModule;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
+import de.unipassau.medspace.common.wrapper.Wrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.Configuration;
@@ -51,6 +52,11 @@ public class AppRoot extends AbstractModule {
     bind(ConfigProvider.class).asEagerSingleton();
 
     //Generics have to be included in a TypeLiteral
+
+    bind(Wrapper.class)
+        .toProvider(WrapperProvider.class)
+        .asEagerSingleton();
+
     //bind(new TypeLiteral<D2rWrapper<?>>(){})
     //    .toProvider(WrapperProvider.class).asEagerSingleton();
 

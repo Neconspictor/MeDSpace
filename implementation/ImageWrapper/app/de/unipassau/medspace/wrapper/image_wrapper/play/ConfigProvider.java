@@ -6,10 +6,14 @@ import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.rdf.RDFProvider;
+import de.unipassau.medspace.wrapper.image_wrapper.config.DDSMConfigReader;
+import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.RootParsing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,7 +68,12 @@ public class ConfigProvider {
   /**
    * TODO
    */
-  private static final String D2R_CONFIG_FILE_ID = "MeDSpaceD2rConfig";
+  private static final String DDSM_CONFIG_FILE_ID = "MeDSpaceDdsmConfig";
+
+  /**
+   * TODO
+   */
+  private static final String DDSM_CONFIG_SPECIFICATION_FILE_ID = "MeDSpaceDdsmConfigSpecification";
 
   /**
    * TODO
@@ -75,6 +84,11 @@ public class ConfigProvider {
    * TODO
    */
   private ServerConfig serverConfig;
+
+  /**
+   * TODO
+   */
+  private RootParsing ddsmConfig;
 
   /**
    * TODO
@@ -89,13 +103,14 @@ public class ConfigProvider {
 
     try {
       init(playConfig, provider);
-    } catch (ConfigException.Missing | ConfigException.WrongType | IOException e) {
+    } catch (ConfigException.Missing | ConfigException.WrongType | IOException | JAXBException | SAXException e) {
       log.error("Couldn't init config provider: ", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
 
-    log.info("Reading MeDSpace D2RMap configuration done.");
+    log.info("Reading MeDSpace DDSM Image configuration done.");
   }
+
 
   /**
    * TODO
@@ -104,11 +119,15 @@ public class ConfigProvider {
    * @throws IOException
    * @throws ConfigException.Missing
    * @throws ConfigException.WrongType
+   * @throws JAXBException
+   * @throws SAXException
    */
   private void init(Config playConfig, RDFProvider provider)
       throws IOException,
       ConfigException.Missing,
-      ConfigException.WrongType {
+      ConfigException.WrongType,
+      JAXBException,
+      SAXException {
 
     String addressHTTP = playConfig.getString(ADDRESS_ID_HTTP);
     String addressHTTPS = playConfig.getString(ADDRESS_ID_HTTP);
@@ -138,6 +157,25 @@ public class ConfigProvider {
 
     log.info("Reading general wrapper configuration done: ");
     log.debug(generalWrapperConfig.toString());
+
+    log.info("Parsing ddsm image wrapper configuration...");
+
+    String ddsmConfigFilePath = playConfig.getString(DDSM_CONFIG_FILE_ID);
+    String ddsmConfigSpecificationFilePath = playConfig.getString(DDSM_CONFIG_SPECIFICATION_FILE_ID);
+
+    DDSMConfigReader configReader = new DDSMConfigReader(ddsmConfigSpecificationFilePath);
+    ddsmConfig = configReader.parse(ddsmConfigFilePath);
+
+    log.info("Parsing ddsm image wrapper configuration done.");
+
+  }
+
+  /**
+   * TODO
+   * @return
+   */
+  public RootParsing getDdsmConfig() {
+    return ddsmConfig;
   }
 
   /**
@@ -155,5 +193,4 @@ public class ConfigProvider {
   public ServerConfig getServerConfig() {
     return serverConfig;
   }
-
 }

@@ -16,10 +16,11 @@ import java.io.IOException;
  */
 public class DDSMConfigReader {
 
-  /**
-   * TODO
-   */
-  private static final String MEDSPACE_DDSM_SPECIFICATION_SCHEMA = "./medspace/medspace-ddsm-specifcation.xsd";
+  private final String ddsmSpecificationSchema;
+
+  public DDSMConfigReader(String ddsmSpecificationSchema) {
+    this.ddsmSpecificationSchema = ddsmSpecificationSchema;
+  }
 
 
   /**
@@ -30,20 +31,10 @@ public class DDSMConfigReader {
    * @throws SAXException
    */
   public RootParsing parse(String fileName) throws JAXBException, IOException, SAXException {
-    return Parser.parse(fileName);
-  }
-
-
-  /**
-   * TODO
-   */
-  private static class Parser {
-    public static RootParsing parse(String fileName) throws JAXBException, IOException, SAXException {
-      JAXBContext context = JAXBContext.newInstance(RootParsing.class);
-      Unmarshaller unmarshaller = context.createUnmarshaller();
-      Schema schema = XmlUtil.createSchema(new String[]{MEDSPACE_DDSM_SPECIFICATION_SCHEMA});
-      unmarshaller.setSchema(schema);
-      return (RootParsing) unmarshaller.unmarshal(new File(fileName));
-    }
+    JAXBContext context = JAXBContext.newInstance(RootParsing.class);
+    Unmarshaller unmarshaller = context.createUnmarshaller();
+    Schema schema = XmlUtil.createSchema(new String[]{ddsmSpecificationSchema});
+    unmarshaller.setSchema(schema);
+    return (RootParsing) unmarshaller.unmarshal(new File(fileName));
   }
 }

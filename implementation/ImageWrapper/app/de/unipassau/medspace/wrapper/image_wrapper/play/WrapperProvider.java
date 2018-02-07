@@ -1,4 +1,4 @@
-package de.unipassau.medspace.wrapper.image_wrapper;
+package de.unipassau.medspace.wrapper.image_wrapper.play;
 
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
@@ -6,31 +6,32 @@ import de.unipassau.medspace.common.rdf.RDFFactory;
 import de.unipassau.medspace.common.rdf.TripleIndexManager;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.common.util.RdfUtil;
-import de.unipassau.medspace.wrapper.image_wrapper.config.DDSMConfigReader;
+import de.unipassau.medspace.common.wrapper.Wrapper;
+import de.unipassau.medspace.wrapper.image_wrapper.DDSM_ImageWrapper;
 import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.NamespaceParsing;
 import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.RootParsing;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.IcsFile;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.LuceneIndexFactory;
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.*;
+import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.DDSM_AdapterFactory;
+import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.LuceneDocAdapter;
 import org.apache.lucene.document.Document;
-import org.xml.sax.SAXException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * TODO
  */
-public class Test {
-
-  /**
-   * TODO
-   */
-  public static final String DDSM_CONFIG_FILE = "./medspace/medspace-ddsm-mapping.xml";
+public class WrapperProvider implements Provider<Wrapper> {
 
   /**
    * TODO
@@ -43,20 +44,23 @@ public class Test {
   public static File root = new File("F:\\bachelorThesis\\DDSM\\WinSCP-Test\\cases\\cases");
 
   /**
-   * TODO
+   * Logger instance for this class.
    */
-  private static String INDEX_DIRECTORY = "./_work/index/lucene/";
+  private static Logger log = LoggerFactory.getLogger(WrapperProvider.class);
 
   /**
    * TODO
-   * @throws JAXBException
-   * @throws IOException
-   * @throws SAXException
    */
-  public static void main(String[] args) throws JAXBException, IOException, SAXException {
+  private Wrapper wrapper;
 
-    DDSMConfigReader configReader = new DDSMConfigReader("");
-    RootParsing rootParsing = configReader.parse(DDSM_CONFIG_FILE);
+  /**
+   * TODO
+   */
+  @Inject
+  public WrapperProvider(ConfigProvider configProvider,
+                         ShutdownService shutdownService) throws IOException {
+
+    RootParsing rootParsing = configProvider.getDdsmConfig();
 
     DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(rootParsing);
     List<LuceneDocAdapter<?>> adapters = adapterFactory.createAdapters();
@@ -73,37 +77,32 @@ public class Test {
     QNameNormalizer normalizer = qName -> RdfUtil.getNormalizedURI(namespaces, qName);;
     RDFFactory factory = new RDF4J_RDFProvider().getFactory();
 
-    LuceneIndexFactory indexFactory = new LuceneIndexFactory(INDEX_DIRECTORY,
+    Path indexDirectory = configProvider.getGeneralWrapperConfig().getIndexDirectory();
+
+    LuceneIndexFactory indexFactory = new LuceneIndexFactory(indexDirectory.toString(),
         adapters,
         factory,
         normalizer);
 
     TripleIndexManager<Document, IcsFile> tripleIndexManager = indexFactory.createIndexManager();
-    /*Stream<Document> documentStream = tripleIndexManager.convert(stream);
 
-
-
-    Document document = null;
-    while (documentStream.hasNext()) {
-      document = documentStream.next();
-      if (document.getField("TOTAL_ABNORMALITIES") != null) {
-        String value = document.getField("TOTAL_ABNORMALITIES").stringValue();
-      }
-    }*/
-
-
-    DDSM_ImageWrapper<Document> imageWrapper = new DDSM_ImageWrapper<>(tripleIndexManager,
+    wrapper = new DDSM_ImageWrapper<>(tripleIndexManager,
         IMAGE_FILE_ENDING,
         namespaces,
         root);
 
-    imageWrapper.reindexData();
+    wrapper.getIndex().open();
+    boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
 
-    /*DocumentClassTriplizer triplizer = new DocumentClassTriplizer(adapters, normalizer, factory);
+    if (shouldReindex) {
+      log.info("Indexing data...");
+      wrapper.reindexData();
+      log.info("Indexing done.");
+    }
+  }
 
-    while(documentStream.hasNext()) {
-      Document document = documentStream.next();
-      List<Triple> triples = triplizer.convert(document);
-    }*/
+  @Override
+  public Wrapper get() {
+    return wrapper;
   }
 }

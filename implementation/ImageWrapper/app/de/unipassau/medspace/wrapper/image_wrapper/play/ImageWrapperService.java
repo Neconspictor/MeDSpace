@@ -4,11 +4,13 @@ import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.stream.Stream;
 
 import de.unipassau.medspace.common.wrapper.Wrapper;
+import de.unipassau.medspace.wrapper.image_wrapper.DDSM_ImageWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
@@ -37,11 +39,6 @@ public class ImageWrapperService {
   private GeneralWrapperConfig generalConfig;
 
   /**
-   * The D2R wrapper.
-   */
-  //private D2rWrapper<?> wrapper;
-
-  /**
    * TODO
    */
   private RegisterClient registerClient;
@@ -56,21 +53,29 @@ public class ImageWrapperService {
    */
   private Datasource wrapperDatasource;
 
+  /**
+   * TODO
+   */
+  private final Wrapper wrapper;
+
 
   /**
    * Creates a new SQLWrapperService.
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
+   * @param wrapper TODO
    */
   @Inject
   public ImageWrapperService(ApplicationLifecycle lifecycle,
                              RegisterClient registerClient,
                              ConfigProvider provider,
-                             ShutdownService shutdownService) {
+                             ShutdownService shutdownService,
+                             Wrapper wrapper) {
 
     this.registerClient = registerClient;
     this.generalConfig = provider.getGeneralWrapperConfig();
+    this.wrapper = wrapper;
 
     this.connectToRegister = generalConfig.getConnectToRegister();
 
@@ -92,7 +97,7 @@ public class ImageWrapperService {
       lifecycle.addStopHook(() -> {
         log.info("Shutdown is executing...");
         if (connectToRegister) deregister();
-        //wrapper.close();
+        wrapper.close();
         return CompletableFuture.completedFuture(null);
       });
   }
@@ -102,7 +107,7 @@ public class ImageWrapperService {
    * @return
    */
   public Wrapper getWrapper() {
-    return null;
+    return wrapper;
   }
 
   /**
@@ -125,9 +130,8 @@ public class ImageWrapperService {
       keywordList.add(tokenizer.nextToken());
     }
 
-    //KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher();
-    //return searcher.searchForKeywords(keywordList);
-    return null;
+    KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher();
+    return searcher.searchForKeywords(keywordList);
   }
 
   /**

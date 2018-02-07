@@ -38,7 +38,7 @@ public class IcsFileAdapter extends LuceneDocAdapter<IcsFile> {
     addPair(IcsFile.PATIENT_AGE, icsFileParsing.getPatientAge());
     addPair(IcsFile.DENSITY, icsFileParsing.getDensity());
     addPair(IcsFile.DATE_DIGITIZED, icsFileParsing.getDateDigitized());
-    addPair(IcsFile.DIGITIZER, icsFileParsing.getDateDigitized());
+    addPair(IcsFile.DIGITIZER, icsFileParsing.getDigitizer());
     addPair(IcsFile.LEFT_CC, icsFileParsing.getLeftCc());
     addPair(IcsFile.LEFT_MLO, icsFileParsing.getLeftMlo());
     addPair(IcsFile.RIGHT_CC, icsFileParsing.getRightCc());
