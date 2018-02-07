@@ -7,10 +7,11 @@ import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.common.util.FileUtil;
+import de.unipassau.medspace.common.util.RdfUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.d2r.query.D2rKeywordSearcher;
-import de.unipassau.medspace.d2r.lucene.SqlToDocStream;
+import de.unipassau.medspace.common.stream.StreamConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +53,6 @@ public class D2rWrapper<DocType> implements Wrapper {
   private List<D2rMap> maps;
 
   /**
-   * A qualified name normalizer used to normalize rdf triples.
-   */
-  private QNameNormalizer normalizer;
-
-  /**
    * Allows accessing namespaces by their prefixes.
    */
   private Map<String, Namespace> namespaces;
@@ -88,7 +84,7 @@ public class D2rWrapper<DocType> implements Wrapper {
     // TODO make the list elements itself immutable after they are initialized
     // TODO to assure that no concurrency problems can occur
     this.maps = Collections.unmodifiableList(maps);
-    normalizer = qName -> getNormalizedURI(qName);
+    QNameNormalizer normalizer = qName -> RdfUtil.getNormalizedURI(namespaces, qName);
     idToMap = new HashMap<>();
 
     for (D2rMap map : maps) {
@@ -113,7 +109,7 @@ public class D2rWrapper<DocType> implements Wrapper {
   @Override
   public KeywordSearcher<Triple> createKeywordSearcher() throws IOException {
 
-    KeywordSearcher<Triple> searcher = null;
+    KeywordSearcher<Triple> searcher;
 
     try {
       if (indexUsed) {
@@ -122,7 +118,7 @@ public class D2rWrapper<DocType> implements Wrapper {
         searcher = new D2rKeywordSearcher(this);
       }
     } catch (IOException e) {
-      throw new IOException("Error while trying to createDoc a keyword searcher", e);
+      throw new IOException("Error while trying to create a keyword searcher", e);
     }
 
     return searcher;
@@ -138,10 +134,7 @@ public class D2rWrapper<DocType> implements Wrapper {
     return proxy.getAllData(maps);
   }
 
-  /**
-   * Provides the index used by this wrapper.
-   * @return The index used by this wrapper or null, if no index is used.
-   */
+  @Override
   public Index getIndex() {
     if (indexManager == null) return null;
       return indexManager.getIndex();
@@ -154,25 +147,6 @@ public class D2rWrapper<DocType> implements Wrapper {
    */
   public D2rMap getMapById(String id) {
     return idToMap.get(id);
-  }
-
-  /**
-   * Translates a qName to an URI using the namespace mapping of the D2R map.
-   * @param qName Qualified name to be translated. See <a href="https://www.w3.org/TR/REC-xml-names/#dt-qualname">
-   *              https://www.w3.org/TR/REC-xml-names/#dt-qualname</a> for a detailed description
-   * @return the URI of the qualified name.
-   */
-  @SuppressWarnings("SpellCheckingInspection")
-  public String getNormalizedURI(String qName) {
-    String prefix = D2rUtil.getNamespacePrefix(qName);
-    Namespace namespace = namespaces.get(prefix);
-    if (namespace != null) {
-      String localName = D2rUtil.getLocalName(qName);
-      return namespace.getFullURI() + localName;
-    }
-    else {
-      return qName;
-    }
   }
 
   @Override
@@ -189,13 +163,13 @@ public class D2rWrapper<DocType> implements Wrapper {
     long before = System.currentTimeMillis();
 
     Index<DocType> index = indexManager.getIndex();
-    Converter<MappedSqlTuple, DocType> converter =  indexManager.getConverterToDoc();
-    SqlToDocStream<DocType> docStream = null;
+    //Converter<MappedSqlTuple, DocType> converter =  indexManager.getConverterToDoc();
+    Stream<DocType> docStream = null;
 
     try {
       index.close();
       index.open();
-      docStream = new SqlToDocStream<DocType>(getAllSourceData(), converter);
+      docStream = indexManager.convert(getAllSourceData());
       index.reindex(docStream);
 
     } catch (IOException e) {
@@ -205,7 +179,7 @@ public class D2rWrapper<DocType> implements Wrapper {
     }
 
     long now = System.currentTimeMillis();
-    log.error("Needed time: " + (now - before)/1000.0f + " seconds");
+    log.debug("Needed time: " + (now - before)/1000.0f + " seconds");
   }
 
   @Override

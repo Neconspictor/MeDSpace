@@ -12,7 +12,7 @@ import java.io.IOException;
  * Specifies an {@link IndexManager} that additionally allows the creation of triples from documents and the creation
  * of a keyword searcher that returns triples instead of documents.
  */
-public class TripleIndexManager<DocType, ElemType> extends IndexManager<DocType, ElemType> {
+public abstract class TripleIndexManager<DocType, ElemType> extends IndexManager<DocType, ElemType> {
 
   /**
    * Used to convert documents to triples.
@@ -22,15 +22,11 @@ public class TripleIndexManager<DocType, ElemType> extends IndexManager<DocType,
   /**
    * Creates a new TripleIndexManager.
    * @param searcher Used for searching an {@link Index}.
-   * @param converterToDoc Used to convert element objects to documents.
-   * @param converterToElem Used to convert documents to element objects.
    * @param tripleSearchConverter Used to convert documents to triples.
    */
   public TripleIndexManager(IndexSearcher<DocType> searcher,
-                            Converter<ElemType, DocType> converterToDoc,
-                            Converter<DocType, ElemType> converterToElem,
                             Converter<KeywordSearcher<DocType>, KeywordSearcher<Triple>> tripleSearchConverter) {
-    super(searcher, converterToDoc, converterToElem);
+    super(searcher);
     this.tripleSearchConverter = tripleSearchConverter;
   }
 

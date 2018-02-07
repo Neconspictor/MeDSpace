@@ -24,8 +24,8 @@ public class Calcification extends LesionType {
   /**
    * TODO
    */
-  public Calcification(String type, String distribution) {
-    super(CALCIFICATION);
+  public Calcification(String type, String distribution, String id) {
+    super(CALCIFICATION, id);
 
     this.type = type;
     this.distribution = distribution;

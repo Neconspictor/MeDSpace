@@ -1,5 +1,6 @@
 package de.unipassau.medspace.common.wrapper;
 
+import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.Triple;
@@ -28,26 +29,32 @@ public interface Wrapper extends Closeable {
   KeywordSearcher<Triple> createKeywordSearcher() throws IOException;
 
   /**
-   * Provides a mapping of prefix and namespace URIs used to prefix triples returned by this wrapper.
-   * @return a mapping of prefix and namespace URIs used to prefix triples returned by this wrapper.
-   */
-  Set<Namespace> getNamespaces();
-
-  /**
-   * Clears the index and reindexes again all data of the proxied datasource.
-   * @throws IOException If any IO-Error occurs.
-   */
-  void reindexData() throws IOException;
-
-  /**
    * Checks if this index has indexed data.
    * @return true, if the index of the wrapper has data.
    */
   boolean existsIndex();
 
   /**
+   * Provides the index used by this wrapper.
+   * @return The index used by this wrapper or null, if no index is used.
+   */
+  Index getIndex();
+
+  /**
+   * Provides a mapping of prefix and namespace URIs used to prefix triples returned by this wrapper.
+   * @return a mapping of prefix and namespace URIs used to prefix triples returned by this wrapper.
+   */
+  Set<Namespace> getNamespaces();
+
+  /**
    * Checks, if the wrapper uses an index to answer keyword searches instead consulting the datasource directly.
    * @return true, if an index is used.
    */
   boolean isIndexUsed();
+
+  /**
+   * Clears the index and reindexes again all data of the proxied datasource.
+   * @throws IOException If any IO-Error occurs.
+   */
+  void reindexData() throws IOException;
 }

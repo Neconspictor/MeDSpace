@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * TODO
  */
-public class DDSM_Image {
+public class DDSM_Image extends Identifiable {
 
   /**
    * TODO
@@ -19,19 +19,14 @@ public class DDSM_Image {
 
   /**
    * TODO
-   */
-  private String id;
-
-  /**
-   * TODO
    * @param source
    * @param overlay
    * @param id
    */
   public DDSM_Image(File source, OverlayMetaData overlay, String id) {
+    super(id);
     this.source = source;
     this.overlay = overlay;
-    this.id = id;
   }
 
   /**
@@ -46,13 +41,6 @@ public class DDSM_Image {
    */
   public OverlayMetaData getOverlay() {
     return overlay;
-  }
-
-  /**
-   * TODO
-   */
-  public String getId() {
-    return id;
   }
 
   @Override

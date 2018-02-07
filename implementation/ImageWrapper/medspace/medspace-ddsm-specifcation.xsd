@@ -39,61 +39,95 @@
 		<xsd:attribute name="namespace" type="xsd:string" use="required"/>
 	</xsd:complexType>
 
+    <xsd:complexType name="Class">
+        <xsd:attribute name="rdfType" type="xsd:string" use="required"/>
+        <xsd:attribute name="classId" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
 
 	<xsd:complexType name="IcsFile">
-		<xsd:sequence>
-			<xsd:element name="dateOfStudy" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="patientAge" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="density" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="dateDigitized" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="digitizer" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="left_cc" type="ddsm:ObjectProperty"/>
-			<xsd:element name="left_mlo" type="ddsm:ObjectProperty"/>
-			<xsd:element name="right_cc" type="ddsm:ObjectProperty"/>
-			<xsd:element name="right_mlo" type="ddsm:ObjectProperty"/>
-		</xsd:sequence>
-		<xsd:attribute name="objectType" type="xsd:string" use="required"/>
+        <xsd:complexContent>
+            <xsd:extension base="ddsm:Class">
+                <xsd:sequence>
+                    <xsd:element name="dateOfStudy" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="patientAge" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="density" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="dateDigitized" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="digitizer" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="left_cc" type="ddsm:ObjectProperty"/>
+                    <xsd:element name="left_mlo" type="ddsm:ObjectProperty"/>
+                    <xsd:element name="right_cc" type="ddsm:ObjectProperty"/>
+                    <xsd:element name="right_mlo" type="ddsm:ObjectProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="Image">
-		<xsd:attribute name="objectType" type="xsd:string" use="required"/>
+        <xsd:complexContent>
+            <xsd:extension base="ddsm:Class">
+                <xsd:sequence>
+                    <xsd:element name="source" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="overlay" type="ddsm:ObjectProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="Overlay">
-		<xsd:sequence>
-			<xsd:element name="totalAbnormalities" type="ddsm:DataTypeProperty"/>
-		</xsd:sequence>
-		<xsd:attribute name="objectType" type="xsd:string" use="required"/>
+        <xsd:complexContent>
+            <xsd:extension base="ddsm:Class">
+                <xsd:sequence>
+                    <xsd:element name="totalAbnormalities" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="abnormality" type="ddsm:ObjectProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="Abnormality">
-		<xsd:sequence>
-			<xsd:element name="abnormality" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="assessment" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="subtlety" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="pathology" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="totalOutlines" type="ddsm:DataTypeProperty"/>
-		</xsd:sequence>
-		<xsd:attribute name="objectType" type="xsd:string" use="required"/>
+        <xsd:complexContent>
+            <xsd:extension base="ddsm:Class">
+                <xsd:sequence>
+                    <xsd:element name="abnormality" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="calcification" type="ddsm:ObjectProperty"/>
+                    <xsd:element name="mass" type="ddsm:ObjectProperty"/>
+                    <xsd:element name="assessment" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="subtlety" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="pathology" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="totalOutlines" type="ddsm:DataTypeProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
 
 	<xsd:complexType name="Calcification">
-		<xsd:sequence>
-			<xsd:element name="type" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="distribution" type="ddsm:DataTypeProperty"/>
-		</xsd:sequence>
-		<xsd:attribute name="objectType" type="xsd:string" use="required"/>
+        <xsd:complexContent>
+            <xsd:extension base="ddsm:Class">
+                <xsd:sequence>
+                    <xsd:element name="type" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="distribution" type="ddsm:DataTypeProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="Mass">
-		<xsd:sequence>
-			<xsd:element name="shape" type="ddsm:DataTypeProperty"/>
-			<xsd:element name="margins" type="ddsm:DataTypeProperty"/>
-		</xsd:sequence>
-		<xsd:attribute name="objectType" type="xsd:string" use="required"/>
+        <xsd:complexContent>
+            <xsd:extension base="ddsm:Class">
+                <xsd:sequence>
+                    <xsd:element name="shape" type="ddsm:DataTypeProperty"/>
+                    <xsd:element name="margins" type="ddsm:DataTypeProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
 
+
+    <xsd:complexType name="Property">
+        <xsd:attribute name="propertyType" type="xsd:string" use="required"/>
+    </xsd:complexType>
 
 	<xsd:complexType name="DataTypeProperty">
         <xsd:complexContent>
@@ -103,10 +137,6 @@
             </xsd:extension>
         </xsd:complexContent>
 	</xsd:complexType>
-
-    <xsd:complexType name="Property">
-        <xsd:attribute name="propertyType" type="xsd:string" use="required"/>
-    </xsd:complexType>
 
 
 	<xsd:complexType name="ObjectProperty">

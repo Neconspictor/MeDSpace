@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * TODO
  */
-public class Abnormality {
+public class Abnormality extends Identifiable {
 
   /**
    * TODO
@@ -28,6 +28,11 @@ public class Abnormality {
   /**
    * TODO
    */
+  private int subtlety;
+
+  /**
+   * TODO
+   */
   private String pathology;
 
   /**
@@ -37,30 +42,27 @@ public class Abnormality {
 
   /**
    * TODO
-   */
-  private String id;
-
-  /**
-   * TODO
    * @param abnormalityNumber
    * @param lesionTypes
    * @param assessment
+   * @param subtlety
    * @param pathology
    * @param totalOutlines
    */
   public Abnormality(int abnormalityNumber,
                      List<LesionType> lesionTypes,
                      int assessment,
+                     int subtlety,
                      String pathology,
                      int totalOutlines,
                      String id) {
+    super(id);
 
     this.abnormalityNumber = abnormalityNumber;
     this.lesionTypes = lesionTypes;
     this.assessment = assessment;
     this.pathology = pathology;
     this.totalOutlines = totalOutlines;
-    this.id = id;
   }
 
   /**
@@ -109,6 +111,7 @@ public class Abnormality {
       builder.append("lesionType: " + type + "\n");
     }
     builder.append("assessment: " + assessment + "\n");
+    builder.append("subtlety: " + subtlety + "\n");
     builder.append("pathology: " + pathology + "\n");
     builder.append("totalOutlines: " + totalOutlines + "\n");
 
@@ -120,7 +123,7 @@ public class Abnormality {
   /**
    * TODO
    */
-  public String getId() {
-    return id;
+  public int getSubtlety() {
+    return subtlety;
   }
 }

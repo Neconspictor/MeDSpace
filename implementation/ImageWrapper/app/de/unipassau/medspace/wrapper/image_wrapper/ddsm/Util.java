@@ -1,16 +1,10 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
-import com.sun.javafx.binding.StringFormatter;
-
 import java.io.*;
-import java.net.URI;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * TODO
@@ -153,5 +147,19 @@ public class Util {
     Path relative = source.toPath().relativize(destination.toPath());
     String result = relative.toString();
     return result.replaceAll("\\\\", "/");
+  }
+
+  /**
+   * TODO
+   * @param collection
+   * @param clazz
+   * @param <T>
+   * @return
+   */
+  public static <T> T getByClass(Collection<?> collection, Class<T> clazz) {
+    for (Object elem : collection) {
+      if (clazz.isInstance(elem)) return (T) elem;
+    }
+    return null;
   }
 }

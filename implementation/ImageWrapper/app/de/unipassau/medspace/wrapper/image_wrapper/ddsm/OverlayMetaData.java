@@ -1,7 +1,5 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
-
-
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Calcification;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.LesionType;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass;
@@ -11,13 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.*;
-
 
 /**
  * TODO
  */
-public class OverlayMetaData {
+public class OverlayMetaData extends Identifiable {
 
   /**
    * TODO
@@ -32,15 +28,10 @@ public class OverlayMetaData {
   /**
    * TODO
    */
-  private String id;
-
-  /**
-   * TODO
-   */
-  private OverlayMetaData() {
+  private OverlayMetaData(String id) {
+    super(id);
     abnormalities = new ArrayList<>();
     totalAbnormalities = 0;
-    id = null;
   }
 
   /**
@@ -51,7 +42,6 @@ public class OverlayMetaData {
    */
   public static OverlayMetaData parse(File file, String id) throws IOException {
     OverlayMetaData result =  new Parser(id).parse(file);
-    result.id = id;
     return result;
   }
 
@@ -84,13 +74,6 @@ public class OverlayMetaData {
     builder.append("}");
 
     return builder.toString();
-  }
-
-  /**
-   * TODO
-   */
-  public String getId() {
-    return id;
   }
 
   /**
@@ -164,8 +147,20 @@ public class OverlayMetaData {
      */
     private static final String MARGINS = "MARGINS";
 
+    /**
+     * TODO
+     */
     private final String overlayID;
 
+    /**
+     * TODO
+     */
+    private int lesionTypeCounter = 0;
+
+    /**
+     * TODO
+     * @param overlayID
+     */
     private Parser(String overlayID) {
       this.overlayID = overlayID;
     }
@@ -177,7 +172,7 @@ public class OverlayMetaData {
      * @throws IOException
      */
     public OverlayMetaData parse(File file) throws IOException  {
-      List<String> content = getLineContent(file);
+      List<String> content = Util.getLineContent(file);
 
       if (content.size() == 0) throw new IOException("Couldn't read content of overlay meta data file: " + file);
 
@@ -196,7 +191,7 @@ public class OverlayMetaData {
             abnormalities.size() + ")");
       }
 
-      OverlayMetaData result = new OverlayMetaData();
+      OverlayMetaData result = new OverlayMetaData(overlayID);
       result.abnormalities = abnormalities;
       result.totalAbnormalities = totalAbnormality;
       return result;
@@ -211,32 +206,32 @@ public class OverlayMetaData {
     private Abnormality parseAbnormality(List<String> content) throws IOException {
 
       // Get abnormality number
-      List<String> tokens = tokenize(content.remove(0));
-      parseExpectedToken(tokens, ABNORMALITY);
-      int abnormalityNumber = parseInt(tokens);
+      List<String> tokens = Util.tokenize(content.remove(0));
+      Util.parseExpectedToken(tokens, ABNORMALITY);
+      int abnormalityNumber = Util.parseInt(tokens);
 
       // Lesion type
       List<LesionType> lesionTypes = parseLesionTypes(content);
 
       // assessment
-      tokens = tokenize(content.remove(0));
-      parseExpectedToken(tokens, ASSESSMENT);
-      int assessment = parseInt(tokens);
+      tokens = Util.tokenize(content.remove(0));
+      Util.parseExpectedToken(tokens, ASSESSMENT);
+      int assessment = Util.parseInt(tokens);
 
       // SUBTLETY
-      tokens = tokenize(content.remove(0));
-      parseExpectedToken(tokens, SUBTLETY);
-      int subtlety = parseInt(tokens);
+      tokens = Util.tokenize(content.remove(0));
+      Util.parseExpectedToken(tokens, SUBTLETY);
+      int subtlety = Util.parseInt(tokens);
 
       // PATHOLOGY
-      tokens = tokenize(content.remove(0));
-      parseExpectedToken(tokens, PATHOLOGY);
+      tokens = Util.tokenize(content.remove(0));
+      Util.parseExpectedToken(tokens, PATHOLOGY);
       String pathology = tokens.remove(0);
 
       // TOTAL_OUTLINES
-      tokens = tokenize(content.remove(0));
-      parseExpectedToken(tokens, TOTAL_OUTLINES);
-      int totalOutlines = parseInt(tokens);
+      tokens = Util.tokenize(content.remove(0));
+      Util.parseExpectedToken(tokens, TOTAL_OUTLINES);
+      int totalOutlines = Util.parseInt(tokens);
 
       /**
        * TOTAL_OUTLINES specifies the number of outlines that were made by a radiologist
@@ -258,6 +253,7 @@ public class OverlayMetaData {
       return new Abnormality(abnormalityNumber,
           lesionTypes,
           assessment,
+          subtlety,
           pathology,
           totalOutlines,
           overlayID + "#" + abnormalityNumber);
@@ -269,11 +265,11 @@ public class OverlayMetaData {
      * @return
      * @throws IOException
      */
-    private static List<LesionType> parseLesionTypes(List<String> content) throws IOException {
+    private List<LesionType> parseLesionTypes(List<String> content) throws IOException {
 
       List<LesionType> result = new ArrayList<>();
 
-      while(beginsWithToken(content.get(0), LESION_TYPE)) {
+      while(Util.beginsWithToken(content.get(0), LESION_TYPE)) {
         LesionType type = parseLesionType(content);
         result.add(type);
       }
@@ -287,11 +283,13 @@ public class OverlayMetaData {
      * @return
      * @throws IOException
      */
-    private static LesionType parseLesionType(List<String> content) throws IOException {
-      List<String> tokens = tokenize(content.remove(0));
-      parseExpectedToken(tokens, LESION_TYPE);
+    private LesionType parseLesionType(List<String> content) throws IOException {
+
+      List<String> tokens = Util.tokenize(content.remove(0));
+      Util.parseExpectedToken(tokens, LESION_TYPE);
       String lesionTypeStr = tokens.remove(0);
       LesionType lesionType;
+
       if (lesionTypeStr.equals(Mass.MASS)) {
         lesionType = parseMass(tokens);
       } else if (lesionTypeStr.equals(Calcification.CALCIFICATION)) {
@@ -309,14 +307,14 @@ public class OverlayMetaData {
      * @return
      * @throws IOException
      */
-    private static Calcification parseCalcification(List<String> tokens) throws IOException {
-      parseExpectedToken(tokens, TYPE);
+    private Calcification parseCalcification(List<String> tokens) throws IOException {
+      Util.parseExpectedToken(tokens, TYPE);
       String type = tokens.remove(0);
 
-      parseExpectedToken(tokens, DISTRIBUTION);
+      Util.parseExpectedToken(tokens, DISTRIBUTION);
       String distribution = tokens.remove(0);
 
-      return new Calcification(type, distribution);
+      return new Calcification(type, distribution, createLesionTypeId());
     }
 
     /**
@@ -325,14 +323,14 @@ public class OverlayMetaData {
      * @return
      * @throws IOException
      */
-    private static Mass parseMass(List<String> tokens) throws IOException {
-      parseExpectedToken(tokens, SHAPE);
+    private Mass parseMass(List<String> tokens) throws IOException {
+      Util.parseExpectedToken(tokens, SHAPE);
       String shape = tokens.remove(0);
 
-      parseExpectedToken(tokens, MARGINS);
+      Util.parseExpectedToken(tokens, MARGINS);
       String margins = tokens.remove(0);
 
-      return new Mass(shape, margins);
+      return new Mass(shape, margins, createLesionTypeId());
     }
 
     /**
@@ -344,12 +342,12 @@ public class OverlayMetaData {
     private static int parseTotalAbnormalityCount(List<String> content) throws IOException {
 
       //the first line contains the total abnormality field
-      List<String> tokens = tokenize(content.remove(0));
+      List<String> tokens = Util.tokenize(content.remove(0));
       while(tokens.size() != 2) {
-        tokens = tokenize(content.remove(0));
+        tokens = Util.tokenize(content.remove(0));
       }
 
-      parseExpectedToken(tokens, TOTAL_ABNORMALITIES);
+      Util.parseExpectedToken(tokens, TOTAL_ABNORMALITIES);
 
       try {
         return Integer.parseInt(tokens.remove(0));
@@ -357,6 +355,12 @@ public class OverlayMetaData {
         throw new IOException("Couldn't retrieve " + TOTAL_ABNORMALITIES + " value; cause: ", e);
       }
 
+    }
+
+    private String createLesionTypeId() {
+      String id = overlayID + "#" + lesionTypeCounter;
+      ++lesionTypeCounter;
+      return id;
     }
   }
 }

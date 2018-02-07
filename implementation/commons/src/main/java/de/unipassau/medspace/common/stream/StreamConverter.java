@@ -1,34 +1,32 @@
-package de.unipassau.medspace.d2r.lucene;
+package de.unipassau.medspace.common.stream;
 
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
-import de.unipassau.medspace.d2r.MappedSqlTuple;
 
 import java.io.IOException;
 
 /**
- * A stream that converts {@link MappedSqlTuple}s to the document type of an index.
+ * A stream that converts a stream of type 'A' to a stream of type 'B'
  */
-public class SqlToDocStream<DocType> implements Stream<DocType> {
+public class StreamConverter<A, B> implements Stream<B> {
 
   /**
    * Used as input for accessing the mapped sql tuples.
    */
-  private final Stream<MappedSqlTuple> stream;
+  private final Stream<A> stream;
 
   /**
    * Used to convert the mapped sql tuples to the desired document class.
    */
-  private final Converter<MappedSqlTuple, DocType> converter;
+  private final Converter<A, B> converter;
 
   /**
    * Creates a new SqlToDocStream.
    * @param stream Used as input for accessing the mapped sql tuples
    * @param converter Used to convert the mapped sql tuples to the desired document class.
-   * @throws IOException If an IO-Error occurs.
    */
-  public SqlToDocStream(Stream<MappedSqlTuple> stream,
-                        Converter<MappedSqlTuple, DocType> converter) throws IOException {
+  public StreamConverter(Stream<A> stream,
+                         Converter<A, B> converter) {
     this.stream = stream;
     this.converter = converter;
   }
@@ -44,8 +42,8 @@ public class SqlToDocStream<DocType> implements Stream<DocType> {
   }
 
   @Override
-  public DocType next() throws IOException {
-    MappedSqlTuple tuple = stream.next();
-    return converter.convert(tuple);
+  public B next() throws IOException {
+    A elem = stream.next();
+    return converter.convert(elem);
   }
 }

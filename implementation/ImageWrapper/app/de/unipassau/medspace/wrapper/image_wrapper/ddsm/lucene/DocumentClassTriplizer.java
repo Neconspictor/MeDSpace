@@ -5,10 +5,13 @@ import de.unipassau.medspace.common.rdf.RDFFactory;
 import de.unipassau.medspace.common.rdf.RDFResource;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.util.Converter;
+import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.ObjectProperty;
 import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
+import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.LuceneDocAdapter;
 import de.unipassau.medspace.wrapper.image_wrapper.rdf_mapping.Util;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
+import org.javatuples.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
   /**
    * TODO
    */
-  private final List<DocumentAdapter<?>> adapters;
+  private final List<LuceneDocAdapter<?>> adapters;
 
   /**
    * Used to normalize the rdf triples.
@@ -40,7 +43,7 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
    * @param normalizer
    * @param rdfFactory
    */
-  public DocumentClassTriplizer(List<DocumentAdapter<?>> adapters,
+  public DocumentClassTriplizer(List<LuceneDocAdapter<?>> adapters,
                                 QNameNormalizer normalizer,
                                 RDFFactory rdfFactory) {
     this.adapters = adapters;
@@ -51,37 +54,68 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
   @Override
   public List<Triple> convert(Document source) throws IOException {
 
-    for (DocumentAdapter<?> adapter : adapters) {
-      if (adapter.isConvertable(source))
+    for (LuceneDocAdapter<?> adapter : adapters) {
+      if (adapter.isConvertible(source))
         return convert(adapter, source);
     }
 
     throw new IOException("Document isn't convertable by any adapter: " + source);
   }
 
-  private List<Triple> convert(DocumentAdapter<?> adapter, Document document) {
+  /**
+   * TODO
+   * @param adapter
+   * @param document
+   * @return
+   */
+  private List<Triple> convert(LuceneDocAdapter<?> adapter, Document document) {
     List<Triple> triples = new ArrayList<>();
-    List<IndexableField> fields = adapter.getValidFields(document);
 
-    String id = adapter.getClassId(document);
+    String id = adapter.getObjectId(document);
     String baseURI = adapter.getClassBaseURI();
     String subjectURI = Util.createResourceId(normalizer, baseURI, id);
     RDFResource subject = rdfFactory.createResource(subjectURI);
 
-    for (IndexableField field : fields) {
-      Property property = adapter.getPropertyByFieldName(field.name());
-      String value = field.stringValue();
+    List<Pair<String, Property>> pairs = adapter.getFieldNamePropertyPairs();
 
-      Triple triple = Util.triplize(rdfFactory,
-          normalizer,
-          property,
-          subject,
-          value);
+    for (Pair<String, Property> pair : pairs) {
+      IndexableField[] fields = document.getFields(pair.getValue0());
 
-      triples.add(triple);
-
+      for (IndexableField field : fields) {
+        Triple triple = createTriple(field, adapter, pair, subject);
+        triples.add(triple);
+      }
     }
 
     return triples;
+  }
+
+  /**
+   * TODO
+   * @param field
+   * @param adapter
+   * @param pair
+   * @param subject
+   * @return
+   */
+  private Triple createTriple(IndexableField field,
+                         LuceneDocAdapter<?> adapter,
+                         Pair<String, Property> pair,
+                         RDFResource subject) {
+
+    Property property = pair.getValue1();
+
+    String value;
+    if (property instanceof ObjectProperty) {
+      value = adapter.createValue(pair, field);
+    } else {
+      value= field.stringValue();
+    }
+
+    return Util.triplize(rdfFactory,
+        normalizer,
+        property,
+        subject,
+        value);
   }
 }

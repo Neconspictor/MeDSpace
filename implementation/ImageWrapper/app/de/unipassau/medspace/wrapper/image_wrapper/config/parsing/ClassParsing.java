@@ -11,21 +11,22 @@ package de.unipassau.medspace.wrapper.image_wrapper.config.parsing;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for DataTypeProperty complex type.
+ * <p>Java class for Class complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="DataTypeProperty">
+ * &lt;complexType name="Class">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.medspace.com/images/ddsm}Property">
- *       &lt;attribute name="dataType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="lang" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/extension>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;attribute name="rdfType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="classId" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -33,62 +34,68 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataTypeProperty")
-public class DataTypePropertyParsing
-    extends Property
-{
+@XmlType(name = "Class")
+@XmlSeeAlso({
+    MassParsing.class,
+    CalcificationParsing.class,
+    IcsFileParsing.class,
+    ImageParsing.class,
+    OverlayParsing.class,
+    AbnormalityParsing.class
+})
+public class ClassParsing {
 
-    @XmlAttribute(name = "dataType", required = true)
-    protected String dataType;
-    @XmlAttribute(name = "lang")
-    protected String lang;
+    @XmlAttribute(name = "rdfType", required = true)
+    protected String rdfType;
+    @XmlAttribute(name = "classId", required = true)
+    protected String classId;
 
     /**
-     * Gets the value of the dataType property.
+     * Gets the value of the rdfType property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDataType() {
-        return dataType;
+    public String getRdfType() {
+        return rdfType;
     }
 
     /**
-     * Sets the value of the dataType property.
+     * Sets the value of the rdfType property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDataType(String value) {
-        this.dataType = value;
+    public void setRdfType(String value) {
+        this.rdfType = value;
     }
 
     /**
-     * Gets the value of the lang property.
+     * Gets the value of the classId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLang() {
-        return lang;
+    public String getClassId() {
+        return classId;
     }
 
     /**
-     * Sets the value of the lang property.
+     * Sets the value of the classId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLang(String value) {
-        this.lang = value;
+    public void setClassId(String value) {
+        this.classId = value;
     }
 
 }

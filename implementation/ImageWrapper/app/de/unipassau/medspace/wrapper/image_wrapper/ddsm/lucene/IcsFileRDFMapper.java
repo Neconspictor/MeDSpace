@@ -135,7 +135,7 @@ public class IcsFileRDFMapper implements TripleConverter<IcsFile> {
   public List<Triple> convert(IcsFile icsFile) {
 
     String subjectURI = Util.createResourceId(normalizer,
-        icsFileParsing.getObjectType(), icsFile.getId());
+        icsFileParsing.getRdfType(), icsFile.getId());
 
     RDFResource subject = rdfFactory.createResource(subjectURI);
 
@@ -154,7 +154,7 @@ public class IcsFileRDFMapper implements TripleConverter<IcsFile> {
   }
 
   private String createImageId(String id) {
-    return Util.createResourceId(normalizer, imageParsing.getObjectType(), id);
+    return Util.createResourceId(normalizer, imageParsing.getRdfType(), id);
   }
 
   /**

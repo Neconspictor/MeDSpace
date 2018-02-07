@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * TODO
  */
-public class IcsFile {
+public class IcsFile extends Identifiable{
 
 
   /**
@@ -104,16 +104,13 @@ public class IcsFile {
    */
   private DDSM_Image rightMLO;
 
-  /**
-   * TODO
-   */
-  private String id;
-
 
   /**
    * TODO
    */
-  private IcsFile() {}
+  private IcsFile(String id) {
+    super(id);
+  }
 
   /**
    * TODO
@@ -128,8 +125,7 @@ public class IcsFile {
                               DDSM_Image rightCC,
                               DDSM_Image rightMLO) throws IOException {
 
-    IcsFile result =  Parser.parse(file);
-    result.id = id;
+    IcsFile result =  Parser.parse(file, id);
     result.leftCC = leftCC;
     result.leftMLO = leftMLO;
     result.rightCC = rightCC;
@@ -223,13 +219,6 @@ public class IcsFile {
     return rightMLO;
   }
 
-  /**
-   * TODO
-   */
-  public String getId() {
-    return id;
-  }
-
 
   /**
    * TODO
@@ -242,11 +231,11 @@ public class IcsFile {
      * @return
      * @throws IOException
      */
-    public static IcsFile parse(File file) throws IOException {
-      IcsFile data = createUninitialized();
-      List<String> content = de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.getLineContent(file);
+    public static IcsFile parse(File file, String id) throws IOException {
+      IcsFile data = createUninitialized(id);
+      List<String> content = Util.getLineContent(file);
       for (String line : content) {
-        List<String> tokens = de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.tokenize(line);
+        List<String> tokens = Util.tokenize(line);
         setField(tokens, data);
       }
 
@@ -262,8 +251,8 @@ public class IcsFile {
      * TODO
      * @return
      */
-    private static IcsFile createUninitialized() {
-      IcsFile data = new IcsFile();
+    private static IcsFile createUninitialized(String id) {
+      IcsFile data = new IcsFile(id);
       data.dateOfStudy = null;
       data.patientAge  = -1;
       data.density = -1;
@@ -300,19 +289,19 @@ public class IcsFile {
 
       switch(key) {
         case DATE_OF_STUDY:
-          data.dateOfStudy = de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.parseDateField(tokens);
+          data.dateOfStudy = Util.parseDateField(tokens);
           break;
         case PATIENT_AGE:
-          data.patientAge = de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.parseInt(tokens);
+          data.patientAge = Util.parseInt(tokens);
           break;
         case DENSITY:
-          data.density = de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.parseInt(tokens);
+          data.density = Util.parseInt(tokens);
           break;
         case DATE_DIGITIZED:
-          data.dateDigitized = de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.parseDateField(tokens);
+          data.dateDigitized = Util.parseDateField(tokens);
           break;
         case DIGITIZER:
-          data.digitizer = de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util.parseText(tokens);
+          data.digitizer = Util.parseText(tokens);
           break;
         default:
           break;

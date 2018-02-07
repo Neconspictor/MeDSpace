@@ -11,6 +11,10 @@
 			<jxb:bindings node="//xsd:complexType[@name='Namespace']">
                 <jxb:class name="NamespaceParsing"/>
             </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='Class']">
+            <jxb:class name="ClassParsing"/>
+        </jxb:bindings>
 			
 			<jxb:bindings node="//xsd:complexType[@name='IcsFile']">
                 <jxb:class name="IcsFileParsing"/>

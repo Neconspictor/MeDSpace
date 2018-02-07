@@ -1,5 +1,6 @@
 package de.unipassau.medspace.common.indexing;
 
+import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
 
 import java.io.Closeable;
@@ -25,7 +26,7 @@ import java.io.IOException;
  * Through a IndexSearcher retrieved from the IndexManager we can search for documents. To get person objects from the
  * search result we can again use a converter from the IndexManager.
  */
-public class IndexManager<DocType, ObjectType> implements Closeable {
+public abstract class IndexManager<DocType, ObjectType> implements Closeable {
 
   /**
    * Wraps the index and allows the user to search the index.
@@ -45,12 +46,8 @@ public class IndexManager<DocType, ObjectType> implements Closeable {
   /**
    * Creates a new IndexManager.
    * @param searcher A searcher of an index.
-   * @param converterToDoc converts objects to documents of the index
-   * @param converterToObject converts documents to objects.
    */
-  public IndexManager(IndexSearcher<DocType> searcher,
-                      Converter<ObjectType, DocType> converterToDoc,
-                      Converter<DocType, ObjectType> converterToObject) {
+  public IndexManager(IndexSearcher<DocType> searcher) {
     this.searcher = searcher;
     this.converterToDoc = converterToDoc;
     this.converterToObject = converterToObject;
@@ -60,17 +57,23 @@ public class IndexManager<DocType, ObjectType> implements Closeable {
    * Provides a converter that converts objects to documents for the index.
    * @return
    */
-  public Converter<ObjectType, DocType> getConverterToDoc() {
+  /*public Converter<ObjectType, DocType> getConverterToDoc() {
     return converterToDoc;
-  }
+  }*/
+
+  /**
+   * Provides a converter that converts objects to documents for the index.
+   * @return
+   */
+  public abstract Stream<DocType> convert(Stream<ObjectType> source);
 
   /**
    * Provides a converter that converts documents of the index to a given object type.
    * @return
    */
-  public Converter<DocType, ObjectType> getConverterToObject() {
+  /*public Converter<DocType, ObjectType> getConverterToObject() {
     return converterToObject;
-  }
+  }*/
 
   /**
    * Provides the index of this class.

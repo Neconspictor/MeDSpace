@@ -23,8 +23,8 @@ public class Mass extends LesionType {
   /**
    * TODO
    */
-  public Mass(String shape, String margins) {
-    super(MASS);
+  public Mass(String shape, String margins, String id) {
+    super(MASS, id);
     this.shape = shape;
     this.margins = margins;
   }

@@ -1,13 +1,25 @@
 package de.unipassau.medspace.common.rdf;
 
 /**
- * Created by David Goeth on 28.10.2017.
+ * TODO
  */
 public interface Triple {
 
+  /**
+   * TODO
+   * @return
+   */
   String getSubject();
 
+  /**
+   * TODO
+   * @return
+   */
   String getPredicate();
 
+  /**
+   * TODO
+   * @return
+   */
   String getObject();
 }

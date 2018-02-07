@@ -15,39 +15,6 @@ public class D2rUtil {
   private static Logger log = LoggerFactory.getLogger(D2rUtil.class);
 
   /**
-   * Provides the namespace prefix of a given qualified name URI.
-   * @param qualifiedName The qualified name ro get the namespace prefix from.
-   * @return The namespace prefix or null, if the qualified name doesn't start with
-   * a namespace prefix.
-   */
-  public static String getNamespacePrefix(String qualifiedName) {
-    int len = qualifiedName.length();
-    for (int i = 0; i < len; i++) {
-      if (qualifiedName.charAt(i) == ':') {
-        return qualifiedName.substring(0, i);
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Provides the local name of a qualified name.
-   * The local name is the suffix when neglecting the namespace prefix.
-   * A local name does only exist for qualified names that start with a namespace prefix.
-   * @param qName The qualified name to get the local name from.
-   * @return The local name of the qualified name or null, if no local name exists for it.
-   */
-  public static String getLocalName(String qName) {
-    int len = qName.length();
-    for (int i = 0; i < len; i++) {
-      if (qName.charAt(i) == ':') {
-        return qName.substring(i + 1);
-      }
-    }
-    return null;
-  }
-
-  /**
    * Provides the value of a column from a given sql tuple.
    * @param columnName The column to get the value from.
    * @param tuple The sql tuple.

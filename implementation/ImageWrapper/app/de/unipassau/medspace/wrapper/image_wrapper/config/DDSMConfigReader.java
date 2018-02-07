@@ -10,7 +10,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * TODO
@@ -30,15 +29,8 @@ public class DDSMConfigReader {
    * @throws IOException
    * @throws SAXException
    */
-  public void parse(String fileName) throws JAXBException, IOException, SAXException {
-    RootParsing root = Parser.parse(fileName);
-    List<NamespaceParsing> namespaceParsings = root.getNamespace();
-    IcsFileParsing container = root.getIcsFile();
-    OverlayParsing overlay = root.getOverlay();
-    AbnormalityParsing abnormality = root.getAbnormality();
-    CalcificationParsing calcification = root.getCalcification();
-    MassParsing mass = root.getMass();
-
+  public RootParsing parse(String fileName) throws JAXBException, IOException, SAXException {
+    return Parser.parse(fileName);
   }
 
 
