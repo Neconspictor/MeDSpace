@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.medspace.com/images/ddsm"
+	xmlns:pdf="http://www.medspace.com/images/ddsm"
+	elementFormDefault="qualified">
+
+	<!-->
+		The root element for the D2R mapping.
+		It defines the structure of a valid D2R config file.
+	<-->
+	<xsd:element name="Root">
+		<xsd:complexType>
+			<xsd:sequence>
+				<!-->Elements that have to stated exact once, but have to occur<-->
+				<!-->Elements that can occur any number of times <-->
+				<xsd:element name="Namespace" type="pdf:Namespace" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="PdfRootDirectory" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="PdfFile" type="pdf:PdfFile" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+
+	<!-->
+		A type for defining RDF namespaces
+
+		@attribute prefix:		The prefix to use in the rdf triples.
+
+		@attribute namespace:	The namespace represented by the prefix.
+	<-->
+	<xsd:complexType name="Namespace">
+		<xsd:attribute name="prefix" type="xsd:string" use="required"/>
+		<xsd:attribute name="namespace" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="PdfFile">
+        <xsd:complexContent>
+            <xsd:extension base="pdf:Class">
+                <xsd:sequence>
+                    <xsd:element name="source" type="pdf:DataTypeProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+	</xsd:complexType>
+
+
+    <xsd:complexType name="Class">
+        <xsd:attribute name="rdfType" type="xsd:string" use="required"/>
+        <xsd:attribute name="classId" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="Property">
+        <xsd:attribute name="propertyType" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+	<xsd:complexType name="DataTypeProperty">
+        <xsd:complexContent>
+            <xsd:extension base="pdf:Property">
+                <xsd:attribute name="dataType" type="xsd:string" use="required"/>
+                <xsd:attribute name="lang" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+	</xsd:complexType>
+
+
+	<xsd:complexType name="ObjectProperty">
+        <xsd:complexContent>
+            <xsd:extension base="pdf:Property">
+            </xsd:extension>
+        </xsd:complexContent>
+	</xsd:complexType>
+	
+</xsd:schema> 

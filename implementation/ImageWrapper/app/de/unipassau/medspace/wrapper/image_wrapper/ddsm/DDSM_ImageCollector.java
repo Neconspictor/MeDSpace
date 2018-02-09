@@ -91,7 +91,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
    */
   private MultiMediaContainer createIcsContainer(File icsFile, List<File> folderFiles) {
 
-    String fileName = getFileName(icsFile);
     File leftccFile = getByNameEnding(folderFiles, "." + LEFT_CC + "." + image_ext);
     File leftMloFile = getByNameEnding(folderFiles, "." + LEFT_MLO + "." + image_ext);
     File rightccFile = getByNameEnding(folderFiles, "." + RIGHT_CC + "." + image_ext);

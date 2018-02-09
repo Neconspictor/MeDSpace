@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<pdf:Root xmlns:pdf="http://www.medspace.com/images/ddsm">
+
+	<!-->RDF namespaces
+		@attribute prefix:		The prefix to use in the rdf triples
+		@attribute namespace:	The namespace represented by the prefix
+	<-->
+	<pdf:Namespace prefix="root" namespace="http://www.medspace.com/pdf/"/>
+	<pdf:Namespace prefix="owl" namespace="http://www.w3.org/2002/07/owl#"/>
+	<pdf:Namespace prefix="rdf" namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+	<pdf:Namespace prefix="dc" namespace="http://purl.org/dc/elements/1.1/"/>
+	<pdf:Namespace prefix="xsd" namespace="http://www.w3.org/2001/XMLSchema#"/>
+
+	<pdf:Namespace prefix="pdf_file" namespace="http://www.medspace.com/pdf/pdf_file#"/>
+
+
+    <pdf:PdfRootDirectory>./_work/pdfFiles/</pdf:PdfRootDirectory>
+
+    <pdf:PdfFile rdfType="http://www.medspace.com/pdf/pdf_file" classId="pdfFile">
+        <pdf:source propertyType="pdf_file:source" dataType="xsd:string"/>
+    </pdf:PdfFile>
+
+</pdf:Root>

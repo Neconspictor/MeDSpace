@@ -1,0 +1,35 @@
+<jxb:bindings 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+
+    <jxb:bindings schemaLocation="medspace-pdf-wrapper-config-specification.xsd">
+        <jxb:bindings node="//xsd:element[@name='Root']">
+            <jxb:class name="RootParsing"/>
+        </jxb:bindings>
+			
+        <jxb:bindings node="//xsd:complexType[@name='Namespace']">
+            <jxb:class name="NamespaceParsing"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='PdfFile']">
+            <jxb:class name="PdfFileParsing"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='Class']">
+            <jxb:class name="ClassParsing"/>
+        </jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Property']">
+            <jxb:class name="PropertyParsing"/>
+        </jxb:bindings>
+			
+        <jxb:bindings node="//xsd:complexType[@name='ObjectProperty']">
+            <jxb:class name="ObjectPropertyParsing"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='DataTypeProperty']">
+            <jxb:class name="DataTypePropertyParsing"/>
+        </jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>
