@@ -33,7 +33,6 @@ implementation/sqlwrapper/logs/*
 implementation/sqlwrapper/.idea/*
 implementation/sqlwrapper/project/*/*
 implementation/sqlwrapper/_work/*
-implementation/sqlwrapper/medspace/*
 
 // register build
 implementation/register/target/*
