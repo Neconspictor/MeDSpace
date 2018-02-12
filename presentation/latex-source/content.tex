@@ -25,7 +25,7 @@
     \item Unified view of the data
     \item Uses a global schema local data source schemas have to be translated to.
     \item Types of integration: Materialized, Virtual, Hybrid
-    \item Wrapper: Takes care of the communication between the data source and the integrated system
+    %\item Wrapper: Takes care of the communication between the data source and the integrated system
 
 \end{itemize}    
 \end{frame}
@@ -174,15 +174,15 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Register}
+\begin{frame}{MeDSpace}
     \begin{itemize}
     \item Responsible for managing registered datasources
     \item Provides user interface for executing search queries
     \item User Interface and REST services powered by Play framework \cite{Play}
     \item Keyword search queries are forwarded to each datasource. The result is collected by the 
-    data-Collector module
+    data-collector module
     \item Query results are (temporarily) stored in separate RDF repositories
-    \item In final implementation: Search results get cached. Useful for quick access and useful for further data integration
+    %\item In final implementation: Search results get cached. Useful for quick access and useful for further data integration
     \end{itemize}
 \end{frame}
 
