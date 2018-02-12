@@ -21,7 +21,7 @@ import java.util.*;
 /**
  * This controller defines actions that allow to access the functionality of the register via HTTP.
  */
-public class RegisterController extends Controller {
+public class MeDSpaceController extends Controller {
 
     /**
      * Used to read http request data.
@@ -33,10 +33,10 @@ public class RegisterController extends Controller {
      */
     private final Register register;
 
-    private static Logger log = LoggerFactory.getLogger(RegisterController.class);
+    private static Logger log = LoggerFactory.getLogger(MeDSpaceController.class);
 
     @Inject
-    public RegisterController(FormFactory formFactory, RegisterLifecycle lifecycle) throws IOException {
+    public MeDSpaceController(FormFactory formFactory, RegisterLifecycle lifecycle) throws IOException {
         this.formFactory = formFactory;
         register = lifecycle.getRegister();
     }
@@ -51,6 +51,14 @@ public class RegisterController extends Controller {
         Collections.sort(list, Comparator.comparing(o -> o.getUrl().toExternalForm()));
 
         return ok(views.html.index.render("Welcome to the register home page!", list, datasourceModifiedMap));
+    }
+
+    /**
+     * Provides the user interface page for MeDSpace.
+     * @return
+     */
+    public Result gui() {
+        return ok(views.html.medspaceGUI.render());
     }
 
     /**
@@ -129,9 +137,9 @@ public class RegisterController extends Controller {
         return ok(
             JavaScriptReverseRouter.create("jsRoutes",
                 routes.javascript.Assets.versioned(),
-                routes.javascript.RegisterController.add(),
-                routes.javascript.RegisterController.noResponse(),
-                routes.javascript.RegisterController.remove(),
+                routes.javascript.MeDSpaceController.add(),
+                routes.javascript.MeDSpaceController.noResponse(),
+                routes.javascript.MeDSpaceController.remove(),
                 routes.javascript.DataCollectorController.addPartialQueryResult(),
                 routes.javascript.DataCollectorController.createQueryResult(),
                 routes.javascript.DataCollectorController.deleteQueryResult()

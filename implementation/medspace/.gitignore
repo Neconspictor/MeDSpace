@@ -1,0 +1,31 @@
+*.aux
+*.bak
+*.bbl
+*.blg
+*.d2rtmp
+*.exe
+*.gz
+*.log
+*.out
+*.sav
+*.toc
+*.db
+*.jar
+
+// gradle
+*.gradle
+
+// idea
+*.iws
+*.ipr
+*.idea
+
+
+
+// register build
+target/*
+logs/*
+.idea/*
+project/*/*
+_work/*
+datasources.json

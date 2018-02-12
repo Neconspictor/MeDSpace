@@ -1,12 +1,12 @@
-name := "Register"
+name := "MeDSpace"
 organization := "de.unipassau.medspace"
 
 // project description
-description := "MeDSpace Register Module"
+description := "Medical Dataspace"
 
-version := "0.0-PreAlpha"
+version := "0.9"
 
-lazy val register = (project in file("."))
+lazy val medspace = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin)
   .aggregate(commons)
   .dependsOn(commons)

@@ -43,8 +43,14 @@ public class QueryExecutorController extends Controller {
         new URL("http://localhost:" + port + "/data-collector/"));
   }
 
-  public Result queryExecutorTest(String query, String rdfFormat) {
-    log.warn("query param: " + query);
+  /**
+   * TODO
+   * @param query
+   * @param rdfFormat
+   * @return
+   */
+  public Result searchByKeyword(String query, String rdfFormat) {
+    log.debug("query param: " + query);
 
     InputStream in;
     try {
