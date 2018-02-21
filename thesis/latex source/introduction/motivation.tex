@@ -1,4 +1,21 @@
 \chapter{Introduction}
 
-\section{Motivation}
-\section{Core of this work}
+In the fields of medicine every year a vast amount of (digital) data is produced, that usually is very complex \cite[p. 1]{ASurveyOnDataMiningApproachesForHealthcare}. Health data is highly heterogeneous (e.g. different file formats, text data, images, videos) and often lots of tools are necessary to work with the data \textbf{\textcolor{red}{TODO: CITE}}. In sum, it can be noted that searching data and working with it isn't that easy and in fact, that produces lot's of costs in the healthcare sector
+\textbf{\textcolor{red}{TODO: CITE}}.  
+
+As a result, the ability to easily access the data would be beneficial for both, research and healthcare institutions \cite[p. 2]{Raghupathi2014}:
+\begin{itemize}
+	\item Lower Costs
+	\item Detecting diseases at early stages
+	\item Simplified collaboration
+	\item Health care fraud detection
+\end{itemize}
+
+The above mentioned benefits were originally stated for Big Data Analysis and Data Mining. For both research fields, as a first step it is important to integrate the data of different datasources into one data integration system. As a first implication it can be noted, that it would be beneficial to create a data integration system for the healthcare sector. This would be an absolute reasonable proposition. But there is another option, the so-called dataspace concept, that doesn't semantically integrate data before it is able to provide its services, and follows a data-coexistence approach. Data co-existence facilitates working with heterogeneous data and many schemas. As heterogeneity is a first-class citizen in a dataspace, it is also useful to integrate multimedia data. That are attractive properties and they form the reason why we will follow the dataspace concept in this work.
+The dataspace concept was introduced in 2005 as a vision \cite{Franklin:2005:DDN:1107499.1107502}. But to the time of this writing, no dataspace implementation was presented. 
+
+In this thesis, we present a distributed environment to state keyword search queries on multiple heterogeneous multimedia medical datasources. The environment could be used as a base for implementing a fully fledged dataspace or for any system, that needs keyword search functionality on multiple (heterogeneous) datasources. Despite the research of dataspaces is very active, they often cover only text data ignoring the properties of multimedia data \cite{6167826}. This is another reason, why we explicitly chose multimedia data.
+
+It should be noted, that although we use medical data for test data of the system to be presented, the system itself isn't restricted to any kind of particular data.
+
+The content of the thesis is structured as follows: At first we'll go into foundation knowledge of data integration and dataspaces. Then we'll cover related work and reference projects. In Chapter 5 the implementation of our system is presented and described in detail. At the end, in chapter 6 we will give some outlook, suggestions, and possible improvements to the system. 
