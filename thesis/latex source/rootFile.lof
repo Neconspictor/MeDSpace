@@ -3,20 +3,20 @@
 \select@language {english}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Architecture of a monolithic database \leavevmode {\color {red}TODO: own figure but inspired by book; cite properly}}}{9}{figure.2.1}
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Architecture of a distributed database}}{10}{figure.2.2}
-\contentsline {figure}{\numberline {2.3}{\ignorespaces Architecture of a multidatabase system}}{11}{figure.2.3}
-\contentsline {figure}{\numberline {2.4}{\ignorespaces Architecture of a federated database management systems (FDBMS)}}{11}{figure.2.4}
-\contentsline {figure}{\numberline {2.5}{\ignorespaces Architecture of a mediator-based information system}}{13}{figure.2.5}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces ANSI/X3/SPARC three-layer architecture \cite [p. 85]{DBLP:books/dp/LeserN2006}}}{9}{figure.2.1}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Architecture of a distributed database \cite [p. 92]{DBLP:books/dp/LeserN2006}}}{9}{figure.2.2}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Architecture of a multidatabase system \cite [p. 94]{DBLP:books/dp/LeserN2006}}}{10}{figure.2.3}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Architecture of a federated database management systems (FDBMS) \cite [p. 95]{DBLP:books/dp/LeserN2006}}}{11}{figure.2.4}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Architecture of a mediator-based information system \cite [p. 97]{DBLP:books/dp/LeserN2006}}}{12}{figure.2.5}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Environment of a Dataspace}}{16}{figure.3.1}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Architecture of a data integration system that handles uncertainty \leavevmode {\color {red}TODO: Discuss image more in depth?}}}{21}{figure.3.2}
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Bootstaping a 'Pay as you go' data integration system}}{23}{figure.3.3}
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Concepts of our example}}{24}{figure.3.4}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Environment of a Dataspace}}{17}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Architecture of a data integration system that handles uncertainty \leavevmode {\color {red}TODO: Discuss image more in depth?}}}{22}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Bootstaping a 'Pay as you go' data integration system}}{24}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Concepts of our example}}{25}{figure.3.4}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{27}{figure.4.1}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces The layered mediator architecture of the DebugIT project}}{28}{figure.4.1}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces The D2r mapping process; Taken from \cite {D2rMap_aDatabaseToRdfMappingLanguage}}}{32}{figure.5.1}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces The D2r mapping process; Taken from \cite {D2rMap_aDatabaseToRdfMappingLanguage}}}{33}{figure.5.1}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \select@language {ngerman}

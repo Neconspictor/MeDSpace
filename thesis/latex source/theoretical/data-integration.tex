@@ -10,7 +10,7 @@ In general, there are two different types of data integration: The \emph{materia
 Of course, an integrated information system can use both principles. Such a system is called \emph{hybrid}\label{hybrid_index}. Both types have in common that a query is processed on a global schema. For the virtual integrated system, the data only exists virtual, thus relations between data sources and the global schema have to be specified and on query time the query has to be split into query schedules. The schedules are responsible to extract the needed information from the different data sources and subsequently merge and transform the data \cite[p. 86-88]{DBLP:books/dp/LeserN2006}.
 
 Today, data is classified into three diverse categories:
-\begin{longtable}{|l|p{0.7\textwidth}|}
+\begin{longtable}{|l|p{0.6\textwidth}|}
 \hline
  \textbf{Structured data}  &  Have a predefined structure through a schema.\\ \hline
  \textbf{Unstructured data}    &  Contains no predefined structure.\\ \hline
@@ -49,7 +49,7 @@ Heterogeneity exists between the data sources as well between the data sources a
 
 Heterogeneity is an issue we have to overcome in the thesis' project. It is necessary to have a thorough understanding of the nature of heterogeneity in order to overcome it the right way. Thus, we will discuss heterogeneity more in depth in the next sections. Heterogeneity can be split into different types: Table \ref{kinds-of-heterogeneity} shows an overview of the existing kinds of heterogeneity \cite[p. 60/61]{DBLP:books/dp/LeserN2006}.
 
-\begin{longtable}{|l|p{0.7\textwidth}|}
+\begin{longtable}{|l|p{0.6\textwidth}|}
 %\centering
 \hline
  \textbf{Technical  heterogeneity}  &  includes all technical problems to realize the access of the data of the data sources.\\ \hline
@@ -127,12 +127,14 @@ A complete resolving of semantic conflicts isn't always possible, or only with b
 Semantic heterogeneity is solved if the integrated system and the data source really mean the same by the used names for schema elements. Equal names have consequently equal meaning \cite[p. 61]{DBLP:books/dp/LeserN2006}.
 
 \section{Distribution}
-\textcolor{red}{From: \cite[chapter 3.1 (p.51-54)]{DBLP:books/dp/LeserN2006}}
 
-An issue of data integration is the distribution of data to be integrated. We speak thereby of data which lies on different systems. It should be noted that it is assumed that the access to the data is ensured, i.d. the systems are connected. A common example of distribution are data sources which can be accessed by a web interface using a browser: The Browser shows only a snippet of the data provided by a web server. The data itself is managed by the web server or one of the headed data sources. 
-Data distribution isn't plainly an annoyance as it is often an intended design decision. Data distribution is handy for load balancing, reliability and protection against data loss. Thereby is the distribution controlled on a central point. The consistency of data is assured using sophisticated mechanisms like the 2-phase.commit protocol. Contrary, in a typical data integration project, distribution of data has historical evolved or is conditioned organizational and is thus uncontrolled redundant.
+An issue of data integration is the distribution of data to be integrated \cite[p. 51]{DBLP:books/dp/LeserN2006}. We speak thereby of data which lies on different systems. It should be noted that it is assumed that the access to the data is ensured, i.d. the systems are connected. 
+%A common example of distribution are data sources which can be accessed by a web interface using a browser: The Browser shows only a snippet of the data provided by a web server. The data itself is managed by the web server or one of the headed data sources. 
 
-Distribution can be structured into logical and physical distribution. Data is \textit{physical} distributed, if it lies onto physical different systems which can also geographically be located on different places. In turn, data is \textit{logical} distributed, if there exists multiple possible locations for storing the same data. 
+Data distribution isn't plainly an annoyance as it is often an intended design decision\cite[p. 54]{DBLP:books/dp/LeserN2006}. The distribution is handy for load balancing, reliability and protection against data loss. Thereby is the distribution controlled on a central point. 
+The consistency of data is assured using sophisticated mechanisms like the 2-phase-commit protocol\cite[p. 54]{DBLP:books/dp/LeserN2006}. Contrary, in a typical data integration project, distribution of data has historical evolved or is conditioned organizational and is thus uncontrolled redundant.
+
+Distribution can be structured into logical and physical distribution \cite[p. 51]{DBLP:books/dp/LeserN2006}. Data is \textit{physical} distributed, if it lies onto physical different systems which can also geographically be located on different places. In turn, data is \textit{logical} distributed, if there exists multiple possible locations for storing the same data. 
 
 \subsection{Physical distribution}
 There have to be overcome several issues to integrate physical distributed data \cite[p. 51]{DBLP:books/dp/LeserN2006}: The first step is to detect the physical storage location of the data. Therefore computer, server and port and network have to be identifiable and locatable. For identification, applications used in the internet use Uniform Resource Locators (URLs) to identify remote computers and services not knowing their exact location.
@@ -146,64 +148,116 @@ The second problem resulting from physical distribution is data stored in differ
 Physical distribution also changes the requirements for the query optimizer \cite[p. 52]{DBLP:books/dp/LeserN2006}: In a central database the optimizer's main function is minimizing  the accesses to the local storage whereas for a distributed database the accesses over the network should be held as small as possible. This is important as remote accesses need considerably more time than accesses to the local storage.  
 
 \subsection{Logical distribution}
-If identical data is located on different places inside the system, we speak of a logical distribution. The key property of logical distribution is therefore the \textit{overlapping of the intension} of different data storage locations. Thereby it is insignificant where these systems physically really are. Two database instances on one computer induce already distribution issues.
+If identical data is located on different places inside the same system, we speak of a logical distribution \cite[p. 52]{DBLP:books/dp/LeserN2006}. The key property of logical distribution is therefore the \textit{overlapping of the intension} of different data storage locations. Thereby it is insignificant where these systems physically really are. Two database instances on one computer induce already distribution issues.
 
-A central point here plays the redundancy in a system. A system is called redundant, if semantic equal data can be located at different places. In order to get a consistent view of a redundant system, redundancy has to be strictly controlled (e.g. using triggers or replication mechanisms). At anytime it has to be assured that the same data is at all different places. But data integration typical has to deal with \textit{uncontrolled redundancy} for each data source is maintained independently. This fact results to several problems:
+A central point here plays the redundancy in a system \cite[p. 53]{DBLP:books/dp/LeserN2006}. A system is called redundant, if semantic equal data can be located at different places. In order to get a consistent view of a redundant system, redundancy has to be strictly controlled (e.g. using triggers or replication mechanisms). At anytime it has to be assured that the same data is at all different places. 
+But data integration typical has to deal with \textit{uncontrolled redundancy} for each data source is maintained independently. This fact results to several problems \cite[p. 53]{DBLP:books/dp/LeserN2006}:
 \begin{itemize}
-\item \textbf{Localization}: For a user it isn't obvious in which sources to find specific data. As a result, the integrated system has to provide meta data allowing \textit{to locate data}. This can e.g. done by a catalog of all schemas and their descriptions or a global schema with mappings to source schemas.
+\item \textbf{Localization}: The integrated system has to provide meta data allowing to \textit{locate} data. This can e.g. done by a catalog of all schemas and their descriptions or a global schema with mappings to source schemas.
 \item \textbf{Duplicates}: If it is possible that data exists on multiple locations, there will exist duplicates, i.d. objects stored on both locations. These objects have to be recognized by the integrated system.
 \item \textbf{Inconsistencies}: Redundant data can contain inconsistencies, which have to be resolved for a homogeneous presentation.
 \end{itemize}
 
 \section{Architectures}
 
-Integrated systems evolved from distributed databases which in turn are based on the classical monolithic database. In the following basic database concepts, on which integrated systems base, are explained. Additionally different types of integrated systems are presented shortly.
+In order to design a system for a data integration process, it is necessary to understand the basic architectures, that have been proposed for data integration, so that a suitable reference architecture can be chosen. For this, we will look at different architectures in the following. 
 
-The \textbf{monolithic database} is subdivided into three layers as seen in \ref{MonolithicDatabaseArchitecture}: The \textit{internal (or physical) view} is responsible for the storage of the data on the respective database. One layer upwards comes the \textit{conceptual (or logical) view} modeling the data on a conceptual way. The conceptual schema defines which data model is used, which data is stored in the DBMS and the relations among the data.
-Splitting the data into the internal and conceptual view, makes the data independent from the physical storage medium. The top layer is called \textit{external (or export) view} and is being concerned with modeling of data as well as the conceptual view. However it isn't modeled the whole application domain. The external view only specifies which part of the conceptual schema is provided to the respective application. An export schema is initially a subset of the conceptual schema, but can be transformed and aggregated. In the external view are defined access restrictions, too. Splitting up conceptual and external view ensures \textit{logical data independence} (\cite[p. 84/85]{DBLP:books/dp/LeserN2006}, own translation).
+%In the following basic database concepts, on which integrated systems base, are explained. Additionally different types of integrated systems are presented shortly.
+
+Integrated systems evolved from distributed databases which in turn are based on the classical \emph{monolithic database}. 
+This system is subdivided into three layers as seen in \ref{MonolithicDatabaseArchitecture} and is based on the ANSI/X3/SPARC three-layer architecture \cite{TSICHRITZIS1978173}, \cite[p. 84/85]{DBLP:books/dp/LeserN2006}.
+
+The \textit{internal (or physical) view} is responsible for the storage of the data on the respective database. 
+One layer upwards comes the \textit{conceptual (or logical) view} modeling the data on a conceptual way. The conceptual schema defines which data model is used, which data is stored in the DBMS and the relations among the data.
+Splitting the data into the internal and conceptual view, makes the data independent from the physical storage medium. The top layer is called \textit{external (or export) view} and is being concerned with modeling of data as well as the conceptual view. However it isn't modeled the whole application domain. The external view only specifies which part of the conceptual schema is provided to the respective application. An export schema is initially a subset of the conceptual schema, but can be transformed and aggregated. In the external view are defined access restrictions, too. Splitting up conceptual and external view ensures \textit{logical data independence}.
+
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.5]{figures/monolithicalDatabaseArchitecture.pdf}
 	\end{center}
-	\caption{Architecture of a monolithic database \textcolor{red}{TODO: own figure but inspired by book; cite properly}}
+	\caption{ANSI/X3/SPARC three-layer architecture \cite[p. 85]{DBLP:books/dp/LeserN2006}}
 	\label{MonolithicDatabaseArchitecture}
+\end{figure} 
+
+
+\subsection{Distributed Systems}
+
+From the monolothic database evolved the distributed database architecture as shown in \ref{DistributedDatabaseArchitecture}.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.5]{figures/distributedDatabaseArchitecture.pdf}
+	\end{center}
+	\caption{Architecture of a distributed database \cite[p. 92]{DBLP:books/dp/LeserN2006}}
+	\label{DistributedDatabaseArchitecture}
 \end{figure}
-Next comes the \textbf{distributed database} architectures as shown in \ref{DistributedDatabaseArchitecture}. The idea is to distribute the data onto several systems (physical and logical), but a user should be able to query all data at once. In order to achieve this, the architecture is subdivided into \textit{four layers}. Each data source owns a local internal and local conceptual schema. The latter only mirrors the data managed by the local database. Dependent on the used distribution strategy, the local conceptual schema is equal to the global conceptual schema  or an extract from it. Common distribution strategies are vertical and horizontal partitioning: 
+
+
+The idea is to distribute the data onto several systems (physical and logical), but it should be possible to query all data at once. In order to achieve this, the architecture is subdivided into \textit{four layers}. Each data source owns a local internal and local conceptual schema. The latter only mirrors the data managed by the local database. Dependent on the used distribution strategy, the local conceptual schema is equal to the global conceptual schema  or an extract from it. Common distribution strategies are vertical and horizontal partitioning \cite[p. 92]{DBLP:books/dp/LeserN2006}: 
 \begin{itemize}
 \item horizontal partitioning: Data of big tables is distributed per tuples on different computers. A union operation consolidates these parts again.
 \item vertical partitioning: Data of big tables is distributed per attributes on different computers. Each partition contains additionally a shared key attribute. This makes it possible to consolidate the partitions with a join operation.
 \end{itemize}
 On top of the local conceptual schemes stands a global conceptual schema. This schema models the whole application domain and is the central point of reference for the external schemes playing the same role as in the three-layers-architecture.
-Distributed databases are close coupled. They are strictly checked while conception and operation and thus the main problems of heterogeneity (like structural and semantic heterogeneity) don't occur (\cite[p. 91-93]{DBLP:books/dp/LeserN2006}, own translation).
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[scale=0.5]{figures/distributedDatabaseArchitecture.pdf}
-	\end{center}
-	\caption{Architecture of a distributed database}
-	\label{DistributedDatabaseArchitecture}
-\end{figure}
-For allowing to connect heterogeneous databases, \textbf{Multidatabase Systems} (MBS) have been evolved (shown in \ref{MBSDatabaseArchitecture}). MBS are collections of autonomous databases being loosely linked. Each database grants external applications access to its data. The access is done using a database language which allows to query several databases in one query. Such a language is called multidatabase language. To obtain the autonomy  of the involved databases, a MBS has no global conceptual schema. Instead, each local database keeps an export schema defining which part of the local conceptual schema is provided to external applications.  
-It is assumed that no data model heterogeneity is contained in a MBS, i.d. all databases use the same data model or either the multidatabase language or the local data source provide a translation to the global data model. Now, each application can create its own external schema, which integrates one or more data sources. So its the task of the application doing the integration task. A MBS provides only a suitable language for querying (\cite[p. 93/94]{DBLP:books/dp/LeserN2006}, own translation).	
+
+Distributed databases are close coupled. They are strictly checked while conception and operation and thus the main problems of heterogeneity (like structural and semantic heterogeneity) don't occur \cite[p. 93]{DBLP:books/dp/LeserN2006}. Thus, this architecture is good for environments there the data sources to be distributed aren't heterogeneous that much. But for highly heterogeneous systems (like medical data sources), this architecture is unsuitable. 
+
+\subsection{Multidatabase Systems}
+
+For allowing to connect heterogeneous databases, the Multidatabase System (MBS) architecture has been evolved (shown in \ref{MBSDatabaseArchitecture}). 
+
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.5]{figures/MultidatabaseArchitecture.pdf}
 	\end{center}
-	\caption{Architecture of a  multidatabase system}
+	\caption{Architecture of a  multidatabase system \cite[p. 94]{DBLP:books/dp/LeserN2006}}
 	\label{MBSDatabaseArchitecture}
 \end{figure}
-In contrast to MBS, \textbf{federated database management systems} (FDBMS) have a global conceptual schema as seen in \ref{FDBMSArchitecture}. This schema is the central and stable point of reference for all external schemes and there applications. But in contrast to distributed databases the global schema results after the local schemes with the goal to provide an integrated view of existing and heterogeneous data sets. Data sources keep a high degree of autonomy.
-The used data model in the global scheme is known as canonical data model. Every local export schema has to be mapped to this global schema. Thus, in order to support heterogeneity in the data model, another layer is needed between local conceptual schema and the local export schema. This new layer is called \textit{local component schema} and translates the local conceptual schema into the canonical data model. The translation is done by a software component called \textit{Wrapper}. All in all, a FDBMS consists of five different layers.
-The global schema can be created either by schema integration or schema mapping. Both variants are introduced later \textcolor{red}{(TODO)}
-(\cite[p. 94/95]{DBLP:books/dp/LeserN2006}, own translation).\\
+
+MBSs are collections of autonomous databases being loosely linked \cite[p. 93]{DBLP:books/dp/LeserN2006}. Each database grants external applications access to its data. The access is done using a database language which allows to query several databases in one query. Such a language is called multidatabase language. To obtain the autonomy  of the involved databases, a MBS has no global conceptual schema. Instead, each local database keeps an export schema defining which part of the local conceptual schema is provided to external applications.  
+It is assumed that no data model heterogeneity is contained in a MBS, i.d. all databases use the same data model or either the multidatabase language or the local data source provide a translation to the global data model. Now, each application can create its own external schema, which integrates one or more data sources. So its the task of the application doing the integration task. A MBS provides only a suitable language for querying \cite[p. 94]{DBLP:books/dp/LeserN2006}.	
+It can be noted, that a MBS is only suitable for data sources, that use the same data model. If this is not the case, another system has to be used. What also should be considered: The query language has to support all languages of the data sources. In order to add a datasource with a not supported query language the MBS query language has to be altered. 
+
+\subsection{Federated Systems}
+
+In contrast to MBSs, federated database management systems (FDBMS) have a global conceptual schema as seen in \ref{FDBMSArchitecture}. The schema is called the \emph{federated schema}, too.
+
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.5]{figures/federatedDatabaseArchitecture.pdf}
 	\end{center}
-	\caption{Architecture of a  federated database management systems (FDBMS)}
+	\caption{Architecture of a  federated database management systems (FDBMS) \cite[p. 95]{DBLP:books/dp/LeserN2006}}
 	\label{FDBMSArchitecture}
 \end{figure}
 
-\textbf{Mediator-based information systems} (as seen in \ref{MediatorBasedArchitecture}) are a generalization of the previous architectures, as they know only two separate components, namely Wrappers and Mediators: Wrappers are software components responsible for the access to a solely data source. A Wrapper has to break down technical, data model, schematic and interface heterogeneity. It realizes the communication between the mediators and data sources. To its task count:
+The federated schema is the central point of reference for all external schemes and there applications \cite[p. 94]{DBLP:books/dp/LeserN2006}. But in contrast to distributed databases the global schema results after the local schemes with the goal to provide an integrated view of existing and heterogeneous data sets. Data sources keep a high degree of autonomy. The used data model in the global scheme is known as the \emph{canonical} data model. 
+
+All in all, a FDBMS consists of five different layers \cite[p. 95]{DBLP:books/dp/LeserN2006}:
+
+\begin{itemize}
+\item \textbf{Local conceptual schema}: Defines the data of a data source. Is comparable with the conceptual schema of the three-layer architecture.
+\item \textbf{Local component schema}: Defines the data of the local conceptual schema in the canonical data model. 
+\item \textbf{Local export schema}: Does the same as the external view in the three-layer architecture: It defines which elements of the local component schema are visible/query-able from the outside.
+\item \textbf{Global conceptual/federated schema}: Defines an integrated view over all data sources and is defined in the canonical data model. The federated schema consists of multiple export schemas \cite[p. 200]{Sheth:1990:FDS:96602.96604}.
+\item \textbf{External schema}: Defines a subset of the global schema, that should be visible to an application.
+\end{itemize}
+
+It should be noted, that a federated system can have several federated schemas, that integrate differently the export schemas. This allows data with different semantic meaning, within the federated system when combining query results of different federated schemas. But query results of a specific federated schema are always semantically integrated, so no data co-existence exists between them. As we see later, this is a crucial difference in respect to dataspaces.
+
+\subsection{Mediator-based Systems}
+
+Mediator-based information systems are a generalization of the previous architectures (see figure \ref{MediatorBasedArchitecture}) \cite[p. 97]{DBLP:books/dp/LeserN2006}: They know only two separate components, namely Wrappers and Mediators. 
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.5]{figures/MediatorBasedArchitecture.pdf}
+	\end{center}
+	\caption{Architecture of a  mediator-based information system \cite[p. 97]{DBLP:books/dp/LeserN2006}}
+	\label{MediatorBasedArchitecture}
+\end{figure}
+
+Wrappers are software components responsible for the access to a solely data source.
+A Wrapper has to break down technical, data model, schematic and interface (technical) heterogeneity. It realizes the communication between the mediators and data sources. To its task count:
 \begin{itemize}
 \item overcoming interface heterogeneity (e.g. SQL to html formulars)
 \item overcoming language heterogeneity. This includes the handling of restricted data sources and different query languages.
@@ -212,36 +266,36 @@ The global schema can be created either by schema integration or schema mapping.
 \item Supporting the global query optimizing by providing information about the query capabilities of the data source and expected costs.
 \end{itemize}
 
-As the system to be created within this thesis uses wrappers, we go more in depth and look at the design, architecture and implementation goals of an architecture using wrappers. The following statements are results of from \cite{Roth:1997:DSW:645923.670992}:
-
+The thesis' system project uses wrappers. Thus we go more in depth and look at the design, architecture and implementation goals of an architecture using wrappers. The following statements are results of from \cite{Roth:1997:DSW:645923.670992}:
 
 \textbf{Low start-up costs:} Writing a wrapper should be possible to do very quickly, very simple wrappers even in matters of hours. The authoring of a wrapper should also be as simple as possible, so that the wrapper can be written with little or no knowledge about the internal structure of the integrated system.
 
 \textbf{Easy evolving:} Evolving should be done very easy due to two reasons: A wrapper should be implemented very fast to show feasibility. More sophisticated features a data source can provide, should be added later. Additionally can the data source change  itself over time and the wrapper should be easily adaptable. 
 
 
-On the other hand are mediators software components, which use knowledge of certain data to \textit{create and provide} information for other applications. In a mediator-based architecture, mediators access one or more wrappers and deliver a specific value, normally structural and semantic data integration.
+The second component of a mediator-based ssystem is the mediator software component, which uses knowledge of certain data to \textit{create and provide} information for other applications. Mediators communicate with one or more wrappers and deliver a specific value, normally structural and semantic data integration.
 
 The following list shows an extract of the services, a mediator might provide (from, \cite[p. 5-6]{Wiederhold1996TheCB}): 
 \begin{itemize}
-\item Selection of likely relevant material
+\item Selection of likely relevant data, e.g. used for scoring query results
 \item Invocation of wrappers to deal with legacy sources
 \item Resolution of domain term	terminology and ontology differences
-\item Sending the information and meta-data to the customer application
+\item Sending data and meta-data to the customer application
 \item Imposition of security filters to guard private data
-\item Omission of replicated information
-\item Assessment of quality of material from diverse sources
-\item Integration of material from diverse source domains based on join keys
+\item Handling data duplication, e.g. by deleting it
+%\item Assessment of quality of the data from the data sources
+\item Integration of data from several data sources
 \end{itemize}
 
-In this architecture, data sources usually don't know of the existence of the integrated system, and so autonomy is preserved for all data sources (\cite[p. 97]{DBLP:books/dp/LeserN2006}, own translation).
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[scale=0.5]{figures/MediatorBasedArchitecture.pdf}
-	\end{center}
-	\caption{Architecture of a  mediator-based information system}
-	\label{MediatorBasedArchitecture}
-\end{figure}
-In \textbf{peer data management systems} (PDMS) there is no separation between data source and integration system. Query can be posed from every system to every other system within the integrated system. The other system than tries to calculate responses with own or other sourced data. So each participant of the integrated system, a so-called peer, is a mediator and a data source at the same time.  
+In a mediator-based architecture data sources don't know of the existence of the integrated system: Only the wrapper directly speaks with the data source. And so autonomy is preserved for all data sources \cite[p. 97]{DBLP:books/dp/LeserN2006}.
 
-\textbf{Ontology-based integration} is an approach of semantic integration using ontologies. This approach assumes that the discourse range is able to be specified so exact, that semantic heterogeneity can be solved in a formal model by logical inference. Hereby, the formal model is called ontology. Ontologies define the vocabulary describing all concepts of the field of application, and the relations between these concepts. At the same time, an ontology often serves as global schema of the integration layer. For specifying ontologies, special classes of logics are used, the so-called description logics. With description logics, classes of a domain and relations among them can be specified much more precise than with the relational data model. (\cite[p. 267]{DBLP:books/dp/LeserN2006}, own translation).\\
+
+%In \textbf{peer data management systems} (PDMS) there is no separation between data source and integration system. Query can be posed from every system to every other system within the integrated system. The other system than tries to calculate responses with own or other sourced data. So each participant of the integrated system, a so-called peer, is a mediator and a data source at the same time.  
+
+\section{Ontologies}
+
+In computer science an ontology defines the concepts, relationships, and other distinctions being relevant for modeling a domain \cite{9780387355443}. It operates on the semantic level and thus is independent from lower data models (logical and physical data models). Since ontologies are independent from lower level data models, they are suitable for integrating heterogeneous data sources. Data integration using ontologies is also called \emph{ontology-based} integration.
+
+To specify an ontology, description logics are used \cite[p. 267]{DBLP:books/dp/LeserN2006}. With description logics it is possible to define classes of a domain and the relations between these classes. An advantage is, that by using description logics, a domain can be specified much more precise than using the relational data model. 
+
+Ontologies can generate new knowledge from existing data by using \emph{logical inference}: The ontology defines basic rules in a formal model and by applying these rules on a given data set, the ontology might infer knowledge from it, that wasn't explicitly stated before.
