@@ -5,7 +5,7 @@ We will cover the following works:
 
 \begin{itemize}
 \item DebugIT which has a mediator-based architecture and uses ontology-based data integration.
-\item 'Dataspace Integration in the medical research' the doctor thesis of Sebastian H.R. Wurst
+\item 'Dataspace Integration in medical research' the doctor thesis of Sebastian H.R. Wurst
 \end{itemize}
 
 \section{DebugIT}
@@ -21,15 +21,18 @@ In that paper it is stated, that the system uses an ontology-based approach for 
 	\label{DebugITArchitectureFigure}
 \end{figure}
 
-Altogether there are 3 data representation layers marked with the Roman Numerals I-III. The query flow between the data layers is specified with 1-3 and the corresponding mappings are given with the Greek letters \textalpha , \textbeta,  and \textgamma .
+Altogether there are three data representation layers marked with the Roman Numerals I-III. The query flow between the data layers is specified with 1-3 and the corresponding mappings are given with the Greek letters \textalpha , \textbeta,  and \textgamma .
 
 On the first integration layer (\textbf{I}) relational data are lexical normalized by the use of mappings of medical terminology and morphosemantic mapping employed by the Averbis Morphosaurus software\cite{DaumkeDiss}. Ambiguities can be resolved with ontological expressions (formulated in OWL) on the integration layers II and III. 
 
-The layer \textbf{II} works with RDF data, wherefore relational data from the layer I is transformed to RDF through D2R mapping calls \footnote{http://d2rq.org/} on the\emph{ first mediation layer} (1). On the second integration layer information about the data and their corresponding vocabulary is stored in Data Definition Ontologies (DDOs) \cite{DebugITDDO}. A DDO bridges a local data model and a semi-formal data model on the local mediation layer for integrating syntactic data and provides an Extract, Transform, Load (ETL)-process \footnote{DBLP:books/dp/LeserN2006} for the next integration layer. So materialized data integration is partially done on this layer.
-For each Clinical Data Repository (CDR) such a DDO is locally created. A CDR contains clinical data of a specific hospital, institute or is a compound of CDRs.
+The layer \textbf{II} works with RDF data, wherefore relational data from the layer I is transformed to RDF through D2R mapping calls \footnote{\url{http://d2rq.org/}} on the\emph{ first mediation layer} (1). On the second integration layer information about the data and their corresponding vocabulary is stored in Data Definition Ontologies (DDOs) \cite{DebugITDDO}. A DDO bridges a local data model and a semi-formal data model on the local mediation layer for integrating syntactic data and provides an Extract, Transform, Load (ETL)-process \cite[p. 382]{DBLP:books/dp/LeserN2006} for the next integration layer. So materialized data integration is partially done on this layer.
+For each Clinical Data Repository (CDR) such a DDO is locally created. 
+
+A CDR integreates a number of systems to provide up-to-date patient informations to clinicians in real-time \cite[p. 82]{carter2008electronic}. CDRs deliver data for only one patient at a time.
+
 Layer II contains also a SPARQL endpoint, for allowing Layer III to query its data. These queries are specified through a Data Set SPARQL Query (DSSQ). 
 
-On the \emph{second mediation layer} (2), in the figure called local mediation layer, the local DDO data is bind to the global DebugIT Core Ontology (DCO) \cite{Schober_developingdco:}, which s the ontology of layer III. The corresponding mapping is done through DDO2DCO using the N3 language \footnote{http://www.w3.org/TeamSubmission/n3/} and Simple Knowledge Organization Structure (SKOS) mappings \footnote{http://www.w3.org/TR/2009/REC-skos-reference-20090818/}. The schema mapping is done by the Euler Eye Reasoner \footnote{http://eulersharp.sourceforge.net/}, which also creates implicit knowledge using logical inference.
+On the \emph{second mediation layer} (2), in the figure called local mediation layer, the local DDO data is bind to the global DebugIT Core Ontology (DCO) \cite{Schober_developingdco:}, which is the ontology of layer III. The corresponding mapping is done through DDO2DCO using the N3 language \footnote{\url{http://www.w3.org/TeamSubmission/n3/}} and Simple Knowledge Organization Structure (SKOS) mappings \footnote{\url{http://www.w3.org/TR/2009/REC-skos-reference-20090818/}}. The schema mapping is done by the Euler Eye Reasoner \footnote{\url{http://eulersharp.sourceforge.net/}}, which also creates implicit knowledge using logical inference.
 
 Data layer \textbf{III} represents a virtual Clinical Data Repository (vCDR), which joins the local Clinical Information Systems (CISs). Important to know is, that in the vCDR are now fully (semantically) integrated and as the name implies, a vCDR \emph{virtually} integrates the data. So data is not duplicated anymore. Through the virtualisation, data of all CIS can be globally queried. Also privacy issues can properly be handled, as the data is not stored outside from the CISs.
 Also on layer III clinical analyses can be performed over Clinical Analysis SPARQL Queries (CASQ (3)). 
@@ -39,14 +42,45 @@ On the last layer (\textbf{IV}), a user or a monitoring tool can query the integ
 Summarizing it, the mapping is performed iteratively in a stack-like manner:
 The first mapping \textalpha (D2R mappings) transforms the relational database layer (I) to the RDF representation layer (II). The next mapping \textbeta (N3 and SKOS) transforms the RDF layer II to the Domain Ontology (OO) layer III, where the data is globally queryable as CASQ over mapping \textgamma (DCO and OO).  
 
-\section{Dataspace Integration in the medical research}
+\section{Dataspace Integration in medical research}
 
-'Dataspace Integration in the medical research' (original title 'Dataspace Integration in der medizinischen Forschung') is a german doctor thesis, was written by Sebastian H.R. Wurst and submitted in 2010 \cite{WurstDiss}.
+'Dataspace Integration in medical research' (original title 'Dataspace Integration in der medizinischen Forschung') is a german doctor thesis, was written by Sebastian H.R. Wurst, and submitted in 2010 \cite{WurstDiss}. In his thesis, Wurst evaluated the dataspace concept as a data integration for medical research and designed a software architecture that could be used for dataspaces. He also implemented a framework for agile software development. 
+In his conclusion he states that the dataspace concept indeed is suitable for the health-care sector, since it is a heterogeneous environment that is constantly changing.
+
+In this section we want to analyze how Wurst defined the software architecture for a DDSP. Figure \ref{SoftwareArchitectureDSSPWurst} shows an overview of the software architecture:
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.9\textwidth]{figures/DataspaceIntegrationInDerMedForschungFigure31.PNG}
 	\end{center}
-	\caption{Overview of the software architecture of the system used in the doctor thesis of Sebastian H.R. Wurst \cite[p. 117, Figure 31]{WurstDiss}}
-	\label{DebugITArchitectureFigure}
+	\caption{Overview of the software architecture of a DSSP used in the doctor thesis of Sebastian H.R. Wurst \cite[p. 117, Figure 31, english translation]{WurstDiss}}.
+	\label{SoftwareArchitectureDSSPWurst}
 \end{figure}
+
+The architecture is subdivided into a service, process and application layer.
+
+\begin{itemize}
+\item Service layer: Provides services to the underlying datasources. E.g. the authentification service provides functionality for authentication, authorization and session management. The credential service manages known data sources with autonomous user administration and stores data for user account specific authentification.
+The meta-data service allows access to schema and meta-data of the data sources.
+The data mapping service provides functionality for connecting instances. 
+With instance data is meant concrete values of data from a specific data source. The service e.g. allows to map data from distributed data sources and assign them a unique instance.
+The schema mapping service provides functionality for doing schema mapping and allows to store schema mapping rules.
+The instance mapping service provides converter for semantic heterogeneous data and is used for resolving semantic heterogeneity on instance level.
+\item Process layer: Coordinates interactions between the services and thus implements the application logic. This layer provides interfaces so that the application layer can use it.
+\item Application layer: Provides applications that operate on top of the process layer.
+\end{itemize}
+
+Applications can be subdivided into three categories:
+\begin{itemize}
+\item Data management applications: Use the DSSP for data integration
+\item Integration tools: Used for doing tighter and incremental data integration.
+\item Portal applications: Allow access to services providing additional benefits for a specific integration solution. They doesn't manage own data.
+An example for this kind of applications would be statistics that should be applied on top of integrated data.
+\end{itemize}
+
+The DSSP has a canonical data model. RDF is used as the canonical data model. 
+The communication between the services and the data sources is done through so-called Data Access Services, that essentially are wrappers for a specific data source. Auxiliary services for accessing the data sources are used, too, but play a subordinary role. 
+
+Interesting to note is the fact, that Wurst's DSSP architecture resembles the mediator-based data integration solution used by DebugIT: Both architectures uses wrappers for accessing the data sources that are rather lightweight. The wrappers need not to know any integration system and thus autonomy of the data sources is preserved. The mediator-based architecture uses mediators to implement services on top of the data sources and applications can use the mediators to use implement a data integration solution. This is also done similar in Wurst's architecture: The process layer (and thus indirectly the service layer) that is used by the application layer doing concrete data integration.
+Of course the architectures have a fundamentally difference: As all data integration solution the applications of a mediator-based architecture operate on semantically integrated data whereas a DSSP allows data co-existence and incremental data integration.
+But it is remarkable how similar the structures of the two architectures is. 
