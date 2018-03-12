@@ -53,19 +53,13 @@ In this section we want to analyze how Wurst defined the software architecture f
 	\begin{center}
 		\includegraphics[width=0.9\textwidth]{figures/DataspaceIntegrationInDerMedForschungFigure31.PNG}
 	\end{center}
-	\caption{Overview of the software architecture of a DSSP used in the doctor thesis of Sebastian H.R. Wurst \cite[p. 117, Figure 31, english translation]{WurstDiss}}.
+	\caption{Overview of the software architecture of a DSSP used in the doctor thesis of Sebastian H.R. Wurst \cite[p. 117, Figure 31, english translation]{WurstDiss}}
 	\label{SoftwareArchitectureDSSPWurst}
 \end{figure}
 
-The architecture is subdivided into a service, process and application layer.
-
+The architecture is subdivided into a service, process and application layer:
 \begin{itemize}
-\item Service layer: Provides services to the underlying datasources. E.g. the authentification service provides functionality for authentication, authorization and session management. The credential service manages known data sources with autonomous user administration and stores data for user account specific authentification.
-The meta-data service allows access to schema and meta-data of the data sources.
-The data mapping service provides functionality for connecting instances. 
-With instance data is meant concrete values of data from a specific data source. The service e.g. allows to map data from distributed data sources and assign them a unique instance.
-The schema mapping service provides functionality for doing schema mapping and allows to store schema mapping rules.
-The instance mapping service provides converter for semantic heterogeneous data and is used for resolving semantic heterogeneity on instance level.
+\item Service layer: Provides services to the underlying datasources. E.g. the authentication service provides functionality for authentication, authorization and session management. The credential service manages known data sources with autonomous user administration and stores data for user account specific authentication. And the meta-data service allows access to schema and meta-data of the data sources.
 \item Process layer: Coordinates interactions between the services and thus implements the application logic. This layer provides interfaces so that the application layer can use it.
 \item Application layer: Provides applications that operate on top of the process layer.
 \end{itemize}
@@ -81,6 +75,7 @@ An example for this kind of applications would be statistics that should be appl
 The DSSP has a canonical data model. RDF is used as the canonical data model. 
 The communication between the services and the data sources is done through so-called Data Access Services, that essentially are wrappers for a specific data source. Auxiliary services for accessing the data sources are used, too, but play a subordinary role. 
 
-Interesting to note is the fact, that Wurst's DSSP architecture resembles the mediator-based data integration solution used by DebugIT: Both architectures uses wrappers for accessing the data sources that are rather lightweight. The wrappers need not to know any integration system and thus autonomy of the data sources is preserved. The mediator-based architecture uses mediators to implement services on top of the data sources and applications can use the mediators to use implement a data integration solution. This is also done similar in Wurst's architecture: The process layer (and thus indirectly the service layer) that is used by the application layer doing concrete data integration.
+Interesting to note is the fact, that Wurst's DSSP architecture resembles the mediator-based data integration solution used by DebugIT: Both architectures uses wrappers for accessing the data sources that are rather lightweight. The wrappers need not to know any integration system and thus autonomy of the data sources is preserved. The mediator-based architecture uses mediators to implement services on top of the data sources and applications can use the mediators to use implement a data integration solution. This is also done similar in Wurst's architecture: The process layer (and thus indirectly the service layer) that is used by the application layer doing concrete data integration. And both systems use RDF as a canonical data model.
+
 Of course the architectures have a fundamentally difference: As all data integration solution the applications of a mediator-based architecture operate on semantically integrated data whereas a DSSP allows data co-existence and incremental data integration.
-But it is remarkable how similar the structures of the two architectures is. 
+But it is remarkable how similar the structures of the two architectures is. We reuse these fundamental similarities for our own system as it seems to be proven.
