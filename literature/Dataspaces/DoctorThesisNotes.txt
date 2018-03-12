@@ -1,0 +1,11 @@
+S. 44, Webservices
+
+S. 45, Clinical Data Repository
+
+S.72 , beispiele von Dataspace ansätzen
+
+S. 98, Service orientierte Architektur
+
+S. 119, Aufbau der Architektur
+
+S. 165, Auflösung von Heterogenitäten
