@@ -39,7 +39,7 @@ public class RDF4J_DataCollector extends DataCollector {
   private final static String NAMED_GRAPH_BASE_IRI = "http://medspace.com/data_collector_ids/#";
 
   @Inject
-  public RDF4J_DataCollector(LocalTestRepositoryManager manager) {
+  public RDF4J_DataCollector(LocalRepositoryManager manager) {
     this.manager = new RepoManagerWrapper(manager);
   }
 
@@ -97,7 +97,7 @@ public class RDF4J_DataCollector extends DataCollector {
   }
 
   @Override
-  public Stream<Triple> queryResult(String rdfFormat, BigInteger resultID) throws IOException {
+  public Stream<Triple> queryResult(BigInteger resultID, String rdfFormat) throws IOException {
     try {
       RepositoryConnection conn = manager.getConnection(resultID.toString());
       RepositoryResult<Statement> result = conn.getStatements(null, null, null);

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.unipassau.medspace.common.register.Datasource;
 
+import de.unipassau.medspace.common.register.DatasourceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.inject.ApplicationLifecycle;
@@ -39,7 +40,7 @@ public class RegisterLifecycle {
     Json.mapper().registerModule(simpleModule);
 
 
-    Map<Datasource, Timestamp> datasources = null;
+    Map<Datasource, DatasourceState> datasources = null;
     try {
       datasources = loadFromDisk();
     } catch (IOException e) {
@@ -64,9 +65,9 @@ public class RegisterLifecycle {
     return DATASOURCES_STORE_LOCAL_PATH;
   }
 
-  private Map<Datasource, Timestamp> loadFromDisk() throws IOException {
+  private Map<Datasource, DatasourceState> loadFromDisk() throws IOException {
     File datasourceFile = new File(DATASOURCES_STORE_LOCAL_PATH);
-    Map<Datasource, Timestamp> datasources = new HashMap<>();
+    Map<Datasource, DatasourceState> datasources = new HashMap<>();
 
     if (datasourceFile.exists()) {
       ObjectMapper mapper = new ObjectMapper();
@@ -78,7 +79,7 @@ public class RegisterLifecycle {
 
       datasources = Json.mapper()
           .reader()
-          .forType(new TypeReference<Map<Datasource,Timestamp>>() {})
+          .forType(new TypeReference<Map<Datasource,DatasourceState>>() {})
           .readValue(root);
     }
 
@@ -87,7 +88,7 @@ public class RegisterLifecycle {
 
   private void saveToDisk(Register register) throws IOException {
     log.info("Save registered datasources to disk...");
-    Map<Datasource, Timestamp> datasources = register.getDatasources();
+    Map<Datasource, DatasourceState> datasources = register.getDatasources();
 
     try (FileOutputStream out = new FileOutputStream(DATASOURCES_STORE_LOCAL_PATH)) {
       JsonNode node = Json.toJson(datasources);

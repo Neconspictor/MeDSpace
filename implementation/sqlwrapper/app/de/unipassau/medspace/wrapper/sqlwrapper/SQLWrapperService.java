@@ -148,13 +148,14 @@ public class SQLWrapperService {
   }
 
   /**
-   * Performs a keyword search on the underlying datasource or on the index if one is used.
-   * @param keywords The keywords to search for.
-   * @return A stream of rdf triples representing the success of the keyword search.
+   * Performs a keyword keywordSearch on the underlying datasource or on the index if one is used.
+   * @param keywords The keywords to keywordSearch for.
+   * @param operator TODO
+   * @return A stream of rdf triples representing the success of the keyword keywordSearch.
    * @throws IOException If an IO-Error occurs.
    * @throws NoValidArgumentException If 'keywords' is null.
    */
-  public Stream<Triple> search(String keywords) throws IOException, NoValidArgumentException {
+  public Stream<Triple> search(String keywords, KeywordSearcher.Operator operator) throws IOException, NoValidArgumentException {
 
     if (keywords == null) {
       throw new NoValidArgumentException("keywords mustn't be null");
@@ -167,7 +168,7 @@ public class SQLWrapperService {
       keywordList.add(tokenizer.nextToken());
     }
 
-    KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher();
+    KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher(operator);
     return searcher.searchForKeywords(keywordList);
   }
 

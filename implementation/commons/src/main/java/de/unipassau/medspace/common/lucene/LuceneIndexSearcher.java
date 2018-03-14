@@ -2,9 +2,7 @@ package de.unipassau.medspace.common.lucene;
 
 import de.unipassau.medspace.common.indexing.Index;
 import de.unipassau.medspace.common.indexing.IndexSearcher;
-import de.unipassau.medspace.common.lucene.AnalyzerBuilder;
-import de.unipassau.medspace.common.lucene.IndexReaderFactory;
-import de.unipassau.medspace.common.lucene.LuceneKeywordSearcher;
+import de.unipassau.medspace.common.lucene.keyword_searcher.LuceneKeywordSearcher;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import org.apache.lucene.document.Document;
 
@@ -47,7 +45,10 @@ public class LuceneIndexSearcher extends IndexSearcher<Document> {
   }
 
   @Override
-  public KeywordSearcher<Document> createKeywordSearcher() throws IOException {
-    return new LuceneKeywordSearcher(fields, readerFactory, builder.build());
+  public KeywordSearcher<Document> createKeywordSearcher(KeywordSearcher.Operator operator) throws IOException {
+    if (operator == KeywordSearcher.Operator.AND)
+      return new LuceneKeywordSearcher(fields, readerFactory, builder.build(), KeywordSearcher.Operator.AND);
+    else
+    return new LuceneKeywordSearcher(fields, readerFactory, builder.build(), KeywordSearcher.Operator.OR);
   }
 }

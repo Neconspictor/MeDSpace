@@ -36,8 +36,8 @@ public abstract class TripleIndexManager<DocType, ElemType> extends IndexManager
    * @return A keyword searcher that returns triples.
    * @throws IOException If an IO-Error occurs.
    */
-  public KeywordSearcher<Triple> createTripleKeywordSearcher() throws IOException {
-    KeywordSearcher<DocType> docKeyWordSearcher = searcher.createKeywordSearcher();
+  public KeywordSearcher<Triple> createTripleKeywordSearcher(KeywordSearcher.Operator operator) throws IOException {
+    KeywordSearcher<DocType> docKeyWordSearcher = searcher.createKeywordSearcher(operator);
     return tripleSearchConverter.convert(docKeyWordSearcher);
   }
 }

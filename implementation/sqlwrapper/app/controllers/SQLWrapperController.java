@@ -3,12 +3,14 @@ package controllers;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.rdf.TripleWriterFactory;
+import de.unipassau.medspace.common.util.SqlUtil;
 import de.unipassau.medspace.wrapper.sqlwrapper.ConfigProvider;
-import de.unipassau.medspace.wrapper.sqlwrapper.LogWrapperInputStream;
+import de.unipassau.medspace.common.stream.LogWrapperInputStream;
 import de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.TripleInputStream;
@@ -120,25 +122,29 @@ public class SQLWrapperController extends Controller {
   }
 
   /**
-   * Does invoke a keyword search on the SQL wrapper and provides the result as serialized rdf triples.
-   * @param keywords The keywords to search for on the SQl wrapper.
+   * Does invoke a keyword keywordSearch on the SQL wrapper and provides the result as serialized rdf triples.
+   * @param keywords The keywords to keywordSearch for on the SQl wrapper.
    * @param attach Specifies if the caller wants the result stored in an HTML attachment field.
-   * @return RDF triples representing the keyword search result.
+   * @return RDF triples representing the keyword keywordSearch result.
    */
-  public Result search(String keywords, boolean attach)  {
+  public Result keywordSearch(String keywords, boolean useOr, boolean attach)  {
     if (log.isDebugEnabled())
-      log.debug("keyword search query: " + keywords);
+      log.debug("keyword keywordSearch query: " + keywords);
+
+    KeywordSearcher.Operator operator = KeywordSearcher.Operator.AND;
+    if (useOr)
+      operator = KeywordSearcher.Operator.OR;
 
     Stream<Triple> triples = null;
     try {
-      triples = wrapperService.search(keywords);
+        triples = wrapperService.search(keywords, operator);
     } catch (IOException e) {
       FileUtil.closeSilently(triples);
       log.error("Error while querying the D2rWrapper", e);
       return internalServerError("Internal server error");
     } catch (NoValidArgumentException e) {
       FileUtil.closeSilently(triples);
-      return badRequest("keyword search query isn't valid: \"" + keywords + "\"");
+      return badRequest("keyword keywordSearch query isn't valid: \"" + keywords + "\"");
     }
 
     String outputFormat = generalConfig.getOutputFormat();

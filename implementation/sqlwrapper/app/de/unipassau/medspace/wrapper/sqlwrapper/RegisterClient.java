@@ -53,7 +53,7 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
    * @return
    */
   public boolean deRegister(Datasource datasource, URL registerBase) {
-    return invokeRegisterService(registerBase, REGISTER_REMOVE_SERVICE_SUBPATH, datasource);
+    return invokeRegisterService(registerBase.toExternalForm(), REGISTER_REMOVE_SERVICE_SUBPATH, datasource);
   }
 
   /**
@@ -63,7 +63,7 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
    * @return
    */
   public boolean register(Datasource datasource, URL registerBase) {
-    return invokeRegisterService(registerBase, REGISTER_ADD_SERVICE_SUBPATH, datasource);
+    return invokeRegisterService(registerBase.toExternalForm(), REGISTER_ADD_SERVICE_SUBPATH, datasource);
   }
 
   /**
@@ -73,15 +73,18 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
    * @param datasource
    * @return
    */
-  private boolean invokeRegisterService(URL registerBase, String serviceSubPath, Datasource datasource) {
+  private boolean invokeRegisterService(String registerBase, String serviceSubPath, Datasource datasource) {
     if (datasource == null) throw new NullPointerException("datasource mustn't be null!");
     if (registerBase == null) throw new NullPointerException("registerBase mustn't be null!");
 
     JsonNode serialized = Json.toJson(new Datasource.Builder(datasource));
 
+    String url = registerBase + serviceSubPath;
+
+
     URL addServiceURL;
     try {
-      addServiceURL = new URL(registerBase, serviceSubPath);
+      addServiceURL = new URL(url);
     } catch (MalformedURLException e) {
       throw new IllegalStateException("Couldn't construct url to the register add service!", e);
     }

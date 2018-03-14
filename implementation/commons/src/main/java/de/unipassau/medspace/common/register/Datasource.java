@@ -72,9 +72,13 @@ public class Datasource implements Comparable<Datasource> {
       this.services = new HashSet<>(services);
 
       // remove null and empty list entries if they exist
-      this.services.remove("");
+      this.services.remove(Service.EMPTY_SERVICE);
       this.services.remove(null);
     }
+
+    // All datasources have to support the keyword search service
+    // Even if it is not explicitly stated!
+    this.services.add(Service.KEYWORD_SEARCH);
 
     // java.net.URL is immutable
     this.url = url;
@@ -152,6 +156,10 @@ public class Datasource implements Comparable<Datasource> {
     return description;
   }
 
+  /**
+   * TODO
+   * @return
+   */
   public String getRdfFormat() {
     return rdfFormat;
   }
@@ -215,12 +223,19 @@ public class Datasource implements Comparable<Datasource> {
      */
     private List<Service> services;
 
+    /**
+     * TODO
+     */
     public Builder() {
       url = null;
       description = null;
       services = null;
     }
 
+    /**
+     * TODO
+     * @param datasource
+     */
     public Builder(Datasource datasource) {
       url = datasource.url;
       description = datasource.description;

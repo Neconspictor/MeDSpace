@@ -5,6 +5,7 @@ import controllers.response.*;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.message.Response;
 import de.unipassau.medspace.common.register.Datasource;
+import de.unipassau.medspace.common.register.DatasourceState;
 import de.unipassau.medspace.register.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +46,12 @@ public class MeDSpaceController extends Controller {
      * An action that renders a page for testing the register services.
      */
     public Result index() {
-        Map<Datasource, Timestamp> datasourceModifiedMap = register.getDatasources();
+        Map<Datasource, DatasourceState> datasourceModifiedMap = register.getDatasources();
         Set<Datasource> datasources = datasourceModifiedMap.keySet();
         List<Datasource> list = new LinkedList<>(datasources);
         Collections.sort(list, Comparator.comparing(o -> o.getUrl().toExternalForm()));
 
-        return ok(views.html.index.render("Welcome to the register home page!", list, datasourceModifiedMap));
+        return ok(views.html.index.render(list, datasourceModifiedMap));
     }
 
     /**
@@ -85,10 +86,27 @@ public class MeDSpaceController extends Controller {
      * @return The set of registered datasources serialized to JSON.
      */
     public Result getDatasources() {
-        Map<Datasource, Timestamp> map = register.getDatasources();
+        Map<Datasource, DatasourceState> map = register.getDatasources();
         Set<Datasource> datasources = map.keySet();
         JsonNode serialized = Json.toJson(datasources);
         return ok(serialized);
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    public Result ioError() {
+        Datasource datasource;
+        try {
+            datasource = readDatasource();
+        } catch (IOException e) {
+            log.error("Couldn't get datasource", e);
+            return flawedOrMissingData();
+        }
+
+        register.datasourceIOError(datasource);
+        return ok("Done.");
     }
 
     /**
@@ -127,6 +145,18 @@ public class MeDSpaceController extends Controller {
         boolean remove = register.removeDatasource(datasource);
         Response response = new RemoveResponse(remove);
         return ok(Json.toJson(response));
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    public  Result removeAllDatasources() {
+        boolean result = register.removeAllDatasources();
+        if (!result) {
+            internalServerError("Register is closed. No data sources can be removed.");
+        }
+        return ok("Deleted successfully all data sources");
     }
 
     /**

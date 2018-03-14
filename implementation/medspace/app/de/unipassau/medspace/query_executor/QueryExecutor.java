@@ -1,6 +1,7 @@
 package de.unipassau.medspace.query_executor;
 
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
+import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.register.Service;
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * The Query executor is responsible to execute a query on a database.
  */
-public class QueryExecutor {
+public class QueryExecutor implements Closeable {
 
   /**
    * Logger instance for this class.
@@ -24,59 +25,46 @@ public class QueryExecutor {
   private final ServiceInvoker serviceInvoker;
   private final URL registerBase;
   private final URL dataCollectorBase;
+  private final QueryCache queryCache;
 
+  /**
+   * TODO
+   * @param serviceInvoker
+   * @param registerBase
+   * @param dataCollectorBase
+   */
   public QueryExecutor(ServiceInvoker serviceInvoker, URL registerBase, URL dataCollectorBase) {
     this.serviceInvoker = serviceInvoker;
     this.registerBase = registerBase;
     this.dataCollectorBase = dataCollectorBase;
+    queryCache = new QueryCache(10, event->{
+      if (event.getOldValue() == null) return;
+      deleteQueryResult(event.getOldValue());
+    });
   }
 
-  public InputStream keywordService(List<String> keywords, String rdfFormat) throws IOException {
-    List<Datasource> datasources;
+  /**
+   * TODO
+   * @param keywords
+   * @param operator
+   * @param rdfFormat
+   * @return
+   * @throws IOException
+   */
+  public InputStream keywordService(List<String> keywords,
+                                    KeywordSearcher.Operator operator,
+                                    String rdfFormat) throws IOException {
 
-    String queryString = "keywords=";
+    BigInteger resultID = queryCache.get(keywords, operator);
 
-    for (String keyword : keywords) {
-      queryString += keyword + " ";
-    }
+    boolean cached = resultID != null;
 
-    queryString = queryString.trim();
 
-    try {
-      datasources = retrieveFromRegister();
-    } catch (IOException e) {
-      throw new IOException("Couldn't retrieve datasource list from the register!", e);
-    }
+    if (!cached) {
+      resultID = queryKeywordService(keywords, operator);
 
-    BigInteger resultID;
-    try {
-      resultID = getResultID();
-    } catch (IOException e) {
-      throw new IOException("Couldn't create unique result id", e);
-    }
-
-    Service service = new Service("search");
-    Query query =  new Query(service, queryString);
-
-    for (Datasource datasource : datasources) {
-      log.info(datasource.toString());
-
-      try (InputStream in = serviceInvoker.queryDatasourceInputStream(datasource, query)){
-        writeInputStreamToRepository(in, datasource.getUrl(), datasource.getRdfFormat(), resultID);
-      } catch (IOException | UnsupportedServiceException e) {
-
-        log.error("Couldn't query datasource " + datasource.getUrl(), e);
-
-        //TODO: We have to decide when to delete query result and throw exception!
-        /*try{
-          serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
-        } catch (IOException e1) {
-          log.error("Couldn't delete query result:", e1);
-        }
-
-        throw new IOException("Couldn't query datasource " + datasource.getUrl(), e);
-        */
-      }
+      //add the query result to the cache
+      queryCache.add(keywords, operator, resultID);
     }
 
     InputStream in;
@@ -95,6 +83,77 @@ public class QueryExecutor {
     return new DataCollectorResultInputStream(in, resultID);
   }
 
+  private void deleteQueryResult(BigInteger resultID) {
+    try {
+      serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
+    } catch (IOException e) {
+      log.error("Couldn't delete query result with resultID=" + resultID, e);
+    }
+  }
+
+  private BigInteger queryKeywordService(List<String> keywords,
+                                         KeywordSearcher.Operator operator) throws IOException {
+    List<Datasource> datasources;
+    String queryString = "keywords=";
+
+    for (String keyword : keywords) {
+      queryString += keyword + " ";
+    }
+
+    queryString = queryString.trim();
+
+    //default is AND operator
+    if (operator == KeywordSearcher.Operator.OR)
+      queryString += "&useOr=true";
+
+    try {
+      datasources = retrieveFromRegister();
+    } catch (IOException e) {
+      throw new IOException("Couldn't retrieve datasource list from the register!", e);
+    }
+
+    BigInteger resultID;
+    try {
+      resultID = getResultID();
+    } catch (IOException e) {
+      throw new IOException("Couldn't create unique result id", e);
+    }
+
+    Service service = Service.KEYWORD_SEARCH;
+    Query query =  new Query(service, queryString);
+
+    for (Datasource datasource : datasources) {
+      log.info(datasource.toString());
+
+      try (InputStream in = serviceInvoker.queryDatasourceInputStream(datasource, query)) {
+        writeInputStreamToRepository(in, datasource.getUrl(), datasource.getRdfFormat(), resultID);
+      }catch (UnsupportedServiceException e){
+
+        // This type of exception shouldn't be thrown; if it is thrown nevertheless, there is a bug in code!
+
+        // Release acquired resources
+        deleteQueryResult(resultID);
+
+        log.error("There is a bug in your code! Fix it!");
+        throw new IOException("Service " + service.getName() + " not supported by data source " + datasource, e);
+
+      } catch (IOException e) {
+
+        log.error("Couldn't query datasource " + datasource.getUrl(), e);
+
+        // inform the register that the data source has problems providing content
+        try {
+          serviceInvoker.invokeRegisterDatasourceIOError(registerBase, datasource);
+        } catch (IOException e1) {
+          log.error("IO Error while reporting register that an IO Error occurred while querying a datasource", e1);
+        }
+      }
+    }
+
+    return resultID;
+  }
+
+
   private List<Datasource> retrieveFromRegister() throws IOException {
     return serviceInvoker.invokeRegisterGetDatasources(registerBase);
   }
@@ -109,6 +168,11 @@ public class QueryExecutor {
 
   private BigInteger getResultID() throws IOException {
     return serviceInvoker.invokeDataCollectorCreateQueryResultID(dataCollectorBase);
+  }
+
+  @Override
+  public void close() throws IOException {
+    queryCache.close();
   }
 
 
@@ -130,16 +194,7 @@ public class QueryExecutor {
 
     @Override
     public void close() throws IOException {
-      try {
-        in.close();
-      } finally {
-        try {
-          serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
-        } catch (IOException e) {
-          log.error("Couldn't delete query result with resultID=" + resultID, e);
-        }
-      }
-
+      in.close();
       log.debug("Closed DataCollectorResultInputStream with resultID=" + resultID);
     }
   }

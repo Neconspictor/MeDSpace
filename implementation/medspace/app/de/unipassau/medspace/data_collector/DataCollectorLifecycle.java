@@ -1,6 +1,6 @@
 package de.unipassau.medspace.data_collector;
 
-import de.unipassau.medspace.data_collector.rdf4j.LocalTestRepositoryManager;
+import de.unipassau.medspace.data_collector.rdf4j.LocalRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * TODO
  */
-public class DataCollectorLifecycle implements Provider<LocalTestRepositoryManager> {
+public class DataCollectorLifecycle implements Provider<LocalRepositoryManager> {
 
   /**
    * Logger instance of this class.
@@ -30,14 +30,14 @@ public class DataCollectorLifecycle implements Provider<LocalTestRepositoryManag
   /**
    * TODO
    */
-  private final LocalTestRepositoryManager manager;
+  private final LocalRepositoryManager manager;
 
   @Inject
   public DataCollectorLifecycle(ApplicationLifecycle lifecycle) throws IOException {
 
     initDataDirectory(DATADIR);
 
-    manager = new LocalTestRepositoryManager(DATADIR.getAbsolutePath());
+    manager = new LocalRepositoryManager(DATADIR.getAbsolutePath());
 
     /*try{
       //db.initialize();
@@ -48,11 +48,7 @@ public class DataCollectorLifecycle implements Provider<LocalTestRepositoryManag
 
     lifecycle.addStopHook(() -> {
       log.info("shutdown is executing...");
-      /*try {
-        manager.shutDown();
-      } catch (RepositoryException e) {
-        log.error("Couldn't shutdown Repository!", e);
-      }*/
+        initDataDirectory(DATADIR);
       log.info("shutdown cleanup done.");
       return CompletableFuture.completedFuture(null);
     });
@@ -77,7 +73,7 @@ public class DataCollectorLifecycle implements Provider<LocalTestRepositoryManag
   }
 
   @Override
-  public LocalTestRepositoryManager get() {
+  public LocalRepositoryManager get() {
     return manager;
   }
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.register.Service;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -266,7 +267,18 @@ public class GeneralWrapperConfig {
      * @param registerURL
      */
     public void setRegisterURL(URL registerURL) {
-      this.registerURL = registerURL;
+      String url = registerURL.toExternalForm();
+
+      // The url has to end with a '/'
+      if (!url.endsWith("/")) {
+        url += "/";
+      }
+
+      try {
+        this.registerURL = new URL(url);
+      } catch (MalformedURLException e) {
+        throw new IllegalStateException("Couldn't create URL out of an existing URL?!");
+      }
     }
 
     @Override

@@ -4,11 +4,10 @@ import de.unipassau.medspace.data_collector.DataCollectorLifecycle;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.data_collector.DataCollector;
-import de.unipassau.medspace.data_collector.rdf4j.LocalTestRepositoryManager;
+import de.unipassau.medspace.data_collector.rdf4j.LocalRepositoryManager;
 import de.unipassau.medspace.data_collector.rdf4j.RDF4J_DataCollector;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import de.unipassau.medspace.register.RegisterLifecycle;
-import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.Configuration;
@@ -46,8 +45,7 @@ public class GlobalModule extends AbstractModule {
     bind(RegisterLifecycle.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();
     bind(DataCollectorLifecycle.class).asEagerSingleton();
-    //bind(RepositoryManager.class).toProvider(DataCollectorLifecycle.class).asEagerSingleton();
-    bind(LocalTestRepositoryManager.class).toProvider(DataCollectorLifecycle.class).asEagerSingleton();
+    bind(LocalRepositoryManager.class).toProvider(DataCollectorLifecycle.class).asEagerSingleton();
     bind(DataCollector.class).to(RDF4J_DataCollector.class).asEagerSingleton();
     log.info("done.");
   }

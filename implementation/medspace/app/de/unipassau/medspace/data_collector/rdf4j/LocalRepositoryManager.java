@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * TODO
  */
-public class LocalTestRepositoryManager {
+public class LocalRepositoryManager {
 
   /**
    * TODO
@@ -29,7 +29,7 @@ public class LocalTestRepositoryManager {
    * @param rootDir
    * @throws IOException
    */
-  public LocalTestRepositoryManager(String rootDir) throws IOException {
+  public LocalRepositoryManager(String rootDir) throws IOException {
     root = createAndCleanDirectory(rootDir);
     this.createdRepos = new ConcurrentHashMap<>();
   }

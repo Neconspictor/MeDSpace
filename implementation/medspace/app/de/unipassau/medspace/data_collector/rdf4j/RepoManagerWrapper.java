@@ -18,7 +18,7 @@ public class RepoManagerWrapper {
   /**
    * TODO
    */
-  private LocalTestRepositoryManager manager;
+  private LocalRepositoryManager manager;
 
   /**
    * TODO
@@ -34,7 +34,7 @@ public class RepoManagerWrapper {
    * TODO
    * @param repositoryManager
    */
-  public RepoManagerWrapper(LocalTestRepositoryManager repositoryManager) {
+  public RepoManagerWrapper(LocalRepositoryManager repositoryManager) {
     manager = repositoryManager;
     repoLocks = new ConcurrentHashMap<>();
     createLock = new ReentrantLock();

@@ -50,10 +50,10 @@ Datasource.prototype = {
     }
 };
 
-// include registerCommon.js
+// include medspaceCommon.js
 jQuery.ajax({
     type:'GET',
-    url: jsRoutes.controllers.Assets.versioned("javascripts/registerCommon.js").url,
+    url: jsRoutes.controllers.Assets.versioned("javascripts/medspaceCommon.js").url,
     dataType:'script'
 });
 
@@ -113,7 +113,7 @@ function submitInfo(formContainer) {
     var datasource = createDatasource(formContainer);
 
     $.ajax({
-        url: jsRoutes.controllers.RegisterController.add().url,
+        url: jsRoutes.controllers.MeDSpaceController.add().url,
         type: 'post',
         data: JSON.stringify(datasource),
         contentType: "application/json",
@@ -134,7 +134,7 @@ function submitInfo(formContainer) {
 function submitNoResponseForm(formContainer) {
     var datasource = createDatasource(formContainer);
     $.ajax({
-        url: jsRoutes.controllers.RegisterController.noResponse().url,
+        url: jsRoutes.controllers.MeDSpaceController.noResponse().url,
         type: 'post',
         data: JSON.stringify(datasource),
         contentType: "application/json",
@@ -155,7 +155,7 @@ function submitNoResponseForm(formContainer) {
 function submitRemoveDatasourceForm(formContainer) {
     var datasource = createDatasource(formContainer);
     $.ajax({
-        url: jsRoutes.controllers.RegisterController.remove().url,
+        url: jsRoutes.controllers.MeDSpaceController.remove().url,
         type: 'post',
         data: JSON.stringify(datasource),
         contentType: "application/json",

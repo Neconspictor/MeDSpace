@@ -1,4 +1,4 @@
-package de.unipassau.medspace.wrapper.sqlwrapper;
+package de.unipassau.medspace.common.stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

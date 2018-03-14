@@ -6,19 +6,19 @@
 @import test.DataCollectorFileUpload
 @import java.sql.Timestamp
 @import de.unipassau.medspace.common.register.Datasource
+@import de.unipassau.medspace.common.register.DatasourceState
 
 @*
 * A test page for the register. Allows to add and remove a datasource and allows to inform the register that a
 * datasource isn't responding.
 *@
-@(msg : String, datasources : List[Datasource], modifiedMap : Map[Datasource, Timestamp])
+@(datasources : List[Datasource], modifiedMap : Map[Datasource, DatasourceState])
 
-@pageSceleton("MeDSpace Test Page",
+@pageSceletonBootstrap("MeDSpace Test Page",
   routes.Assets.versioned("stylesheets/test.css").url,
   routes.Assets.versioned("javascripts/test.js").url,
   routes.Assets.versioned("images/favicon.png").url) {
   <h1>MeDSpace Test Page</h1>
-  @msg
 
   <h2>Datasource Registration Test</h2>
 
@@ -50,7 +50,9 @@
           }
         </ul>
         <h4>Last update</h4>
-          @modifiedMap.get(datasource)
+          @modifiedMap.get(datasource).getTimestamp()
+        <h4>IO Errors</h4>
+        @modifiedMap.get(datasource).getIoErrors()
       </li>
     }
   </ul>

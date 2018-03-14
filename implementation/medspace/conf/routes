@@ -7,17 +7,6 @@ GET     /                            controllers.MeDSpaceController.index
 
 GET     /gui                            controllers.MeDSpaceController.gui
 
-+nocsrf
-POST     /add                        controllers.MeDSpaceController.add
-
-GET /get-datasources                  controllers.MeDSpaceController.getDatasources
-
-+nocsrf
-POST     /remove                     controllers.MeDSpaceController.remove
-
-+nocsrf
-POST     /no-response                 controllers.MeDSpaceController.noResponse
-
 GET     /javascript-routes            controllers.MeDSpaceController.javascriptRoutes
 
 
@@ -25,7 +14,7 @@ GET     /javascript-routes            controllers.MeDSpaceController.javascriptR
 GET     /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)
 
 # QueryExecutor stuff
-GET     /query-executor/keyword-search           controllers.QueryExecutorController.searchByKeyword(query ?="", rdfFormat ?= "TURTLE")
+GET     /query-executor/keyword-search           controllers.QueryExecutorController.searchByKeyword(query ?="", rdfFormat ?= "TURTLE", useOr:Boolean ?= false, attach:Boolean ?= false)
 
 # DataCollector stuff
 GET     /data-collector/create-query-result     controllers.DataCollectorController.createQueryResult()
@@ -36,3 +25,22 @@ POST     /data-collector/add-partial-query-result     controllers.DataCollectorC
 GET     /data-collector/delete-query-result          controllers.DataCollectorController.deleteQueryResult(resultID)
 
 GET     /data-collector/query-result          controllers.DataCollectorController.queryResult(resultID, rdfFormat)
+
+
+# Register stuff
++nocsrf
+POST     /register/add                        controllers.MeDSpaceController.add
+
+GET /register/get-datasources                  controllers.MeDSpaceController.getDatasources
+
++nocsrf
+POST     /register/remove                     controllers.MeDSpaceController.remove
+
++nocsrf
+POST     /register/io-error                 controllers.MeDSpaceController.ioError
+
++nocsrf
+POST     /register/no-response                 controllers.MeDSpaceController.noResponse
+
+
+GET     /register/remove-all          controllers.MeDSpaceController.removeAllDatasources()

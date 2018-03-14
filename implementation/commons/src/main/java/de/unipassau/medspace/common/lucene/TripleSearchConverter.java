@@ -1,6 +1,5 @@
 package de.unipassau.medspace.common.lucene;
 
-import de.unipassau.medspace.common.lucene.DocToTripleStream;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.stream.Stream;

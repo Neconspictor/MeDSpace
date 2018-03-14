@@ -107,13 +107,13 @@ public class D2rWrapper<DocType> implements Wrapper {
   }
 
   @Override
-  public KeywordSearcher<Triple> createKeywordSearcher() throws IOException {
+  public KeywordSearcher<Triple> createKeywordSearcher(KeywordSearcher.Operator operator) throws IOException {
 
     KeywordSearcher<Triple> searcher;
 
     try {
       if (indexUsed) {
-        searcher = indexManager.createTripleKeywordSearcher();
+        searcher = indexManager.createTripleKeywordSearcher(operator);
       } else {
         searcher = new D2rKeywordSearcher(this);
       }

@@ -1,6 +1,7 @@
 package de.unipassau.medspace.register;
 
 import de.unipassau.medspace.common.register.Datasource;
+import de.unipassau.medspace.common.register.DatasourceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class Register {
    * A map, that assigns each registered datasource a timestamp,
    * which records he time the datasource was added to the register.
    */
-  private final Map<Datasource, Timestamp> datasources;
+  private final Map<Datasource, DatasourceState> datasources;
 
   private boolean isClosed = false;
 
@@ -53,9 +54,14 @@ public class Register {
   private static final int COOL_DOWN_TIME = 10000;
 
   /**
+   * TODO
+   */
+  private static final int IO_ERROR_LIMIT = 5;
+
+  /**
    * Creates a new Register.
    */
-  public Register(Map<Datasource, Timestamp> datasources) {
+  public Register(Map<Datasource, DatasourceState> datasources) {
     if (datasources == null) datasources = new HashMap<>();
     this.datasources = new TreeMap<>(datasources);
     this.readWriteLock = new ReentrantReadWriteLock();
@@ -76,16 +82,16 @@ public class Register {
     try {
       lock.lock();
       if (isClosed) return false;
-      Timestamp old = datasources.get(datasource);
+      DatasourceState old = datasources.get(datasource);
 
       // Datasource wasn't registered before?
       if (old == null) {
-        datasources.put(datasource, newUpdate);
+        datasources.put(datasource, new DatasourceState(newUpdate));
         return true;
       }
 
       // only update if no newer update exists
-      if (old.before(newUpdate)) {
+      if (old.getTimestamp().before(newUpdate)) {
 
         // Datasource objects are considered equal, if their URLs are equal.
         // As a side effect, other information like the services member are not considered.
@@ -95,7 +101,8 @@ public class Register {
         // and should be removed.
         datasources.remove(datasource);
 
-        datasources.put(datasource, newUpdate);
+        datasources.put(datasource, new DatasourceState(newUpdate,
+                                                        old.getIoErrors()));
         return  true;
       }
 
@@ -105,6 +112,34 @@ public class Register {
     } finally {
       lock.unlock();
     }
+  }
+
+  public void datasourceIOError(Datasource datasource) {
+    if (datasource == null) throw new IllegalArgumentException("datasource mustn't be null!");
+    if (isClosed) return;
+
+    // increase the io error counter
+    Lock lock = readWriteLock.writeLock();
+
+    try {
+      lock.lock();
+      DatasourceState state = datasources.get(datasource);
+
+      // Datasource isn't registered?
+      if (state == null) return;
+
+      state = state.createIncrement();
+      datasources.put(datasource, state);
+
+      // If the io error count exceeds a limit remove the data source if its cool down isn't active
+      if (state.getIoErrors() > IO_ERROR_LIMIT ) {
+        datasourceNoRespond(datasource);
+      }
+
+    } finally {
+      lock.unlock();
+    }
+
   }
 
   /**
@@ -119,11 +154,12 @@ public class Register {
     if (datasource == null) throw new IllegalArgumentException("datasource mustn't be null!");
     // For now just remove the datasource
     Lock lock = readWriteLock.readLock();
-    Timestamp timestamp;
+    Timestamp timestamp = null;
     try {
       lock.lock();
       if (isClosed) return NoResponse.DATASOURCE_NOT_FOUND;
-      timestamp = datasources.get(datasource);
+      DatasourceState state = datasources.get(datasource);
+      if (state != null) timestamp = state.getTimestamp();
     } finally {
       lock.unlock();
     }
@@ -146,7 +182,7 @@ public class Register {
    * Provides a copy of the datasources along with their time stamps on that they were added to the register.
    * @return A copy of the datasources the register contains.
    */
-  public Map<Datasource, Timestamp> getDatasources() {
+  public Map<Datasource, DatasourceState> getDatasources() {
     Lock lock = readWriteLock.readLock();
     try {
       lock.lock();
@@ -155,7 +191,7 @@ public class Register {
       // NOTE: A wrapper class like Collections.unmodifiableList isn't enough
       // as write operations to datasources would also change the content of the shallow copy!
       // As Datasource is an immutable class, no copying has to be done.
-      Map<Datasource, Timestamp> copy = new TreeMap<>(datasources);
+      Map<Datasource, DatasourceState> copy = new TreeMap<>(datasources);
       return copy;
     } finally {
       lock.unlock();
@@ -181,6 +217,23 @@ public class Register {
 
       // Datasource isn't registered and thus couldn't be removed.
       return false;
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  /**
+   * TODO
+   */
+  public boolean removeAllDatasources() {
+
+    if (isClosed) return false;
+
+    Lock lock = readWriteLock.writeLock();
+    try{
+      lock.lock();
+      datasources.clear();
+      return true;
     } finally {
       lock.unlock();
     }

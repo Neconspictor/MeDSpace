@@ -12,6 +12,10 @@ import java.util.List;
  */
 public interface KeywordSearcher<E> {
 
+  enum Operator {
+    AND, OR
+  }
+
   /**
    * Does a keyword search onto a list of search fields based on a given list of keywords.
    * @param keywords The keywords for searching data in the fields

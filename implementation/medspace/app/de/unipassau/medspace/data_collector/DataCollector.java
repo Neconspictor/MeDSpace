@@ -84,12 +84,10 @@ public abstract class DataCollector {
 
   /**
    * TODO
-   * @param rdfFormat
    * @param resultID
+   * @param rdfFormat
    * @return
    * @throws IOException
    */
-  public abstract Stream<Triple> queryResult(String rdfFormat, BigInteger resultID) throws IOException;
-
-  //TODO open and close repos to each query result
+  public abstract Stream<Triple> queryResult(BigInteger resultID, String rdfFormat) throws IOException;
 }

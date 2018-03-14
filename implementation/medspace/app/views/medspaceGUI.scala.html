@@ -1,6 +1,5 @@
-
 @*
-* A test and mocking page for evaluating the functionality of the SQL Wrapper.
+* The MeDSpace gui.
 *@
 
 @()
@@ -40,6 +39,10 @@
         <input type="hidden" name="rdfFormat" value="Turtle" />
         @*<input type="hidden" name="attach" value="false" />*@
         <button class="button grayGradient bigText" type="submit">Search</button>
+        <div>
+            Use Or boolean operator
+            <input type="checkbox" name="useOr" value="true">
+        </div>
         <div>
             Attach result as file
             <input type="checkbox" name="attach" value="true">

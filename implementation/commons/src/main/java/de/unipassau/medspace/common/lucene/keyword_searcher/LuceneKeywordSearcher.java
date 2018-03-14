@@ -1,6 +1,8 @@
-package de.unipassau.medspace.common.lucene;
+package de.unipassau.medspace.common.lucene.keyword_searcher;
 
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.lucene.IndexReaderFactory;
+import de.unipassau.medspace.common.lucene.SearchResult;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.stream.Stream;
 import org.apache.lucene.analysis.Analyzer;
@@ -43,16 +45,33 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
   protected Analyzer analyzer;
 
   /**
+   * The used boolean operator for the keyword search
+   */
+  protected final QueryParser.Operator operator;
+
+  /**
    * Creates a new {@link LuceneKeywordSearcher}
    * @param fields Specifies the names of {@link org.apache.lucene.document.Field} to consider for searching.
    * @param readerFactory Used to read an lucene index.
    * @param analyzer Used to analyze the index.
+   * @param operator The used boolean operator for the keyword search
    */
-  public LuceneKeywordSearcher(List<String> fields, IndexReaderFactory readerFactory, Analyzer analyzer) {
+  public LuceneKeywordSearcher(List<String> fields,
+                               IndexReaderFactory readerFactory,
+                               Analyzer analyzer,
+                               Operator operator
+                                ) {
     this.fields = new String[fields.size()];
     fields.toArray(this.fields);
     this.readerFactory = readerFactory;
     this.analyzer = analyzer;
+
+    if (operator == Operator.AND) {
+      this.operator = QueryParser.Operator.AND;
+    } else {
+      this.operator = QueryParser.Operator.OR;
+    }
+
   }
 
   @Override
@@ -72,7 +91,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
     SearchResult result = null;
     Query query = null;
     try {
-      query = constructQuery(fields, keywords);
+      query = constructQuery(fields, keywords, operator);
     } catch (ParseException e) {
       throw new NoValidArgumentException("One of the keywords isn't valid", e);
     }
@@ -110,8 +129,11 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
    * @return A new query that searches for the specified keywords.
    * @throws ParseException If the query couldn't be constructed.
    */
-  protected Query constructQuery(String[] fieldNameArray, List<String> keywords) throws ParseException {
+  protected Query constructQuery(String[] fieldNameArray,
+                                 List<String> keywords,
+                                 QueryParser.Operator defaultOperator) throws ParseException {
     QueryParser parser = new MultiFieldQueryParser(fieldNameArray,analyzer);
+    parser.setDefaultOperator(defaultOperator);
 
     StringBuilder keywordsConcat = new StringBuilder();
     for (String keyword : keywords) {

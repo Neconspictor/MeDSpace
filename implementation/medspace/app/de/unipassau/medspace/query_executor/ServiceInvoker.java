@@ -4,6 +4,7 @@ import akka.stream.*;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;
 import de.unipassau.medspace.common.network.JsonResponse;
 import de.unipassau.medspace.common.network.Util;
@@ -36,6 +37,8 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
   private static final Logger log = LoggerFactory.getLogger(ServiceInvoker.class);
 
   private static final Service REGISTER_GET_DATASOURCES_SUBPATH = new Service("get-datasources");
+
+  private static final Service REGISTER_DATASOURCE_IO_ERROR = new Service("io-error");
 
   private static final Service DATA_COLLECTOR_ADD_PARTIAL_QUERY_RESULT = new Service("add-partial-query-result");
 
@@ -181,6 +184,24 @@ public class ServiceInvoker implements WSBodyReadables, WSBodyWritables {
     }
 
     return datasources;
+  }
+
+  public void invokeRegisterDatasourceIOError(URL registerBase, Datasource datasource) throws IOException {
+    if (registerBase == null) throw new NullPointerException("register URL mustn't be null!");
+
+    URL serviceURL = constructServiceURL(registerBase, REGISTER_DATASOURCE_IO_ERROR);
+
+    WSRequest request = ws.url(serviceURL.toExternalForm())
+        .setRequestTimeout(Duration.of(10, ChronoUnit.SECONDS))
+        .setFollowRedirects(true);
+
+    JsonNode root = Json.toJson(datasource);
+
+    WSResponse result = Util.postJsonAndWait(request, root, 2);
+
+    if (result == null) {
+      throw new IOException("IO Error while sending/retrieving data from the register");
+    }
   }
 
   public DatasourceQueryResult queryDatasource(Datasource datasource, Query query) throws UnsupportedServiceException,

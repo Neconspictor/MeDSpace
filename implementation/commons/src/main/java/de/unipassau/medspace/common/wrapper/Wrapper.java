@@ -22,11 +22,12 @@ public interface Wrapper extends Closeable {
   /**
    * Provides a search object for initiating a keyword search onto the
    * datasource's data set.
+   * @param operator TODO
    * @return A KeywordSearcher for searching the proxied datasource's data set
    *         based on keywords.
    * @throws IOException If an error occurs while trying to createDoc a keyword searcher
    */
-  KeywordSearcher<Triple> createKeywordSearcher() throws IOException;
+  KeywordSearcher<Triple> createKeywordSearcher(KeywordSearcher.Operator operator) throws IOException;
 
   /**
    * Checks if this index has indexed data.

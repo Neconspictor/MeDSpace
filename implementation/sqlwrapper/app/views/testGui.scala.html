@@ -35,10 +35,14 @@
 
     <!--<div class="verticalContentSeparatorSmall"></div>-->
 <div class= "centeredBlock">
-    <form class="queryField" action="@routes.SQLWrapperController.search("", false)" method="GET">
+    <form class="queryField" action="@routes.SQLWrapperController.keywordSearch("", false, false)" method="GET">
         <input class="bigTextField" type="text" name="keywords" placeholder="Search Dataspace...">
         @*<input type="hidden" name="attach" value="false" />*@
         <button class="button grayGradient bigText" type="submit">Search</button>
+        <div>
+            Use Or boolean operator
+            <input type="checkbox" name="useOr" value="true">
+        </div>
         <div>
             Attach result as file
             <input type="checkbox" name="attach" value="true">

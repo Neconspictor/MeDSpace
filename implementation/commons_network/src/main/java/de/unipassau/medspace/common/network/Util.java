@@ -1,7 +1,6 @@
 package de.unipassau.medspace.common.network;
 
 
-import akka.stream.IOResult;
 import akka.stream.javadsl.Source;
 import akka.stream.javadsl.StreamConverters;
 import akka.util.ByteString;
@@ -81,6 +80,9 @@ public final class Util {
         CompletionStage<? extends WSResponse> responsePromise = function.get();
         response = responsePromise.toCompletableFuture().get();
 
+        // if get() doesn't throw any exception, we needn't try anymore!
+        break;
+
       } catch (ExecutionException | InterruptedException e) {
         log.warn("Couldn't retrieve data at try " +  i);
         log.debug("Cause", e);
@@ -102,6 +104,10 @@ public final class Util {
 
   public static JsonResponse getAndWaitJson(WSRequest request, int triesOnFailure) {
     return executeAndWaitJson(() -> request.get(), triesOnFailure);
+  }
+
+  public static WSResponse postJsonAndWait(WSRequest request, JsonNode body, int triesOnFailure) throws IOException {
+    return executeAndWait(()-> request.post(body), triesOnFailure);
   }
 
   public static JsonResponse postAndWaitJson(WSRequest request, JsonNode body, int triesOnFailure) {
@@ -128,8 +134,10 @@ public final class Util {
     for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
       List<String> values = entry.getValue();
       if (values != null && values.size() > 0) {
-        String value  = java.net.URLEncoder.encode(values.get(0),"UTF-8");
-        builder.append(entry.getKey() + "=" + value + "&");
+        String unencoded = values.get(0);
+        if (unencoded == null) unencoded = "";
+        String encodedValue  = java.net.URLEncoder.encode(unencoded,"UTF-8");
+        builder.append(entry.getKey() + "=" + encodedValue + "&");
       }
     }
 

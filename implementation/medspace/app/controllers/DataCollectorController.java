@@ -135,7 +135,7 @@ public class DataCollectorController extends Controller {
     Stream<Triple> triples;
     InputStream in;
     try {
-      triples = dataCollector.queryResult(rdfFormat, id);
+      triples = dataCollector.queryResult(id, rdfFormat);
       Set<Namespace> namespaces = dataCollector.getNamespaces(id);
       // TODO get namesapces from the repository
       in = new TripleInputStream(triples, rdfFormat, namespaces, provider.getWriterFactory());

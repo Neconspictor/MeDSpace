@@ -25,6 +25,10 @@ libraryDependencies += ws
 
 libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"
 
+// https://mvnrepository.com/artifact/org.ehcache/ehcache
+libraryDependencies += "org.ehcache" % "ehcache" % "3.5.0"
+
+
 // https://mvnrepository.com/artifact/dnsjava/dnsjava
 libraryDependencies += "dnsjava" % "dnsjava" % "2.1.8"
 
