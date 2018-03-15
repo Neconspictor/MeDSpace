@@ -1,0 +1,363 @@
+/*global constants*/
+/*
+ * base pixel size (for em): 16px (=12pt)
+ */
+/**
+ * Functions and mixins 
+ */
+/** 
+ * CSS definitions
+ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; }
+
+/**
+ * utilities
+ */
+.grayGradient {
+  /*gradient: top-down: 90%*/
+  /* ff3.6+ */
+  background: -moz-linear-gradient(90deg, #c7c7c7 0%, #c7c7c7 12%, #dedede 89%, #dedede 100%);
+  /* safari4+,chrome */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #c7c7c7), color-stop(11%, #c7c7c7), color-stop(88%, #dedede), color-stop(100%, #dedede));
+  /* safari5.1+,chrome10+ */
+  background: -webkit-linear-gradient(90deg, #c7c7c7 0%, #c7c7c7 12%, #dedede 89%, #dedede 100%);
+  /* opera 11.10+ */
+  background: -o-linear-gradient(90deg, #c7c7c7 0%, #c7c7c7 12%, #dedede 89%, #dedede 100%);
+  /* ie10+ */
+  background: -ms-linear-gradient(90deg, #c7c7c7 0%, #c7c7c7 12%, #dedede 89%, #dedede 100%);
+  /* w3c */
+  background: linear-gradient(0deg, #c7c7c7 0%, #c7c7c7 12%, #dedede 89%, #dedede 100%);
+  /* ie6-9: remark: we need colors with full alpha channel! */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dedede', endColorstr='#c7c7c7',GradientType=0 ); }
+
+.verticalContentSeparatorSmall {
+  margin-top: 1em; }
+
+.verticalContentSeparatorMedium {
+  margin-top: 1em; }
+
+.tinyText {
+  font-size: 0.563em; }
+
+h1 {
+  font-size: 3em; }
+
+.container {
+  width: 100%;
+  border: 0.1em solid gray;
+  margin: 0em 0em 0em 0em;
+  padding: 0em; }
+
+.topFirstElement {
+  /*position: absolute;
+  */
+  margin: auto auto;
+  display: table;
+  /*height: $headerHeight;*/ }
+
+.leftFloating {
+  display: inline-block;
+  float: left !important; }
+
+.rightFloating {
+  display: inline-block;
+  float: right !important;
+  /*margin-left: auto;
+  margin-right: 0;*/ }
+
+.centeredBlock {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 50em; }
+
+.queryField {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1em;
+  display: table; }
+
+.flexibleWrapper {
+  display: flex;
+  height: 100%; }
+
+/**
+ * Buttons
+ */
+.button {
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.5em;
+  line-height: 0.5em;
+  border: 0.063em solid #aaaaaa;
+  /* Round corners*/
+  /*-moz-border-radius: 0.25em;*/
+  -webkit-border-radius: 0.25em;
+  border-radius: 0.2500em;
+  /*drop shadow: first: x offset, second: y offset, third: shadow strength, fourth: shadow color*/
+  box-shadow: 0px 0px 1px grey; }
+
+.button:hover {
+  /*make font a little bit greater*/
+  /*font-size: 1.1em;*/
+  /* border color should be a bit darker and stronger (more width)*/
+  border: 0.09em solid #cacaca;
+  /*enlarge drop shadow strength -> button stands more out*/
+  box-shadow: 0px 0px 3px grey; }
+
+.button.span {
+  display: table; }
+
+.spoilerbutton {
+  margin: 5px 0; }
+
+.spoiler {
+  overflow: hidden;
+  background: #f5f5f5; }
+
+.spoiler .spoilerContent {
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: margin 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: margin 0.2s ease; }
+
+.spoilerbutton[value="Show"] + .spoiler .spoilerContent {
+  margin-top: -100%; }
+
+.spoilerbutton[value="Hide"] + .spoiler {
+  padding: 5px; }
+
+/**
+ *  text fields
+ */
+.bigTextField {
+  font-size: 1em;
+  width: 20em;
+  height: 2em;
+  border-width: 0.1em;
+  border-style: solid;
+  border-color: rgba(199, 199, 199, 0.5);
+  margin-right: 0.1em;
+  margin-left: auto;
+  margin-bottom: 0.1em; }
+
+.bigTextField:hover {
+  border-color: #c7c7c7; }
+
+.bigTextField:focus {
+  border-color: blue; }
+
+/** 
+ *  Logo
+ */
+.logoHeader {
+  /*background: $colorLightGray;*/
+  background: linear-gradient(#0689b6, #10ace3, #0689b6);
+  border-bottom: 1px solid black;
+  /* border-top:1px solid #666;*/
+  position: relative;
+  float: none;
+  width: 100%;
+  min-width: 4em;
+  /*height: $headerHeight;*/
+  overflow: hidden;
+  /*z-index: 2;*/
+  display: block; }
+
+.logoText {
+  color: white;
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 2em;
+  letter-spacing: 0.1em;
+  margin-left: 0.2em;
+  margin-bottom: 0.2em; }
+
+.logoTextMedium {
+  color: white;
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 1em;
+  letter-spacing: 0.1em;
+  margin-left: 0.2em; }
+
+.logoBottomText {
+  display: flex;
+  justify-content: center;
+  /* align horizontal */
+  align-items: center;
+  /* align vertical */
+  text-align: center;
+  vertical-align: middle;
+  color: white;
+  letter-spacing: 0.1em;
+  margin-top: 1em;
+  margin-left: 0.5em; }
+
+/*
+ * Menus
+ */
+.menu {
+  /*position: relative;*/
+  margin: auto 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  background: #0689b6;
+  border-bottom: 1px solid black;
+  margin-bottom: 1em; }
+  .menu ul {
+    list-style: none;
+    text-align: center; }
+    .menu ul li {
+      list-style: none;
+      display: inline-block;
+      margin: 0 0 0 2em; }
+
+.menuItem {
+  text-decoration: none;
+  background: #0689b6;
+  color: #fff;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  /*border-left: 1px solid black;
+  border-right: 1px solid black;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  */ }
+  .menuItem:hover {
+    background: #10ace3; }
+  .menuItem:active {
+    color: #FFFACD; }
+
+/**
+ * Tooltips
+ */
+.ToolTip {
+  position: relative;
+  text-decoration: none; }
+
+.ToolTip:after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 130%;
+  left: 20%;
+  background: #ffcb66;
+  padding: 5px 15px;
+  color: black;
+  -webkit-border-radius: 1em;
+  -moz-border-radius: 1em;
+  border-radius: 1em;
+  white-space: nowrap;
+  display: none;
+  z-index: 1; }
+
+.ToolTip:before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 1.5em solid #ffcb66;
+  border-left: 1.5em solid transparent;
+  border-right: 1.5em solid transparent;
+  display: none; }
+
+.ToolTip:hover:after {
+  display: block; }
+
+/**
+ * Text stuff
+ */
+.bigText {
+  font-size: 1em; }
+
+.smallText {
+  font-size: 0.5em; }
+
+/**
+ * Search results
+ */
+.SearchResult {
+  list-style: none;
+  border: 1px solid black;
+  -webkit-border-radius: 0.3em;
+  -moz-border-radius: 0.3em;
+  border-radius: 0.3em;
+  padding: 0.5em;
+  margin-bottom: 1em;
+  /*overflow: scroll;*/
+  overflow: hidden; }
+
+.SearchResultEntry {
+  list-style: none; }
+
+/**
+ * RDF Table View
+ */
+.RDFTable {
+  display: table;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  margin-top: 1em;
+  margin-left: auto;
+  margin-right: auto; }
+
+.RDFTableRowHeader {
+  display: table-row;
+  width: 100%;
+  background: #dedede; }
+
+.RDFTableRow {
+  display: table-row;
+  width: 100%; }
+
+.RDFTableCell {
+  display: table-cell;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+  text-align: center; }
+
+/**
+ * Generic two cell table view
+ */
+.twoCellTable {
+  display: table;
+  margin-left: auto;
+  margin-right: auto; }
+
+.twoCellTableEntry {
+  display: table;
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  margin: 0.5em; }
+
+.twoCellTableEntryProperty {
+  display: table-row;
+  width: 100%; }
+
+.twoCellTableEntryPropertyFirstElement {
+  background: #dedede;
+  font-size: 1.2em; }
+
+.twoCellTableEntryPropertyType {
+  display: table-cell;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black; }
+
+.twoCellTableEntryPropertyValue {
+  display: table-cell;
+  border-bottom: 1px solid black;
+  padding-left: 0.3em; }
+
+/*# sourceMappingURL=sass.css.map */

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="sass.css">
+
+<head>
+	<title>MeDSpace - Testsuite for Medical Information</title>
+    <!--<script src="scripts.js"></script>-->
+</head>
+
+<body>
+<header>
+<div class="logoHeader">
+    <div class="topFirstElement">
+        <span class="leftFloating logoText">MeDSpace</span>
+        <span class="leftFloating logoBottomText ">
+            <span class="tinyText">&mdash; Testsuite for Medical Information</span>
+        </span>
+    </div>
+</div>
+<!-- Main Menu-->
+<div class="menu">
+    <ul>
+        <li class="ToolTip" data-tooltip="Browse dataspace by keywords"><a class="menuItem" href="index.htm">Search</a>
+        </li>
+        <li class=""><a class="menuItem ToolTip" data-tooltip="Browse available data sources" href="BrowseDataSourcesTest.htm">Data Sources</a>
+        </li>
+        <li class="ToolTip" data-tooltip="Browse used schemas"><a class="menuItem" href="BrowseSchemasTest.htm">Schemas</a>
+        </li>
+    </ul>
+</div>
+</header>
+
+
+<!--<div class="verticalContentSeparatorSmall"></div>-->
+<div class= "centeredBlock">
+    <form class="queryField" action="query.php" method="POST">
+        <input class="bigTextField" type="text" name="Query" placeholder="Search Dataspace...">
+        <button class="button grayGradient bigText" type="submit">Search</button>
+    </form>
+</div>
+
+
+<!-- Search result -->
+
+<div class= "centeredBlock ResultPage">
+    <ul class="ResultList">
+        <li class="SearchResult">
+            <ul>
+                <li class="SearchResultEntry">Schema: <a href="#">name</a></li>
+                <li class="SearchResultEntry">results: 666</li>
+                <li class="SearchResultEntry">Involved data sources: 
+                <input class="spoilerbutton button grayGradient" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';">
+                    <div class="spoiler"><div class="spoilerContent">
+                        <a href="#">source1</a>, <a href="#">source2</a>, <a href="#">source3</a>, <a href="#">source4</a>, <br>
+                        <a href="#">source5</a>, <a href="#">source6</a>, <a href="#">source7</a>, <a href="#">source8</a>, <br>
+                        <a href="#">source9</a>, <a href="#">source10</a>, <a href="#">source11</a>, <a href="#">source12</a>, <br>
+                        <a href="#">source13</a>, <a href="#">source14</a>, <a href="#">source15</a>, <a href="#">source16</a>
+                    </div></div>
+                </li>
+                <li class="SearchResultEntry">RDF data: <a href="BrowseRDFDataTest.htm">Browse</a></li>
+                <li class="SearchResultEntry">
+                    <form action="refine.php" method="POST">
+                        <button class="button grayGradient" type="submit">Refine</button>
+                    </form> 
+                </li>
+            </ul>
+        </li>
+        
+        
+        <li class="SearchResult">
+            <ul>
+                <li class="SearchResultEntry">Schema: <a href="#">name</a></li>
+                <li class="SearchResultEntry">results: 333</li>
+                <li class="SearchResultEntry">Involved data sources: 
+                <input class="spoilerbutton button grayGradient" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';">
+                    <div class="spoiler"><div class="spoilerContent">
+                        <a href="#">source1</a>, <a href="#">source2</a>, <a href="#">source3</a>, <a href="#">source4</a>, <br>
+                        <a href="#">source5</a>, <a href="#">source6</a>, <a href="#">source7</a>, <a href="#">source8</a>, <br>
+                        <a href="#">source9</a>, <a href="#">source10</a>, <a href="#">source11</a>, <a href="#">source12</a>, <br>
+                        <a href="#">source13</a>, <a href="#">source14</a>, <a href="#">source15</a>, <a href="#">source16</a>
+                    </div></div>
+                </li>
+                <li class="SearchResultEntry">RDF data: <a href="BrowseRDFDataTest.htm">Browse</a></li>
+                <li class="SearchResultEntry">
+                    <form action="refine.php" method="POST">
+                        <button class="button grayGradient" type="submit">Refine</button>
+                    </form> 
+                </li>
+            </ul>
+        </li>
+        
+        
+    </ul>
+</div>
+</body>
+</html>
+
+<!--
+<html>
+<body>
+
+<form action="action_page.php">
+  <input type="text" name="Query" value="" placeholder="your keyword(s)">
+  <button type="submit" value="Search">Search</button>
+</form> 
+<p>If you click the "Submit" button, the form-data will be sent to a page called "action_page.php".</p>
+
+</body>
+</html>
+
+-->

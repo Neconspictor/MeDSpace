@@ -1,0 +1,72 @@
+/* Special pain is taken to make this work on ALL background colors. If you're going to use it on a white (or black) background, you can simplify the code furhter.
+
+In short, yes I know you can write it shorter, you clever mothers. */
+
+@mixin gradient-text($text, $background, $gradient) {
+  background: white;
+  color: black;
+  position: relative;
+  
+  // Hide aliased edges caused by mixing blend modes. Will appear as a faint dark outline on certain backgrounds. Tweak to improve rendering
+    text-shadow: 
+      1px 1px 0px $background,
+      1px -1px 0px $background,
+      -1px -1px 0px $background,
+      -1px 1px 0px $background;
+  
+  &::before,
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    
+    // Make cursor ignore these, allowing text underneath to be clicked and selected
+    pointer-events: none;
+  }
+  
+  &::before {
+    // Gradient
+    background: $gradient;
+    content: '';
+    display: block;
+    mix-blend-mode: screen;
+  }
+  
+// Everything below can be removed when using a #fff background. Ditto when using a black background, provided the mix-blend-modes, text, background color are reversed. (Screen to multiply, white to black)
+  
+  &::after {
+// Duplicate gradient text. Yes, it's ugly. Change the value below without changing the HTML for fun times.
+    content: $text;
+    background: $background;
+    
+    color: white;
+    mix-blend-mode: multiply;
+  }
+
+}
+
+body {
+  background: #04161f;
+  font-family: "Lato", sans-serif;
+  margin: 3em auto;
+  max-width: 50em;
+}
+
+.gradient1 {
+  display: inline-block;
+  font-size: 96px;
+  margin: 0;
+  opacity: 0.9;
+  
+  @include gradient-text('CSS Gradient Text', #04161f, linear-gradient(to right, #23966c, #faaa54, #e23b4a, #db0768, #360670));
+}
+
+.gradient2 {
+  text-align: center;
+  margin: 1em auto;
+  width: 10em;
+  
+  @include gradient-text('Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptas, aut.', #04161f, radial-gradient(circle, #23966c, #faaa54, #e23b4a, #db0768, #360670));
+}
