@@ -90,8 +90,8 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
    * @throws UnsupportedEncodingException
    */
   private static String createID(File root, File destination) throws UnsupportedEncodingException {
-    String id = Util.createRelativePath(root, destination);
-    return URLEncoder.encode(id, "UTF-8");
+    return Util.createRelativePath(root, destination);
+    //return URLEncoder.encode(id, "UTF-8");
   }
 
   /**
