@@ -2,13 +2,10 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
-import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
-import de.unipassau.medspace.common.rdf.Triple;
-import de.unipassau.medspace.common.query.KeywordSearcher;
+import de.unipassau.medspace.common.play.WrapperService;
 import de.unipassau.medspace.common.register.Datasource;
-import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.config.Configuration;
@@ -26,14 +23,13 @@ import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Defines the Model of the SQL wrapper.
  */
 @Singleton
-public class SQLWrapperService {
+public class SQLWrapperService extends WrapperService {
 
   /**
    * Logger instance for this class.
@@ -44,16 +40,6 @@ public class SQLWrapperService {
    * Used to establish connection to the datasource.
    */
   private ConnectionPool connectionPool;
-
-  /**
-   * The general wrapper configuration.
-   */
-  private GeneralWrapperConfig generalConfig;
-
-  /**
-   * The D2R wrapper.
-   */
-  private D2rWrapper<?> wrapper;
 
   /**
    * Read meta data from the datasource.
@@ -89,11 +75,10 @@ public class SQLWrapperService {
                            ConnectionPool connectionPool,
                            ShutdownService shutdownService,
                            D2rWrapper<?> d2rWrapper) {
+    super(provider.getGeneralWrapperConfig(), d2rWrapper);
 
     this.registerClient = registerClient;
     this.connectionPool = connectionPool;
-    this.wrapper = d2rWrapper;
-    this.generalConfig = provider.getGeneralWrapperConfig();
 
     this.connectToRegister = generalConfig.getConnectToRegister();
 
@@ -122,15 +107,6 @@ public class SQLWrapperService {
 
 
   /**
-   * Provides the D2R wrapper.
-   * @return The D2R wrapper.
-   */
-  public D2rWrapper<?> getWrapper() {
-    return wrapper;
-  }
-
-
-  /**
    * Checks the connection status to the datasource
    * @return true if the wrapper could establish a connection to the datasource.
    */
@@ -145,31 +121,6 @@ public class SQLWrapperService {
       FileUtil.closeSilently(conn);
     }
     return true;
-  }
-
-  /**
-   * Performs a keyword keywordSearch on the underlying datasource or on the index if one is used.
-   * @param keywords The keywords to keywordSearch for.
-   * @param operator TODO
-   * @return A stream of rdf triples representing the success of the keyword keywordSearch.
-   * @throws IOException If an IO-Error occurs.
-   * @throws NoValidArgumentException If 'keywords' is null.
-   */
-  public Stream<Triple> search(String keywords, KeywordSearcher.Operator operator) throws IOException, NoValidArgumentException {
-
-    if (keywords == null) {
-      throw new NoValidArgumentException("keywords mustn't be null");
-    }
-
-    StringTokenizer tokenizer = new StringTokenizer(keywords, ", ", false);
-    List<String> keywordList = new ArrayList<>();
-
-    while(tokenizer.hasMoreTokens()) {
-      keywordList.add(tokenizer.nextToken());
-    }
-
-    KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher(operator);
-    return searcher.searchForKeywords(keywordList);
   }
 
   /**

@@ -26,15 +26,6 @@ libraryDependencies ++= Seq(
 
 	"com.h2database" % "h2" % "1.4.195",
 
-	// Jena
-	"org.apache.jena" % "jena-arq" % "3.4.0",
-	"org.apache.jena" % "jena-core" % "3.4.0",
-	"org.apache.jena" % "jena-iri" % "3.4.0",
-	"org.apache.jena" % "jena-tdb" % "3.4.0",
-	"org.apache.jena" % "jena-base" % "3.4.0" % "test",
-	"org.apache.jena" % "apache-jena-libs" % "3.4.0" pomOnly(),
-
-
 // Logging
 	// We only want to use one logging instance but some libs are using slf4j
 	// while others use log4j -> we use log4j and bridge slf4j to it
@@ -78,5 +69,4 @@ libraryDependencies ++= Seq(
 
 // https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
 	"org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
-
 )

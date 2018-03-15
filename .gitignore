@@ -55,6 +55,12 @@ implementation/commons_network/logs/*
 implementation/commons_network/.idea/*
 implementation/commons_network/project/*/*
 
+// commons_play build
+implementation/commons_play/target/*
+implementation/commons_play/logs/*
+implementation/commons_play/.idea/*
+implementation/commons_play/project/*/*
+
 //thesis
 thesis/latex source/rootFile.pdf
 thesis/sqlwrapper_doc/MeDSpace_D2RMap_Language_Specification.pdf

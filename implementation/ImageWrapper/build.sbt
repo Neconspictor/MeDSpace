@@ -12,9 +12,12 @@ lazy val image_wrapper = (project in file("."))
   .dependsOn(commons)
   .aggregate(commons_network)
   .dependsOn(commons_network)
+  .aggregate(common_play)
+  .dependsOn(common_play)
 
 lazy val commons = RootProject(file("../commons"))
 lazy val commons_network = RootProject(file("../commons_network"))
+lazy val common_play = RootProject(file("../commons_play"))
 
 scalaVersion := "2.12.2"
 
