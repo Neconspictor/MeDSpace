@@ -8,7 +8,6 @@ import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.stream.StreamConverter;
 import de.unipassau.medspace.d2r.D2R;
 import de.unipassau.medspace.d2r.D2rMap;
-import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
 import org.apache.lucene.document.Document;
 
@@ -17,14 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A factory that creates a lucene index manager for a {@link D2rWrapper}.
+ * A factory that creates a lucene index manager for a {@link de.unipassau.medspace.d2r.D2rWrapper}.
  */
 public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSqlTuple> {
 
-  /**
-   * The D2rWrapper used to create the index.
-   */
-  private D2rWrapper<Document> wrapper;
+  private final List<D2rMap> maps;
 
   /**
    * The directory to store lucene index data to.
@@ -33,11 +29,11 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
 
   /**
    * Creates a new LuceneIndexFactory.
-   * @param wrapper The wrapper to create an index manager for.
+   * @param maps
    * @param directory The directory the created index should store its data.
    */
-  public LuceneIndexFactory(D2rWrapper<Document> wrapper, String directory) {
-    this.wrapper = wrapper;
+  public LuceneIndexFactory(List<D2rMap> maps, String directory) {
+    this.maps = maps;
     this.directory = directory;
   }
 
@@ -45,8 +41,8 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
   @Override
   public TripleIndexManager<Document, MappedSqlTuple> createIndexManager() throws IOException {
 
-    LuceneD2rResultFactory factory = new LuceneD2rResultFactory(D2R.MAP_FIELD, wrapper);
-    List<String> fields = createFields(wrapper.getMaps());
+    LuceneD2rResultFactory factory = new LuceneD2rResultFactory(D2R.MAP_FIELD, maps);
+    List<String> fields = createFields(maps);
     AnalyzerBuilder builder = () -> LuceneUtil.buildAnalyzer();
     LuceneIndex index = LuceneIndex.create(directory, builder);
     IndexReaderFactory readerFactory = () -> index.createReader();

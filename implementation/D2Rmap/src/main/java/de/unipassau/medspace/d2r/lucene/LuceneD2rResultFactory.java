@@ -2,8 +2,10 @@ package de.unipassau.medspace.d2r.lucene;
 
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.SQL.SelectStatement;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.util.Converter;
+import de.unipassau.medspace.common.util.RdfUtil;
 import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
@@ -16,9 +18,7 @@ import org.apache.lucene.document.TextField;
 import org.javatuples.Pair;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Provides access to converters for converting {@link Document} to {@link MappedSqlTuple} and vice versa.
@@ -44,26 +44,38 @@ public class LuceneD2rResultFactory  {
   /**
    * This constant is used as the field name for the map id
    */
-  protected final String mapField;
+  private final String mapField;
+
+  private final List<D2rMap> maps;
 
   /**
-   * Used to get access to the D2rMaps.
+   * Allows accessing D2rMaps by their id.
    */
-  protected final D2rWrapper wrapper;
+  private final Map<String, D2rMap> idToMap;
 
 
   /**
    * Creates a new LuceneD2rResultFactory
    * @param mapField Will be stored in the created documents, to assign documents a D2rMap.
-   * @param wrapper Used to get access to the D2rMaps.
+   * @param maps TODO
    */
-  public LuceneD2rResultFactory(String mapField, D2rWrapper wrapper) {
+  public LuceneD2rResultFactory(String mapField, List<D2rMap> maps) {
     this.mapField = mapField;
-    this.wrapper = wrapper;
+    this.maps = Collections.unmodifiableList(maps);
+
     toDoc = (MappedSqlTuple elem) ->
        create(elem.getSource(), elem.getMap().getId());
     toElem = (Document doc) -> createElem(doc);
     triplizer = (Document doc) -> triplize(doc);
+
+
+    Map<String, D2rMap> temp = new HashMap<>();
+    for (D2rMap map : maps) {
+      temp.put(map.getId(), map);
+    }
+
+    //the id map should be unmodifiable
+    idToMap = Collections.unmodifiableMap(temp);
   }
 
   /**
@@ -189,7 +201,7 @@ public class LuceneD2rResultFactory  {
    */
   protected D2rMap getMap(Document doc) {
     String mapId = getMapId(doc);
-    return wrapper.getMapById(mapId);
+    return idToMap.get(mapId);
   }
 
   /**

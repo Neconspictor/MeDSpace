@@ -3,13 +3,13 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.ImageWrapperController.index()
+GET     /                           controllers.PDFWrapperController.index()
 
-GET /search                         controllers.ImageWrapperController.search(keywords:String ?="", attach:Boolean ?= false)
+GET /keyword-search                         controllers.PDFWrapperController.keywordSearch(keywords:String ?="", useOr:Boolean ?= false, attach:Boolean ?= false)
 
-GET /reindex                        controllers.ImageWrapperController.reindex()
+GET /reindex                        controllers.PDFWrapperController.reindex()
 
-GET /test_gui                       controllers.ImageWrapperController.guiTest()
+GET /test_gui                       controllers.PDFWrapperController.guiTest()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

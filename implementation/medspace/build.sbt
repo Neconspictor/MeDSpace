@@ -36,3 +36,5 @@ javacOptions ++= Seq("-Xlint:unchecked")
 
 unmanagedResourceDirectories in Test += baseDirectory.value / "app/resources"
 unmanagedResourceDirectories in Compile += baseDirectory.value / "app/resources"
+
+PlayKeys.devSettings := Seq("play.server.http.port" -> "9500", "play.server.http.address" -> "localhost")

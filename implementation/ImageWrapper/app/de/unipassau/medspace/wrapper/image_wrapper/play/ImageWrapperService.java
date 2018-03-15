@@ -1,16 +1,12 @@
 package de.unipassau.medspace.wrapper.image_wrapper.play;
 
 import com.typesafe.config.ConfigException;
-import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
-import de.unipassau.medspace.common.query.KeywordSearcher;
-import de.unipassau.medspace.common.rdf.Triple;
+import de.unipassau.medspace.common.play.WrapperService;
 import de.unipassau.medspace.common.register.Datasource;
-import de.unipassau.medspace.common.stream.Stream;
 
 import de.unipassau.medspace.common.wrapper.Wrapper;
-import de.unipassau.medspace.wrapper.image_wrapper.DDSM_ImageWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
@@ -19,24 +15,18 @@ import play.api.inject.ApplicationLifecycle;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Defines the Model of the SQL wrapper.
  */
 @Singleton
-public class ImageWrapperService {
+public class ImageWrapperService extends WrapperService {
 
   /**
    * Logger instance for this class.
    */
   private static Logger log = LoggerFactory.getLogger(ImageWrapperService.class);
-
-  /**
-   * The general wrapper configuration.
-   */
-  private GeneralWrapperConfig generalConfig;
 
   /**
    * TODO
@@ -53,11 +43,6 @@ public class ImageWrapperService {
    */
   private Datasource wrapperDatasource;
 
-  /**
-   * TODO
-   */
-  private final Wrapper wrapper;
-
 
   /**
    * Creates a new SQLWrapperService.
@@ -73,10 +58,8 @@ public class ImageWrapperService {
                              ShutdownService shutdownService,
                              Wrapper wrapper) {
 
+    super(provider.getGeneralWrapperConfig(), wrapper);
     this.registerClient = registerClient;
-    this.generalConfig = provider.getGeneralWrapperConfig();
-    this.wrapper = wrapper;
-
     this.connectToRegister = generalConfig.getConnectToRegister();
 
       try {
@@ -100,38 +83,6 @@ public class ImageWrapperService {
         wrapper.close();
         return CompletableFuture.completedFuture(null);
       });
-  }
-
-  /**
-   * TODO
-   * @return
-   */
-  public Wrapper getWrapper() {
-    return wrapper;
-  }
-
-  /**
-   * Performs a keyword search on the underlying datasource or on the index if one is used.
-   * @param keywords The keywords to search for.
-   * @return A stream of rdf triples representing the success of the keyword search.
-   * @throws IOException If an IO-Error occurs.
-   * @throws NoValidArgumentException If 'keywords' is null.
-   */
-  public Stream<Triple> search(String keywords) throws IOException, NoValidArgumentException {
-
-    if (keywords == null) {
-      throw new NoValidArgumentException("keywords mustn't be null");
-    }
-
-    StringTokenizer tokenizer = new StringTokenizer(keywords, ", ", false);
-    List<String> keywordList = new ArrayList<>();
-
-    while(tokenizer.hasMoreTokens()) {
-      keywordList.add(tokenizer.nextToken());
-    }
-
-    KeywordSearcher<Triple> searcher = wrapper.createKeywordSearcher();
-    return searcher.searchForKeywords(keywordList);
   }
 
   /**

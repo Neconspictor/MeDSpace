@@ -12,9 +12,12 @@ lazy val pdf_wrapper = (project in file("."))
   .dependsOn(commons)
   .aggregate(commons_network)
   .dependsOn(commons_network)
+  .aggregate(commons_play)
+  .dependsOn(commons_play)
 
 lazy val commons = RootProject(file("../commons"))
 lazy val commons_network = RootProject(file("../commons_network"))
+lazy val commons_play = RootProject(file("../commons_play"))
 
 scalaVersion := "2.12.2"
 

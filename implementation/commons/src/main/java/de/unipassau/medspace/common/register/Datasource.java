@@ -230,6 +230,7 @@ public class Datasource implements Comparable<Datasource> {
       url = null;
       description = null;
       services = null;
+      rdfFormat = null;
     }
 
     /**
@@ -240,6 +241,7 @@ public class Datasource implements Comparable<Datasource> {
       url = datasource.url;
       description = datasource.description;
       services = new ArrayList<>(datasource.services);
+      rdfFormat = datasource.rdfFormat;
     }
 
     /**

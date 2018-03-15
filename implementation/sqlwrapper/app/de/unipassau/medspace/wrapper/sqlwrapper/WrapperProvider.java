@@ -2,8 +2,13 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
+import de.unipassau.medspace.common.indexing.IndexManager;
 import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;
+import de.unipassau.medspace.common.rdf.TripleIndexManager;
+import de.unipassau.medspace.common.util.RdfUtil;
+import de.unipassau.medspace.d2r.D2rMap;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import de.unipassau.medspace.d2r.MappedSqlTuple;
 import de.unipassau.medspace.d2r.config.Configuration;
@@ -18,6 +23,7 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,14 +81,25 @@ public class WrapperProvider implements Provider<D2rWrapper<?>> {
     Map<String, Namespace> namespaces = new HashMap<>(generalConfig.getNamespaces());
     namespaces.putAll(d2rConfig.getNamespaces());
 
-    wrapper = new D2rWrapper<Document>(connectionPool, d2rConfig.getMaps(), namespaces);
-
-    D2rWrapper<Document> specificWrapper = (D2rWrapper<Document>) wrapper;
+    // Initialize d2r maps
+    QNameNormalizer normalizer = qName -> RdfUtil.getNormalizedURI(namespaces, qName);
+    List<D2rMap> maps = d2rConfig.getMaps();
+    for (D2rMap map : maps) {
+      map.setNormalizer(normalizer);
+      map.init(connectionPool.getDataSource());
+    }
 
     TripleIndexFactory<Document, MappedSqlTuple> indexFactory =
-        new LuceneIndexFactory(specificWrapper, indexPath.toString());
+        new LuceneIndexFactory(maps, indexPath.toString());
 
-    specificWrapper.init(indexPath, indexFactory);
+    TripleIndexManager<Document, MappedSqlTuple> indexManager =
+        indexFactory.createIndexManager();
+
+    wrapper = new D2rWrapper<Document>(connectionPool,
+        maps,
+        namespaces,
+        indexManager,
+        generalConfig.isIndexUsed());
 
     boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
 

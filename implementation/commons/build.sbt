@@ -14,10 +14,12 @@ description := "MeDSpace Commons"
 publishMavenStyle := true
 
 // Do not append Scala versions to the generated artifacts
-crossPaths := false
+//crossPaths := false
 
 // This forbids including Scala related libraries into the dependency
-autoScalaLibrary := false
+//autoScalaLibrary := false
+
+scalaVersion := "2.12.2"
 
 // library dependencies. (orginization name) % (project name) % (version)
 libraryDependencies ++= Seq(
@@ -58,7 +60,10 @@ libraryDependencies ++= Seq(
 	// Mockrunner JDBC
 	"com.mockrunner" % "mockrunner-jdbc" % "1.1.2",
 
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
+	"com.fasterxml.jackson.core" % "jackson-annotations" % "2.8.10",
+
+// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 	"com.fasterxml.jackson.core" % "jackson-core" % "2.8.10",
 
 	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime
@@ -68,5 +73,38 @@ libraryDependencies ++= Seq(
 	"org.eclipse.rdf4j" % "rdf4j-queryresultio-binary" % "2.2.2" % "runtime",
 
 // https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-core
-	"org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly()
+	"org.eclipse.rdf4j" % "rdf4j-core" % "2.2.2" pomOnly(),
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-rdfxml
+	"org.eclipse.rdf4j" % "rdf4j-rio-rdfxml" % "2.2.2" % "runtime",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-turtle
+	"org.eclipse.rdf4j" % "rdf4j-rio-turtle" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples
+	"org.eclipse.rdf4j" % "rdf4j-rio-ntriples" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-n3
+	"org.eclipse.rdf4j" % "rdf4j-rio-n3" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-trig
+	"org.eclipse.rdf4j" % "rdf4j-rio-trig" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-nquads
+	"org.eclipse.rdf4j" % "rdf4j-rio-nquads" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-jsonld
+	"org.eclipse.rdf4j" % "rdf4j-rio-jsonld" % "2.2.2" % "runtime",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-rdfjson
+	"org.eclipse.rdf4j" % "rdf4j-rio-rdfjson" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-trix
+	"org.eclipse.rdf4j" % "rdf4j-rio-trix" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-binary
+	"org.eclipse.rdf4j" % "rdf4j-rio-binary" % "2.2.2",
+
+	// https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java
+	"com.github.jsonld-java" % "jsonld-java" % "0.11.1"
 )

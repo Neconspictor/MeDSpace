@@ -9,8 +9,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.javatuples.Pair;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 
 /**
  * TODO

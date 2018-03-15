@@ -5,7 +5,7 @@
 # An example controller showing a sample home page
 GET     /                           controllers.ImageWrapperController.index()
 
-GET /search                         controllers.ImageWrapperController.search(keywords:String ?="", attach:Boolean ?= false)
+GET /keyword-search                         controllers.ImageWrapperController.keywordSearch(keywords:String ?="", useOr:Boolean ?= false, attach:Boolean ?= false)
 
 GET /reindex                        controllers.ImageWrapperController.reindex()
 
