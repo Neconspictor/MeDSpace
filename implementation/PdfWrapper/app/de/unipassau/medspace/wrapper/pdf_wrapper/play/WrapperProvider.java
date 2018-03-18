@@ -1,19 +1,20 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 
+import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.RDFFactory;
 import de.unipassau.medspace.common.rdf.TripleIndexManager;
+import de.unipassau.medspace.common.rdf.mapping.NamespaceMapping;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.common.util.RdfUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.wrapper.pdf_wrapper.PdfWrapper;
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.NamespaceParsing;
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.RootParsing;
+import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.PdfFile;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.LuceneIndexFactory;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.Pdf_AdapterFactory;
-import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.LuceneDocAdapter;
+import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.LucenePdfFileDocAdapter;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,14 +50,23 @@ public class WrapperProvider implements Provider<Wrapper> {
   public WrapperProvider(ConfigProvider configProvider,
                          ShutdownService shutdownService) throws IOException {
 
-    RootParsing rootParsing = configProvider.getPdfConfig();
+    RootMapping rootParsing = configProvider.getPdfConfig();
 
-    Pdf_AdapterFactory adapterFactory = new Pdf_AdapterFactory(rootParsing);
-    List<LuceneDocAdapter<?>> adapters = adapterFactory.createAdapters();
+
+    ServerConfig serverConfig = configProvider.getServerConfig();
+    String host = serverConfig.getServerURL().toString();
+    if (!host.endsWith("/")) {
+      host += "/";
+    }
+
+    String downloadService = host + "get-file?relativePath=";
+
+    Pdf_AdapterFactory adapterFactory = new Pdf_AdapterFactory(rootParsing, downloadService);
+    List<LucenePdfFileDocAdapter<?>> adapters = adapterFactory.createAdapters();
 
     Map<String, Namespace> namespaces = new HashMap<>();
 
-    for (NamespaceParsing parsedNamespace :  rootParsing.getNamespace()) {
+    for (NamespaceMapping parsedNamespace :  rootParsing.getNamespace()) {
       String prefix = parsedNamespace.getPrefix().trim();
       String fullURI = parsedNamespace.getNamespace().trim();
       Namespace namespace = new Namespace(prefix, fullURI);

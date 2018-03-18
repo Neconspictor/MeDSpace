@@ -9,6 +9,8 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Utility class for handling files, directories and resources.
@@ -77,6 +79,66 @@ public class FileUtil {
   }
 
   /**
+   * Creates a temporary file from a resource.
+   * @param resourceName The name of the resource.
+   * @param tempFileName The wished name of the created temporary file.
+   * @return The temporary file having the same content as the resource.
+   * @throws IOException If an IO-Error occurs.
+   */
+  public static TempFile createTempFileFromResource(String resourceName, String tempFileName)
+      throws IOException {
+
+    TempFile file = null;
+    InputStream input = null;
+    OutputStream out = null;
+
+    try {
+
+      input = FileUtil.class.getResourceAsStream(resourceName);
+      file = new TempFile(new Date().getTime() + " " + tempFileName, ".tmp");
+      out = new FileOutputStream(file.get());
+      int read;
+      byte[] bytes = new byte[1024];
+
+      while ((read = input.read(bytes)) != -1) {
+        out.write(bytes, 0, read);
+      }
+      out.flush();
+
+    } catch (IOException ex) {
+      throw new IOException("Couldn't createDoc temporary file from resource: " + resourceName, ex);
+    } finally {
+      closeSilently(out);
+      closeSilently(input);
+    }
+
+    return file;
+  }
+
+
+  /**
+   * TODO
+   * @param file
+   * @return
+   * @throws IOException
+   */
+  public static List<String> getLineContent(File file) throws IOException {
+    List<String> result = new LinkedList<>();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+    try {
+      String line = reader.readLine();
+      while(line != null) {
+        result.add(line);
+        line = reader.readLine();
+      }
+    } finally {
+      reader.close();
+    }
+
+    return result;
+  }
+
+  /**
    * Provides a URL from a given resource file name.
    * @param filename The resource to get an URL from.
    * @return The URL to the specified resource.
@@ -114,39 +176,43 @@ public class FileUtil {
   }
 
   /**
-   * Creates a temporary file from a resource.
-   * @param resourceName The name of the resource.
-   * @param tempFileName The wished name of the created temporary file.
-   * @return The temporary file having the same content as the resource.
-   * @throws IOException If an IO-Error occurs.
+   * TODO
+   * @param root
+   * @param subFile
+   * @return
+   * @throws IOException
    */
-  public static TempFile createTempFileFromResource(String resourceName, String tempFileName)
-      throws IOException {
+  public static String getRelativePath(File root, File subFile)  {
 
-    TempFile file = null;
-    InputStream input = null;
-    OutputStream out = null;
+    if (!root.isDirectory())
+      throw new IllegalArgumentException("root isn't a directory!");
 
-    try {
+    String canonicalRoot = makePlatformIndependentPathStructure(root);
+    String canonicalSubFile = makePlatformIndependentPathStructure(subFile);
 
-      input = FileUtil.class.getResourceAsStream(resourceName);
-      file = new TempFile(new Date().getTime() + " " + tempFileName, ".tmp");
-      out = new FileOutputStream(file.get());
-      int read;
-      byte[] bytes = new byte[1024];
-
-      while ((read = input.read(bytes)) != -1) {
-        out.write(bytes, 0, read);
-      }
-      out.flush();
-
-    } catch (IOException ex) {
-      throw new IOException("Couldn't createDoc temporary file from resource: " + resourceName, ex);
-    } finally {
-      closeSilently(out);
-      closeSilently(input);
+    if (!canonicalSubFile.startsWith(canonicalRoot)) {
+      throw new IllegalArgumentException("File to get the relative path from isn't a sub file from root!");
     }
 
-    return file;
+    int length = canonicalRoot.length();
+
+    // we create a substring from canonicalSubFile by subtracting canonicalRoot
+    // But we have to assure that the resulting string doesn't start with a path separator.
+    if (!canonicalRoot.endsWith("/")) {
+      ++length;
+    }
+    return canonicalSubFile.substring(length, canonicalSubFile.length());
+  }
+
+  /**
+   * TODO
+   * @param file
+   * @return
+   */
+  public static String makePlatformIndependentPathStructure(File file) {
+    String canonicalRoot = file.getAbsolutePath();
+
+    //use only '/' as it is supported by all platforms
+    return canonicalRoot.replaceAll("\\\\", "/");
   }
 }

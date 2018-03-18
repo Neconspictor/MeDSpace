@@ -5,6 +5,8 @@
 # An example controller showing a sample home page
 GET     /                           controllers.PDFWrapperController.index()
 
+GET /get-file                   controllers.PDFWrapperController.getFile(relativePath:String ?="")
+
 GET /keyword-search                         controllers.PDFWrapperController.keywordSearch(keywords:String ?="", useOr:Boolean ?= false, attach:Boolean ?= false)
 
 GET /reindex                        controllers.PDFWrapperController.reindex()

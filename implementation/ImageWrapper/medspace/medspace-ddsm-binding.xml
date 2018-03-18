@@ -2,46 +2,64 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
     version="2.1">
+	
+	
+	<jxb:bindings schemaLocation="../../commons/src/main/resources/medspace-rdf-mapping-specification.xsd">
+		<jxb:bindings node="//xsd:complexType[@name='Class']">
+			<jxb:class ref="de.unipassau.medspace.common.rdf.mapping.ClassMapping">
+			</jxb:class>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='DataTypeProperty']">
+            <jxb:class ref="de.unipassau.medspace.common.rdf.mapping.DataTypePropertyMapping"/>
+		</jxb:bindings>
 
-    <jxb:bindings schemaLocation="medspace-ddsm-specifcation.xsd">
+        <jxb:bindings node="//xsd:complexType[@name='File']">
+            <jxb:class ref="de.unipassau.medspace.common.rdf.mapping.FileMapping"/>
+        </jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Namespace']">
+            <jxb:class ref="de.unipassau.medspace.common.rdf.mapping.NamespaceMapping"/>
+        </jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Property']">
+            <jxb:class ref="de.unipassau.medspace.common.rdf.mapping.PropertyMapping"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='ObjectProperty']">
+            <jxb:class ref="de.unipassau.medspace.common.rdf.mapping.ObjectPropertyMapping"/>
+        </jxb:bindings>
+
+	</jxb:bindings>
+
+    <jxb:bindings schemaLocation="medspace-ddsm-specification.xsd">
             <jxb:bindings node="//xsd:element[@name='Root']">
-                <jxb:class name="RootParsing"/>
+                <jxb:class name="RootMapping"/>
             </jxb:bindings>
 			
-			<jxb:bindings node="//xsd:complexType[@name='Namespace']">
-                <jxb:class name="NamespaceParsing"/>
-            </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='Class']">
-            <jxb:class name="ClassParsing"/>
-        </jxb:bindings>
 			
 			<jxb:bindings node="//xsd:complexType[@name='IcsFile']">
-                <jxb:class name="IcsFileParsing"/>
+                <jxb:class name="IcsFileMapping"/>
             </jxb:bindings>
 			
 			<jxb:bindings node="//xsd:complexType[@name='Image']">
-                <jxb:class name="ImageParsing"/>
+                <jxb:class name="ImageMapping"/>
             </jxb:bindings>
 			
 			<jxb:bindings node="//xsd:complexType[@name='Overlay']">
-                <jxb:class name="OverlayParsing"/>
+                <jxb:class name="OverlayMapping"/>
             </jxb:bindings>
 			
 			<jxb:bindings node="//xsd:complexType[@name='Abnormality']">
-                <jxb:class name="AbnormalityParsing"/>
+                <jxb:class name="AbnormalityMapping"/>
             </jxb:bindings>
 			
 			<jxb:bindings node="//xsd:complexType[@name='Calcification']">
-                <jxb:class name="CalcificationParsing"/>
+                <jxb:class name="CalcificationMapping"/>
             </jxb:bindings>
 			
 			<jxb:bindings node="//xsd:complexType[@name='Mass']">
-                <jxb:class name="MassParsing"/>
-            </jxb:bindings>
-			
-			<jxb:bindings node="//xsd:complexType[@name='DataTypeProperty']">
-                <jxb:class name="DataTypePropertyParsing"/>
+                <jxb:class name="MassMapping"/>
             </jxb:bindings>
     </jxb:bindings>
 </jxb:bindings>

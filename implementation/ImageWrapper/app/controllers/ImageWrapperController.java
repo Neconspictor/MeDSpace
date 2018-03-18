@@ -2,7 +2,8 @@ package controllers;
 
 import de.unipassau.medspace.common.play.WrapperController;
 import de.unipassau.medspace.common.rdf.RDFProvider;
-import de.unipassau.medspace.wrapper.image_wrapper.play.ConfigProvider;
+import de.unipassau.medspace.common.zip.ZipProject;
+import de.unipassau.medspace.wrapper.image_wrapper.play.DdsmConfigProvider;
 import de.unipassau.medspace.wrapper.image_wrapper.play.ImageWrapperService;
 
 import org.slf4j.Logger;
@@ -16,8 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This controller handles the access of the SQL wrapper services and manages the proper GUI rendering of the services.
@@ -45,7 +44,7 @@ public class ImageWrapperController extends WrapperController {
   @Inject
   ImageWrapperController(ImageWrapperService wrapperService,
                          RDFProvider rdfProvider,
-                         ConfigProvider configProvider) {
+                         DdsmConfigProvider configProvider) {
     super(configProvider.getGeneralWrapperConfig(), rdfProvider, wrapperService);
     this.imageWrapperService = wrapperService;
     root = new File("_work/medspace/caseFiles/");
@@ -81,7 +80,7 @@ public class ImageWrapperController extends WrapperController {
         return internalServerError("Illegal file specified!");
       }
     } catch (IOException e) {
-      internalServerError("Error while processing request.");
+      return internalServerError("Error while processing request.");
     }
 
     FileInputStream target;
@@ -95,6 +94,58 @@ public class ImageWrapperController extends WrapperController {
     String mimeType = Http.MimeTypes.BINARY;
 
     String dispositionValue = "attachement; filename=" + filename;
+    return ok(target).as(mimeType).withHeader("Content-Disposition", dispositionValue);
+  }
+
+  public Result getDirectory(String relativePath) {
+    Result result;
+    try {
+      result = getZipFromDirectory(relativePath);
+    } catch (IOException e) {
+      return internalServerError("Couldn't zip folder!");
+    }
+
+    return result;
+  }
+
+
+  Result getZipFromDirectory(String relativePath) throws IOException {
+    String path = root.getCanonicalPath();
+
+    if (!(path.endsWith("/") || path.endsWith("\\"))) {
+      path += "/";
+    }
+
+    path += relativePath;
+
+    if (!(path.endsWith("/") || path.endsWith("\\"))) {
+      path += "/";
+    }
+
+    File targetDirectory = new File(path);
+
+    if (!isInFolderOrSubfolder(targetDirectory, root)) {
+      throw new IOException("Illegal file specified!");
+    }
+
+    if (!targetDirectory.isDirectory()) {
+      throw new IOException("Directory not found!");
+    }
+
+    String directoryName = targetDirectory.getName();
+    String zipFilePath = path + directoryName + ".zip";
+
+    File zipFile = new File(zipFilePath);
+
+    if (!zipFile.exists()) {
+      ZipProject zipProject = new ZipProject(path, zipFilePath);
+      zipProject.zip();
+    }
+
+    FileInputStream target = new FileInputStream(zipFile);
+    String mimeType = Http.MimeTypes.BINARY;
+
+    String dispositionValue = "attachement; filename=" + directoryName + ".zip";
     return ok(target).as(mimeType).withHeader("Content-Disposition", dispositionValue);
   }
 

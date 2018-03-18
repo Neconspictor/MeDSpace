@@ -4,11 +4,12 @@ import de.unipassau.medspace.common.indexing.IndexSearcher;
 import de.unipassau.medspace.common.lucene.*;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.*;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.common.stream.FlatMapStream;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
+import de.unipassau.medspace.common.util.MiskUtil;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.IcsFile;
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.Util;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.*;
 import org.apache.lucene.document.Document;
 import org.javatuples.Pair;
@@ -25,7 +26,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
   /**
    * TODO
    */
-  private final List<LuceneDocAdapter<?>> adpaters;
+  private final List<LuceneDocDdsmCaseAdapter<?>> adpaters;
 
   /**
    * The directory to store lucene index data to.
@@ -50,7 +51,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
    * @param normalizer
    */
   public LuceneIndexFactory(String directory,
-                            List<LuceneDocAdapter<?>> adpaters,
+                            List<LuceneDocDdsmCaseAdapter<?>> adpaters,
                             RDFFactory factory,
                             QNameNormalizer normalizer) {
     this.directory = directory;
@@ -80,11 +81,14 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
    */
   private List<String> createFields() {
     List<String> fields = new ArrayList<>();
-    for (LuceneDocAdapter<?> adapter : adpaters) {
-      List<Pair<String, Property>> pairs = adapter.getFieldNamePropertyPairs();
-      for (Pair<String, Property> pair : pairs) {
+    for (LuceneDocDdsmCaseAdapter<?> adapter : adpaters) {
+      List<Pair<String, PropertyMapping>> pairs = adapter.getFieldNamePropertyPairs();
+      for (Pair<String, PropertyMapping> pair : pairs) {
         fields.add(pair.getValue0());
       }
+
+      for (String metaDataField : adapter.getMetaDataFields())
+        fields.add(metaDataField);
     }
     return fields;
   }
@@ -97,7 +101,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
     /**
      * TODO
      */
-    private final List<LuceneDocAdapter<?>> adapters;
+    private final List<LuceneDocDdsmCaseAdapter<?>> adapters;
 
     /**
      * Creates a new TripleIndexManager.
@@ -107,7 +111,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
      */
     public IcsFileTripleIndexManager(IndexSearcher<Document> searcher,
                                      Converter<KeywordSearcher<Document>, KeywordSearcher<Triple>> tripleSearchConverter,
-                                     List<LuceneDocAdapter<?>> adapters) {
+                                     List<LuceneDocDdsmCaseAdapter<?>> adapters) {
       super(searcher, tripleSearchConverter);
       this.adapters = adapters;
     }
@@ -115,12 +119,12 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
     @Override
     public Stream<Document> convert(Stream<IcsFile> source) {
       Stream<Stream<Document>> streamOfDocumentStreams = new IcsFileStreamToDocStream(source,
-          Util.getByClass(adapters, IcsFileAdapter.class),
-          Util.getByClass(adapters, OverlayAdapter.class),
-          Util.getByClass(adapters, AbnormalityAdapter.class),
-          Util.getByClass(adapters, ImageAdapter.class),
-          Util.getByClass(adapters, CalcificationAdapter.class),
-          Util.getByClass(adapters, MassAdapter.class));
+          MiskUtil.getByClass(adapters, IcsFileAdapter.class),
+          MiskUtil.getByClass(adapters, OverlayAdapter.class),
+          MiskUtil.getByClass(adapters, AbnormalityAdapter.class),
+          MiskUtil.getByClass(adapters, ImageAdapter.class),
+          MiskUtil.getByClass(adapters, CalcificationAdapter.class),
+          MiskUtil.getByClass(adapters, MassAdapter.class));
 
       return new FlatMapStream<>(streamOfDocumentStreams);
     }

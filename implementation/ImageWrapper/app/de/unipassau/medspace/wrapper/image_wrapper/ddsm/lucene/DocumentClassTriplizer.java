@@ -4,11 +4,11 @@ import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.RDFFactory;
 import de.unipassau.medspace.common.rdf.RDFResource;
 import de.unipassau.medspace.common.rdf.Triple;
+import de.unipassau.medspace.common.rdf.mapping.ObjectPropertyMapping;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
 import de.unipassau.medspace.common.util.Converter;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.ObjectProperty;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.LuceneDocAdapter;
-import de.unipassau.medspace.wrapper.image_wrapper.rdf_mapping.Util;
+import de.unipassau.medspace.common.util.RdfUtil;
+import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.LuceneDocDdsmCaseAdapter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.javatuples.Pair;
@@ -25,7 +25,7 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
   /**
    * TODO
    */
-  private final List<LuceneDocAdapter<?>> adapters;
+  private final List<LuceneDocDdsmCaseAdapter<?>> adapters;
 
   /**
    * Used to normalize the rdf triples.
@@ -43,7 +43,7 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
    * @param normalizer
    * @param rdfFactory
    */
-  public DocumentClassTriplizer(List<LuceneDocAdapter<?>> adapters,
+  public DocumentClassTriplizer(List<LuceneDocDdsmCaseAdapter<?>> adapters,
                                 QNameNormalizer normalizer,
                                 RDFFactory rdfFactory) {
     this.adapters = adapters;
@@ -54,7 +54,7 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
   @Override
   public List<Triple> convert(Document source) throws IOException {
 
-    for (LuceneDocAdapter<?> adapter : adapters) {
+    for (LuceneDocDdsmCaseAdapter<?> adapter : adapters) {
       if (adapter.isConvertible(source))
         return convert(adapter, source);
     }
@@ -68,17 +68,17 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
    * @param document
    * @return
    */
-  private List<Triple> convert(LuceneDocAdapter<?> adapter, Document document) {
+  private List<Triple> convert(LuceneDocDdsmCaseAdapter<?> adapter, Document document) {
     List<Triple> triples = new ArrayList<>();
 
     String id = adapter.getObjectId(document);
     String baseURI = adapter.getClassBaseURI();
-    String subjectURI = Util.createResourceId(normalizer, baseURI, id);
+    String subjectURI = RdfUtil.createResourceId(normalizer, baseURI, id);
     RDFResource subject = rdfFactory.createResource(subjectURI);
 
-    List<Pair<String, Property>> pairs = adapter.getFieldNamePropertyPairs();
+    List<Pair<String, PropertyMapping>> pairs = adapter.getFieldNamePropertyPairs();
 
-    for (Pair<String, Property> pair : pairs) {
+    for (Pair<String, PropertyMapping> pair : pairs) {
       IndexableField[] fields = document.getFields(pair.getValue0());
 
       for (IndexableField field : fields) {
@@ -99,20 +99,20 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
    * @return
    */
   private Triple createTriple(IndexableField field,
-                         LuceneDocAdapter<?> adapter,
-                         Pair<String, Property> pair,
+                         LuceneDocDdsmCaseAdapter<?> adapter,
+                         Pair<String, PropertyMapping> pair,
                          RDFResource subject) {
 
-    Property property = pair.getValue1();
+    PropertyMapping property = pair.getValue1();
 
     String value;
-    if (property instanceof ObjectProperty) {
+    if (property instanceof ObjectPropertyMapping) {
       value = adapter.createValue(pair, field);
     } else {
       value= field.stringValue();
     }
 
-    return Util.triplize(rdfFactory,
+    return RdfUtil.triplize(rdfFactory,
         normalizer,
         property,
         subject,

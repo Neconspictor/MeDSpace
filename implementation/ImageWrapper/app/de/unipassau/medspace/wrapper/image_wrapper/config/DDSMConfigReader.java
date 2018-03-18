@@ -1,7 +1,8 @@
 package de.unipassau.medspace.wrapper.image_wrapper.config;
 
+import de.unipassau.medspace.common.config.Constants;
 import de.unipassau.medspace.common.util.XmlUtil;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.*;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
@@ -18,6 +19,10 @@ public class DDSMConfigReader {
 
   private final String ddsmSpecificationSchema;
 
+  /**
+   * TODO
+   * @param ddsmSpecificationSchema
+   */
   public DDSMConfigReader(String ddsmSpecificationSchema) {
     this.ddsmSpecificationSchema = ddsmSpecificationSchema;
   }
@@ -30,11 +35,13 @@ public class DDSMConfigReader {
    * @throws IOException
    * @throws SAXException
    */
-  public RootParsing parse(String fileName) throws JAXBException, IOException, SAXException {
-    JAXBContext context = JAXBContext.newInstance(RootParsing.class);
+  public RootMapping parse(String fileName) throws JAXBException, IOException, SAXException {
+    JAXBContext context = JAXBContext.newInstance(RootMapping.class);
     Unmarshaller unmarshaller = context.createUnmarshaller();
-    Schema schema = XmlUtil.createSchema(new String[]{ddsmSpecificationSchema});
+
+    // RDF_MAPPING_SCHEMA is a dependency for ddsmSpecificationSchema, so it has to be stated at the first place
+    Schema schema = XmlUtil.createSchema(new String[]{Constants.RDF_MAPPING_SCHEMA, ddsmSpecificationSchema});
     unmarshaller.setSchema(schema);
-    return (RootParsing) unmarshaller.unmarshal(new File(fileName));
+    return (RootMapping) unmarshaller.unmarshal(new File(fileName));
   }
 }

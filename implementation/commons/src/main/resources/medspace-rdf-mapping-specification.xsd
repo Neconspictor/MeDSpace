@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.medspace.com/rdf-mapping"
+        xmlns:rdf-mapping="http://www.medspace.com/rdf-mapping"
+        elementFormDefault="qualified">
+
+    <!-->
+        A type for defining RDF namespaces
+
+        @attribute prefix:		The prefix to use in the rdf triples.
+
+        @attribute namespace:	The namespace represented by the prefix.
+    <-->
+    <xsd:complexType name="Namespace">
+        <xsd:attribute name="prefix" type="xsd:string" use="required"/>
+        <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="Class">
+        <xsd:sequence>
+            <xsd:element name="metaData" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="rdfType" type="xsd:string" use="required"/>
+        <xsd:attribute name="classId" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="Property">
+        <xsd:attribute name="propertyType" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="DataTypeProperty">
+        <xsd:complexContent>
+            <xsd:extension base="rdf-mapping:Property">
+                <xsd:attribute name="dataType" type="xsd:string" use="required"/>
+                <xsd:attribute name="lang" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="ObjectProperty">
+        <xsd:complexContent>
+            <xsd:extension base="rdf-mapping:Property"></xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="File">
+        <xsd:complexContent>
+            <xsd:extension base="rdf-mapping:Class">
+                <xsd:sequence>
+                    <xsd:element name="source" type="rdf-mapping:DataTypeProperty" minOccurs="1" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+</xsd:schema>

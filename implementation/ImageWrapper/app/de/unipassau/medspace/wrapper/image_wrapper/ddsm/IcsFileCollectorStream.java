@@ -1,6 +1,7 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
 import de.unipassau.medspace.common.stream.Stream;
+import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.wrapper.image_wrapper.MultiMediaCollector;
 import de.unipassau.medspace.wrapper.image_wrapper.MultiMediaContainer;
 import de.unipassau.medspace.wrapper.image_wrapper.MultiMediaFile;
@@ -8,7 +9,6 @@ import de.unipassau.medspace.wrapper.image_wrapper.MultiMediaFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -90,7 +90,7 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
    * @throws UnsupportedEncodingException
    */
   private static String createID(File root, File destination) throws UnsupportedEncodingException {
-    return Util.createRelativePath(root, destination);
+    return FileUtil.getRelativePath(root, destination);
     //return URLEncoder.encode(id, "UTF-8");
   }
 

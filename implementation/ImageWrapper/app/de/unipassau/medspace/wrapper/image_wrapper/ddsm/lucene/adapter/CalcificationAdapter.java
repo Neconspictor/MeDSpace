@@ -1,7 +1,7 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.CalcificationParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.CalcificationMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Calcification;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class CalcificationAdapter extends LuceneDocAdapter<Calcification> {
+public class CalcificationAdapter extends LuceneDocDdsmCaseAdapter<Calcification> {
 
   /**
    * TODO
@@ -30,8 +30,8 @@ public class CalcificationAdapter extends LuceneDocAdapter<Calcification> {
    *
    * @param calcificationParsing
    */
-  protected CalcificationAdapter(CalcificationParsing calcificationParsing) {
-    super(calcificationParsing);
+  protected CalcificationAdapter(CalcificationMapping calcificationParsing, String ddsmCaseName) {
+    super(calcificationParsing,ddsmCaseName);
 
     addPair(TYPE, calcificationParsing.getType());
     addPair(DISTRIBUTION, calcificationParsing.getDistribution());
@@ -44,7 +44,7 @@ public class CalcificationAdapter extends LuceneDocAdapter<Calcification> {
   }
 
   @Override
-  public String createValue(Pair<String, Property> pair, IndexableField field) {
+  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
     return field.stringValue();
   }
 }

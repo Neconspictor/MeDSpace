@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<ddsm:Root xmlns:ddsm="http://www.medspace.com/images/ddsm">
+<ddsm:Root xmlns:ddsm="http://www.medspace.com/images/ddsm"
+           xmlns:rdf-mapping="http://www.medspace.com/rdf-mapping">
 
 	<!-->RDF namespaces
 		@attribute prefix:		The prefix to use in the rdf triples
@@ -29,6 +30,8 @@
 	<-->
 
     <ddsm:IcsFile rdfType="http://www.medspace.com/images/ddsm/ics_file" classId="IcsFile">
+        <rdf-mapping:metaData>DDSM ICS</rdf-mapping:metaData>
+        <rdf-mapping:source propertyType="ics_file:source" dataType="xsd:string"/>
         <ddsm:dateOfStudy propertyType="ics_file:dateOfStudy" dataType="xsd:date"/>
         <ddsm:patientAge propertyType="ics_file:patientAge" dataType="xsd:integer"/>
         <ddsm:density propertyType="ics_file:density" dataType="xsd:integer"/>
@@ -41,16 +44,20 @@
     </ddsm:IcsFile>
 
     <ddsm:Image rdfType="http://www.medspace.com/images/ddsm/image" classId="Image">
-        <ddsm:source propertyType="image:source" dataType="xsd:string"/>
+        <rdf-mapping:metaData>DDSM IMAGE</rdf-mapping:metaData>
+        <rdf-mapping:source propertyType="image:source" dataType="xsd:string"/>
         <ddsm:overlay propertyType="image:overlay"/>
     </ddsm:Image>
 
     <ddsm:Overlay rdfType="http://www.medspace.com/images/ddsm/overlay" classId="Overlay">
+        <rdf-mapping:metaData>DDSM OVERLAY</rdf-mapping:metaData>
+        <rdf-mapping:source propertyType="overlay:source" dataType="xsd:string"/>
         <ddsm:totalAbnormalities propertyType="overlay:totalAbnormalities" dataType="xsd:integer"/>
         <ddsm:abnormality propertyType="overlay:abnormality"/>
     </ddsm:Overlay>
     
     <ddsm:Abnormality rdfType="http://www.medspace.com/images/ddsm/overlay/abnormality" classId="Abnormality">
+        <rdf-mapping:metaData>DDSM Abnormality</rdf-mapping:metaData>
         <ddsm:abnormality propertyType="abnormality:abnormality" dataType="xsd:integer"/>
         <ddsm:calcification propertyType="abnormality:calcification"/>
         <ddsm:mass propertyType="abnormality:mass"/>
@@ -61,11 +68,13 @@
     </ddsm:Abnormality>
 
     <ddsm:Calcification rdfType="http://www.medspace.com/images/ddsm/overlay/abnormality/calcification" classId="Calcification">
+        <rdf-mapping:metaData>DDSM lesion Calcification </rdf-mapping:metaData>
         <ddsm:type propertyType="calcification:type" dataType="xsd:string"/>
         <ddsm:distribution propertyType="calcification:distribution" dataType="xsd:string"/>
     </ddsm:Calcification>
 
     <ddsm:Mass rdfType="http://www.medspace.com/images/ddsm/overlay/abnormality/mass" classId="Mass">
+        <rdf-mapping:metaData>DDSM lesion Mass </rdf-mapping:metaData>
         <ddsm:shape propertyType="mass:shape" dataType="xsd:string"/>
         <ddsm:margins propertyType="mass:margins" dataType="xsd:string"/>
     </ddsm:Mass>

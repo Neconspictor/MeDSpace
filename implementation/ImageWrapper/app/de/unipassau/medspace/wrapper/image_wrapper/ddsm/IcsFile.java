@@ -1,5 +1,10 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
+import de.unipassau.medspace.common.rdf.mapping.IdentifiableFile;
+import de.unipassau.medspace.common.util.FileUtil;
+import de.unipassau.medspace.common.util.ParserUtil;
+import de.unipassau.medspace.common.util.StringUtil;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -7,7 +12,7 @@ import java.util.*;
 /**
  * TODO
  */
-public class IcsFile extends Identifiable{
+public class IcsFile extends IdentifiableFile {
 
 
   /**
@@ -56,6 +61,9 @@ public class IcsFile extends Identifiable{
    * TODO
    */
   public static final String RIGHT_MLO = "RIGHT_MLO";
+
+  public static final List<String> FIELD_META_DATA = Arrays.asList(DATE_OF_STUDY, PATIENT_AGE, DENSITY, DATE_DIGITIZED,
+      DIGITIZER, LEFT_CC, LEFT_MLO, RIGHT_CC, "ICS FILE", "DDSM");
 
 
   /**
@@ -108,8 +116,8 @@ public class IcsFile extends Identifiable{
   /**
    * TODO
    */
-  private IcsFile(String id) {
-    super(id);
+  private IcsFile(String id, File source) {
+    super(id, source);
   }
 
   /**
@@ -219,6 +227,13 @@ public class IcsFile extends Identifiable{
     return rightMLO;
   }
 
+  /**
+   * TODO
+   */
+  public File getSource() {
+    return source;
+  }
+
 
   /**
    * TODO
@@ -232,10 +247,10 @@ public class IcsFile extends Identifiable{
      * @throws IOException
      */
     public static IcsFile parse(File file, String id) throws IOException {
-      IcsFile data = createUninitialized(id);
-      List<String> content = Util.getLineContent(file);
+      IcsFile data = createUninitialized(id, file);
+      List<String> content = FileUtil.getLineContent(file);
       for (String line : content) {
-        List<String> tokens = Util.tokenize(line);
+        List<String> tokens = StringUtil.tokenize(line, " \t");
         setField(tokens, data);
       }
 
@@ -251,8 +266,8 @@ public class IcsFile extends Identifiable{
      * TODO
      * @return
      */
-    private static IcsFile createUninitialized(String id) {
-      IcsFile data = new IcsFile(id);
+    private static IcsFile createUninitialized(String id, File source) {
+      IcsFile data = new IcsFile(id, source);
       data.dateOfStudy = null;
       data.patientAge  = -1;
       data.density = -1;
@@ -289,19 +304,19 @@ public class IcsFile extends Identifiable{
 
       switch(key) {
         case DATE_OF_STUDY:
-          data.dateOfStudy = Util.parseDateField(tokens);
+          data.dateOfStudy = ParserUtil.pullDateField(tokens);
           break;
         case PATIENT_AGE:
-          data.patientAge = Util.parseInt(tokens);
+          data.patientAge = ParserUtil.pullInt(tokens);
           break;
         case DENSITY:
-          data.density = Util.parseInt(tokens);
+          data.density = ParserUtil.pullInt(tokens);
           break;
         case DATE_DIGITIZED:
-          data.dateDigitized = Util.parseDateField(tokens);
+          data.dateDigitized = ParserUtil.pullDateField(tokens);
           break;
         case DIGITIZER:
-          data.digitizer = Util.parseText(tokens);
+          data.digitizer = StringUtil.concat(tokens, " ");
           break;
         default:
           break;

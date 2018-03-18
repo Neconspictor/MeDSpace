@@ -1,8 +1,8 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.AbnormalityParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.OverlayParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.AbnormalityMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.OverlayMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.Abnormality;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.OverlayMetaData;
 import org.apache.lucene.document.Document;
@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class OverlayAdapter extends LuceneDocAdapter<OverlayMetaData> {
+public class OverlayAdapter extends LuceneDocDdsmCaseAdapter<OverlayMetaData> {
 
   /**
    * TODO
@@ -29,12 +29,12 @@ public class OverlayAdapter extends LuceneDocAdapter<OverlayMetaData> {
   /**
    * TODO
    */
-  private final OverlayParsing overlayParsing;
+  private final OverlayMapping overlayParsing;
 
   /**
    * TODO
    */
-  private final AbnormalityParsing abnormalityParsing;
+  private final AbnormalityMapping abnormalityParsing;
 
   /**
    * TODO
@@ -42,8 +42,10 @@ public class OverlayAdapter extends LuceneDocAdapter<OverlayMetaData> {
    * @param overlayParsing
    * @param abnormalityParsing
    */
-  protected OverlayAdapter(OverlayParsing overlayParsing, AbnormalityParsing abnormalityParsing) {
-    super(overlayParsing);
+  protected OverlayAdapter(OverlayMapping overlayParsing,
+                           AbnormalityMapping abnormalityParsing,
+                           String ddsmCaseName) {
+    super(overlayParsing,ddsmCaseName);
     this.overlayParsing = overlayParsing;
     this.abnormalityParsing = abnormalityParsing;
 
@@ -64,8 +66,8 @@ public class OverlayAdapter extends LuceneDocAdapter<OverlayMetaData> {
   }
 
   @Override
-  public String createValue(Pair<String, Property> pair, IndexableField field) {
-    Property property = pair.getValue1();
+  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+    PropertyMapping property = pair.getValue1();
     String value = field.stringValue();
 
     if (isAbnormalityReference(property)) {
@@ -80,7 +82,7 @@ public class OverlayAdapter extends LuceneDocAdapter<OverlayMetaData> {
    * @param property
    * @return
    */
-  private boolean isAbnormalityReference(Property property) {
+  private boolean isAbnormalityReference(PropertyMapping property) {
 
     if (overlayParsing.getAbnormality().equals(property)) return true;
     return false;

@@ -10,6 +10,17 @@ public class Calcification extends LesionType {
    */
   public static final String CALCIFICATION = "CALCIFICATION";
 
+
+  /**
+   * TODO
+   */
+  public static final String TYPE = "TYPE";
+
+  /**
+   * TODO
+   */
+  public static final String DISTRIBUTION = "DISTRIBUTION";
+
   /**
    * TODO
    */

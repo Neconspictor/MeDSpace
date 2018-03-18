@@ -1,6 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf;
 
 import de.unipassau.medspace.common.stream.Stream;
+import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.wrapper.pdf_wrapper.MultiMediaCollector;
 import de.unipassau.medspace.wrapper.pdf_wrapper.MultiMediaContainer;
 import de.unipassau.medspace.wrapper.pdf_wrapper.MultiMediaFile;
@@ -8,7 +9,6 @@ import de.unipassau.medspace.wrapper.pdf_wrapper.MultiMediaFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -75,7 +75,7 @@ public class PdfFileCollectorStream implements Stream<PdfFile> {
    * @throws UnsupportedEncodingException
    */
   private static String createID(File root, File destination) throws UnsupportedEncodingException {
-    String id = Util.createRelativePath(root, destination);
-    return URLEncoder.encode(id, "UTF-8");
+    return FileUtil.getRelativePath(root, destination);
+    //return URLEncoder.encode(id, "UTF-8");
   }
 }

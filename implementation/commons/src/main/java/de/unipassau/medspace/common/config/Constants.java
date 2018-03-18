@@ -10,6 +10,8 @@ public final class Constants {
    */
   public static final String WRAPPER_VALIDATION_SCHEMA = "/medspace-wrapper-config-specification.xsd";
 
+  public static final String RDF_MAPPING_SCHEMA = "/medspace-rdf-mapping-specification.xsd";
+
     /**
      * Standard output format - should be used if no output format element is stated.
      */

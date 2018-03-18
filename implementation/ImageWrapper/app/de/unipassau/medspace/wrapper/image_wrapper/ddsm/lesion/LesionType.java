@@ -1,12 +1,18 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion;
 
 
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.Identifiable;
+import de.unipassau.medspace.common.rdf.mapping.Identifiable;
 
 /**
  * TODO
  */
 public abstract class LesionType extends Identifiable {
+
+  /**
+   * TODO
+   */
+  public static final String LESION_TYPE = "LESION_TYPE";
+
 
   /**
    * TODO

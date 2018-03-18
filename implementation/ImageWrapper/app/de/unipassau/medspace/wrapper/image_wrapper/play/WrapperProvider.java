@@ -1,19 +1,20 @@
 package de.unipassau.medspace.wrapper.image_wrapper.play;
 
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.RDFFactory;
 import de.unipassau.medspace.common.rdf.TripleIndexManager;
+import de.unipassau.medspace.common.rdf.mapping.NamespaceMapping;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.common.util.RdfUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.wrapper.image_wrapper.DDSM_ImageWrapper;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.NamespaceParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.RootParsing;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.RootMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.IcsFile;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.LuceneIndexFactory;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.DDSM_AdapterFactory;
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.LuceneDocAdapter;
+import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.LuceneDocDdsmCaseAdapter;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,17 +57,17 @@ public class WrapperProvider implements Provider<Wrapper> {
    * TODO
    */
   @Inject
-  public WrapperProvider(ConfigProvider configProvider,
+  public WrapperProvider(DdsmConfigProvider configProvider,
                          ShutdownService shutdownService) throws IOException {
 
-    RootParsing rootParsing = configProvider.getDdsmConfig();
+    RootMapping rootParsing = configProvider.getDdsmConfig();
 
-    DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(rootParsing);
-    List<LuceneDocAdapter<?>> adapters = adapterFactory.createAdapters();
+    DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(root, rootParsing);
+    List<LuceneDocDdsmCaseAdapter<?>> adapters = adapterFactory.createAdapters();
 
     Map<String, Namespace> namespaces = new HashMap<>();
 
-    for (NamespaceParsing parsedNamespace :  rootParsing.getNamespace()) {
+    for (NamespaceMapping parsedNamespace :  rootParsing.getNamespace()) {
       String prefix = parsedNamespace.getPrefix().trim();
       String fullURI = parsedNamespace.getNamespace().trim();
       Namespace namespace = new Namespace(prefix, fullURI);

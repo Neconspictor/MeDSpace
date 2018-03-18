@@ -23,8 +23,7 @@ import play.mvc.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -48,6 +47,8 @@ public class PDFWrapperController extends WrapperController {
    */
   private final PdfWrapperService pdfWrapperService;
 
+  private final File root;
+
   /**
    * Creates a new SQLWrapperController
    * @param wrapperService TODO
@@ -59,7 +60,55 @@ public class PDFWrapperController extends WrapperController {
                        ConfigProvider configProvider) {
     super(configProvider.getGeneralWrapperConfig(), rdfProvider, wrapperService);
     this.pdfWrapperService = wrapperService;
+
+    root = new File(configProvider.getPdfConfig().getPdfRootDirectory());
+
   }
+
+  /**
+   * TODO
+   * @param relativePath
+   * @return
+   */
+  public Result getFile(String relativePath) {
+
+    String path;
+    try {
+      path = root.getCanonicalPath();
+    } catch (IOException e) {
+      throw new IllegalStateException("root.getCanonicalPath() shouldn't throw new Exception");
+    }
+
+    if (!(path.endsWith("/") || path.endsWith("\\"))) {
+      path += "/";
+    }
+
+    path += relativePath;
+
+    File targetFile = new File(path);
+
+    try {
+      if (!isInFolderOrSubfolder(targetFile, root)) {
+        return internalServerError("Illegal file specified!");
+      }
+    } catch (IOException e) {
+      return internalServerError("Error while processing request.");
+    }
+
+    FileInputStream target;
+    try {
+      target = new FileInputStream(path);
+    } catch (FileNotFoundException e) {
+      return internalServerError("File not found!");
+    }
+
+    String filename = targetFile.getName();
+    String mimeType = Http.MimeTypes.BINARY;
+
+    String dispositionValue = "attachement; filename=" + filename;
+    return ok(target).as(mimeType).withHeader("Content-Disposition", dispositionValue);
+  }
+
 
   /**
    * Provides the test page of the SQL Wrapper.
@@ -74,5 +123,12 @@ public class PDFWrapperController extends WrapperController {
    */
   public Result index() {
     return ok(views.html.index.render(pdfWrapperService, generalConfig));
+  }
+
+  private boolean isInFolderOrSubfolder(File targetFile, File root) throws IOException {
+    String rootCanonical = root.getCanonicalPath();
+    String targetCanonical = targetFile.getCanonicalPath();
+
+    return targetCanonical.startsWith(rootCanonical + File.separator);
   }
 }

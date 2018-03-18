@@ -1,6 +1,5 @@
 package de.unipassau.medspace.common.config;
 
-import de.unipassau.medspace.common.config.general_wrapper.RegisterUrlAdapter;
 import de.unipassau.medspace.common.config.general_wrapper.Config;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.util.XmlUtil;
@@ -13,7 +12,6 @@ import de.unipassau.medspace.common.config.GeneralWrapperConfig.GeneralWrapperCo
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import java.io.File;

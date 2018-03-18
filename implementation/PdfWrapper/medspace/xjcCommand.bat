@@ -1,1 +1,1 @@
-xjc -b medspace-pdf-wrapper-config-binding.xml -p de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing -d xjc-generated -extension medspace-pdf-wrapper-config-specification.xsd
+xjc -b medspace-pdf-wrapper-config-binding.xml -p de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping -d xjc-generated -extension ../../commons/src/main/resources/medspace-rdf-mapping-specification.xsd medspace-pdf-wrapper-config-specification.xsd

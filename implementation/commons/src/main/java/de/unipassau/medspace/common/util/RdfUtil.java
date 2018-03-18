@@ -1,12 +1,84 @@
 package de.unipassau.medspace.common.util;
 
-import de.unipassau.medspace.common.rdf.Namespace;
+import de.unipassau.medspace.common.rdf.*;
+import de.unipassau.medspace.common.rdf.mapping.DataTypePropertyMapping;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
  * TODO
  */
 public class RdfUtil {
+
+  /**
+   * TODO
+   * @param value
+   * @param propertyParsing
+   * @return
+   */
+  public static RDFObject createLiteral(RDFFactory factory,
+                                        QNameNormalizer normalizer,
+                                        DataTypePropertyMapping propertyParsing,
+                                        String value) {
+
+    String dataType = propertyParsing.getDataType();
+    String lang = propertyParsing.getLang();
+    RDFObject object;
+
+    // The lang tag specifies indirectly the dataType (rdf:lang)
+    // Thus the lang tag has a higher priority than the dataType tag
+    if ((value != null) && (lang != null)) {
+      object = factory.createLiteral(value, lang);
+    } else if ((value != null) && (dataType != null)) {
+      // if no lang tag is set but the dataType tag createDoc a typed literal
+      dataType = normalizer.normalize(dataType);
+      object = factory.createTypedLiteral(value, dataType);
+    }  else {
+      // no lang tag and dataType set; assume xsd:string is the data type
+      object = factory.createLiteral(value);
+    }
+    return object;
+  }
+
+  /**
+   * TODO
+   * @param propertyParsing
+   * @return
+   */
+  public static RDFResource createProperty(RDFFactory factory,
+                                           QNameNormalizer normalizer,
+                                           PropertyMapping propertyParsing) {
+    String propertyQName = propertyParsing.getPropertyType();
+    String propURI = normalizer.normalize(propertyQName);
+    return factory.createResource(propURI);
+  }
+
+  /**
+   * TODO
+   *
+   * @param normalizer
+   * @param baseURI
+   * @param id
+   * @return
+   * @throws IllegalArgumentException
+   */
+  public static String createResourceId(QNameNormalizer normalizer, String baseURI, String id) {
+    String subject = baseURI + "#" + id;
+    return normalizer.normalize(subject);
+  }
+
+  /**
+   * TODO
+   * @param date
+   * @return
+   */
+  public static String format(Date date) {
+    SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
+    return formater.format(date);
+  }
 
 
   /**
@@ -59,5 +131,36 @@ public class RdfUtil {
     else {
       return qName;
     }
+  }
+
+
+  /**
+   * TODO
+   * @param propertyParsing
+   * @param subject
+   * @param value
+   * @return
+   */
+  public static Triple triplize(RDFFactory factory,
+                                QNameNormalizer normalizer,
+                                PropertyMapping propertyParsing,
+                                RDFResource subject,
+                                String value) {
+
+    // create property
+    RDFResource property = createProperty(factory, normalizer, propertyParsing);
+
+    // create object
+    RDFObject object;
+    if (propertyParsing instanceof DataTypePropertyMapping) {
+      object = createLiteral(factory,
+          normalizer,
+          (DataTypePropertyMapping) propertyParsing,
+          value);
+    } else {
+      object = factory.createResource(value);
+    }
+
+    return factory.createTriple(subject, property, object);
   }
 }

@@ -7,7 +7,7 @@ import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.wrapper.pdf_wrapper.config.PdfConfigReader;
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.RootParsing;
+import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -17,6 +17,8 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import static de.unipassau.medspace.common.config.Constants.RDF_MAPPING_SCHEMA;
 
 /**
  * TODO
@@ -88,7 +90,7 @@ public class ConfigProvider {
   /**
    * TODO
    */
-  private RootParsing pdfConfig;
+  private RootMapping pdfConfig;
 
   /**
    * TODO
@@ -163,7 +165,8 @@ public class ConfigProvider {
     String pdfConfigFilePath = playConfig.getString(PDF_CONFIG_FILE_ID);
     String pdfConfigSpecificationFilePath = playConfig.getString(PDF_CONFIG_SPECIFICATION_FILE_ID);
 
-    PdfConfigReader configReader = new PdfConfigReader(pdfConfigSpecificationFilePath);
+    PdfConfigReader configReader = new PdfConfigReader(pdfConfigSpecificationFilePath,
+        RDF_MAPPING_SCHEMA);
     pdfConfig = configReader.parse(pdfConfigFilePath);
 
     log.info("Parsing ddsm image wrapper configuration done.");
@@ -174,7 +177,7 @@ public class ConfigProvider {
    * TODO
    * @return
    */
-  public RootParsing getPdfConfig() {
+  public RootMapping getPdfConfig() {
     return pdfConfig;
   }
 

@@ -1,11 +1,13 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
+import de.unipassau.medspace.common.rdf.mapping.IdentifiableFile;
+
 import java.io.File;
 
 /**
  * TODO
  */
-public class DDSM_Image extends Identifiable {
+public class DDSM_Image extends IdentifiableFile {
 
   /**
    * TODO
@@ -24,7 +26,7 @@ public class DDSM_Image extends Identifiable {
    * @param id
    */
   public DDSM_Image(File source, OverlayMetaData overlay, String id) {
-    super(id);
+    super(id, source);
     this.source = source;
     this.overlay = overlay;
   }

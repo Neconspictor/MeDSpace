@@ -1,9 +1,9 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.AbnormalityParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.CalcificationParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.MassParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.AbnormalityMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.CalcificationMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.MassMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.Abnormality;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Calcification;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.LesionType;
@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class AbnormalityAdapter extends LuceneDocAdapter<Abnormality> {
+public class AbnormalityAdapter extends LuceneDocDdsmCaseAdapter<Abnormality> {
 
 
   /**
@@ -58,17 +58,17 @@ public class AbnormalityAdapter extends LuceneDocAdapter<Abnormality> {
   /**
    * TODO
    */
-  private final AbnormalityParsing abnormalityParsing;
+  private final AbnormalityMapping abnormalityParsing;
 
   /**
    * TODO
    */
-  private final CalcificationParsing calcificationParsing;
+  private final CalcificationMapping calcificationParsing;
 
   /**
    * TODO
    */
-  private final MassParsing massParsing;
+  private final MassMapping massParsing;
 
   /**
    * TODO
@@ -77,10 +77,11 @@ public class AbnormalityAdapter extends LuceneDocAdapter<Abnormality> {
    * @param calcificationParsing
    * @param massParsing
    */
-  protected AbnormalityAdapter(AbnormalityParsing abnormalityParsing,
-                               CalcificationParsing calcificationParsing,
-                               MassParsing massParsing) {
-    super(abnormalityParsing);
+  protected AbnormalityAdapter(AbnormalityMapping abnormalityParsing,
+                               CalcificationMapping calcificationParsing,
+                               MassMapping massParsing,
+                               String ddsmCaseName) {
+    super(abnormalityParsing, ddsmCaseName);
     this.abnormalityParsing = abnormalityParsing;
     this.calcificationParsing = calcificationParsing;
     this.massParsing = massParsing;
@@ -111,8 +112,8 @@ public class AbnormalityAdapter extends LuceneDocAdapter<Abnormality> {
   }
 
   @Override
-  public String createValue(Pair<String, Property> pair, IndexableField field) {
-    Property property = pair.getValue1();
+  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+    PropertyMapping property = pair.getValue1();
     String value = field.stringValue();
 
     if (isCalcificationReference(property)) {
@@ -124,11 +125,11 @@ public class AbnormalityAdapter extends LuceneDocAdapter<Abnormality> {
     return value;
   }
 
-  private boolean isMassReference(Property property) {
+  private boolean isMassReference(PropertyMapping property) {
     return property.equals(abnormalityParsing.getMass());
   }
 
-  private boolean isCalcificationReference(Property property) {
+  private boolean isCalcificationReference(PropertyMapping property) {
     return property.equals(abnormalityParsing.getCalcification());
   }
 }

@@ -1,0 +1,60 @@
+ics-file:
+  DATE_OF_STUDY
+  PATIENT_AGE
+  DENSITY
+  DATE_DIGITIZED
+  DIGITIZER
+  LEFT_CC   (Overlay reference)
+  LEFT_MLO  (Overlay reference)
+  RIGHT_CC  (Overlay reference)
+  RIGHT_MLO (Overlay reference)
+
+
+
+Overlay:
+  TOTAL_ABNORMALITIES
+  ABNORMALITY            (Abnormality reference)
+
+
+Abnormality:
+  LESION_TYPE  (Calcification or Mass reference)
+  ASSESSMENT
+  SUBTLETY
+  PATHOLOGY
+  TOTAL_OUTLINES
+  
+Calcification:
+  TYPE
+  DISTRIBUTION
+
+Mass:
+  SHAPE
+  MARGINS
+
+
+
+ics-file:
+  DATE_OF_STUDY
+  PATIENT_AGE
+  DENSITY
+  DATE_DIGITIZED
+  DIGITIZER
+  LEFT_CC   (Overlay reference)
+    TOTAL_ABNORMALITIES
+    ABNORMALITY            (Abnormality reference)
+  LEFT_MLO  (Overlay reference)
+    TOTAL_ABNORMALITIES
+    ABNORMALITY            (Abnormality reference)
+  RIGHT_CC  (Overlay reference)
+    TOTAL_ABNORMALITIES
+    ABNORMALITY            (Abnormality reference)
+  RIGHT_MLO (Overlay reference)
+    TOTAL_ABNORMALITIES
+    ABNORMALITY            (Abnormality reference)
+
+
+index source file (relative to the host address) and also index keywords from the source file path
+file:/F:/bachelorThesis/DDSM/WinSCP-Test/cases/cases/benigns/benign_01/case0029/C_0029_1.LEFT_CC.png
+
+-> benigns/benign_01/case0029/C_0029_1.LEFT_CC.png (source file relative to host)
+-> benigns, benign_01, case0029, C_0029_1.LEFT_CC.png (keywords)

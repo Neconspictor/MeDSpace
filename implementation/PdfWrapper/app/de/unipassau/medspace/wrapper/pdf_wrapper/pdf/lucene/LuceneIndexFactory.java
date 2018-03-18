@@ -4,11 +4,11 @@ import de.unipassau.medspace.common.indexing.IndexSearcher;
 import de.unipassau.medspace.common.lucene.*;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.*;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.PropertyParsing;
+import de.unipassau.medspace.common.util.MiskUtil;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.PdfFile;
-import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.Util;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.*;
 import org.apache.lucene.document.Document;
 import org.javatuples.Pair;
@@ -25,7 +25,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
   /**
    * TODO
    */
-  private final List<LuceneDocAdapter<?>> adpaters;
+  private final List<LucenePdfFileDocAdapter<?>> adpaters;
 
   /**
    * The directory to store lucene index data to.
@@ -50,7 +50,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
    * @param normalizer
    */
   public LuceneIndexFactory(String directory,
-                            List<LuceneDocAdapter<?>> adpaters,
+                            List<LucenePdfFileDocAdapter<?>> adpaters,
                             RDFFactory factory,
                             QNameNormalizer normalizer) {
     this.directory = directory;
@@ -80,10 +80,14 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
    */
   private List<String> createFields() {
     List<String> fields = new ArrayList<>();
-    for (LuceneDocAdapter<?> adapter : adpaters) {
-      List<Pair<String, PropertyParsing>> pairs = adapter.getFieldNamePropertyPairs();
-      for (Pair<String, PropertyParsing> pair : pairs) {
+    for (LucenePdfFileDocAdapter<?> adapter : adpaters) {
+      List<Pair<String, PropertyMapping>> pairs = adapter.getFieldNamePropertyPairs();
+      for (Pair<String, PropertyMapping> pair : pairs) {
         fields.add(pair.getValue0());
+      }
+
+      for (String metaDataField : adapter.getMetaDataFields()) {
+        fields.add(metaDataField);
       }
 
       List<String> notExportableSearchableFields = adapter.getNotExportedSearchableFields();
@@ -100,7 +104,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
     /**
      * TODO
      */
-    private final List<LuceneDocAdapter<?>> adapters;
+    private final List<LucenePdfFileDocAdapter<?>> adapters;
 
     /**
      * Creates a new TripleIndexManager.
@@ -110,7 +114,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
      */
     public PdfFileTripleIndexManager(IndexSearcher<Document> searcher,
                                      Converter<KeywordSearcher<Document>, KeywordSearcher<Triple>> tripleSearchConverter,
-                                     List<LuceneDocAdapter<?>> adapters) {
+                                     List<LucenePdfFileDocAdapter<?>> adapters) {
       super(searcher, tripleSearchConverter);
       this.adapters = adapters;
     }
@@ -118,7 +122,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
     @Override
     public Stream<Document> convert(Stream<PdfFile> source) {
       return new PdfFileToDocStream(source,
-          Util.getByClass(adapters, PdfFileAdapter.class));
+          MiskUtil.getByClass(adapters, PdfFileAdapter.class));
     }
   }
 }

@@ -1,7 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf;
 
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
 import de.unipassau.medspace.common.util.Converter;
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.PropertyParsing;
 import org.apache.lucene.index.IndexableField;
 import org.javatuples.Pair;
 
@@ -19,7 +19,7 @@ public interface DocumentAdapter<ClassType extends Identifiable, DocType> extend
    * @param field
    * @return
    */
-  String createValue(Pair<String, PropertyParsing> pair, IndexableField field);
+  String createValue(Pair<String, PropertyMapping> pair, IndexableField field);
 
   /**
    * TODO
@@ -31,7 +31,7 @@ public interface DocumentAdapter<ClassType extends Identifiable, DocType> extend
    * TODO
    * @return
    */
-  List<Pair<String, PropertyParsing>> getFieldNamePropertyPairs();
+  List<Pair<String, PropertyMapping>> getFieldNamePropertyPairs();
 
   /**
    * TODO

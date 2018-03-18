@@ -1,7 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter;
 
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.PdfFileParsing;
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.PropertyParsing;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.PdfFileMapping;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.PdfFile;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class PdfFileAdapter extends LuceneDocAdapter<PdfFile> {
+public class PdfFileAdapter extends LucenePdfFileDocAdapter<PdfFile> {
 
   /**
    * TODO
@@ -25,13 +25,19 @@ public class PdfFileAdapter extends LuceneDocAdapter<PdfFile> {
    */
   public static final String CONTENT = "CONTENT";
 
+
+  private final String downloadService;
+
   /**
    * TODO
    * @param pdfFileParsing
+   * @param downloadService
    */
-  public PdfFileAdapter(PdfFileParsing pdfFileParsing) {
+  public PdfFileAdapter(PdfFileMapping pdfFileParsing, String downloadService) {
 
     super(pdfFileParsing);
+    this.downloadService = downloadService;
+
 
     addPair(SOURCE, pdfFileParsing.getSource());
     addNotExportableSearchableField(CONTENT);
@@ -40,16 +46,16 @@ public class PdfFileAdapter extends LuceneDocAdapter<PdfFile> {
 
   @Override
   protected void addFields(PdfFile source, Document doc) throws IOException {
-    String path = source.getSource().getCanonicalPath();
-    path = path.replaceAll("\\\\", "/");
-    doc.add(createField(SOURCE, path));
+    //String path = source.getSource().getCanonicalPath();
+    //path = path.replaceAll("\\\\", "/");
+    doc.add(createField(SOURCE, downloadService + source.getId()));
 
     String extractedText = extractText(source);
     doc.add(createField(CONTENT, extractedText));
   }
 
   @Override
-  public String createValue(Pair<String, PropertyParsing> pair, IndexableField field) {
+  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
     return field.stringValue();
   }
 

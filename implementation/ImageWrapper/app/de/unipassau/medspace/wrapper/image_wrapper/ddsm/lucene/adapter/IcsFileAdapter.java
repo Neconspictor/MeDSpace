@@ -1,36 +1,54 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.IcsFileParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.ImageParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
+import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
+import de.unipassau.medspace.common.lucene.rdf.LuceneDocFileAdapter;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.IcsFileMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.ImageMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.IcsFile;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.javatuples.Pair;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
  * TODO
  */
-public class IcsFileAdapter extends LuceneDocAdapter<IcsFile> {
+public class IcsFileAdapter extends LuceneDocDdsmCaseAdapter<IcsFile> {
 
 
   /**
    * TODO
    */
-  private final IcsFileParsing icsFileParsing;
+  public static final String ICSFILE_FOLDER_STRUCTURE_METADATA = "ICSFILE_FOLDER_STRUCTURE_METADATA";
 
-  private final ImageParsing imageParsing;
+  private final IcsFileMapping icsFileParsing;
+
+  private final ImageMapping imageParsing;
 
   /**
    * TODO
    * @param icsFileParsing
    * @param imageParsing
+   * @param root
    */
-  public IcsFileAdapter(IcsFileParsing icsFileParsing, ImageParsing imageParsing) {
+  public IcsFileAdapter(IcsFileMapping icsFileParsing,
+                        ImageMapping imageParsing,
+                        File root,
+                        String ddsmCaseName) {
 
-    super(icsFileParsing);
+    this(icsFileParsing, imageParsing, ddsmCaseName,
+        new LuceneDocFileAdapter<IcsFile>(icsFileParsing, root, null));
+  }
+
+  protected IcsFileAdapter (IcsFileMapping icsFileParsing,
+                            ImageMapping imageParsing,
+                            String ddsmCaseName,
+                            LuceneClassAdapter<IcsFile> decorator) {
+    super(icsFileParsing, ddsmCaseName, decorator);
+
     this.icsFileParsing = icsFileParsing;
     this.imageParsing = imageParsing;
 
@@ -44,6 +62,7 @@ public class IcsFileAdapter extends LuceneDocAdapter<IcsFile> {
     addPair(IcsFile.RIGHT_CC, icsFileParsing.getRightCc());
     addPair(IcsFile.RIGHT_MLO, icsFileParsing.getRightMlo());
 
+    this.metaDataFields.add(ICSFILE_FOLDER_STRUCTURE_METADATA);
   }
 
   @Override
@@ -61,16 +80,15 @@ public class IcsFileAdapter extends LuceneDocAdapter<IcsFile> {
   }
 
   @Override
-  public String createValue(Pair<String, Property> pair,IndexableField field) {
-
-    Property property = pair.getValue1();
+  protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+    PropertyMapping property = pair.getValue1();
     String value = field.stringValue();
 
     if (isImageReference(property)) {
-      value = imageParsing.getRdfType() + "#" + value;
+     return imageParsing.getRdfType() + "#" + value;
     }
 
-    return value;
+    return null;
   }
 
   /**
@@ -78,7 +96,7 @@ public class IcsFileAdapter extends LuceneDocAdapter<IcsFile> {
    * @param property
    * @return
    */
-  private boolean isImageReference(Property property) {
+  private boolean isImageReference(PropertyMapping property) {
     if (property.equals(icsFileParsing.getLeftCc())) return true;
     if (property.equals(icsFileParsing.getLeftMlo())) return true;
     if (property.equals(icsFileParsing.getRightCc())) return true;

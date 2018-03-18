@@ -1,0 +1,32 @@
+<jxb:bindings 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+
+    <jxb:bindings schemaLocation="../src/main/resources/medspace-rdf-mapping-specification.xsd">
+			
+		<jxb:bindings node="//xsd:complexType[@name='Class']">
+            <jxb:class name="ClassMapping"/>
+        </jxb:bindings>	
+		
+		<jxb:bindings node="//xsd:complexType[@name='DataTypeProperty']">
+			<jxb:class name="DataTypePropertyMapping"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='File']">
+			<jxb:class name="FileMapping"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Namespace']">
+			<jxb:class name="NamespaceMapping"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Property']">
+			<jxb:class name="PropertyMapping"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='ObjectProperty']">
+            <jxb:class name="ObjectPropertyMapping"/>
+        </jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>

@@ -1,14 +1,48 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
 
+import de.unipassau.medspace.common.rdf.mapping.Identifiable;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.LesionType;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * TODO
  */
 public class Abnormality extends Identifiable {
+
+  /**
+   * TODO
+   */
+  public static final String ABNORMALITY = "ABNORMALITY";
+
+
+  /**
+   * TODO
+   */
+  public static final String ASSESSMENT = "ASSESSMENT";
+
+
+  /**
+   * TODO
+   */
+  public static final String SUBTLETY = "SUBTLETY";
+
+  /**
+   * TODO
+   */
+  public static final String PATHOLOGY = "PATHOLOGY";
+
+
+  /**
+   * TODO
+   */
+  public static final String TOTAL_OUTLINES = "TOTAL_OUTLINES";
+
+
+  public static final List<String> FIELD_META_DATA = Arrays.asList(ABNORMALITY, ASSESSMENT, SUBTLETY, PATHOLOGY,TOTAL_OUTLINES);
+
 
   /**
    * TODO

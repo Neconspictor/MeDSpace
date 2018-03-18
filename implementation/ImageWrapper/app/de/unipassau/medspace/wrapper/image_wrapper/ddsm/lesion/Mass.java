@@ -13,6 +13,17 @@ public class Mass extends LesionType {
   /**
    * TODO
    */
+  public static final String SHAPE = "SHAPE";
+
+
+  /**
+   * TODO
+   */
+  public static final String MARGINS = "MARGINS";
+
+  /**
+   * TODO
+   */
   private String shape;
 
   /**

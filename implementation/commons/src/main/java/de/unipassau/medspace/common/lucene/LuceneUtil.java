@@ -2,6 +2,7 @@ package de.unipassau.medspace.common.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 
 import java.io.IOException;
 
@@ -17,7 +18,8 @@ public class LuceneUtil {
    */
   public static Analyzer buildAnalyzer() throws IOException {
     return CustomAnalyzer.builder()
-        .withTokenizer("whitespace")
+        .withTokenizer(StandardTokenizerFactory.class)
+        //.withTokenizer("whitespace")
         .addTokenFilter("lowercase")
         .addTokenFilter("standard")
         .build();

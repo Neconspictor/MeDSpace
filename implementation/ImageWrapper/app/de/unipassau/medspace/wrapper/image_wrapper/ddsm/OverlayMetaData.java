@@ -1,5 +1,9 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
+import de.unipassau.medspace.common.rdf.mapping.Identifiable;
+import de.unipassau.medspace.common.util.FileUtil;
+import de.unipassau.medspace.common.util.ParserUtil;
+import de.unipassau.medspace.common.util.StringUtil;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Calcification;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.LesionType;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass;
@@ -7,7 +11,12 @@ import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static de.unipassau.medspace.wrapper.image_wrapper.ddsm.Abnormality.*;
+import static de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Calcification.*;
+import static de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass.*;
 
 
 /**
@@ -18,12 +27,26 @@ public class OverlayMetaData extends Identifiable {
   /**
    * TODO
    */
+  public static final String TOTAL_ABNORMALITIES = "TOTAL_ABNORMALITIES";
+
+
+  public static final List<String> FIELD_META_DATA = Arrays.asList(TOTAL_ABNORMALITIES, "OVERLAY", "DDSM");
+
+
+
+  /**
+   * TODO
+   */
   private List<Abnormality> abnormalities;
 
   /**
    * TODO
    */
   private int totalAbnormalities;
+
+
+
+
 
   /**
    * TODO
@@ -84,72 +107,6 @@ public class OverlayMetaData extends Identifiable {
     /**
      * TODO
      */
-    private static final String TOTAL_ABNORMALITIES = "TOTAL_ABNORMALITIES";
-
-    /**
-     * TODO
-     */
-    private static final String ABNORMALITY = "ABNORMALITY";
-
-    /**
-     * TODO
-     */
-    private static final String LESION_TYPE = "LESION_TYPE";
-
-    /**
-     * TODO
-     */
-    private static final String ASSESSMENT = "ASSESSMENT";
-
-
-    /**
-     * TODO
-     */
-    private static final String SUBTLETY = "SUBTLETY";
-
-    /**
-     * TODO
-     */
-    private static final String PATHOLOGY = "PATHOLOGY";
-
-
-    /**
-     * TODO
-     */
-    private static final String TOTAL_OUTLINES = "TOTAL_OUTLINES";
-
-
-    /**
-     * TODO
-     */
-    private static final String BOUNDARY = "BOUNDARY";
-
-
-    /**
-     * TODO
-     */
-    private static final String TYPE = "TYPE";
-
-    /**
-     * TODO
-     */
-    private static final String DISTRIBUTION = "DISTRIBUTION";
-
-
-    /**
-     * TODO
-     */
-    private static final String SHAPE = "SHAPE";
-
-
-    /**
-     * TODO
-     */
-    private static final String MARGINS = "MARGINS";
-
-    /**
-     * TODO
-     */
     private final String overlayID;
 
     /**
@@ -172,7 +129,7 @@ public class OverlayMetaData extends Identifiable {
      * @throws IOException
      */
     public OverlayMetaData parse(File file) throws IOException  {
-      List<String> content = Util.getLineContent(file);
+      List<String> content = FileUtil.getLineContent(file);
 
       if (content.size() == 0) throw new IOException("Couldn't read content of overlay meta data file: " + file);
 
@@ -206,32 +163,32 @@ public class OverlayMetaData extends Identifiable {
     private Abnormality parseAbnormality(List<String> content) throws IOException {
 
       // Get abnormality number
-      List<String> tokens = Util.tokenize(content.remove(0));
-      Util.parseExpectedToken(tokens, ABNORMALITY);
-      int abnormalityNumber = Util.parseInt(tokens);
+      List<String> tokens = StringUtil.tokenize(content.remove(0), " \t");
+      ParserUtil.pullExpectedToken(tokens, ABNORMALITY);
+      int abnormalityNumber = ParserUtil.pullInt(tokens);
 
       // Lesion type
       List<LesionType> lesionTypes = parseLesionTypes(content);
 
       // assessment
-      tokens = Util.tokenize(content.remove(0));
-      Util.parseExpectedToken(tokens, ASSESSMENT);
-      int assessment = Util.parseInt(tokens);
+      tokens = StringUtil.tokenize(content.remove(0), " \t");
+      ParserUtil.pullExpectedToken(tokens, ASSESSMENT);
+      int assessment = ParserUtil.pullInt(tokens);
 
       // SUBTLETY
-      tokens = Util.tokenize(content.remove(0));
-      Util.parseExpectedToken(tokens, SUBTLETY);
-      int subtlety = Util.parseInt(tokens);
+      tokens = StringUtil.tokenize(content.remove(0), " \t");
+      ParserUtil.pullExpectedToken(tokens, SUBTLETY);
+      int subtlety = ParserUtil.pullInt(tokens);
 
       // PATHOLOGY
-      tokens = Util.tokenize(content.remove(0));
-      Util.parseExpectedToken(tokens, PATHOLOGY);
+      tokens = StringUtil.tokenize(content.remove(0), " \t");
+      ParserUtil.pullExpectedToken(tokens, PATHOLOGY);
       String pathology = tokens.remove(0);
 
       // TOTAL_OUTLINES
-      tokens = Util.tokenize(content.remove(0));
-      Util.parseExpectedToken(tokens, TOTAL_OUTLINES);
-      int totalOutlines = Util.parseInt(tokens);
+      tokens = StringUtil.tokenize(content.remove(0), " \t");
+      ParserUtil.pullExpectedToken(tokens, TOTAL_OUTLINES);
+      int totalOutlines = ParserUtil.pullInt(tokens);
 
       /**
        * TOTAL_OUTLINES specifies the number of outlines that were made by a radiologist
@@ -269,7 +226,7 @@ public class OverlayMetaData extends Identifiable {
 
       List<LesionType> result = new ArrayList<>();
 
-      while(Util.beginsWithToken(content.get(0), LESION_TYPE)) {
+      while(StringUtil.beginsWithToken(content.get(0), LESION_TYPE)) {
         LesionType type = parseLesionType(content);
         result.add(type);
       }
@@ -285,8 +242,8 @@ public class OverlayMetaData extends Identifiable {
      */
     private LesionType parseLesionType(List<String> content) throws IOException {
 
-      List<String> tokens = Util.tokenize(content.remove(0));
-      Util.parseExpectedToken(tokens, LESION_TYPE);
+      List<String> tokens = StringUtil.tokenize(content.remove(0), " \t");
+      ParserUtil.pullExpectedToken(tokens, LESION_TYPE);
       String lesionTypeStr = tokens.remove(0);
       LesionType lesionType;
 
@@ -308,10 +265,10 @@ public class OverlayMetaData extends Identifiable {
      * @throws IOException
      */
     private Calcification parseCalcification(List<String> tokens) throws IOException {
-      Util.parseExpectedToken(tokens, TYPE);
+      ParserUtil.pullExpectedToken(tokens, TYPE);
       String type = tokens.remove(0);
 
-      Util.parseExpectedToken(tokens, DISTRIBUTION);
+      ParserUtil.pullExpectedToken(tokens, DISTRIBUTION);
       String distribution = tokens.remove(0);
 
       return new Calcification(type, distribution, createLesionTypeId());
@@ -324,10 +281,10 @@ public class OverlayMetaData extends Identifiable {
      * @throws IOException
      */
     private Mass parseMass(List<String> tokens) throws IOException {
-      Util.parseExpectedToken(tokens, SHAPE);
+      ParserUtil.pullExpectedToken(tokens, SHAPE);
       String shape = tokens.remove(0);
 
-      Util.parseExpectedToken(tokens, MARGINS);
+      ParserUtil.pullExpectedToken(tokens, MARGINS);
       String margins = tokens.remove(0);
 
       return new Mass(shape, margins, createLesionTypeId());
@@ -342,12 +299,12 @@ public class OverlayMetaData extends Identifiable {
     private static int parseTotalAbnormalityCount(List<String> content) throws IOException {
 
       //the first line contains the total abnormality field
-      List<String> tokens = Util.tokenize(content.remove(0));
+      List<String> tokens = StringUtil.tokenize(content.remove(0), " \t");
       while(tokens.size() != 2) {
-        tokens = Util.tokenize(content.remove(0));
+        tokens = StringUtil.tokenize(content.remove(0), " \t");
       }
 
-      Util.parseExpectedToken(tokens, TOTAL_ABNORMALITIES);
+      ParserUtil.pullExpectedToken(tokens, TOTAL_ABNORMALITIES);
 
       try {
         return Integer.parseInt(tokens.remove(0));

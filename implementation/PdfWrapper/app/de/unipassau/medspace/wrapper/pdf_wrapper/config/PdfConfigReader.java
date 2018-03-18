@@ -1,7 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.config;
 
 import de.unipassau.medspace.common.util.XmlUtil;
-import de.unipassau.medspace.wrapper.pdf_wrapper.config.parsing.RootParsing;
+import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
@@ -18,8 +18,11 @@ public class PdfConfigReader {
 
   private final String pdfConfigSpecificationSchema;
 
-  public PdfConfigReader(String pdfConfigSpecificationSchema) {
+  private final String rdfMappingSpec;
+
+  public PdfConfigReader(String pdfConfigSpecificationSchema, String rdfMappingSpec) {
     this.pdfConfigSpecificationSchema = pdfConfigSpecificationSchema;
+    this.rdfMappingSpec = rdfMappingSpec;
   }
 
 
@@ -30,11 +33,11 @@ public class PdfConfigReader {
    * @throws IOException
    * @throws SAXException
    */
-  public RootParsing parse(String fileName) throws JAXBException, IOException, SAXException {
-    JAXBContext context = JAXBContext.newInstance(RootParsing.class);
+  public RootMapping parse(String fileName) throws JAXBException, IOException, SAXException {
+    JAXBContext context = JAXBContext.newInstance(RootMapping.class);
     Unmarshaller unmarshaller = context.createUnmarshaller();
-    Schema schema = XmlUtil.createSchema(new String[]{pdfConfigSpecificationSchema});
+    Schema schema = XmlUtil.createSchema(new String[]{rdfMappingSpec, pdfConfigSpecificationSchema});
     unmarshaller.setSchema(schema);
-    return (RootParsing) unmarshaller.unmarshal(new File(fileName));
+    return (RootMapping) unmarshaller.unmarshal(new File(fileName));
   }
 }

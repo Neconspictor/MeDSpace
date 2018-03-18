@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<pdf:Root xmlns:pdf="http://www.medspace.com/images/ddsm">
+<pdf:Root xmlns:pdf="http://www.medspace.com/images/ddsm" xmlns:rdf-mapping="http://www.medspace.com/rdf-mapping">
 
 	<!-->RDF namespaces
 		@attribute prefix:		The prefix to use in the rdf triples
@@ -17,7 +17,7 @@
     <pdf:PdfRootDirectory>./_work/pdfFiles/</pdf:PdfRootDirectory>
 
     <pdf:PdfFile rdfType="http://www.medspace.com/pdf/pdf_file" classId="pdfFile">
+		<rdf-mapping:metaData>test</rdf-mapping:metaData>
         <pdf:source propertyType="pdf_file:source" dataType="xsd:string"/>
     </pdf:PdfFile>
-
 </pdf:Root>

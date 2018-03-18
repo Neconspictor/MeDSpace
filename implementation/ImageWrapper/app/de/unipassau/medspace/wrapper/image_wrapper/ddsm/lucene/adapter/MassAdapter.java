@@ -1,7 +1,7 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.MassParsing;
-import de.unipassau.medspace.wrapper.image_wrapper.config.parsing.Property;
+import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.MassMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class MassAdapter extends LuceneDocAdapter<Mass> {
+public class MassAdapter extends LuceneDocDdsmCaseAdapter<Mass> {
 
   /**
    * TODO
@@ -29,8 +29,8 @@ public class MassAdapter extends LuceneDocAdapter<Mass> {
    * TODO
    * @param massParsing
    */
-  protected MassAdapter(MassParsing massParsing) {
-    super(massParsing);
+  protected MassAdapter(MassMapping massParsing, String ddsmCaseName) {
+    super(massParsing,ddsmCaseName);
 
     addPair(SHAPE, massParsing.getShape());
     addPair(MARGINS, massParsing.getMargins());
@@ -43,7 +43,7 @@ public class MassAdapter extends LuceneDocAdapter<Mass> {
   }
 
   @Override
-  public String createValue(Pair<String, Property> pair, IndexableField field) {
+  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
     return field.stringValue();
   }
 }
