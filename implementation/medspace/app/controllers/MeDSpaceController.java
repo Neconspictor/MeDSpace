@@ -43,6 +43,19 @@ public class MeDSpaceController extends Controller {
     }
 
     /**
+     * TODO
+     * @return
+     */
+    public Result datasources() {
+        Map<Datasource, DatasourceState> datasourceModifiedMap = register.getDatasources();
+        Set<Datasource> datasources = datasourceModifiedMap.keySet();
+        List<Datasource> list = new LinkedList<>(datasources);
+        Collections.sort(list, Comparator.comparing(o -> o.getUrl().toExternalForm()));
+
+        return ok(views.html.datasources.render(list, datasourceModifiedMap));
+    }
+
+    /**
      * An action that renders a page for testing the register services.
      */
     public Result index() {

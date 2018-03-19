@@ -109,6 +109,11 @@ public class QueryExecutorController extends Controller {
     return ok(logWrapper).as(mimeType).withHeader("Content-Disposition", dispositionValue);
   }
 
+  public Result clearCache() {
+    queryExecutor.clearCache();
+    return ok("Cleared query cache.");
+  }
+
   private List<String> getKeywords(String query) {
     List<String> result = new ArrayList<>();
     StringTokenizer tokenizer = new StringTokenizer(query);

@@ -45,6 +45,13 @@ public class QueryExecutor implements Closeable {
 
   /**
    * TODO
+   */
+  public void clearCache() {
+    queryCache.clear();
+  }
+
+  /**
+   * TODO
    * @param keywords
    * @param operator
    * @param rdfFormat

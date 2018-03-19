@@ -86,6 +86,15 @@ public class QueryCache implements Closeable {
     return cache.get(key);
   }
 
+  /**
+   * TODO
+   */
+  public void clear() {
+    cache.forEach( elem -> {
+      cache.remove(elem.getKey());
+    });
+  }
+
   @Override
   public void close() throws IOException {
 

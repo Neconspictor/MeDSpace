@@ -5,6 +5,8 @@
 # An example controller showing a sample home page
 GET     /                            controllers.MeDSpaceController.index
 
+GET     /datasources                            controllers.MeDSpaceController.datasources
+
 GET     /gui                            controllers.MeDSpaceController.gui
 
 GET     /javascript-routes            controllers.MeDSpaceController.javascriptRoutes
@@ -15,6 +17,8 @@ GET     /assets/*file                controllers.Assets.versioned(path="/public"
 
 # QueryExecutor stuff
 GET     /query-executor/keyword-search           controllers.QueryExecutorController.searchByKeyword(query ?="", rdfFormat ?= "TURTLE", useOr:Boolean ?= false, attach:Boolean ?= false)
+
+GET     /query-executor/clear-cache           controllers.QueryExecutorController.clearCache()
 
 # DataCollector stuff
 GET     /data-collector/create-query-result     controllers.DataCollectorController.createQueryResult()
