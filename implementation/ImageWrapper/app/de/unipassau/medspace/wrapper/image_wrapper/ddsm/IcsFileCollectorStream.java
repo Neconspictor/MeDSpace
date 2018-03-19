@@ -1,10 +1,10 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
+import de.unipassau.medspace.common.multimedia.MultiMediaCollector;
+import de.unipassau.medspace.common.multimedia.MultiMediaContainer;
+import de.unipassau.medspace.common.multimedia.MultiMediaFile;
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.FileUtil;
-import de.unipassau.medspace.wrapper.image_wrapper.MultiMediaCollector;
-import de.unipassau.medspace.wrapper.image_wrapper.MultiMediaContainer;
-import de.unipassau.medspace.wrapper.image_wrapper.MultiMediaFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,13 +59,15 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
 
     File icsFileSource = container.getMetaData().get(0);
     String id = createID(root, icsFileSource);
-    DDSM_Image leftCC = getByNameEnding(container, "LEFT_CC" + "." + imageFileEnding);
-    DDSM_Image leftMLO = getByNameEnding(container, "LEFT_MLO" + "." + imageFileEnding);
-    DDSM_Image rightCC = getByNameEnding(container, "RIGHT_CC" + "." + imageFileEnding);
-    DDSM_Image rightMLO = getByNameEnding(container, "RIGHT_MLO" + "." + imageFileEnding);
+    String caseName = getCaseName(icsFileSource);
+    Image leftCC = getByNameEnding(container, "LEFT_CC" + "." + imageFileEnding, caseName);
+    Image leftMLO = getByNameEnding(container, "LEFT_MLO" + "." + imageFileEnding, caseName);
+    Image rightCC = getByNameEnding(container, "RIGHT_CC" + "." + imageFileEnding, caseName);
+    Image rightMLO = getByNameEnding(container, "RIGHT_MLO" + "." + imageFileEnding, caseName);
 
     return IcsFile.parse(icsFileSource,
         id,
+        caseName,
         leftCC,
         leftMLO,
         rightCC,
@@ -112,7 +114,7 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
    * @return
    * @throws IOException
    */
-  private DDSM_Image getByNameEnding(MultiMediaContainer container, String ending) throws IOException {
+  private Image getByNameEnding(MultiMediaContainer container, String ending, String caseName) throws IOException {
 
     for (MultiMediaFile multiMediaFile: container.getData()) {
       File source = multiMediaFile.getSource();
@@ -122,15 +124,26 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
         if (multiMediaFile.getMetaData().size() > 0) {
           File overlay = multiMediaFile.getMetaData().get(0);
           String overlayID = createID(root, overlay);
-          overlayMetaData = OverlayMetaData.parse(overlay, overlayID);
+          overlayMetaData = OverlayMetaData.parse(overlay, overlayID, caseName);
         }
 
         String id = createID(root, source);
 
-        return new DDSM_Image(source, overlayMetaData, id);
+        return new Image(source, overlayMetaData, id, caseName);
       }
     }
 
     throw new IOException("Couldn't create DDSM_Image by name ending search: '" + ending + "'");
+  }
+
+  /**
+   * TODO
+   * @param file
+   * @return
+   */
+  private String getCaseName(File file) {
+    assert file.isFile();
+    File folder = file.getParentFile();
+    return folder.getName();
   }
 }

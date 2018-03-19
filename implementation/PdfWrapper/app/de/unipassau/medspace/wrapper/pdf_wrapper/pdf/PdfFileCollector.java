@@ -1,9 +1,9 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf;
 
 
-import de.unipassau.medspace.wrapper.pdf_wrapper.MultiMediaCollector;
-import de.unipassau.medspace.wrapper.pdf_wrapper.MultiMediaContainer;
-import de.unipassau.medspace.wrapper.pdf_wrapper.MultiMediaFile;
+import de.unipassau.medspace.common.multimedia.MultiMediaCollector;
+import de.unipassau.medspace.common.multimedia.MultiMediaContainer;
+import de.unipassau.medspace.common.multimedia.MultiMediaFile;
 
 import java.io.File;
 import java.util.ArrayList;

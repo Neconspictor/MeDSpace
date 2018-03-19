@@ -1,5 +1,7 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
+import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
+import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.RootMapping;
 
 import java.io.File;
@@ -18,65 +20,54 @@ public class DDSM_AdapterFactory {
 
   private final File root;
 
-  private final String ddsmCaseName;
+  private final String fileDownloadService;
 
   /**
    * TODO
    * @param root
    * @param rootParsing
+   * @param fileDownloadService
    */
-  public DDSM_AdapterFactory(File root, RootMapping rootParsing) {
+  public DDSM_AdapterFactory(File root, RootMapping rootParsing, String fileDownloadService) {
     this.rootParsing = rootParsing;
     this.root = root;
-    ddsmCaseName = extractCaseName(root);
+    this.fileDownloadService = fileDownloadService;
   }
 
   /**
    * TODO
    * @return
    */
-  public List<LuceneDocDdsmCaseAdapter<?>> createAdapters() {
-    List<LuceneDocDdsmCaseAdapter<?>> adapters = new ArrayList<>();
+  public List<LuceneClassAdapter<?>> createAdapters() {
+    List<LuceneClassAdapter<?>> adapters = new ArrayList<>();
 
-    LuceneDocDdsmCaseAdapter<?> adapter = new IcsFileAdapter(rootParsing.getIcsFile(),
+    DDSM_CaseAdapter<?> adapter = new IcsFileAdapter(rootParsing.getIcsFile(),
         rootParsing.getImage(),
         root,
-        ddsmCaseName);
+        fileDownloadService);
     adapters.add(adapter);
 
     adapter = new ImageAdapter(rootParsing.getImage(),
         rootParsing.getOverlay(),
         root,
-        ddsmCaseName);
+        fileDownloadService);
     adapters.add(adapter);
 
     adapter = new OverlayAdapter(rootParsing.getOverlay(),
-        rootParsing.getAbnormality(),
-        ddsmCaseName);
+        rootParsing.getAbnormality());
     adapters.add(adapter);
 
     adapter = new AbnormalityAdapter(rootParsing.getAbnormality(),
         rootParsing.getCalcification(),
-        rootParsing.getMass(),
-        ddsmCaseName);
+        rootParsing.getMass());
     adapters.add(adapter);
 
-    adapter = new CalcificationAdapter(rootParsing.getCalcification(), ddsmCaseName);
+    adapter = new CalcificationAdapter(rootParsing.getCalcification());
     adapters.add(adapter);
 
-    adapter = new MassAdapter(rootParsing.getMass(), ddsmCaseName);
+    adapter = new MassAdapter(rootParsing.getMass());
     adapters.add(adapter);
 
     return adapters;
-  }
-
-  /**
-   * TODO
-   * @param root
-   * @return
-   */
-  private static String extractCaseName(File root) {
-    if (!root.isDirectory()) throw new IllegalArgumentException("root is expected to be a directory!");
-    return root.getName();
   }
 }

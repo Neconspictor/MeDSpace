@@ -2,6 +2,8 @@ package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene;
 
 import de.unipassau.medspace.common.indexing.IndexSearcher;
 import de.unipassau.medspace.common.lucene.*;
+import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
+import de.unipassau.medspace.common.lucene.rdf.converter.LuceneDocClassTriplizer;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.*;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
@@ -26,7 +28,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
   /**
    * TODO
    */
-  private final List<LuceneDocDdsmCaseAdapter<?>> adpaters;
+  private final List<LuceneClassAdapter<?>> adpaters;
 
   /**
    * The directory to store lucene index data to.
@@ -51,7 +53,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
    * @param normalizer
    */
   public LuceneIndexFactory(String directory,
-                            List<LuceneDocDdsmCaseAdapter<?>> adpaters,
+                            List<LuceneClassAdapter<?>> adpaters,
                             RDFFactory factory,
                             QNameNormalizer normalizer) {
     this.directory = directory;
@@ -69,7 +71,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
     IndexReaderFactory readerFactory = () -> index.createReader();
     IndexSearcher<Document> searcher = new LuceneIndexSearcher(index, fields, readerFactory, builder);
 
-    Converter<Document, List<Triple>> triplizer = new DocumentClassTriplizer(adpaters, normalizer, factory);
+    Converter<Document, List<Triple>> triplizer = new LuceneDocClassTriplizer(adpaters, normalizer, factory);
     TripleSearchConverter converter = new TripleSearchConverter(triplizer);
 
     return new IcsFileTripleIndexManager(searcher, converter, adpaters);
@@ -81,7 +83,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
    */
   private List<String> createFields() {
     List<String> fields = new ArrayList<>();
-    for (LuceneDocDdsmCaseAdapter<?> adapter : adpaters) {
+    for (LuceneClassAdapter<?> adapter : adpaters) {
       List<Pair<String, PropertyMapping>> pairs = adapter.getFieldNamePropertyPairs();
       for (Pair<String, PropertyMapping> pair : pairs) {
         fields.add(pair.getValue0());
@@ -101,7 +103,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
     /**
      * TODO
      */
-    private final List<LuceneDocDdsmCaseAdapter<?>> adapters;
+    private final List<LuceneClassAdapter<?>> adapters;
 
     /**
      * Creates a new TripleIndexManager.
@@ -111,7 +113,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
      */
     public IcsFileTripleIndexManager(IndexSearcher<Document> searcher,
                                      Converter<KeywordSearcher<Document>, KeywordSearcher<Triple>> tripleSearchConverter,
-                                     List<LuceneDocDdsmCaseAdapter<?>> adapters) {
+                                     List<LuceneClassAdapter<?>> adapters) {
       super(searcher, tripleSearchConverter);
       this.adapters = adapters;
     }

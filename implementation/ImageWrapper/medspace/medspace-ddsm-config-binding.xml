@@ -1,0 +1,13 @@
+<jxb:bindings 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+	
+
+
+    <jxb:bindings schemaLocation="medspace-ddsm-config-specification.xsd">
+            <jxb:bindings node="//xsd:element[@name='Root']">
+                <jxb:class name="DDSMConfig"/>
+            </jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>

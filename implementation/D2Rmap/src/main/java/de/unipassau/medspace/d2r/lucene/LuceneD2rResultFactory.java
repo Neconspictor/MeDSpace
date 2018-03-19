@@ -6,10 +6,8 @@ import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.Triple;
 import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.common.util.RdfUtil;
-import de.unipassau.medspace.d2r.D2rMap;
-import de.unipassau.medspace.d2r.D2rUtil;
-import de.unipassau.medspace.d2r.D2rWrapper;
-import de.unipassau.medspace.d2r.MappedSqlTuple;
+import de.unipassau.medspace.common.util.StringUtil;
+import de.unipassau.medspace.d2r.*;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -153,6 +151,12 @@ public class LuceneD2rResultFactory  {
       doc.add(field);
     }
 
+    D2rMap map = idToMap.get(mapId);
+    String concatenated = StringUtil.concat(map.getMetaDataTags(), " ");
+
+    Field field = new TextField(D2R.D2RMAP_META_DATA_TAGS, concatenated, Field.Store.YES);
+    doc.add(field);
+
     return doc;
   }
 
@@ -180,6 +184,9 @@ public class LuceneD2rResultFactory  {
 
       // Skip the MAP element
       if (columnName.equals(mapField)) return;
+
+      // Skip the Meta data tag element
+      if (columnName.equals(D2R.D2RMAP_META_DATA_TAGS)) return;
 
       // Delete the column prefix
       columnName = columnName.substring(columnNamePrefix.length(), columnName.length());

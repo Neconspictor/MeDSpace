@@ -1,11 +1,16 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf;
 
+import de.unipassau.medspace.common.rdf.mapping.IdentifiableFile;
+
 import java.io.File;
 
 /**
  * TODO
  */
-public class PdfFile extends Identifiable {
+public class PdfFile implements IdentifiableFile {
+
+
+  private final String id;
 
   /**
    * TODO
@@ -18,13 +23,11 @@ public class PdfFile extends Identifiable {
    * @param id
    */
   public PdfFile(File source, String id) {
-    super(id);
+    this.id = id;
     this.source = source;
   }
 
-  /**
-   * TODO
-   */
+  @Override
   public File getSource() {
     return source;
   }
@@ -40,5 +43,10 @@ public class PdfFile extends Identifiable {
     builder.append("}");
 
     return builder.toString();
+  }
+
+  @Override
+  public String getId() {
+    return id;
   }
 }

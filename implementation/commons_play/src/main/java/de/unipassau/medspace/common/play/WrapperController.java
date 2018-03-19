@@ -101,7 +101,7 @@ public class WrapperController extends Controller {
       return internalServerError("Couldn't construct triple input stream");
     }
 
-    String mimeType = Http.MimeTypes.TEXT;
+    String mimeType = "text/plain; charset=utf-8";
     String formatMimeType = rdfProvider.getDefaultMimeType(outputFormat);
 
     if (formatMimeType == null) formatMimeType = mimeType;
@@ -124,9 +124,11 @@ public class WrapperController extends Controller {
     // So we wrap the triple stream around an input stream, that will log any error before rethrowing the error.
     LogWrapperInputStream logWrapper = new LogWrapperInputStream(tripleStream);
 
-    return ok(logWrapper).as(mimeType).withHeader("Content-Disposition", dispositionValue);
+    return ok(logWrapper).as(mimeType)
+        // content disposition specifies whether a browser displays the content in its view or opens a download window
+        // (if attachment is added)
+        .withHeader("Content-Disposition", dispositionValue);
   }
-
 
   /**
    * The SQL wrapper does reindex the data from the underlying datasource.

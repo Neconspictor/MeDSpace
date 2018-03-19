@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class OverlayAdapter extends LuceneDocDdsmCaseAdapter<OverlayMetaData> {
+public class OverlayAdapter extends DDSM_CaseAdapter<OverlayMetaData> {
 
   /**
    * TODO
@@ -43,9 +43,8 @@ public class OverlayAdapter extends LuceneDocDdsmCaseAdapter<OverlayMetaData> {
    * @param abnormalityParsing
    */
   protected OverlayAdapter(OverlayMapping overlayParsing,
-                           AbnormalityMapping abnormalityParsing,
-                           String ddsmCaseName) {
-    super(overlayParsing,ddsmCaseName);
+                           AbnormalityMapping abnormalityParsing) {
+    super(overlayParsing, null);
     this.overlayParsing = overlayParsing;
     this.abnormalityParsing = abnormalityParsing;
 
@@ -66,15 +65,13 @@ public class OverlayAdapter extends LuceneDocDdsmCaseAdapter<OverlayMetaData> {
   }
 
   @Override
-  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+  protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
     PropertyMapping property = pair.getValue1();
-    String value = field.stringValue();
 
     if (isAbnormalityReference(property)) {
-      value = abnormalityParsing.getRdfType() + "#" + value;
+      return abnormalityParsing.getRdfType() + "#" + field.stringValue();
     }
-
-    return value;
+    return null;
   }
 
   /**

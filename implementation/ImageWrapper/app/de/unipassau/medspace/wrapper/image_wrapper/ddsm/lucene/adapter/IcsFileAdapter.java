@@ -1,8 +1,9 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
-import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
 import de.unipassau.medspace.common.lucene.rdf.LuceneDocFileAdapter;
+import de.unipassau.medspace.common.rdf.mapping.IdentifiableFile;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
+import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.IcsFileMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.ImageMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.IcsFile;
@@ -16,7 +17,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class IcsFileAdapter extends LuceneDocDdsmCaseAdapter<IcsFile> {
+public class IcsFileAdapter extends DDSM_CaseAdapter<IcsFile> {
 
 
   /**
@@ -37,17 +38,13 @@ public class IcsFileAdapter extends LuceneDocDdsmCaseAdapter<IcsFile> {
   public IcsFileAdapter(IcsFileMapping icsFileParsing,
                         ImageMapping imageParsing,
                         File root,
-                        String ddsmCaseName) {
+                        String downloadService) {
 
-    this(icsFileParsing, imageParsing, ddsmCaseName,
-        new LuceneDocFileAdapter<IcsFile>(icsFileParsing, root, null));
-  }
-
-  protected IcsFileAdapter (IcsFileMapping icsFileParsing,
-                            ImageMapping imageParsing,
-                            String ddsmCaseName,
-                            LuceneClassAdapter<IcsFile> decorator) {
-    super(icsFileParsing, ddsmCaseName, decorator);
+    super(icsFileParsing,
+        new LuceneDocFileAdapter<IdentifiableFile>(icsFileParsing,
+            root,
+            downloadService,
+            null));
 
     this.icsFileParsing = icsFileParsing;
     this.imageParsing = imageParsing;
@@ -82,10 +79,9 @@ public class IcsFileAdapter extends LuceneDocDdsmCaseAdapter<IcsFile> {
   @Override
   protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
     PropertyMapping property = pair.getValue1();
-    String value = field.stringValue();
 
     if (isImageReference(property)) {
-     return imageParsing.getRdfType() + "#" + value;
+     return imageParsing.getRdfType() + "#" + field.stringValue();
     }
 
     return null;

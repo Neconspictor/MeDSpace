@@ -75,7 +75,7 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
       // we actually don't want, that a classMapping is overwritten by an existing one
       // if they aren't equal (-> Bug in user code)!
       if (classMapping != null) {
-        if (!decorator.classMapping.equals(decorator)) {
+        if (!decorator.classMapping.equals(classMapping)) {
           throw new IllegalArgumentException("ClassMapping mismatch!");
         }
       }

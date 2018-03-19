@@ -19,7 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * This controller handles the access of the SQL wrapper services and manages the proper GUI rendering of the services.
+ * This controller handles the access of the DDSM image wrapper services and manages the proper GUI rendering of the services.
  */
 @Singleton
 public class ImageWrapperController extends WrapperController {
@@ -30,16 +30,18 @@ public class ImageWrapperController extends WrapperController {
   private static Logger log = LoggerFactory.getLogger(ImageWrapperController.class);
 
   /**
-   * The SQL wrapper model.
+   * The DDSM image wrapper service.
    */
   private final ImageWrapperService imageWrapperService;
 
   private final File root;
 
+
   /**
-   * Creates a new SQLWrapperController
+   * Creates a new ImageWrapperController
    * @param wrapperService TODO
-   * @param rdfProvider TODO
+   * @param rdfProvider
+   * @param configProvider
    */
   @Inject
   ImageWrapperController(ImageWrapperService wrapperService,
@@ -47,11 +49,12 @@ public class ImageWrapperController extends WrapperController {
                          DdsmConfigProvider configProvider) {
     super(configProvider.getGeneralWrapperConfig(), rdfProvider, wrapperService);
     this.imageWrapperService = wrapperService;
-    root = new File("_work/medspace/caseFiles/");
+    String imageDirectory = configProvider.getDdsmConfig().getImageDirectory();
+    root = new File(imageDirectory);
   }
 
   /**
-   * Provides the test page of the SQL Wrapper.
+   * Provides the test page of the DDSM image Wrapper.
    * @return
    */
   public Result guiTest() {
@@ -169,7 +172,7 @@ public class ImageWrapperController extends WrapperController {
   }
 
   /**
-   * Provides the SQL Wrapper status and debug page.
+   * Provides the DDSM image Wrapper status and debug page.
    */
   public Result index() {
     return ok(views.html.index.render(imageWrapperService, generalConfig));

@@ -8,7 +8,6 @@ import java.sql.*;
 import de.unipassau.medspace.common.SQL.SQLResultTuple;
 import de.unipassau.medspace.common.rdf.*;
 import de.unipassau.medspace.d2r.bridge.Bridge;
-import de.unipassau.medspace.d2r.bridge.ObjectPropertyBridge;
 import de.unipassau.medspace.d2r.exception.D2RException;
 import de.unipassau.medspace.common.SQL.SelectStatement;
 
@@ -59,6 +58,11 @@ public class D2rMap implements Serializable {
   private QNameNormalizer normalizer;
 
   /**
+   * Meta data tags, tuple instances of this d2r map are related to.
+   */
+  private final List<String> metaDataTags;
+
+  /**
    * TODO
    */
   private RDFFactory rdfFactory;
@@ -75,6 +79,7 @@ public class D2rMap implements Serializable {
     bridges = new ArrayList<>();
     normalizer = qName -> qName;
     this.rdfFactory = rdfFactory;
+    this.metaDataTags = new ArrayList<>();
   }
 
 
@@ -87,6 +92,17 @@ public class D2rMap implements Serializable {
     if (bridge.getPropertyQName().equals("rdf:type")) {
       this.rdfTypeProperty = bridge;
     }
+  }
+
+  /**
+   * Adds a meta data tag to this D2rMap.
+   * @param tag The tag to be added. Mustn't be null
+   *
+   * @throws NullPointerException If tag is null
+   */
+  public void addMetaDataTag(String tag) {
+    if (tag == null) throw new NullPointerException("Null is not supported for a meta data tag");
+    this.metaDataTags.add(tag);
   }
 
 
@@ -168,6 +184,14 @@ public class D2rMap implements Serializable {
   public String getId() {
     assert id != null;
     return id;
+  }
+
+  /**
+   * Provides an unmodifiable list of the meta tags used by this class.
+   * @return The list of used meta tags. The result is unmodifiable.
+   */
+  public List<String> getMetaDataTags() {
+    return Collections.unmodifiableList(metaDataTags);
   }
 
   /**

@@ -1,12 +1,11 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter;
 
-import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
 import de.unipassau.medspace.common.lucene.rdf.LuceneDocFileAdapter;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
-import de.unipassau.medspace.common.util.FileUtil;
+import de.unipassau.medspace.common.register.Service;
 import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.ImageMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.OverlayMapping;
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.DDSM_Image;
+import de.unipassau.medspace.wrapper.image_wrapper.ddsm.Image;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.OverlayMetaData;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -14,12 +13,11 @@ import org.javatuples.Pair;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * TODO
  */
-public class ImageAdapter extends LuceneDocDdsmCaseAdapter<DDSM_Image> {
+public class ImageAdapter extends DDSM_CaseAdapter<Image> {
 
   /**
    * TODO
@@ -51,29 +49,22 @@ public class ImageAdapter extends LuceneDocDdsmCaseAdapter<DDSM_Image> {
   public ImageAdapter(ImageMapping imageParsing,
                       OverlayMapping overlayParsing,
                       File root,
-                      String ddsmCaseName) {
+                      String downloadService) {
 
-    this(imageParsing, overlayParsing, ddsmCaseName,
-        new LuceneDocFileAdapter<>(imageParsing, root, null));
-
-  }
-
-  protected ImageAdapter(ImageMapping imageParsing,
-                      OverlayMapping overlayParsing,
-                      String ddsmCaseName,
-                      LuceneClassAdapter<DDSM_Image> decorator) {
-    super(imageParsing, ddsmCaseName, decorator);
+    super(imageParsing,
+        new LuceneDocFileAdapter<>(imageParsing, root, downloadService, null));
     this.overlayParsing = overlayParsing;
 
-    addPair(SOURCE, imageParsing.getSource());
+    //addPair(SOURCE, imageParsing.getSource());
     addPair(OVERLAY, imageParsing.getOverlay());
     this.imageParsing = imageParsing;
 
     this.metaDataFields.add(IMAGE_FOLDER_STRUCTURE_METADATA);
+
   }
 
   @Override
-  protected void addFields(DDSM_Image source, Document doc) throws IOException {
+  protected void addFields(Image source, Document doc) throws IOException {
 
     OverlayMetaData overlay = source.getOverlay();
     if (overlay != null) {
@@ -85,10 +76,9 @@ public class ImageAdapter extends LuceneDocDdsmCaseAdapter<DDSM_Image> {
   @Override
   protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
     PropertyMapping property = pair.getValue1();
-    String value = field.stringValue();
 
     if (isOverlayReference(property)) {
-      return overlayParsing.getRdfType() + "#" + value;
+      return overlayParsing.getRdfType() + "#" + field.stringValue();
     }
     return null;
   }

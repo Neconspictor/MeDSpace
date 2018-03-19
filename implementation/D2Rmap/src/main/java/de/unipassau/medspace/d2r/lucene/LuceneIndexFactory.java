@@ -68,6 +68,10 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
       List<String> mappedColumns = LuceneD2rResultFactory.getMappedColumns(map);
       fields.addAll(mappedColumns);
     }
+
+    // Add the meta daa tag field
+    fields.add(D2R.D2RMAP_META_DATA_TAGS);
+
     return fields;
   }
 }

@@ -1,4 +1,4 @@
-package de.unipassau.medspace.wrapper.image_wrapper;
+package de.unipassau.medspace.common.multimedia;
 
 import java.io.File;
 import java.util.List;

@@ -1,6 +1,5 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
-import de.unipassau.medspace.common.rdf.mapping.Identifiable;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.util.ParserUtil;
 import de.unipassau.medspace.common.util.StringUtil;
@@ -22,7 +21,7 @@ import static de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass.*;
 /**
  * TODO
  */
-public class OverlayMetaData extends Identifiable {
+public class OverlayMetaData extends DDSM_CaseIdentifiable {
 
   /**
    * TODO
@@ -46,13 +45,11 @@ public class OverlayMetaData extends Identifiable {
 
 
 
-
-
   /**
    * TODO
    */
-  private OverlayMetaData(String id) {
-    super(id);
+  private OverlayMetaData(String id, String caseName) {
+    super(id, caseName);
     abnormalities = new ArrayList<>();
     totalAbnormalities = 0;
   }
@@ -63,8 +60,8 @@ public class OverlayMetaData extends Identifiable {
    * @return
    * @throws IOException
    */
-  public static OverlayMetaData parse(File file, String id) throws IOException {
-    OverlayMetaData result =  new Parser(id).parse(file);
+  public static OverlayMetaData parse(File file, String id, String caseName) throws IOException {
+    OverlayMetaData result =  new Parser(id).parse(file, caseName);
     return result;
   }
 
@@ -128,7 +125,7 @@ public class OverlayMetaData extends Identifiable {
      * @return
      * @throws IOException
      */
-    public OverlayMetaData parse(File file) throws IOException  {
+    public OverlayMetaData parse(File file, String caseName) throws IOException  {
       List<String> content = FileUtil.getLineContent(file);
 
       if (content.size() == 0) throw new IOException("Couldn't read content of overlay meta data file: " + file);
@@ -139,7 +136,7 @@ public class OverlayMetaData extends Identifiable {
       List<Abnormality> abnormalities = new ArrayList<>();
 
       for (int i = 0; i < totalAbnormality; ++i) {
-        Abnormality abnormality = parseAbnormality(content);
+        Abnormality abnormality = parseAbnormality(content,caseName);
         abnormalities.add(abnormality);
       }
 
@@ -148,7 +145,7 @@ public class OverlayMetaData extends Identifiable {
             abnormalities.size() + ")");
       }
 
-      OverlayMetaData result = new OverlayMetaData(overlayID);
+      OverlayMetaData result = new OverlayMetaData(overlayID, caseName);
       result.abnormalities = abnormalities;
       result.totalAbnormalities = totalAbnormality;
       return result;
@@ -160,7 +157,7 @@ public class OverlayMetaData extends Identifiable {
      * @return
      * @throws IOException
      */
-    private Abnormality parseAbnormality(List<String> content) throws IOException {
+    private Abnormality parseAbnormality(List<String> content, String caseName) throws IOException {
 
       // Get abnormality number
       List<String> tokens = StringUtil.tokenize(content.remove(0), " \t");
@@ -168,7 +165,7 @@ public class OverlayMetaData extends Identifiable {
       int abnormalityNumber = ParserUtil.pullInt(tokens);
 
       // Lesion type
-      List<LesionType> lesionTypes = parseLesionTypes(content);
+      List<LesionType> lesionTypes = parseLesionTypes(content,caseName);
 
       // assessment
       tokens = StringUtil.tokenize(content.remove(0), " \t");
@@ -213,7 +210,8 @@ public class OverlayMetaData extends Identifiable {
           subtlety,
           pathology,
           totalOutlines,
-          overlayID + "#" + abnormalityNumber);
+          overlayID + "#" + abnormalityNumber,
+          caseName);
     }
 
     /**
@@ -222,12 +220,12 @@ public class OverlayMetaData extends Identifiable {
      * @return
      * @throws IOException
      */
-    private List<LesionType> parseLesionTypes(List<String> content) throws IOException {
+    private List<LesionType> parseLesionTypes(List<String> content, String caseName) throws IOException {
 
       List<LesionType> result = new ArrayList<>();
 
       while(StringUtil.beginsWithToken(content.get(0), LESION_TYPE)) {
-        LesionType type = parseLesionType(content);
+        LesionType type = parseLesionType(content, caseName);
         result.add(type);
       }
 
@@ -240,7 +238,7 @@ public class OverlayMetaData extends Identifiable {
      * @return
      * @throws IOException
      */
-    private LesionType parseLesionType(List<String> content) throws IOException {
+    private LesionType parseLesionType(List<String> content, String caseName) throws IOException {
 
       List<String> tokens = StringUtil.tokenize(content.remove(0), " \t");
       ParserUtil.pullExpectedToken(tokens, LESION_TYPE);
@@ -248,9 +246,9 @@ public class OverlayMetaData extends Identifiable {
       LesionType lesionType;
 
       if (lesionTypeStr.equals(Mass.MASS)) {
-        lesionType = parseMass(tokens);
+        lesionType = parseMass(tokens, caseName);
       } else if (lesionTypeStr.equals(Calcification.CALCIFICATION)) {
-        lesionType = parseCalcification(tokens);
+        lesionType = parseCalcification(tokens, caseName);
       } else {
         throw new IOException("Unknown LESION_TYPE:  " + lesionTypeStr);
       }
@@ -264,14 +262,14 @@ public class OverlayMetaData extends Identifiable {
      * @return
      * @throws IOException
      */
-    private Calcification parseCalcification(List<String> tokens) throws IOException {
+    private Calcification parseCalcification(List<String> tokens, String caseName) throws IOException {
       ParserUtil.pullExpectedToken(tokens, TYPE);
       String type = tokens.remove(0);
 
       ParserUtil.pullExpectedToken(tokens, DISTRIBUTION);
       String distribution = tokens.remove(0);
 
-      return new Calcification(type, distribution, createLesionTypeId());
+      return new Calcification(type, distribution, createLesionTypeId(), caseName);
     }
 
     /**
@@ -280,14 +278,14 @@ public class OverlayMetaData extends Identifiable {
      * @return
      * @throws IOException
      */
-    private Mass parseMass(List<String> tokens) throws IOException {
+    private Mass parseMass(List<String> tokens, String caseName) throws IOException {
       ParserUtil.pullExpectedToken(tokens, SHAPE);
       String shape = tokens.remove(0);
 
       ParserUtil.pullExpectedToken(tokens, MARGINS);
       String margins = tokens.remove(0);
 
-      return new Mass(shape, margins, createLesionTypeId());
+      return new Mass(shape, margins, createLesionTypeId(), caseName);
     }
 
     /**

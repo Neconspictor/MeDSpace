@@ -3,7 +3,9 @@ package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.play.WrapperService;
+import de.unipassau.medspace.common.play.wrapper.RegisterClient;
 import de.unipassau.medspace.common.register.Datasource;
 
 import de.unipassau.medspace.common.wrapper.Wrapper;
@@ -54,7 +56,7 @@ public class PdfWrapperService extends WrapperService {
   @Inject
   public PdfWrapperService(ApplicationLifecycle lifecycle,
                            RegisterClient registerClient,
-                           ConfigProvider provider,
+                           PdfWrapperConfigProvider provider,
                            ShutdownService shutdownService,
                            Wrapper wrapper) {
 
@@ -91,7 +93,7 @@ public class PdfWrapperService extends WrapperService {
    * @param provider A provider used to access the wrapper and server configurations
    * @throws IOException If an IO-Error occurs.
    */
-  private void startup(ConfigProvider provider) throws IOException {
+  private void startup(PdfWrapperConfigProvider provider) throws IOException {
 
     log.info("initializing SQL Wrapper...");
 

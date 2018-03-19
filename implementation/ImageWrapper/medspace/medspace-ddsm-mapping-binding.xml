@@ -32,7 +32,7 @@
 
 	</jxb:bindings>
 
-    <jxb:bindings schemaLocation="medspace-ddsm-specification.xsd">
+    <jxb:bindings schemaLocation="medspace-ddsm-mapping-specification.xsd">
             <jxb:bindings node="//xsd:element[@name='Root']">
                 <jxb:class name="RootMapping"/>
             </jxb:bindings>

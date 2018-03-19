@@ -27,6 +27,11 @@ public final class D2R {
   public static final String MEDSPACE_VALIDATION_SCHEMA = "/Medspace_D2Rmap.xsd";
 
   /**
+   * This constant is used as the field name for meta data tags.
+   */
+  public static final String D2RMAP_META_DATA_TAGS = "D2RMAP_META_DATA_TAGS";
+
+  /**
    * The rdf namespace
    */
   public static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";

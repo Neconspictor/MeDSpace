@@ -50,7 +50,7 @@ public final class StringUtil {
    * @return
        * @throws IOException
    */
-  public static String concat(List<String> list, String seperator) throws IOException {
+  public static String concat(List<String> list, String seperator) {
     StringBuilder builder = new StringBuilder();
 
     for (String elem : list) {

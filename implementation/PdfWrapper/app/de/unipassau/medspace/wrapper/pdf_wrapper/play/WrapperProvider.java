@@ -47,7 +47,7 @@ public class WrapperProvider implements Provider<Wrapper> {
    * TODO
    */
   @Inject
-  public WrapperProvider(ConfigProvider configProvider,
+  public WrapperProvider(PdfWrapperConfigProvider configProvider,
                          ShutdownService shutdownService) throws IOException {
 
     RootMapping rootParsing = configProvider.getPdfConfig();

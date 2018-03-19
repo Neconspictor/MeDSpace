@@ -79,10 +79,13 @@
 											to refer this ClassMap.
 	<-->
 	<xsd:complexType name="ClassMap">
-		<xsd:choice maxOccurs="unbounded">
-			<xsd:element name="DataTypePropertyBridge" type="d2r:DataTypePropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="ObjectPropertyBridge" type="d2r:ObjectPropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
-		</xsd:choice>
+		<xsd:sequence>
+			<xsd:choice maxOccurs="unbounded">
+				<xsd:element name="DataTypePropertyBridge" type="d2r:DataTypePropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="ObjectPropertyBridge" type="d2r:ObjectPropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			<xsd:element name="MetaData" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
 		<xsd:attribute name="sql" type="xsd:string" use="required"/>
 		<xsd:attribute name="resourceIdPattern" type="xsd:string" use="required"/>
 		<xsd:attribute name="id" type="xsd:string" use="required"/>

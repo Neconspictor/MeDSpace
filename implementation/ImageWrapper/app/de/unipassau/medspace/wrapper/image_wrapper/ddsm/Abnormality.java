@@ -1,7 +1,6 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
 
-import de.unipassau.medspace.common.rdf.mapping.Identifiable;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.LesionType;
 
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import java.util.List;
 /**
  * TODO
  */
-public class Abnormality extends Identifiable {
+public class Abnormality extends DDSM_CaseIdentifiable {
 
   /**
    * TODO
@@ -89,8 +88,9 @@ public class Abnormality extends Identifiable {
                      int subtlety,
                      String pathology,
                      int totalOutlines,
-                     String id) {
-    super(id);
+                     String id,
+                     String caseName) {
+    super(id, caseName);
 
     this.abnormalityNumber = abnormalityNumber;
     this.lesionTypes = lesionTypes;

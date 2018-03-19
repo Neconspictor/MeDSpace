@@ -1,0 +1,46 @@
+<jxb:bindings 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+
+    <jxb:bindings schemaLocation="Medspace_D2Rmap.xsd">
+
+
+		<jxb:bindings node="//xsd:complexType[@name='Bridge']">
+			<jxb:class name="BridgeParsing"/>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xsd:complexType[@name='DataSourceProperty']">
+			<jxb:class name="DataSourcePropertyParsing"/>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xsd:complexType[@name='DataTypePropertyBridge']">
+			<jxb:class name="DataTypePropertyBridgeParsing"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='DBAuthentification']">
+			<jxb:class name="DBAuthentificationParsing"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='DBConnection']">
+			<jxb:class name="DBConnectionParsing"/>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xsd:complexType[@name='ClassMap']">
+			<jxb:class name="ClassMapParsing"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Namespace']">
+			<jxb:class name="NamespaceParsing"/>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xsd:complexType[@name='ObjectPropertyBridge']">
+			<jxb:class name="ObjectPropertyBridgeParsing"/>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xsd:element[@name='Root']">
+			<jxb:class name="RootParsing"/>
+		</jxb:bindings>
+
+    </jxb:bindings>
+</jxb:bindings>

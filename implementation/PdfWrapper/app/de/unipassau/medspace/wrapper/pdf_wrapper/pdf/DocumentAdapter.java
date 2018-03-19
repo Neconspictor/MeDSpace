@@ -1,5 +1,6 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf;
 
+import de.unipassau.medspace.common.rdf.mapping.Identifiable;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
 import de.unipassau.medspace.common.util.Converter;
 import org.apache.lucene.index.IndexableField;

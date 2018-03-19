@@ -1,6 +1,8 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 
 import com.google.inject.AbstractModule;
+import de.unipassau.medspace.common.play.ShutdownService;
+import de.unipassau.medspace.common.play.wrapper.RegisterClient;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.common.wrapper.Wrapper;
@@ -49,7 +51,7 @@ public class AppRoot extends AbstractModule {
         .to(RDF4J_RDFProvider.class)
         .asEagerSingleton();
 
-    bind(ConfigProvider.class).asEagerSingleton();
+    bind(PdfWrapperConfigProvider.class).asEagerSingleton();
 
     //Generics have to be included in a TypeLiteral
 

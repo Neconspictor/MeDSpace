@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class AbnormalityAdapter extends LuceneDocDdsmCaseAdapter<Abnormality> {
+public class AbnormalityAdapter extends DDSM_CaseAdapter<Abnormality> {
 
 
   /**
@@ -79,9 +79,8 @@ public class AbnormalityAdapter extends LuceneDocDdsmCaseAdapter<Abnormality> {
    */
   protected AbnormalityAdapter(AbnormalityMapping abnormalityParsing,
                                CalcificationMapping calcificationParsing,
-                               MassMapping massParsing,
-                               String ddsmCaseName) {
-    super(abnormalityParsing, ddsmCaseName);
+                               MassMapping massParsing) {
+    super(abnormalityParsing, null);
     this.abnormalityParsing = abnormalityParsing;
     this.calcificationParsing = calcificationParsing;
     this.massParsing = massParsing;
@@ -112,16 +111,15 @@ public class AbnormalityAdapter extends LuceneDocDdsmCaseAdapter<Abnormality> {
   }
 
   @Override
-  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+  protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
     PropertyMapping property = pair.getValue1();
-    String value = field.stringValue();
+    String value = null;
 
     if (isCalcificationReference(property)) {
-      value = calcificationParsing.getRdfType() + "#" + value;
+      value = calcificationParsing.getRdfType() + "#" + field.stringValue();
     } else if (isMassReference(property)) {
-      value = massParsing.getRdfType() + "#" + value;
+      value = massParsing.getRdfType() + "#" + field.stringValue();
     }
-
     return value;
   }
 

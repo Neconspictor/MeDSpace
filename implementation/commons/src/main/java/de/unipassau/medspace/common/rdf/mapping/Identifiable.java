@@ -3,26 +3,11 @@ package de.unipassau.medspace.common.rdf.mapping;
 /**
  * TODO
  */
-public class Identifiable {
-
-  /**
-   * TODO
-   */
-  protected String id;
-
-  /**
-   * TODO
-   * @param id
-   */
-  public Identifiable(String id) {
-    this.id = id;
-  }
+public interface Identifiable {
 
   /**
    * TODO
    * @return
    */
-  public String getId() {
-    return id;
-  }
+  String getId();
 }

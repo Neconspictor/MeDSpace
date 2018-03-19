@@ -207,6 +207,10 @@ public class ConfigurationReader {
     validateSqlQuery(sqlQuery);
     map.setSql(sqlQuery);
 
+    for (String tag : mapParsing.getMetaData()) {
+      map.addMetaDataTag(tag);
+    }
+
     String resourceIdPattern = mapParsing.getResourceIdPattern();
 
     //check that resource id columns aren't empty, has id creation

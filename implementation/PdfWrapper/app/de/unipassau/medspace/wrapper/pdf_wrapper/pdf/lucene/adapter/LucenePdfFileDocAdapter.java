@@ -1,11 +1,11 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter;
 
 import de.unipassau.medspace.common.rdf.mapping.ClassMapping;
+import de.unipassau.medspace.common.rdf.mapping.Identifiable;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
 import de.unipassau.medspace.common.util.RdfUtil;
 import de.unipassau.medspace.common.util.StringUtil;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.DocumentAdapter;
-import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.Identifiable;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;

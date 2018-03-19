@@ -2,7 +2,7 @@ package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene;
 
 import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.Abnormality;
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.DDSM_Image;
+import de.unipassau.medspace.wrapper.image_wrapper.ddsm.Image;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.IcsFile;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.OverlayMetaData;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Calcification;
@@ -68,7 +68,7 @@ public class IcsFileToDocStream implements Stream<Document> {
     createDocs(icsFile.getRightMLO());
   }
 
-  private void createDocs(DDSM_Image image) throws IOException {
+  private void createDocs(Image image) throws IOException {
     Document doc = imageAdapter.convert(image);
     documents.add(doc);
 

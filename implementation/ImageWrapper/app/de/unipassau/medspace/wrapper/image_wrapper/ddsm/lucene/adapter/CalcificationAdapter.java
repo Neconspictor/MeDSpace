@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class CalcificationAdapter extends LuceneDocDdsmCaseAdapter<Calcification> {
+public class CalcificationAdapter extends DDSM_CaseAdapter<Calcification> {
 
   /**
    * TODO
@@ -30,8 +30,8 @@ public class CalcificationAdapter extends LuceneDocDdsmCaseAdapter<Calcification
    *
    * @param calcificationParsing
    */
-  protected CalcificationAdapter(CalcificationMapping calcificationParsing, String ddsmCaseName) {
-    super(calcificationParsing,ddsmCaseName);
+  protected CalcificationAdapter(CalcificationMapping calcificationParsing) {
+    super(calcificationParsing, null);
 
     addPair(TYPE, calcificationParsing.getType());
     addPair(DISTRIBUTION, calcificationParsing.getDistribution());
@@ -44,7 +44,7 @@ public class CalcificationAdapter extends LuceneDocDdsmCaseAdapter<Calcification
   }
 
   @Override
-  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
-    return field.stringValue();
+  protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+    return null;
   }
 }

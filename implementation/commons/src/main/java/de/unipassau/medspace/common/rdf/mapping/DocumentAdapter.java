@@ -33,6 +33,10 @@ public interface DocumentAdapter<ClassType extends Identifiable, DocType, FieldT
   List<Pair<String, PropertyMapping>> getFieldNamePropertyPairs();
 
 
+  /**
+   * TODO
+   * @return
+   */
   List<String> getMetaDataFields();
 
   /**

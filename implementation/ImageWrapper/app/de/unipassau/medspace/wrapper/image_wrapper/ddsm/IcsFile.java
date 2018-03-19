@@ -1,6 +1,5 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
-import de.unipassau.medspace.common.rdf.mapping.IdentifiableFile;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.common.util.ParserUtil;
 import de.unipassau.medspace.common.util.StringUtil;
@@ -12,7 +11,7 @@ import java.util.*;
 /**
  * TODO
  */
-public class IcsFile extends IdentifiableFile {
+public class IcsFile extends DDSM_CaseFile {
 
 
   /**
@@ -95,29 +94,31 @@ public class IcsFile extends IdentifiableFile {
   /**
    * TODO
    */
-  private DDSM_Image leftCC;
+  private Image leftCC;
 
   /**
    * TODO
    */
-  private DDSM_Image leftMLO;
+  private Image leftMLO;
 
   /**
    * TODO
    */
-  private DDSM_Image rightCC;
+  private Image rightCC;
 
   /**
    * TODO
    */
-  private DDSM_Image rightMLO;
+  private Image rightMLO;
 
 
   /**
    * TODO
    */
-  private IcsFile(String id, File source) {
-    super(id, source);
+  private IcsFile(String id,
+                  String caseName,
+                  File source) {
+    super(id, caseName, source);
   }
 
   /**
@@ -128,12 +129,13 @@ public class IcsFile extends IdentifiableFile {
    */
   public static IcsFile parse(File file,
                               String id,
-                              DDSM_Image leftCC,
-                              DDSM_Image leftMLO,
-                              DDSM_Image rightCC,
-                              DDSM_Image rightMLO) throws IOException {
+                              String caseName,
+                              Image leftCC,
+                              Image leftMLO,
+                              Image rightCC,
+                              Image rightMLO) throws IOException {
 
-    IcsFile result =  Parser.parse(file, id);
+    IcsFile result =  Parser.parse(file, id, caseName);
     result.leftCC = leftCC;
     result.leftMLO = leftMLO;
     result.rightCC = rightCC;
@@ -202,28 +204,28 @@ public class IcsFile extends IdentifiableFile {
   /**
    * TODO
    */
-  public DDSM_Image getLeftCC() {
+  public Image getLeftCC() {
     return leftCC;
   }
 
   /**
    * TODO
    */
-  public DDSM_Image getLeftMLO() {
+  public Image getLeftMLO() {
     return leftMLO;
   }
 
   /**
    * TODO
    */
-  public DDSM_Image getRightCC() {
+  public Image getRightCC() {
     return rightCC;
   }
 
   /**
    * TODO
    */
-  public DDSM_Image getRightMLO() {
+  public Image getRightMLO() {
     return rightMLO;
   }
 
@@ -246,8 +248,8 @@ public class IcsFile extends IdentifiableFile {
      * @return
      * @throws IOException
      */
-    public static IcsFile parse(File file, String id) throws IOException {
-      IcsFile data = createUninitialized(id, file);
+    public static IcsFile parse(File file, String id, String caseName) throws IOException {
+      IcsFile data = createUninitialized(id, caseName, file);
       List<String> content = FileUtil.getLineContent(file);
       for (String line : content) {
         List<String> tokens = StringUtil.tokenize(line, " \t");
@@ -266,8 +268,8 @@ public class IcsFile extends IdentifiableFile {
      * TODO
      * @return
      */
-    private static IcsFile createUninitialized(String id, File source) {
-      IcsFile data = new IcsFile(id, source);
+    private static IcsFile createUninitialized(String id, String caseName, File source) {
+      IcsFile data = new IcsFile(id, caseName, source);
       data.dateOfStudy = null;
       data.patientAge  = -1;
       data.density = -1;

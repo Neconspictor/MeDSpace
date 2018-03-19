@@ -1,5 +1,6 @@
 package de.unipassau.medspace.wrapper.image_wrapper.play;
 
+import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
@@ -10,11 +11,11 @@ import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.common.util.RdfUtil;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import de.unipassau.medspace.wrapper.image_wrapper.DDSM_ImageWrapper;
+import de.unipassau.medspace.wrapper.image_wrapper.config.DDSMConfig;
 import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.RootMapping;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.IcsFile;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.LuceneIndexFactory;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.DDSM_AdapterFactory;
-import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lucene.adapter.LuceneDocDdsmCaseAdapter;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +40,15 @@ public class WrapperProvider implements Provider<Wrapper> {
   public static String IMAGE_FILE_ENDING = "png";
 
   /**
-   * TODO
-   */
-  public static File root = new File("F:\\bachelorThesis\\DDSM\\WinSCP-Test\\cases\\cases");
-
-  /**
    * Logger instance for this class.
    */
   private static Logger log = LoggerFactory.getLogger(WrapperProvider.class);
+
+  /**
+   * TODO
+   */
+  private File imageDirectory;
+
 
   /**
    * TODO
@@ -60,10 +62,17 @@ public class WrapperProvider implements Provider<Wrapper> {
   public WrapperProvider(DdsmConfigProvider configProvider,
                          ShutdownService shutdownService) throws IOException {
 
-    RootMapping rootParsing = configProvider.getDdsmConfig();
+    RootMapping rootParsing = configProvider.getDdsmMappingConfig();
+    DDSMConfig ddsmConfig = configProvider.getDdsmConfig();
 
-    DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(root, rootParsing);
-    List<LuceneDocDdsmCaseAdapter<?>> adapters = adapterFactory.createAdapters();
+    imageDirectory = new File(ddsmConfig.getImageDirectory());
+
+    if (!imageDirectory.isDirectory()) throw new IOException("The image directory is not a valid directory: " + imageDirectory);
+
+    String downloadFileServiceURL = createGetFileServiceURL(configProvider);
+    DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(imageDirectory, rootParsing,
+        downloadFileServiceURL);
+    List<LuceneClassAdapter<?>> adapters = adapterFactory.createAdapters();
 
     Map<String, Namespace> namespaces = new HashMap<>();
 
@@ -89,7 +98,7 @@ public class WrapperProvider implements Provider<Wrapper> {
     wrapper = new DDSM_ImageWrapper<>(tripleIndexManager,
         IMAGE_FILE_ENDING,
         namespaces,
-        root);
+        imageDirectory);
 
     wrapper.getIndex().open();
     boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
@@ -99,6 +108,29 @@ public class WrapperProvider implements Provider<Wrapper> {
       wrapper.reindexData();
       log.info("Indexing done.");
     }
+  }
+
+  /**
+   * TODO
+   * @param configProvider
+   * @return
+   */
+  private String createGetFileServiceURL(DdsmConfigProvider configProvider) {
+    String testParam = "test";
+
+    String host = configProvider.getServerConfig().getServerURL().toExternalForm();
+
+    if (host.endsWith("/")) {
+      host = host.substring(0, host.length() -1);
+    }
+
+    //create a relative url to the getFile service and with a test param
+    String getFile = controllers.routes.ImageWrapperController.getFile(testParam).url();
+
+    //delete the test param
+    getFile = getFile.substring(0, getFile.length() - testParam.length());
+
+    return host + getFile;
   }
 
   @Override

@@ -82,6 +82,10 @@
 		<d2r:DataTypePropertyBridge property="adenocarcinoma:SBR_grading" pattern="@@adenocarcinoma.SBR_grading@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="adenocarcinoma:resection_margin" pattern="@@adenocarcinoma.resection_margin@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="adenocarcinoma:number_of_removed_lymphnodes" pattern="@@adenocarcinoma.number_of_removed_lymphnodes@@" dataType="xsd:integer"/>
+
+		<d2r:MetaData>adenocarcinoma</d2r:MetaData>
+		<d2r:MetaData>cancer</d2r:MetaData>
+		<d2r:MetaData>breastcancer</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -96,6 +100,9 @@
 		<d2r:DataTypePropertyBridge property="breastcancer:quadrant" pattern="@@quadrant@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="breastcancer:breastside" pattern="@@breastside@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="breastcancer:microcalcification" pattern="@@microcalcification@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>breastcancer</d2r:MetaData>
+		<d2r:MetaData>cancer</d2r:MetaData>
 	</d2r:ClassMap>
 
 	<d2r:ClassMap
@@ -106,6 +113,7 @@
 
 		<d2r:ObjectPropertyBridge property="breastcancer_has_receptor:tumor" referredClass="tumor" referredColumns="breastcancer_has_receptor.tumor"/>
 		<d2r:ObjectPropertyBridge property="breastcancer_has_receptor:receptor" referredClass="receptor" referredColumns="breastcancer_has_receptor.receptor"/>
+		<d2r:MetaData>tumor receptor</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -119,6 +127,8 @@
 		<d2r:ObjectPropertyBridge property="classification:tumor" referredClass="tumor" referredColumns="classification.tumor"/>
 		<d2r:ObjectPropertyBridge property="classification:patient" referredClass="patient" referredColumns="classification.patient"/>
 		<d2r:DataTypePropertyBridge property="classification:name" pattern="@@name@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>tumor classicifcation</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -132,6 +142,8 @@
 		<d2r:ObjectPropertyBridge property="clinical_data:tumor" referredClass="tumor" referredColumns="clinical_data.tumor"/>
 		<d2r:DataTypePropertyBridge property="clinical_data:breastsize" pattern="@@breastsize@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="clinical_data:history" pattern="@@history@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>clinical data</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -145,6 +157,8 @@
 		<d2r:DataTypePropertyBridge property="decision:description" pattern="@@description@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="decision:type" pattern="@@type@@" dataType="xsd:string"/>
 		<d2r:ObjectPropertyBridge property="decision:rcp" referredClass="rcp" referredColumns="decision.rcp"/>
+
+		<d2r:MetaData>decision</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -158,6 +172,8 @@
 		<d2r:DataTypePropertyBridge property="doctor:firstname" pattern="@@firstname@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="doctor:lastname" pattern="@@lastname@@" dataType="xsd:string"/>
 		<d2r:ObjectPropertyBridge property="doctor:hospital" referredClass="hospital" referredColumns="doctor.hospital"/>
+
+		<d2r:MetaData>person doctor clinician</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -169,6 +185,8 @@
 
 		<d2r:ObjectPropertyBridge property="doctor_participate_rcp:doctor" referredClass="doctor" referredColumns="doctor"/>
 		<d2r:ObjectPropertyBridge property="doctor_participate_rcp:rcp" referredClass="rcp" referredColumns="rcp"/>
+
+		<d2r:MetaData>doctor participate participates participation rcp</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -180,6 +198,8 @@
 
 		<d2r:ObjectPropertyBridge property="doctor_treat_patient:doctor" referredClass="doctor" referredColumns="doctor"/>
 		<d2r:ObjectPropertyBridge property="doctor_treat_patient:patient" referredClass="patient" referredColumns="patient"/>
+
+		<d2r:MetaData>treats treatment doctor patient</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -192,6 +212,8 @@
 		<d2r:DataTypePropertyBridge property="hospital:id" pattern="@@id@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="hospital:place" pattern="@@place@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="hospital:name" pattern="@@name@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>hospital</d2r:MetaData>
 	</d2r:ClassMap>
 
 	<d2r:ClassMap
@@ -206,6 +228,8 @@
 		<d2r:DataTypePropertyBridge property="patient:maidenname" pattern="@@maidenname@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="patient:birthday" pattern="@@birthday@@" dataType="xsd:date"/>
 		<d2r:DataTypePropertyBridge property="patient:sex" pattern="@@sex@@" dataType="xsd:Character"/>
+
+		<d2r:MetaData>patient person</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -219,6 +243,9 @@
 		<d2r:DataTypePropertyBridge property="rcp:place" pattern="@@place@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="rcp:rcpdate" pattern="@@rcpdate@@" dataType="xsd:date"/>
 		<d2r:ObjectPropertyBridge property="rcp:patient" referredClass="patient" referredColumns="rcp.patient"/>
+
+		<d2r:MetaData>rcp</d2r:MetaData>
+		<d2r:MetaData>Réunion de concertation pluridisciplinaire</d2r:MetaData>
 	</d2r:ClassMap>
 
 	<d2r:ClassMap
@@ -230,6 +257,10 @@
 		<d2r:DataTypePropertyBridge property="rcp_cause:id" pattern="@@id@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="rcp_cause:description" pattern="@@description@@" dataType="xsd:string"/>
 		<d2r:ObjectPropertyBridge property="rcp:rcp" referredClass="rcp" referredColumns="rcp_cause.rcp"/>
+
+		<d2r:MetaData>rcp</d2r:MetaData>
+		<d2r:MetaData>Réunion de concertation pluridisciplinaire</d2r:MetaData>
+		<d2r:MetaData>cause</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -241,6 +272,8 @@
 
 		<d2r:DataTypePropertyBridge property="receptor:id" pattern="@@id@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="receptor:description" pattern="@@description@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>receptor</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -254,6 +287,8 @@
 		<d2r:ObjectPropertyBridge property="therapy:rcp" referredClass="rcp" referredColumns="therapy.rcp"/>
 		<d2r:DataTypePropertyBridge property="therapy:place" pattern="@@place@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="therapy:comment" pattern="@@comment@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>therapy</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -270,6 +305,8 @@
 		<d2r:DataTypePropertyBridge property="tnm:metastases" pattern="@@metastases@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="tnm:tumorsize" pattern="@@tumorsize@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="tnm:affected_lymphnodes" pattern="@@affected_lymphnodes@@" dataType="xsd:integer"/>
+
+		<d2r:MetaData>tnm</d2r:MetaData>
 	</d2r:ClassMap>
 
 	<d2r:ClassMap
@@ -285,6 +322,8 @@
 		<d2r:DataTypePropertyBridge property="treatment:sequence" pattern="@@sequence@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="treatment:description" pattern="@@description@@" dataType="xsd:string"/>
 		<d2r:DataTypePropertyBridge property="treatment:type" pattern="@@type@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>treatment</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -297,6 +336,8 @@
 		<d2r:DataTypePropertyBridge property="tumor:id" pattern="@@id@@" dataType="xsd:integer"/>
 		<d2r:ObjectPropertyBridge property="tumor:patient" referredClass="patient" referredColumns="tumor.patient"/>
 		<d2r:DataTypePropertyBridge property="tumor:name" pattern="@@name@@" dataType="xsd:string"/>
+
+		<d2r:MetaData>tumor</d2r:MetaData>
 	</d2r:ClassMap>
 
 
@@ -313,6 +354,8 @@
 		<d2r:DataTypePropertyBridge property="vannuysindex:grading" pattern="@@grading@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="vannuysindex:resectionmargin" pattern="@@resectionmargin@@" dataType="xsd:integer"/>
 		<d2r:DataTypePropertyBridge property="vannuysindex:tumorsize" pattern="@@tumorsize@@" dataType="xsd:integer"/>
+
+		<d2r:MetaData>vannuysindex vannuys index</d2r:MetaData>
 	</d2r:ClassMap>
 
 

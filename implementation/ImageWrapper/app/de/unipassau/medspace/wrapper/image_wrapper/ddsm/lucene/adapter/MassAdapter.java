@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * TODO
  */
-public class MassAdapter extends LuceneDocDdsmCaseAdapter<Mass> {
+public class MassAdapter extends DDSM_CaseAdapter<Mass> {
 
   /**
    * TODO
@@ -29,8 +29,8 @@ public class MassAdapter extends LuceneDocDdsmCaseAdapter<Mass> {
    * TODO
    * @param massParsing
    */
-  protected MassAdapter(MassMapping massParsing, String ddsmCaseName) {
-    super(massParsing,ddsmCaseName);
+  public MassAdapter(MassMapping massParsing) {
+    super(massParsing, null);
 
     addPair(SHAPE, massParsing.getShape());
     addPair(MARGINS, massParsing.getMargins());
@@ -43,7 +43,9 @@ public class MassAdapter extends LuceneDocDdsmCaseAdapter<Mass> {
   }
 
   @Override
-  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
-    return field.stringValue();
+  protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+
+    // use default value
+    return null;
   }
 }
