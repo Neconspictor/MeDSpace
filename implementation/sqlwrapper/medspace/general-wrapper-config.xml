@@ -39,6 +39,6 @@
 
 	<wrapper:RegisterUrl>http://localhost:9500/register</wrapper:RegisterUrl>
 
-	<wrapper:ConnectToRegister>false</wrapper:ConnectToRegister>
+	<wrapper:ConnectToRegister>true</wrapper:ConnectToRegister>
 
 </wrapper:Config>

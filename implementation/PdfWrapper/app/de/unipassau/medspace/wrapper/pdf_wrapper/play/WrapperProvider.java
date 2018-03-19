@@ -1,6 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 
 import de.unipassau.medspace.common.config.ServerConfig;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.RDFFactory;

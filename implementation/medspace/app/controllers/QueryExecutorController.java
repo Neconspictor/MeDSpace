@@ -88,7 +88,7 @@ public class QueryExecutorController extends Controller {
       return internalServerError(strWriter.getBuffer().toString());
     }
 
-    String mimeType = Http.MimeTypes.TEXT;
+    String mimeType = "text/plain; charset=utf-8";
     String dispositionValue = "inline";
 
     if (attach) {
