@@ -19,13 +19,36 @@ In figure \ref{MeDSpaceOverview} the overview of the MeDSpace system is illustra
 The system can roughly be divided into a \emph{wrapper} and a \emph{global MeDSpace} category: The \emph{wrapper} category includes everything from managing the data of a specific datasources (e.g. from a relational database). 
 Whereas the \emph{global MeDSpace} category comprises datasource management and services on a global view.  The modules belonging to this category are the \emph{Register}, the \emph{Data Collector}, the \emph{Query Executor}, and the \emph{Search Page}.  
 
-Now, we want look at the requirements met by MeDSpace. Therefore we look at the purposes of each module of the system. 
+Now, we want look at the requirements met by MeDSpace. Therefore we look at the purposes of each module of the system.
+
+\section{General} 
+MeDSpace uses RDF \cite{w3RDF} as its canonical data model. Although a dataspace system is not restrict to use a specific data model, it simplifies the complexity of data management.
+Furthermore RDF is proposed to be used for Linked Data \cite{LinkedData} in the Semantic Web field. Although a different research field, both fields face semantic data-integration.
+
+All wrappers and the register have configuration files. These configuration files use XML and each configuration file has a corresponding \emph{XML Schema Definition} (XSD)\cite{w3XMLSchema} file, that is used to validate the configuration file. This allowed us to generate automatically Java classes out of the XSD files using \emph{Java Architecture for XML Binding} (JAXB) \cite{JAXB}.
+
+
+\subsection{Importance of unicode}
+
+A dataspace includes data sources possibly spread around the globe. It is near inferring to support a wide area of different languages. In terms of character sets, it is therefore necessary to use a unicode encoding.
+Unicode is a system assigning each character a unique code point and it is designed to support the worldwide interchange, processing and display of texts written in different languages\cite{UnicodeStandard}.\newline
+There exist several encodings for unicode. The more well known are the UTF and UCS encoding families. In the draft of HTML5 it is advised to use UTF-8 for new web pages\cite{HTML5Rec}. 
+Thus, to simplify processing, we follow the recommendation and use UTF-8 throughout the dataspace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
+
+\subsection{Keyword query language convention}
+As already previously told, the one service that every wrapper has to implement is the keyword search functionality. In order to search for specific keywords, it is important to define a convention how the keyword search should work, since there are several possibilities. E.g. if a query is posed with two keywords, should a query be created for all results that contains both keywords or is it enough if one of the keywords is contained? Should boolean operators be allowed (AND, OR, NOT)? 
+
+The design decision is at follows: Rudimentary keyword search functionality suffices and several keyword searches have to be interpreted in an 'AND like' manner by default, i.d. all of the stated keywords have to occur to fulfill the query condition. Additionally, the user should be able to use an 'OR' operator instead. This option is included in the search page.
+
+The reasons are, that no complex global query language is necessary, that all wrappers have to implement which leads to much more flexible implementation decisions. As wrappers can provide as many services as they like it is easy to provide a much more powerful keyword search service. So this design decision doesn't restrict the power of a wrapper.
+
+We think, that it is more likely for a user to want results that include all stated keywords and not only one of it. So we decided to use the 'AND' operator by default. In certain cases it should be useful to use the 'OR' operator, so we added it, too.
 
 \section{Wrappers}
 Each local datasource has its own wrapper. The wrapper is similar to the wrappers used in a mediator-based system, but provides dataspace specific functionality: the wrapper...
 \begin{itemize}
 	\item manages the data exchange between the datasource and extern MeDSpace services.
-	\item provides keyword search functionality (if the datasource doesn't provide itself). Therefore it creates an index of the data of the wrapped datasource and maintains it. 	
+	\item provides keyword search functionality (if the datasource doesn't provide it itself already). Therefore it creates an index of the data of the wrapped datasource and maintains it. 	
 	\item converts search results from the datasource to the canonical data model.
 	\item registers and deregisters the datasource from MeDSpace by communicating with the \emph{Register} module. The wrapper informs the register what services the datasource and the wrapper provide.
 	\item overcomes technical, syntactic and data model heterogeneity. 
@@ -47,21 +70,53 @@ The \emph{Data Collector} provides services that allow to query a specific  data
 Represents the \emph{graphical user interface} (GUI) so that a user can easily interact with the MeDSpace system using a common browser. It provides a page for stating and sending keyword searches, allows the user to display the search result in the browser or download it as a file. Furthermore the search page allows the user to inspect the list of the current registered datasources and it allows to delete the query cache.
 
 \chapter{Implementation}
+In this chapter we focus on implementation details of the MeDSpace system: What technology is used, how and why the implementation is structured, and also on details that developers should know to use the system rightly.
 
-\textbf{Importance of unicode}
+\section{Used technologies}
 
-A dataspace includes data sources possibly spread around the globe. It is near inferring to support a wide area of different languages. In terms of character sets, it is therefore necessary to use a unicode encoding.
-Unicode is a system assigning each character a unique code point and it is designed to support the worldwide interchange, processing and display of texts written in different languages\cite{UnicodeStandard}.\newline
-There exist several encodings for unicode. The more well known are the UTF and UCS encoding families. In the draft of HTML5 it is advised to use UTF-8 for new web pages\cite{HTML5Rec}. 
-Thus, to simplify processing, we follow the recommendation and use UTF-8 throughout the dataspace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
+In this section we want to present the technologies that are used by MeDSpace.
+
+\subsection{Programming language - Java}
+MeDSpace is written completely in Java 8. The reason for java are diverse: its platform independence is something very helpful in a heterogeneous environment. Java with its JIT compiler runs nearly as fast as C++ and outperforms several other languages. Performance is something that didn't is something too important, but it should not be neglected, especially as the system has to handle potentially very large data sets. And last but not least, Java has great library support for Web development. 
+Of course, other languages could be used, too. But Java is definitive a good choice.
+
+\subsection{Resource Description Framework}
+
+The \emph{Resource Description Framework} (RDF) \cite{w3RDF} is used as the canonical data model in MeDSpace. RDF is a graph-based abstract data model. With abstract, we mean it is a conceptual data model, so RDF says nothing about serializing data. But there exists plenty serialization formats that can be used to serialize RDF data. A popular RDF serialization format is Turtle \footnote{\url{https://www.w3.org/TR/turtle/}}, that is known to be easy human readable.
+It facilitates merging data expressed in different schemas, as objects are identified by URIs and with the help of ontologies, semantic data integration can be performed by logical inference. 
+
+Figure \ref{RdfTriple} shows how rdf data is structured.
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.75]{figures/rdf-graph.pdf}
+	\end{center}
+	\caption{A predicate connects two nodes (Subject, Object) forming an RDF Triple}
+	\label{RdfTriple}
+	\footnotemark
+\end{figure}
+\footnotetext{\url{https://www.w3.org/TR/rdf11-concepts/rdf-graph.svg}}
+
+RDF data consists of resources, which are the nodes of the rdf graph, and predicates, which are directed edges between the resources. So rdf is a directed graph. 
+
+Resources can be IRIs, literals and blank nodes. 
+Resources with an IRI are identified through its IRI. Two resources with the same IRI are supposed to be equal.
+Blank nodes are also called anonymous resources, as they specify the existence of a thing, but it is not identifiable. So blank nodes are always unique.
+Literals are used for values like numbers, strings or a date aren't identifiable, too.
+Predicates are always IRIs and can also be resources. They are also identified by their IRIs.
+
+The idea of RDF is, to represent data in form of triple statements, that consists of two resources (subject and object in figure \ref{RdfTriple}) and a predicate. The statement 'A has a property B' could be expressed in RDF with two resources A (the subject) and B (the object) and a predicate with an IRI, that should form the 'has' predicate. It should be noted that a subject can be an IRI or a blank node, but not a literal. As a result about a literal no statements can be made.
+
+
+In MeDSpace we used the RDF4J framework \cite{RDF4J}, that enables to read and write RDF content from within Java. Originally we planned to use Apache Jena \cite{Jena}, but it wasn't possible for us to convert the RDF data into an appropriate input and output stream classes without the Jena PipedRDFIterator class \footnote{\url{https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/riot/lang/PipedRDFIterator.html}}, that unfortunately creates a new thread for processing the rdf triples. But that isn't an option for us, as this solution doesn't scale well.
+
 
 \section{Setting up databases}
 
 
 \subsection{Setting up a MySQL data source}
 
-To setup a MySQL data source download a recent stable MySQL community server\footnote{\url{https://www.mysql.de/downloads/}} 
-and install it for you target platform. Additionally you will need the Connector/J components, the official JDBC driver for MySQL. 
+To setup a MySQL datasource get a recent stable MySQL community server\footnote{\url{https://www.mysql.de/downloads/}} 
+and install it for your target platform. Additionally you will need the Connector/J components, the official JDBC driver for MySQL. 
 
 At time of writing, the most recent stable versions are the community server 5.7.17 and the Connector/J 5.1.41. These versions are used for the thesis project and all following commands are related on them. If you're using 
 different versions, assure that the instructions are adapted properly. As a detailed installation instruction for all supported platforms would break the mold, the reader is encouraged to consult the official 
@@ -83,7 +138,7 @@ in the mysql section and
 	collation\-server=utf8\_general\_ci
 \end{codebox}
 
-in the mysqld section. Then restart the mysqld daemon. In the following, it is assumed, that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system the command line isn't using UTF-8 by default
+in the mysqld section. Then restart the mysqld daemon. In the following, it is assumed, that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system (before Windows 10) the command line isn't using UTF-8 by default
 \footnote{To set the encoding to UTF-8 on the windows command line, change the active code page to 65001 and set 'Lucida Console' as the displaying font. In contrast to the font, the code page is only active for the current console session. But you can automate this command with a AutoRun setting. For more information see \url{https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433}}.  
 Now try to connect to the database as the user root:
 
@@ -119,7 +174,5 @@ Per default, the created database will be named \textbf{medspace} and the read-u
 
 \section{Register}
 
-\section{Basic dataspace querying}
-\section{Advanced query techniques/features}
+\section{Keyword search}
 \section{GUI}
-\section{Validation}

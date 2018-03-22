@@ -1,16 +1,5 @@
 \section{Wrappers}
-
-As described in Chapter \ref{chapter_dataspaces}, a wrapper is  an interface between the datasource and the dataspace. The wrapper can provide any number of services to access the data of the datasource, but the one service, that every wrapper has to implement, is the keyword search.
-In the thesis' project there are three datasources: A SQL database, a pdf file server and a SQL multimedia database serving image files. The SQL database and the multimedia image database contain
-structured data while the pdf file server contains semi-structured data.
 The following sub sections describe the functionality and implementation of the wrappers for the three datasources in detail.
-
-\textbf {Keyword query language convention}\\
-As already previously told, the one service that every wrapper has to implement is the keyword search functionality. In order to search for specific keywords, it is important to define a convention how the keyword search should work, since there are several possibilities. E.g. if a query is posed with two keywords, should a query be created for all results that contains both keywords or it is enough if one of the keywords is contained? Should boolean operators be allowed (AND, OR, NOT)? 
-
-The design decision is at follows: Rudimentary keyword search functionality suffices and several keyword searches have to be interpreted in an 'OR like' manner, i.d. one of the stated keywords suffices to fulfill the query condition. The reasons are, that no complex global query language is necessary, that all wrappers have to implement which leads to much more flexible implementation decisions. As wrappers can provide as many services as they like it is easy to provide a much more powerful keyword search service. So this design decision doesn't restrict the power of a wrapper.
-So, why is an 'OR like' interpretation used for a multi-keyword statement and not an 'AND like' one ? There is no special reason for that design decision, as both possibilities would be conceivable, since in the dataspace services could be implemented, that would complement the missing feature:\\
-A dataspace is supposed allowing to refine iteratively a keyword search result. Assuming that keywords are ORed, this condition allows to implement a service that allows the user to search for one keyword and than for another on the result set. The result would be a executed AND operator. Similarly could a service be implemented that would add an OR operator. 
 
 
 \subsection{SQL Wrapper}
@@ -60,5 +49,4 @@ Having this in mind, the preferred method for the keyword search functionality c
 \textcolor{red}{TODO:} Communication with the register
 
 \subsection{Image Wrapper}
-fgfg
 \subsection{PDF Wrapper}
