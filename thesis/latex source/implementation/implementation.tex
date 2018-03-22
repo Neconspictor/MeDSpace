@@ -1,3 +1,51 @@
+\chapter{MeDSpace}
+
+In this chapter we will present the developed system MeDSpace (\textit{abbr.} for Medical Dataspace) whereas in the next chapter we will look at more implementation specific details.
+
+The purpose of MeDSpace is to provide a distributed test environment of medical datasources. The focus thereby is the provision of a keyword search functionality over medical datasources. 
+As distributed keyword search is the foundation for every Dataspace system, MeDSpace can be used as a starting point for a much more evolved dataspace or as a framework for implementing advanced dataspace functionality.
+Although the system uses medical datasources for its test data, the system is general enough to be used for other dataspace-related projects or systems, that need keyword search functionality over a set of multiple heterogenous (multimedia) datasources. 
+
+In figure \ref{MeDSpaceOverview} the overview of the MeDSpace system is illustrated.
+\begin{figure}[H]
+	\begin{center}
+	%\hspace*{-1cm}
+		\includegraphics[scale=0.145]{figures/MeDSpace-Overview.png}
+	\end{center}
+	\caption{MeDSpace Project overview}
+	\label{MeDSpaceOverview}
+\end{figure} 
+
+The system can roughly be divided into a \emph{wrapper} and a \emph{global MeDSpace} category: The \emph{wrapper} category includes everything from managing the data of a specific datasources (e.g. from a relational database). 
+Whereas the \emph{global MeDSpace} category comprises datasource management and services on a global view.  The modules belonging to this category are the \emph{Register}, the \emph{Data Collector}, the \emph{Query Executor}, and the \emph{Search Page}.  
+
+Now, we want look at the requirements met by MeDSpace. Therefore we look at the purposes of each module of the system. 
+
+\section{Wrappers}
+Each local datasource has its own wrapper. The wrapper is similar to the wrappers used in a mediator-based system, but provides dataspace specific functionality: the wrapper...
+\begin{itemize}
+	\item manages the data exchange between the datasource and extern MeDSpace services.
+	\item provides keyword search functionality (if the datasource doesn't provide itself). Therefore it creates an index of the data of the wrapped datasource and maintains it. 	
+	\item converts search results from the datasource to the canonical data model.
+	\item registers and deregisters the datasource from MeDSpace by communicating with the \emph{Register} module. The wrapper informs the register what services the datasource and the wrapper provide.
+	\item overcomes technical, syntactic and data model heterogeneity. 
+\end{itemize}
+
+Thereby the \emph{SQL Wrapper} is responsible for wrapping a relational database containg data created with the \emph{Patient Data Generation Framework} (PDGF) tool created by Schmiedbauer \cite{SchmidbauerBachelorThesis}. The \emph{Image Wrapper} provides access to case files of \emph{Digital Database for Screening Mammography} (DDSM)\cite{DDSM} and the \emph{PDF Wrapper} maintains a set of pdf files that were created specific for this system: the pdf files contain data based on Schmidbauer's test data.
+
+\section{Register}
+The Register holds a list of active datasources that can be queried. Therefore it provides functionality so that wrappers can register and deregister a datasource. In order to know what services are provided by each datasource, the register also keeps records of these services. This allows other modules to use services of any datasource.
+\section{Query Executor}
+The task of the \emph{Query Executor} is to accept a given keyword search query, transform this query to a service call and instructs the \emph{Data Collector} module to call the keyword search service for each registered data sources. To know which datasources are registered, this module communicates with the \emph{Register} module. After the \emph{Data Collector} has collected the query results of all datasources the \emph{Query Executor} adds the search query to its query cache and returns the collected search result to the caller who requested the \emph{Query Executor}. On the next request, the cached query result will be returned without querying the datasources if no 'cache miss' has been occurred.
+
+Note: It is not the task of the \emph{Query Executor} to actually collect the search result from the datasources. That is done by the \emph{Data Collector}. It does only instruct the \emph{Data Collector} to do the collecting.
+
+\section{Data Collector}
+The \emph{Data Collector} provides services that allow to query a specific  datasource and store the query result into a specific RDF repository that is maintained by this module. Furthermore the \emph{Data Collector} allows other modules to create and remove a repository that is coupled with a specific search query. This allows the \emph{Query Executor} to merge the search results of all datasources into a seperate RDF repository. Then, again the \emph{Query Executor} is able to delete the repository if the associated and cached query result should be deleted. 
+
+\section{Search Page}
+Represents the \emph{graphical user interface} (GUI) so that a user can easily interact with the MeDSpace system using a common browser. It provides a page for stating and sending keyword searches, allows the user to display the search result in the browser or download it as a file. Furthermore the search page allows the user to inspect the list of the current registered datasources and it allows to delete the query cache.
+
 \chapter{Implementation}
 
 \textbf{Importance of unicode}
