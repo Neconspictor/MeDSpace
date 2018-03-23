@@ -106,8 +106,39 @@ Predicates are always IRIs and can also be resources. They are also identified b
 
 The idea of RDF is, to represent data in form of triple statements, that consists of two resources (subject and object in figure \ref{RdfTriple}) and a predicate. The statement 'A has a property B' could be expressed in RDF with two resources A (the subject) and B (the object) and a predicate with an IRI, that should form the 'has' predicate. It should be noted that a subject can be an IRI or a blank node, but not a literal. As a result about a literal no statements can be made.
 
+Listing \ref{listing1} shows an example of how rdf data can look like using Turtle syntax. In line 3 we can see the aforementioned example statement 'A has B'. An interesting property of Turtle is the ability to define prefixes for namespaces, as done at line 1. Prefixes are used to shorten IRIs increasing readability. Thus, the statement in line 3 and the statement in line 5 are equal: in line 3 the fully qualified IRIs are used whereas in line 5 the 'ex' namespace prefix is used.
 
-In MeDSpace we used the RDF4J framework \cite{RDF4J}, that enables to read and write RDF content from within Java. Originally we planned to use Apache Jena \cite{Jena}, but it wasn't possible for us to convert the RDF data into an appropriate input and output stream classes without the Jena PipedRDFIterator class \footnote{\url{https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/riot/lang/PipedRDFIterator.html}}, that unfortunately creates a new thread for processing the rdf triples. But that isn't an option for us, as this solution doesn't scale well.
+Line 7 shows an example of a statement with a literal value.
+
+Line 8 and 9 shows to different ways of blank node usage: In line 8 a so-called 'labeled' blank node is created. This allows a developer to give a blank node same properties by using the labeled like an IRI. A property is stated for this labeled blank node at line 11.
+But it should be noted, that a blank node is not visible from the outside (i.e. in a SPARQL query).
+In line 9 the usage of an 'unlabeled' blank node is illustrated: all what belongs to the blank node is defined inside the rectangular brackets.
+
+\begin{lstlisting}[style=RdfCodeStyle, caption=RDF example data in Turtle syntax, label=listing1]
+@prefix \[ex:\] <http://example.org/#>
+
+<http://example.org/#A> 
+		<http://example.org/#has> <http://example.org/#B> .
+
+\[ex:\]A \[ex:\]has \[ex:\]B .
+\[ex:\]A \[ex:\]hasLiteral 20 .
+\[ex:\]A \[ex:\]hasLabeledBlankNode \[_:\]blank .
+\[ex:\]A \[ex:\]hasUnlabeledBlankNode [ \[ex:\]hasLiteral 5 ] .
+
+\[_:\]blank \[ex\]:hasLiteral 5 .
+\end{lstlisting}
+
+
+In MeDSpace we used the RDF4J framework \cite{RDF4J}, that enabled us to read and write RDF content from within Java. Originally we planned to use Apache Jena \cite{Jena}, but it wasn't possible for us to convert the RDF data into an appropriate input and output stream classes without the Jena PipedRDFIterator class \footnote{\url{https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/riot/lang/PipedRDFIterator.html}}, that unfortunately creates a new thread for processing the rdf triples. But that isn't an option for us, as this solution doesn't scale well. 
+MeDSpace uses its own interfaces for handling rdf data in order to be independent from any third party framework. Thus it would be relatively easy to support a different rdf framework. To do so, one can implement a custom version of the \emph{de.unipassau.medspace.rdf.RDFProvider} interface. 
+
+\subsection{Apache Lucene}
+
+\subsection{Play Framework}
+
+\subsection{SBT}
+
+\subsection{JAXB}
 
 
 \section{Setting up databases}
