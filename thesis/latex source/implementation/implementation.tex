@@ -33,16 +33,17 @@ All wrappers and the register have configuration files. These configuration file
 A dataspace includes data sources possibly spread around the globe. It is near inferring to support a wide area of different languages. In terms of character sets, it is therefore necessary to use a unicode encoding.
 Unicode is a system assigning each character a unique code point and it is designed to support the worldwide interchange, processing and display of texts written in different languages\cite{UnicodeStandard}.\newline
 There exist several encodings for unicode. The more well known are the UTF and UCS encoding families. In the draft of HTML5 it is advised to use UTF-8 for new web pages\cite{HTML5Rec}. 
-Thus, to simplify processing, we follow the recommendation and use UTF-8 throughout the dataspace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
+Thus, to simplify processing, we follow the recommendation and use UTF-8 throughout MeDSpace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
 
 \subsection{Keyword query language convention}
 As already previously told, the one service that every wrapper has to implement is the keyword search functionality. In order to search for specific keywords, it is important to define a convention how the keyword search should work, since there are several possibilities. E.g. if a query is posed with two keywords, should a query be created for all results that contains both keywords or is it enough if one of the keywords is contained? Should boolean operators be allowed (AND, OR, NOT)? 
 
-The design decision is at follows: Rudimentary keyword search functionality suffices and several keyword searches have to be interpreted in an 'AND like' manner by default, i.d. all of the stated keywords have to occur to fulfill the query condition. Additionally, the user should be able to use an 'OR' operator instead. This option is included in the search page.
+The design decision is at follows: Rudimentary keyword search functionality suffices and several keyword searches have to be interpreted in an 'AND like' manner by default, i.d. all of the stated keywords have to occur to fulfill the query condition. Additionally, the user should be able to use an 'OR' operator instead. This option is provided by the search page.
 
-The reasons are, that no complex global query language is necessary, that all wrappers have to implement which leads to much more flexible implementation decisions. As wrappers can provide as many services as they like it is easy to provide a much more powerful keyword search service. So this design decision doesn't restrict the power of a wrapper.
-
+The reasons are, that no complex global query language is necessary, that all wrappers have to implement which leads to much more flexible implementation decisions. 
 We think, that it is more likely for a user to want results that include all stated keywords and not only one of it. So we decided to use the 'AND' operator by default. In certain cases it should be useful to use the 'OR' operator, so we added it, too.
+As wrappers can provide as many services as they like it is easy to provide a much more powerful keyword search service. So this design decision doesn't restrict the power of a wrapper.
+
 
 \section{Wrappers}
 Each local datasource has its own wrapper. The wrapper is similar to the wrappers used in a mediator-based system, but provides dataspace specific functionality: the wrapper...
@@ -74,7 +75,7 @@ In this chapter we focus on implementation details of the MeDSpace system: What 
 
 \section{Used technologies}
 
-In this section we want to present the technologies that are used by MeDSpace.
+In this section we want to present the technologies that are most important and how and for what they are used in MeDSpace.
 
 \subsection{Programming language - Java}
 MeDSpace is written completely in Java 8. The reason for java are diverse: its platform independence is something very helpful in a heterogeneous environment. Java with its JIT compiler runs nearly as fast as C++ and outperforms several other languages. Performance is something that didn't is something too important, but it should not be neglected, especially as the system has to handle potentially very large data sets. And last but not least, Java has great library support for Web development. 
@@ -129,19 +130,71 @@ In line 9 the usage of an 'unlabeled' blank node is illustrated: all what belong
 \end{lstlisting}
 
 
-In MeDSpace we used the RDF4J framework \cite{RDF4J}, that enabled us to read and write RDF content from within Java. Originally we planned to use Apache Jena \cite{Jena}, but it wasn't possible for us to convert the RDF data into an appropriate input and output stream classes without the Jena PipedRDFIterator class \footnote{\url{https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/riot/lang/PipedRDFIterator.html}}, that unfortunately creates a new thread for processing the rdf triples. But that isn't an option for us, as this solution doesn't scale well. 
+In MeDSpace we used the RDF4J framework (version 2.2.2) \cite{RDF4J}, that enabled us to read and write RDF content from within Java. Originally we planned to use Apache Jena \cite{Jena}, but it wasn't possible for us to convert the RDF data into an appropriate input and output stream classes without the Jena PipedRDFIterator class \footnote{\url{https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/riot/lang/PipedRDFIterator.html}}, that unfortunately creates a new thread for processing the rdf triples. But that isn't an option for us, as this solution doesn't scale well. 
 MeDSpace uses its own interfaces for handling rdf data in order to be independent from any third party framework. Thus it would be relatively easy to support a different rdf framework. To do so, one can implement a custom version of the \emph{de.unipassau.medspace.rdf.RDFProvider} interface. 
 
 \subsection{Apache Lucene}
 
+Apache Lucene is a full-featured text search engine \cite{LuceneCore} at version 6.6.6 . In MeDSpace it is used to implement the keyword search functionality and for the search indexes used by the wrappers.
+
 \subsection{Play Framework}
 
-\subsection{SBT}
+Play is a framework for web development and written in Scala, but it provides Java bindings \cite{Play}. So it is possible to use Play without any complications. In MeDSpace we used Play in its version 2.6.6 . We used the framework for implementing the REST services and for the GUI. 
+
+Play has its own default folder structure. In order to understand how the modules are structured, it is necessary to have at least a rough understanding of it:
+
+\begin{itemize}
+\item \textbf{app} In this folder all the source code is stored. This includes also html templates that are used to generate dynamic html pages. These templates have to be stored in the subfolder  \emph{views}. The same applies to controllers, which have to to stored inside the \emph{controllers} subpackage.
+
+\item \textbf{conf} Contains configuration files. The  file \emph{application.conf} is used to configure the play framework (E.g. the port number for the http server should run on). The \emph{logback.xml} file is the configuration file for the logging backend logback \footnote{\url{https://logback.qos.ch/}} and the file \emph{routes} contains the definition of relative URL to java method mappings. This is used to define on which URL a service is located. As some modules call services by its URL name, the URLs routes shouldn't be modified carelessly. For example, if you change the relative URL for registering a datasource, all wrappers have to be updated to use the new URL.
+
+\item \textbf{public} Resource folder for the http server. Here is stored static content that should be transferred to a client, like javascript files or css files.
+
+\item \textbf{project} Contains additional build configurations. E.g. we used the sbt-sass plugin to compile sass to a css file. 
+\end{itemize} 
+
+Play needs the Simple Build Tool \cite{SBT}(SBT). As a consequence we had to use SBT, too. Thus we used SBT as build tool for the whole project. If you just want to run MeDSpace, SBT is not required, but if you want compile it you have to have installed it at least on version 0.13.15 . 
+
+The play framework supports dependency injection powered by Google's Guice \footnote{\url{https://github.com/google/guice}}. This way it is possible to inject dependencies by defining a special class, that is instantiated by Play on startup. The definition of this class is done in the \emph{application.conf} file by assigning the property \emph{play.modules.enabled}. In MeDSpace, this functionality is used to inject global class instances, e.g. for providing access to the configuration files or access to rdf processing methods.
 
 \subsection{JAXB}
 
+With the Java Architecture for XML Binding \cite{JAXB} (JAXB) we mapped the XML configuration files to auto-generated Java classes. This simplified the configuration reading, reduced programming faults and enabled us to do changes faster. If you want to generate the java classes by yourself, you have to look at the subfolder \emph{jaxb-generation} of your target module (e.g. sql wrapper). There you'll find batch and shell scripts you just have to execute. The only requirement is, that the \emph{xjc} binary is findable through the environment variable of your operating system. This should be true, if you have installed properly the JDK.
 
-\section{Setting up databases}
+All xjc generation commands are structured as follows:
+
+\begin{codebox}
+	\textbf{xjc} \textbf{-b} 'binding-file' \textbf{-p} 'target-package' \textbf{-d} 'output-directory' \textbf{-extension} 'target-xsd-file'
+\end{codebox}
+
+The \emph{binding-file} is used to customize the generated java classes, e.g. the class can be assigned a different class name. \emph{output-directory} specifies the directory where the generated java classes should be saved to and \emph{target-xsd-file} is the xsd file to use. The xsd file is the specification how the XML configuration should look like and therefore from the xsd file the java classes can be derived from.
+
+In listing \ref{jaxbExample} you can see an extract of \emph{medspace-d2rmap-binding.xml}, where a complex type \emph{Bridge} from the \emph{Medspace\_D2Rmap.xsd} xsd file is mapped to a class called \emph{BridgeParsing}:
+
+\begin{lstlisting}[style=RdfCodeStyle, caption=JAXB binding example, label=jaxbExample]
+
+<jxb:bindings 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+
+    <jxb:bindings schemaLocation="Medspace_D2Rmap.xsd">
+		<jxb:bindings node="//xsd:complexType[@name='Bridge']">
+			<jxb:class name="BridgeParsing"/>
+		</jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>
+\end{lstlisting}
+
+
+
+\section{SQL Wrapper}
+
+In this section we will talk about implementation details of the SQL wrapper. For the SQL wrapper we used a MySQL database as the relational datasource the wrapper should proxy. So, at first we want to look at how this type of datasource is setup properly.
+
+The task of the SQL Wrapper is to convert the SQL data into RDF and providing a keyword search functionality, as SQL databases doesn't provide such a functionality. \\
+In the thesis' project a MySQL datasource is used. But as several other SQL database vendors exists, one additional design goal is to produce a wrapper that can be used with any other SQL database. That will considerably reduce prospective maintenance work.\\
+Thus, a SQL wrapper was implemented, that doesn't use any vendor specific features.
 
 
 \subsection{Setting up a MySQL data source}
@@ -201,7 +254,52 @@ where \emph{path\_to\_sql\_file} is the full (absolute or relative) path to the 
 Per default, the created database will be named \textbf{medspace} and the read-user will be called \textbf{medspace\_client}. If you want edit the init.sql file, beware that the file is encoded in UTF-8. As we instructed mysql to use UTF-8 in every case, this is encoding is required. Assure that your file editor saves the file in that encoding, too.
 
 
+\subsection{D2RMap}
+
+In this sub section, we want to look at the conversion from SQL to RDF. To do this, the wrapper implements a specialized version of the D2rMap language. D2rMap was designed by Chris Bizer and is  a declarative language to describe mappings between relational databases schemata and OWL/RDFS ontologies\cite{D2rMap_aDatabaseToRdfMappingLanguage}.
+
+D2rMap is a general purpose language to export any SQL data to RDF. To better suit the needs for a dataspace wrapper, the language was changed. The custom language is called MeDSpace D2rMap and its language specification can be found in the appendix.
+
+The mapping is done as follows: At first the user specifies mappings in a config file. Each mapping is used to create RDF instances of a certain type. The mapping contains a SQL query, that represents all the data, that is necessary to create the instances. Furthermore, in the mapping are columns specified, that are used to create unique IDs for the created RDF instances.
+The next step is to fetch the SQL data and group the record set according to the fore mentioned columns. Now, each row of the grouped record set represents a RDF instance, so the instances can be created by proceeding all rows. The last step is the creation of the property statements of the RDF instances. Important to note is the seperation of the last two steps. As all RDF instances exists before the properties are created, it is possible to reference other RDF instances (from the same mapping or another). The mapping process is visualized in figure \ref{D2rMappingProcessFigure}.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{figures/MappingProcess.pdf}
+	\end{center}
+	\caption{The D2r mapping process; Taken from \cite{D2rMap_aDatabaseToRdfMappingLanguage}}
+	\label{D2rMappingProcessFigure}
+\end{figure}
+
+After discussing the SQL to RDF mapping, we look at the keyword search, now:
+Mainly there are two possibilities, to implement a keyword search functionality:
+\begin{itemize}
+	\item {Construct a keyword search query in SQL and let the database answer the query.}
+	
+	\item {Use a keyword search engine that answers the query based on an external index}
+\end{itemize}
+
+At first glance, the first option sounds obviously simple, but after implementing it showed several disadvantages: SQL is not designed to provide search functionality based on keywords. SQL uses the \textbf{\emph{LIKE}} operator for pattern matching. But in order to do a Full-text search, the SQL Query executor cannot use any index resulting in poor query answer performance. Another problem of \emph{LIKE} is, that there is no way to define, that only whole words should be searched and not just sub word matching. Whole word matching is very important, as e.g. a user searching for data about male patients should not also get data about female patients.
+As a result, the \emph{LIKE} operator is not suitable for a proper keyword search service as expected to be provided by a dataspace wrapper. Several SQL database vendors provide often own solutions for Full-Text search queries. But these solutions have often other restrictions as e.g. only column fields having the datatype \emph{TEXT} (on MySQL) and the fields have to be specified as fulltext fields (in their creation or through an update operation), so that the SQL engine is able to create an index for it (at MySQL databases at least).\\
+A Wrapper could use vendor specific services but that would exclude other SQL database vendors, obviously.
+
+The second option doesn't rise the aforementioned issues of option one. For the Wrapper a keyword searcher was implemented using the fulltext search engine Apache Lucene. The advantage of using Lucene is it's high-performance and scaling of keyword searches over large data sets. Additionally it allows a fine granular configuration about the query construction and sorts automatically the query result by relevance (so called query result ranking). \\
+The major disadvantage of using lucene is that the SQL data have to be extracted and indexed outside the database. If the data changes or rows are added resp. deleted, the index has to be updated accordingly. The update process can be very complex, as not only new data has to be indexed resp. existing data has to be removed, but also data that references the deleted or new data that depends on it.\\
+A simpler but obviously slower solution is to reindex the whole data set. Reindexing the whole data set is only advised if updates occur not that often or if it is acceptable if the wrapper updates the index not instantly and thus provides potentially outdated data.
+
+The decision which method is more suitable depends primarily on the use case and the domain. As the project is designed to be used as a test suite for medical datasources and medical science, it is acceptable if the data is outdated to some degree and will be updated not very frequent. So, changes on the datasource haven't to be updated in near-realtime. \\
+Than, one of the design goals for this project is to design a SQL wrapper that can be used with arbitrary vendors. As a result, vendor specific services are not an option, too.\\
+Having this in mind, the preferred method for the keyword search functionality clearly is Apache Lucene Core, as the  advantages clearly outweigh its disadvantages. Thus, a full functional keyword searcher was implemented powered by Lucene.
+
+\textcolor{red}{TODO:} keyword search services: The basic service and the advanced one, that utilizes the whole potential of Apache Lucene
+
+\textcolor{red}{TODO:} Communication with the register
+
+
 \input{implementation/wrappers}
+
+\section{Image Wrapper}
+\section{PDF Wrapper}
 
 \section{Register}
 
