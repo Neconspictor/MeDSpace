@@ -135,7 +135,7 @@ MeDSpace uses its own interfaces for handling rdf data in order to be independen
 
 \subsection{Apache Lucene}
 
-Apache Lucene is a full-featured text search engine \cite{LuceneCore} at version 6.6.6 . In MeDSpace it is used to implement the keyword search functionality and for the search indexes used by the wrappers.
+Apache Lucene is a full-featured text search engine \cite{LuceneCore} at version 6.6.6. In MeDSpace it is used to implement the keyword search functionality and for the search indexes used by the wrappers.
 
 \subsection{Play Framework}
 
@@ -159,7 +159,7 @@ The play framework supports dependency injection powered by Google's Guice \foot
 
 \subsection{JAXB}
 
-With the Java Architecture for XML Binding \cite{JAXB} (JAXB) we mapped the XML configuration files to auto-generated Java classes. This simplified the configuration reading, reduced programming faults and enabled us to do changes faster. If you want to generate the java classes by yourself, you have to look at the subfolder \emph{jaxb-generation} of your target module (e.g. sql wrapper). There you'll find batch and shell scripts you just have to execute. The only requirement is, that the \emph{xjc} binary is findable through the environment variable of your operating system. This should be true, if you have installed properly the JDK.
+With the Java Architecture for XML Binding \cite{JAXB} (JAXB) we mapped the XML configuration files to auto-generated Java classes. This simplified the configuration reading, reduced programming faults and enabled us to do changes faster. If you want to generate the java classes by yourself, you have to look at the subfolder \emph{jaxb-generation} of your target module (e.g. sql wrapper). There you'll find batch and shell scripts you just have to execute. The only requirement is, that the \emph{xjc} binary is findable through the environment variable of your operating system. This should be the case, if you have installed properly the JDK.
 
 All xjc generation commands are structured as follows:
 
@@ -167,7 +167,7 @@ All xjc generation commands are structured as follows:
 	\textbf{xjc} \textbf{-b} 'binding-file' \textbf{-p} 'target-package' \textbf{-d} 'output-directory' \textbf{-extension} 'target-xsd-file'
 \end{codebox}
 
-The \emph{binding-file} is used to customize the generated java classes, e.g. the class can be assigned a different class name. \emph{output-directory} specifies the directory where the generated java classes should be saved to and \emph{target-xsd-file} is the xsd file to use. The xsd file is the specification how the XML configuration should look like and therefore from the xsd file the java classes can be derived from.
+The \emph{binding-file} is used to customize the generated java classes, e.g. the class can be assigned a different class name, \emph{output-directory} specifies the directory where the generated java classes should be saved to, and \emph{target-xsd-file} is the xsd file to use. The xsd file is the specification how the XML configuration should look like and therefore from the xsd file the java classes can be derived from.
 
 In listing \ref{jaxbExample} you can see an extract of \emph{medspace-d2rmap-binding.xml}, where a complex type \emph{Bridge} from the \emph{Medspace\_D2Rmap.xsd} xsd file is mapped to a class called \emph{BridgeParsing}:
 
@@ -290,10 +290,6 @@ A simpler but obviously slower solution is to reindex the whole data set. Reinde
 The decision which method is more suitable depends primarily on the use case and the domain. As the project is designed to be used as a test suite for medical datasources and medical science, it is acceptable if the data is outdated to some degree and will be updated not very frequent. So, changes on the datasource haven't to be updated in near-realtime. \\
 Than, one of the design goals for this project is to design a SQL wrapper that can be used with arbitrary vendors. As a result, vendor specific services are not an option, too.\\
 Having this in mind, the preferred method for the keyword search functionality clearly is Apache Lucene Core, as the  advantages clearly outweigh its disadvantages. Thus, a full functional keyword searcher was implemented powered by Lucene.
-
-\textcolor{red}{TODO:} keyword search services: The basic service and the advanced one, that utilizes the whole potential of Apache Lucene
-
-\textcolor{red}{TODO:} Communication with the register
 
 
 \input{implementation/wrappers}

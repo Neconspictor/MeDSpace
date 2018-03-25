@@ -3,6 +3,8 @@
 
 
 \usepackage{color}
+\usepackage[export]{adjustbox}
+
 \usepackage{verbatim}
 
 
@@ -19,6 +21,8 @@
 \usepackage{lmodern}
 \usepackage[utf8]{inputenc} % use utf8 as encoding style
 
+\usepackage{setspace}
+
 \usepackage{vmargin} %Seitenränder einstellen leichtgemacht
 \usepackage{fancyhdr} %definiere einfache Headings (mindestens V 1.99c notwendig)
 
@@ -34,6 +38,8 @@
 \usepackage[normalem]{ulem}
 
 \usepackage{longtable}
+
+\usepackage{titling}
 
 \usepackage{textgreek}
 
@@ -228,6 +234,21 @@ citecolor   = {cyan}
 }
 
 
+
+
+% Title
+\title{Implementation of a distributed environment of medical data sources}
+
+% Author
+\author{David Goeth}
+
+% Date
+\date{\today}
+
+\subject{Bachelor thesis}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -266,7 +287,7 @@ citecolor   = {cyan}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tableofcontents
 
-\cleardoublepage %beginne neue Seitenzählung auf einer rechten Seite (ungerade Seitenzahl)
+%\cleardoublepage %beginne neue Seitenzählung auf einer rechten Seite (ungerade Seitenzahl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Tabellenverzeichnis
@@ -318,15 +339,18 @@ citecolor   = {cyan}
 
 \input{index/index}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibtex-Tool: http://jabref.sourceforge.net/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage
+\addcontentsline{toc}{chapter}{\bibname}
 \bibliographystyle{ieeetr}
 \bibliography{bib.bib}
-\addcontentsline{toc}{chapter}{\bibname}
 
 
-\clearpage
+
+\cleardoublepage
 \selectlanguage{ngerman}
 \input{assertion}
 
