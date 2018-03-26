@@ -172,7 +172,6 @@ The \emph{binding-file} is used to customize the generated java classes, e.g. th
 In listing \ref{jaxbExample} you can see an extract of \emph{medspace-d2rmap-binding.xml}, where a complex type \emph{Bridge} from the \emph{Medspace\_D2Rmap.xsd} xsd file is mapped to a class called \emph{BridgeParsing}:
 
 \begin{lstlisting}[style=RdfCodeStyle, caption=JAXB binding example, label=jaxbExample]
-
 <jxb:bindings 
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
@@ -267,7 +266,7 @@ The mapping process is visualized in figure \ref{D2rMappingProcessFigure}.
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=0.75\textwidth]{figures/MappingProcess.pdf}
+		\includegraphics[width=0.75\textwidth]{figures/MappingProcess.png}
 	\end{center}
 	\caption{The D2r mapping process \cite{D2rMap_aDatabaseToRdfMappingLanguage}}
 	\label{D2rMappingProcessFigure}
@@ -279,7 +278,6 @@ The next step is to fetch the SQL data and group the record set according to the
 An example of a mapping between a SQL query and RDF data definition is showed in listing \ref{D2RMapMappingExample}
 
 \begin{lstlisting}[style=RdfCodeStyle, caption=Example of a MeDSpace D2rMap mapping, label=D2RMapMappingExample]
-
 <d2r:ClassMap
 			type="test:doctor"
 			sql="SELECT * FROM doctor"
@@ -328,12 +326,85 @@ Than, one of the design goals for this project was to design a SQL wrapper that 
 Having this in mind, the preferred method for the keyword search functionality clearly is Apache Lucene Core, as the  advantages clearly outweigh its disadvantages. Thus, a full functional keyword searcher was implemented powered by Lucene.
 
 
-\input{implementation/wrappers}
-
 \section{Image Wrapper}
+ 
+In this section details about the implementation of the image wrapper are presented. 
+At first we want to look at the data the image wrapper is managing. Then, we will discuss how the data is indexed, mapped, and converted to RDF. Finally we present the multimedia file download service, that allows others to access the source files of DDSM cases.
+
+\subsection{DDSM}
+
+The data managed by the image wrapper are DDSM case file, that are publicly available\footnote{\url{http://marathon.csee.usf.edu/Mammography/Database.html}}.
+DDSM is a resource for mammographic image analysis and it contains data about approximately 2500 cases \cite{DDSM}. As one case needs relative much disk space, we decided to use only a subset of 50 cases, that take altogether 3.7 GB.
+
+In the following we will touch upon the content of a case, but for more details, please consult the specification of a DDSM case \cite{DDSM_CASE_SPEC}. 
+
+For each study, a case contains two LJPEG images for each breast (so 4 images in total) and related patient information. LJPEG is a very old image format, that isn't used anymore that often today. In fact, we didn't found a tool, that could display it. Thus, we decided to convert the images to PNG. Therefore we used Sharma's \emph{DDSMUtility} \cite{DDSM_UTILITY}.
+
+A case also contais a 16\_PGM image, that is an overview of the whole case. But the 16\_PGM image is not really needed and as 16\_PGM is a really old image format, we didn't used it.
+
+Each case has a ics file, that holds general information about the case. It also specifies, if a so-called overlay is defined for each breast image. 
+
+An overlay files are used to specify found abnormalities in the breast images. An overlay file contains the number of found abnormalities, the type of each abnormality and defines outline boundaries which specify where the abnormality can be found in the source image.
+
+\subsection{Mapping, Indexing, and RDF conversion}
+
+The data for each DDSM case is collected and useful data is extracted to create java objects from it. We created java classes for the ics file, overlay file, abnormality, and the lesion types calcification and mass. The content of each java object, that is created using the aforementioned method, is indexed and stored locally. 
+
+When a keyword search query is executed, the searching module queries the indexed documents. Each document is assigned to a specific java class in order to know that a document represent an ics file, an overlay file, etc. .  
+
+We defined for each type a RDF mapping, that is specified in the configuration file \emph{medspace-ddsm-mapping.xml}. The configuration file has a specification file \emph{medspace-ddsm-mapping-specification.xsd}, so that the mapping types can be auto-generated using JAXB.
+
+With the mapping configuration it is possible to generate RDF data from each document.
+
+\subsection{File downloading service}
+
+For the exported rdf types \emph{IcsFile} and \emph{Overlay}, which represent an ics file resp. overlay file of a DDSM case, we defined statements, that point to a URL location of the source file. We decided to implement a service on the image wrapper, that allows others to download these image files. 
+
+In listing \ref{FileDonwloadResultExample} you can see an example of created RDF data for a breast image. The highlighted URL specifies the source image. In this example, the image wrapper is running at localhost on port 9300, and as stated before, by following the link (e.g. in the browser) it would possible to download the source image.
+
+\begin{lstlisting}[style=RdfCodeStyle, caption=image RDF conversion example, label=FileDonwloadResultExample]
+<http://www.medspace.com/images/ddsm/image#cancers/cancer_01/case0001/C_0001_1.LEFT_CC.png>
+image:source \["http://localhost:9300/get-file?relativePath=cancers/cancer_01/case0001/C_0001_1.LEFT_CC.png"\]^^xsd:anyURI .
+\end{lstlisting}
+
+
+
 \section{PDF Wrapper}
+In this section details about the implementation of the PDF wrapper are presented.
+At first we look at what data is managed by this wrapper. Then we look at how the data is indexed, mapped and converted to RDF. Finally we present the multimedia file download service, that allows others to access the pdf files.
 
-\section{Register}
+\subsection{PDF Data}
 
-\section{Keyword search}
+Actually it was planned to use existing PDF files, but we didn't found suitable pdf files that are publicly available and contain healthcare data. As a result, we generated our own PDF files. For that we used again Schmiedbauer's data set: we wrote a little pdf generation program, that establishes a JDBC connection to the MySQL database and fetches some data. From that data we created PDF files. For the PDF generation we used the framework Apache PDFBox \cite{PDFBox}.  
+
+\subsection{Mapping, Indexing, and RDF conversion}
+
+On startup the PDF wrapper extracts the content from the pdf files and index it. This way it is possible to do a full-text search over all pdf files. 
+
+The mapping to RDF is straight forward: Each pdf file is mapped to a rdf type called 'PdfFile'. The specification of this type is done in the file \emph{medspace-pdf-wrapper-config-specification.xsd} which is used to create auto-generated java classes with JAXB. Also it is used to validate the mapping configuration file. The definition of the mapping is done in the corresponding configuration file \emph{medspace-pdf-wrapper-config.xml}.
+
+\begin{lstlisting}[style=RdfCodeStyle, caption=Extract of the pdf wrapper configuration, label=PDFWrapperMappingConfig]
+<pdf:PdfRootDirectory>./_work/pdfFiles/</pdf:PdfRootDirectory>
+<pdf:PdfFile rdfType="http://www.medspace.com/pdf/pdf_file" classId="pdfFile">
+	<rdf-mapping:metaData>pdf file</rdf-mapping:metaData>
+    <pdf:source propertyType="pdf_file:source" dataType="xsd:string"/>
+</pdf:PdfFile>
+\end{lstlisting}
+
+In line \textbf{1} the directory is specified, where all pdf files are located.
+Starting from line \textbf{2} is the definition of the RDF type \emph{PdfFile}, which contains the source file location and (optional) meta data tags (as the other wrappers use it).
+
+\subsection{File downloading service}
+
+This service works similar like the one of the image wrapper: every PDF file that is mapped to RDF is assigned a download link so that it can be downloaded from external programs.
+
+Every pdf files get assigned an id so that the downloading service can distinguish them. The id is thereby the file path in relation to the pdf file root directory, that is specified in the configuration file.
+
+\section{Query Executor}
+In this section details about the implementation of the query executor are presented. 
+
+\section{Data Collector}
+In this section details about the implementation of the data collector are presented.
+
 \section{GUI}
+In this section the resulting GUI of MeDSpace is presented.
