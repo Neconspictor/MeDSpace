@@ -81,6 +81,7 @@ In this section we want to present the technologies that are most important and 
 MeDSpace is written completely in Java 8. The reason for java are diverse: its platform independence is something very helpful in a heterogeneous environment. Java with its JIT compiler runs nearly as fast as C++ and outperforms several other languages. Performance is something that didn't is something too important, but it should not be neglected, especially as the system has to handle potentially very large data sets. And last but not least, Java has great library support for Web development. 
 Of course, other languages could be used, too. But Java is definitive a good choice.
 
+
 \subsection{Resource Description Framework}
 
 The \emph{Resource Description Framework} (RDF) \cite{w3RDF} is used as the canonical data model in MeDSpace. RDF is a graph-based abstract data model. With abstract, we mean it is a conceptual data model, so RDF says nothing about serializing data. But there exists plenty serialization formats that can be used to serialize RDF data. A popular RDF serialization format is Turtle \footnote{\url{https://www.w3.org/TR/turtle/}}, that is known to be easy human readable.
@@ -185,6 +186,44 @@ In listing \ref{jaxbExample} you can see an extract of \emph{medspace-d2rmap-bin
 </jxb:bindings>
 \end{lstlisting}
 
+\section{Wrappers - General}
+
+This section targets to present implementation details, that is used by all wrapper implementations.
+
+Each wrapper has a \emph{general-wrapper-config.xml} configuration file, that is located in the \emph{medspace} subfolder of the respective wrapper. This configuration file has to follow a specific structure that is defined in \emph{medspace-wrapper-config-specification.xsd}. This XSD file is used to validate the general wrapper configuration file. The XSD file can be found as a resource file in the \emph{commons} package: \\
+\emph{\{medspace-root-folder\}/commons/src/main/resources}
+
+The following things can be configured through this configuration file:
+\begin{itemize}
+\item \textbf{Services}: Specifies which services the wrapper supports. The name of the service is thereby the relative path for calling the service. MeDSpace translate this then to an absolute URL by using the wrapper host address: the url would be \emph{\{wrapper-address\}/\{service-name\}}. Example: if the wrapper address is \emph{http://localhost:9300} and the service  name is \emph{keyword-search} then the resulting absolute URL would be: \emph{http://localhost:9300/keyword-search}. 
+
+It should be noted, that MeDSpace expects the services in \textbf{lower case}. So you shouldn't define service URLs that use upper case characters, as URLs are \textbf{case sensitive}.
+Furthermore is expected from every wrapper to support the keyword-search service. So it is not explicitly necessary to state it in the configuration file.
+
+\item \textbf{IndexDirectoy}: The directory where index data should be stored. If the directory already contains indexed data, the wrapper will use it.
+
+\item \textbf{Namespaces}: Defines prefixes for rdf namespaces. 
+
+\item \textbf{OutputFormat}: Specifies the RDF syntax, the wrapper should use.
+
+\item \textbf{RegisterUrl}: The URL to the register.
+
+\item \textbf{ConnectToRegister}: Specifies whether the wrapper should register itself on startup. This is primarily for testing and debugging.
+\end{itemize}
+
+\subsection{Indexing}
+
+On startup, the wrapper tries to fetch and index the data from the datasource for the keyword search functionality. If the index exists already (e.g. from a previous run), the wrapper won't reindex the data. But the wrapper provides a service for reindexing the data on runtime. The service can be found at \emph{/reindex}, uses no argument and http \emph{GET}.
+
+\subsection{Keyword search service}
+
+Each wrapper supports keyword search functionality. The corresponding service can be found under 
+\textbf{/keyword-search}, uses http GET, and needs the following arguments:
+\begin{itemize}
+\item \textbf{keywords}: A list of keywords to search for. The keywords have to separated by spaces or commas.
+\item \textbf{useOr}: Specifies if the OR operator should be used instead of AND. This argument is optional. Its default value is \emph{false}.
+\item \emph{attach}: Specifeis whether the result should be interpreted as a file attachment. This opetion is only relevant for browser. This argument is optional. Its default value is \emph{false}.
+\end{itemize}
 
 
 \section{SQL Wrapper}
@@ -346,7 +385,7 @@ Each case has a ics file, that holds general information about the case. It also
 
 An overlay files are used to specify found abnormalities in the breast images. An overlay file contains the number of found abnormalities, the type of each abnormality and defines outline boundaries which specify where the abnormality can be found in the source image.
 
-\subsection{Mapping, Indexing, and RDF conversion}
+\subsection{RDF conversion}
 
 The data for each DDSM case is collected and useful data is extracted to create java objects from it. We created java classes for the ics file, overlay file, abnormality, and the lesion types calcification and mass. The content of each java object, that is created using the aforementioned method, is indexed and stored locally. 
 
@@ -377,11 +416,11 @@ At first we look at what data is managed by this wrapper. Then we look at how th
 
 Actually it was planned to use existing PDF files, but we didn't found suitable pdf files that are publicly available and contain healthcare data. As a result, we generated our own PDF files. For that we used again Schmiedbauer's data set: we wrote a little pdf generation program, that establishes a JDBC connection to the MySQL database and fetches some data. From that data we created PDF files. For the PDF generation we used the framework Apache PDFBox \cite{PDFBox}.  
 
-\subsection{Mapping, Indexing, and RDF conversion}
+\subsection{RDF conversion}
 
 On startup the PDF wrapper extracts the content from the pdf files and index it. This way it is possible to do a full-text search over all pdf files. 
 
-The mapping to RDF is straight forward: Each pdf file is mapped to a rdf type called 'PdfFile'. The specification of this type is done in the file \emph{medspace-pdf-wrapper-config-specification.xsd} which is used to create auto-generated java classes with JAXB. Also it is used to validate the mapping configuration file. The definition of the mapping is done in the corresponding configuration file \emph{medspace-pdf-wrapper-config.xml}.
+The mapping to RDF is straight forward: Each pdf file is mapped to a rdf type called 'PdfFile'. The specification of this type is done in the file \emph{medspace-pdf-wrapper-config-specification.xsd} which is used to create auto-generated java classes with JAXB. Also it is used to validate the mapping configuration file. The definition of the mapping is done in the corresponding configuration file \emph{medspace-pdf-wrapper-config.xml}. Listing \ref{PDFWrapperMappingConfig} shows an extract of the configuration file:
 
 \begin{lstlisting}[style=RdfCodeStyle, caption=Extract of the pdf wrapper configuration, label=PDFWrapperMappingConfig]
 <pdf:PdfRootDirectory>./_work/pdfFiles/</pdf:PdfRootDirectory>
@@ -398,13 +437,70 @@ Starting from line \textbf{2} is the definition of the RDF type \emph{PdfFile}, 
 
 This service works similar like the one of the image wrapper: every PDF file that is mapped to RDF is assigned a download link so that it can be downloaded from external programs.
 
-Every pdf files get assigned an id so that the downloading service can distinguish them. The id is thereby the file path in relation to the pdf file root directory, that is specified in the configuration file.
+Every pdf file gets assigned an id so that the downloading service can distinguish and locate them. The id is thereby the file path in relation to the pdf file root directory, that is specified in the configuration file.
 
-\section{Query Executor}
-In this section details about the implementation of the query executor are presented. 
+\section{Global MeDSpace}
 
-\section{Data Collector}
-In this section details about the implementation of the data collector are presented.
+In this section implementation details of the global MeDSpace application (\emph{Query Executor}, \emph{Data Collector}, \emph{Register}) are presented.
+
+
+\subsection{Query Caching}
+In this section details about the implementation of the query caching, a functionality that is implemented in the \emph{Query Executor} module.
+
+For each keyword search query, we created unique strings in order to avoid caching duplicates.
+The algorithm works as follows: the keywords are transformed to lower case, trimmed, lexically sorted, and finally duplicates are deleted.
+For actually caching the query, we used EHCache \cite{EHCache}. 
+It should be noted that only the queries itself are cached by EHCache. The result of the query is stored by the \emph{Data Collector} using a \emph{NativeStore}\footnote{\url{http://docs.rdf4j.org/javadoc/2.2/org/eclipse/rdf4j/sail/nativerdf/NativeStore.html}} from the RDF4J framework.
+
+\subsection{Datasource storing}
+In this section details about the implementation of the \emph{Register} module are presented.
+
+When the register is shutting down it saves all registered datasources into a local file \emph{datasources.json} in the current working directory. The datasources are serialized to JSON in this file. On startup, if MeDSpace finds the aforementioned file, it will auto-register them without contacting the respective datasources.
+
+\subsection{IO-Error policy}
+
+If a datasource doesn't respond anymore, e.g. the network is overloaded or the wrapper doesn't derigester itself for any reason every try to call it's services would inevitable result in a lot of io-errors, slowing down query query answering. Therefore we implemented an io-error policy that works as follows: for every registered datasource a counter for the happened io-errors is hold. Whenever an io-error occurs the counter gets increased. Should the counter exceed a specified limit, the datasource gets deregistered automatically. The default value of the io-error limit is 5, but this can be configured in the \emph{medspace-config.xml} from the \emph{medspace} project.
 
 \section{GUI}
-In this section the resulting GUI of MeDSpace is presented.
+In this section is explained how the GUI of MeDSpace was created.
+
+For dynamic (html) page creation we used Play's template engine \emph{Twirl} \footnote{\url{https://github.com/playframework/twirl}}. The templates are normal text files, that are enriched by Scala code \cite{PlayJavaTemplates}.
+
+For styling the html content, we used SASS, an extension of CSS, that is used to generate CSS files \cite{SASS}. In order to auto-compile the SASS files, we've used the \emph{sbt-sassify} plugin \footnote{\url{https://github.com/irundaia/sbt-sassify}}. 
+
+The look of the search page is illustrated in figure \ref{MeDSpaceSearchPage}:
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{figures/MeDSpace-GUI-Search-Main.png}
+	\end{center}
+	\caption{MeDSpace search page}
+	\label{MeDSpaceSearchPage}
+\end{figure}
+
+The search page contains a blue header with the writing 'MeDSpace - Testsuite for Medical Information'. Then the navigation menu comes, which contains buttons to navigate to the search and datasources page. For each button exists a tooltip describing the respective page. An example of this tooltips is illustrated in figure \ref{MeDSpaceDataTooltip}. 
+
+In the page body is an input field allowing a user to state a keyword search query. The user can state if he wishes to use the OR operator instead of the AND operator, and he can state whether he wants the rdf query result to be returned as a file. Both this options can be activated by using the check boxes under the text input field. With the \emph{Search} button the query gets executed.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{figures/MeDSpace-GUI-Tooltip.png}
+	\end{center}
+	\caption{Tooltip of a navigation button}
+	\label{MeDSpaceDataTooltip}
+\end{figure}
+
+
+The \emph{Data Sources} page lists all registered datasources, as illustrated in figure \ref{MeDSpaceDataSourcePage}: 
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{figures/MeDSpace-GUI-Datasources.png}
+	\end{center}
+	\caption{Data Sources page}
+	\label{MeDSpaceDataSourcePage}
+\end{figure}
+
+\textcolor{red}{TODO: Better image}
+
+For each datasource is listed its URL, a description of it, what services it provides, when it registered itself and how much io errors occurred since its registration.
