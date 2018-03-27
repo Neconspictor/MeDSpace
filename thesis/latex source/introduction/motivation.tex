@@ -1,20 +1,30 @@
 \chapter{Introduction}
 
-In the fields of medicine every year a vast amount of (digital) data is produced, that usually is very complex \cite[p. 1]{ASurveyOnDataMiningApproachesForHealthcare}. Health data is highly heterogeneous (e.g. different file formats, text data, images, videos) and often lots of tools are necessary to work with the data\cite[p. 1]{Raghupathi2014}. In sum, it can be noted that searching data and working with it isn't that easy and in fact, that produces lot's of costs in the healthcare sector.  
+In the fields of medicine every year a vast amount of (digital) data is produced, that usually is very complex \cite[p. 1]{ASurveyOnDataMiningApproachesForHealthcare}. 
+The data in the healthcare sector are combinations of classical text files, images, audio, and videos that is used in combination. Thus the data meets the definition of multimedia data, which is exactly a conjunction of multiple kinds of data that is used to present modal information \cite[p. 2]{DBLP:journals/corr/abs-1102-5769}.
+
+Health data is also highly heterogeneous (e.g. different file formats) and and often requires lots of tools to work with.\cite[p. 1]{Raghupathi2014}. In summary, searching data and working with it isn't a straightforward process, and indeed causes many costs.
 
 As a result, the ability to easily access the data would be beneficial for both, research and healthcare institutions \cite[p. 2]{Raghupathi2014}:
 \begin{itemize}
 	\item Lower Costs
 	\item Detecting diseases at early stages
 	\item Simplified collaboration
-	\item Health care fraud detection
+	\item Healthcare fraud detection
 \end{itemize}
 
-The above mentioned benefits were originally stated for Big Data Analysis and Data Mining. For both research fields, as a first step it is important to integrate the data of different datasources into one data integration system. As a first implication it can be noted, that it would be beneficial to create a data integration system for the healthcare sector. This would be an absolute reasonable proposition. But there is another option, the so-called dataspace concept, that doesn't semantically integrate data before it is able to provide its services, and follows a data-coexistence approach. Data co-existence facilitates working with heterogeneous data and many schemas. As heterogeneity is a first-class citizen in a dataspace, it is also useful to integrate multimedia data. That are attractive properties and they form the reason why we will follow the dataspace concept in this work.
-The dataspace concept was introduced in 2005 as a vision \cite{Franklin:2005:DDN:1107499.1107502}. But to the time of this writing, no fully fledged dataspace implementation was presented. 
 
-In this thesis, we present a distributed environment to state keyword search queries on multiple heterogeneous multimedia medical datasources. The environment could be used as a base for implementing a fully fledged dataspace or for any system, that needs keyword search functionality on multiple (heterogeneous) datasources. Despite the research of dataspaces is very active, they often cover only text data ignoring the properties of multimedia data \cite{6167826}. This is another reason, why we explicitly chose multimedia data.
+The above mentioned benefits were originally stated for Big Data Analysis and Data Mining. 
+Both research fields require as a first step to integrate the data of different datasources into one data integration system. Creating a data integration system for the healthcare sector would not only be reasonable, but offers lots of necessary benefits to the whole healthcare system.
 
-It should be noted, that although we use medical data for test data of the system to be presented, the system itself isn't restricted to any kind of particular data.
+But there is another option, the so-called dataspace concept, that doesn't semantically integrate data before it is able to provide its services, and follows a data co-existence approach. Data co-existence means that data from a query result isn't fully integrated. So it is allowed e.g. that semantical equal data is presented differently. Duplicates  in a query result are thus acceptable.
+Data co-existence facilitates work with heterogeneous data and many schemas. As heterogeneity is a first-class citizen in a dataspace, it is also useful for integrating multimedia data. 
+These are attractive properties and reason in this work for to follow the dataspace concept . The dataspace concept was introduced in 2005 as a vision \cite{Franklin:2005:DDN:1107499.1107502}. Yet, until today no fully fledged dataspace implementation was presented.
 
-The content of the thesis is structured as follows: At first we'll go into foundation knowledge of data integration and dataspaces. Then we'll cover related work and reference projects. In Chapter 5 the implementation of our system is presented and described in detail. At the end, in chapter 6 we will give some outlook, suggestions, and possible improvements to the system. 
+%But to the time of this writing, no fully fledged dataspace implementation was presented. 
+
+In this thesis we present a distributed environment to state keyword search queries on multiple heterogeneous multimedia medical datasources. We called this system MeDSpace which is an abbreviation for \emph{Medical Dataspace}. The system could be used as a base for implementing a fully fledged dataspace or for any system, that needs keyword search functionality on multiple heterogeneous (distributed) datasources. Despite the research of dataspaces is very active, they often cover only text data ignoring the properties of multimedia data \cite{6167826}. This is another reason, why we explicitly chose multimedia data.
+
+There should be noted, that although we use medical data for test data of the system to be presented, the system itself isn't restricted to any kind of particular data.
+
+The content of the thesis is structured as follows: In the first chapters we will present foundation knowledge of data integration and dataspaces. Then we will cover related work and reference projects. In chapter 5 the structure and the provided services of MeDSpace is presented and in chapter 6 the implementation of our system is described in detail. At the end, in chapter 6 we will give some outlook, suggestions, and possible improvements to the system. 
