@@ -118,7 +118,8 @@ This component also supports ``value-added'' - information held by the DSSP, but
 
 \section{Query answering}
 
-In a dataspace, queries might be posed in a wide range of different languages \cite[p. 3]{Halevy:2006:PDS:1142351.1142352}. But most of the activities will properly begin with a keyword search, but it might also be common to see queries as a result of a form (which results to queries with several selectable predicates). More complex queries arise when a user interacts deeper with a certain data source. If it isn't explicitly stated, it is usual, that a user is likely to believe that a query considers all relevant data in a dataspace, regardless of the used data model or schema. Even if a query is posed to a data source, it is implicitly expected that the system considers the data of other sources, as well. If additional answers are desired, one has to do transformations on the schema and the data model.
+In a dataspace, queries might be posed in a wide range of different languages \cite[p. 3]{Halevy:2006:PDS:1142351.1142352}. But most of the activities will properly begin with a keyword search, but it might also be common to see queries as a result of a form (which results to queries with several selectable predicates). More complex queries arise when a user interacts deeper with a certain data source. 
+If it isn't explicitly stated, it can be assumed that a user likely believes a query considers all relevant data in a dataspace, regardless of the used data model or schema. Even if a query is posed to a data source, it is implicitly expected that the system considers the data of other sources, as well. If additional answers are desired, one has to do transformations on the schema and the data model.
 
 \textbf{Challenges of answer querying}
 
@@ -129,7 +130,7 @@ Answers corresponded to queries of a dataspace are different from traditional qu
 
 \item \textbf{Heterogenity}: Answers will come from many sources and will differ in their used data model and schema. The Ranking has to manage heterogeneity, too.
 
-\item \textbf{Sources as answers}: In addition to base elements (e.g. documents or tuples), a DSSP should be able to provide sources, as well. This means that it returns links to locations where additional answers can be found.
+\item \textbf{Sources as answers}: In addition to base elements (e.g. documents or tuples), a DSSP should also be able to provide sources. This means that it returns links to locations where additional answers can be found.
 
 \item \textbf{Iterative queries}: Normally, the interaction with a dataspace can't be reduced to the process of posing  a sole query and getting an answer to it. Instead, a user is involved in an information finding task that requires a sequence of queries, each being a refinement or modification on the previous ones.
 
@@ -140,23 +141,30 @@ Answers corresponded to queries of a dataspace are different from traditional qu
 \section{Uncertainty in Dataspaces}
  
 In the paper ``Data Modeling in Dataspace Support Systems'' \cite{DBLP:conf/birthday/SarmaDH09}, the authors face the issue of uncertainty in dataspaces. In their view, a dataspace needs to model uncertainty in its core. In their work, they described the concepts of probabilistic mediated schemas and probabilistic mappings as enabling concepts for DSSPs. With this foundation, it is possible to completely bootstrap a pay-as-you-go integration system. 
-In order to develop DSSPs, it is impossible to rely on the same data modeling paradigms data integration systems use. One cannot assume, that the mediated schema is given in advance and that the schema mappings between the sources and the mediated schema will be accurate. Therefore the authors argue that uncertainty has to be considered in the mediated schema and in the schema mappings.
+In order to develop DSSPs, it is impossible to rely on the same data modeling paradigms data integration systems use. 
+One cannot assume that the mediated schema is given in advance, and that the schema mappings between the sources and the mediated schema will be accurate. Therefore the authors argue that uncertainty has to be considered in the mediated schema and in the schema mappings.
 
-Now, we discuss the different kinds of uncertainty, that can arise in a datasapce \cite[p. 123]{DBLP:conf/birthday/SarmaDH09}:
+Now, we discuss the different kinds of uncertainty, that can arise in a dataspace \cite[p. 123]{DBLP:conf/birthday/SarmaDH09}:
 
 \begin{itemize}
-\item \textbf{Uncertain mediated schema}: The set of schema terms in which queries are posed is called the mediated schema. Not necessarily they cover all the attributes in any source, it cover rather the aspects of the domain that the developer of the application wishes to expose to the user. For several reasons uncertainty happens in the mediated schema. First, if the mediated schema is derived from the data sources during bootstrapping, there will be some uncertainty about the results. When domains are broad, there will be also some uncertainty about how to model them, because in general, there will be overlappings in different topics. 
+\item \textbf{Uncertain mediated schema}: 
+the set of schema terms in which queries are posed is called the mediated schema. 
+Not necessarily the set covers all the attributes in any source, it  rather covers the aspects of the domain that the developer of the application wishes to expose to the user.
+For several reasons uncertainty happens in the mediated schema. First, if the mediated schema is derived from the data sources during bootstrapping, there will be some uncertainty about the results. When domains are broad, there will be also some uncertainty about how to model them, because in general there will be overlappings in different topics. 
 
-\item \textbf{Uncertain schema mapping}: Schema mapping defines the semantic relationships between the terms in the sources and the terms used in the mediated schema. Although, schema mappings can be inaccurate. In a dataspace, many of the initial schema mappings are properly automatically derived, and therefore they may inaccurate. In general, it is impossible to create and maintain precise mappings between data sources. 
+\item \textbf{Uncertain schema mapping}: schema mapping defines the semantic relationships between the terms in the sources, and the terms used in the mediated schema. Although, schema mappings can be inaccurate. 
+In a dataspace many of the initial schema mappings are probably automatically derived, and therefore they might be inaccurate. 
+In general, it is impossible to create and maintain precise mappings between data sources. 
 
-\item \textbf{Uncertain data}: Some of the data may be obtained by automatism as data sources may not always be structured well. Additionally, unreliable or inconsistent data may be contained in systems with many sources.
+\item \textbf{Uncertain data}: some of the data may be obtained by automatism, as data sources may not always be structured well. Additionally, unreliable or inconsistent data may be contained in systems with many sources.
 
-\item \textbf{Uncertain queries}: Properly, much of the early interaction with a dataspace will be done through keyword queries as the users aren't aware of a (non-existent) schema. The queries have to be translated into some structured form so they can be reformulated with respect to the data sources. At this point, multiple candidate structured queries could be generated and thus some uncertainty arises about which query captures the real intention of the user.
+\item \textbf{Uncertain queries}: probably much of the early interaction with a dataspace will be done through keyword queries, as the users aren't aware of a (non-existent) schema. The queries have to be translated into some structured form so they can be reformulated with respect to the data sources. At this point multiple candidate structured queries could be generated, and thus some uncertainty arises about which query captures the real intention of the user.
 \end{itemize} 
 
-The most fundamental characteristic of a dataspace system handling uncerteinty is that it is based on a probabilistic data model. In contrast to a traditional data integration system, which includes a single mediated schema and assumes a single (and correct) schema mapping between the mediated schema and each source, the data integration module of a DSSP attaches possibilities to multiple tuples, mediated schemas, schema mappings and possible interpretations of  keyword queries posed to the system. 
+The most fundamental characteristic of a dataspace system handling uncertainty is that it is based on a probabilistic data model. In contrast to a traditional data integration system which includes a single mediated schema and assumes a single (and correct) schema mapping between the mediated schema, and each source, the data integration module of a DSSP attaches possibilities to multiple tuples, mediated schemas, schema mappings, and possible interpretations of  keyword queries posed to the system. 
 
-For a database it is assumed that queries are posed as keywords. This is contrary to traditional integration systems which assume the query to be posed in a structured fashion( i.e. that it can be translated to some subset of SQL). So, a DSSP must first reformulate a keyword query into a set of candidate structured queries, before it can reformulate the query onto the schemas of the data sources. This step is also called keyword reformulation.  It is important to note, that keyword reformulation differs from keyword search techniques on structured data (see \cite{994693}, \cite{Hristidis:2002:DKS:1287369.1287427}) in that (a) it does not assume access to all data in the sources or that the sources support keyword search, and (b) it tries to distinguish different structural elements in the query in order to pose more precise queries to the sources. In any case, keyword reformulation should benefit from techniques that support answering search on structured data.
+For a database it is assumed that queries are posed as keywords. This is contrary to traditional integration systems which assume the query to be posed in a structured fashion( i.e. that it can be translated to some subset of SQL). So, a DSSP must first reformulate a keyword query into a set of candidate structured queries before it can reformulate the query onto the schemas of the data sources. This step is also called keyword reformulation. 
+It is important to note that keyword reformulation differs from keyword search techniques on structured data (see \cite{994693}, \cite{Hristidis:2002:DKS:1287369.1287427}) in that (a) it does not assume access to all data in the sources, or that the sources support keyword search, and (b) tries to distinguish different structural elements in the query in order to pose more precise queries to the sources. In any case keyword reformulation should benefit from techniques that support answering search on structured data.
 
 \begin{figure}[H]
 	\begin{center}
