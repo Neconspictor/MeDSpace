@@ -9,11 +9,12 @@ In general, there are two different types of data integration: The \emph{materia
  \item \label{virtual_index}in case of \emph{virtual} integration, the data are transported from the data source to the integrated system while the query processing. That temporary data is then again discarded. So, integration isn't done once but on each query.
 \end{itemize}
 
-Of course, an integrated information system can use both principles. A system of this kind is called \emph{hybrid}\label{hybrid_index}. Both types have in common that a query is processed on a global schema. For the virtual integrated system, the data only exists virtual, thus relations between data sources and the global schema have to be specified. Then, on query time the query has to be split into query schedules. The schedules responsible for extracting the needed information from the different data sources and subsequently merge and transform the data \cite[p. 86-88]{DBLP:books/dp/LeserN2006}.
+Of course, an integrated information system can use both principles. A system of this kind is called \emph{hybrid}\label{hybrid_index}. Both types have in common that a query is processed on a global schema. For the virtual integrated system, the data only exists virtually, thus relations between data sources and the global schema have to be specified. Then, on query time the query has to be split into query schedules. The schedules are responsible for extracting the needed information from the different data sources and subsequently merge and transform the data \cite[p. 86-88]{DBLP:books/dp/LeserN2006}.
+
 
 Today, data is classified into three diverse categories:
 \begin{longtable}{|l|p{0.6\textwidth}|}
-\hline
+ \hline
  \textbf{Structured data}  &  Have a predefined structure through a schema.\\ \hline
  \textbf{Unstructured data}    &  Contains no predefined structure.\\ \hline
  \textbf{Semi-structured data} & This kind of data can also have a schema, but can deviate from the schema, too.\\ \hline
@@ -25,20 +26,20 @@ A common example for structured data are relational data. Unstructured data can 
 
 A significant property to consider when looking at data is heterogeneity. What heterogeneity is and how it affects data integration will be explained in the next section. But before we explain it, we should introduce Some important terms and concept that we need to understand data integration and heterogeneity:
 
-\textbf{Data model}: \label{data_model_index} in data modeling theory a data model is an abstract model that describes how data is represented and used. It consists of a set of data structures and conceptual tools that is used to describe the structure of a database and operations that can be performed on the data. A data model consists of a data model theory, a formal description of the data model, and a data model instance, which is a practical data model designed for a particular application. There exist three types of data models \cite[p.10-14]{IntroductionToDatabaseSystems2010}:
+\textbf{Data model}: \label{data_model_index} In data modeling theory a data model is an abstract model that describes how data is represented and used. It consists of a set of data structures and conceptual tools that is used to describe the structure of a database and operations that can be performed on the data. A data model consists of a data model theory, a formal description of the data model, and a data model instance, which is a practical data model designed for a particular application. There exist three types of data models \cite[p.10-14]{IntroductionToDatabaseSystems2010}:
 \begin{itemize}
-	\item \textbf{Conceptual data model}: describes data independent from any implementation details. It is used to describe the semantic of a domain. Examples for conceptual data models are the entity-relationship (E-R) model and ontologies. 
-	\item \textbf{Logical data model}: also called representational or implementation data model. Describes data in terms of data structures, like relational tables and columns or XML tags. Examples of logical data models are the relational data model, the object-based data model, semi-structured data models like XML or a graph-based data model like RDF. 
-	\item \textbf{Physical data model}: describes data in terms of collection of files, indices and other physical storage structures. It defines how the data is stored on disk and the available access methods. 
+	\item \textbf{Conceptual data model}: Describes data independent from any implementation details. It is used to describe the semantic of a domain. Examples for conceptual data models are the entity-relationship (E-R) model and ontologies. 
+	\item \textbf{Logical data model}: Also called representational or implementation data model. Describes data in terms of data structures, like relational tables and columns or XML tags. Examples of logical data models are the relational data model, the object-based data model, semi-structured data models like XML or a graph-based data model like RDF. 
+	\item \textbf{Physical data model}: Describes data in terms of collection of files, indices and other physical storage structures. It defines how the data is stored on disk and the available access methods. 
 \end{itemize}
 
-\textbf{Data source}:\label{data_source_index} a data source addresses an arbitrary data storage, whose data should be integrated in an information system \cite[p. 7]{DBLP:books/dp/LeserN2006}.
+\textbf{Data source}:\label{data_source_index} A data source addresses an arbitrary data storage, whose data should be integrated in an information system \cite[p. 7]{DBLP:books/dp/LeserN2006}.
 
-\textbf{Integrated or integrating information system}:\label{integrated_system_index} an integrated information system is an application, which facilitates the access to different data sources \cite[p. 7]{DBLP:books/dp/LeserN2006}.
+\textbf{Integrated or integrating information system}:\label{integrated_system_index} An integrated information system is an application, which facilitates the access to different data sources \cite[p. 7]{DBLP:books/dp/LeserN2006}.
 
-\textbf{Meta data}:\label{meta_data_index} data that describe other data. The distinction between data and meta data in a system depends on the particular application. Meta data has to be stored, browsed and integrated as well as 'normal' data \cite[p. 8]{DBLP:books/dp/LeserN2006}.
+\textbf{Meta data}:\label{meta_data_index} Data that describe other data. The distinction between data and meta data in a system depends on the particular application. Meta data has to be stored, browsed and integrated as well as 'normal' data \cite[p. 8]{DBLP:books/dp/LeserN2006}.
 
-\textbf{Schema}:\label{schema_index} the word comes from greek \foreignlanguage{greek}{\emph{σχήμα}}(skhēma) meaning \emph{shape} or \emph{plan}. In computer science this word has different meanings. 
+\textbf{Schema}:\label{schema_index} The word comes from greek \foreignlanguage{greek}{\emph{σχήμα}} (skhēma) meaning \emph{shape} or \emph{plan}. In computer science this word has different meanings. 
 In the context of database theory the word is used for a representation of the structure (syntax), semantics, and constraints on the use of a database (or its portion) in a particular data model. \cite[p. 235]{Sheth:1990:FDS:96602.96604}. Analogous, an XML schema defines the structure, content and semantics of XML documents\cite{w3XMLSchema}. To generalize it, we can define a schema in the context of data integration as the definition of the structure, content and semantics of a data source.
 
 \section{Heterogeneity}
@@ -54,10 +55,10 @@ Heterogeneity is an issue we have to overcome in the thesis' project. It is nece
 \begin{longtable}{|l|p{0.6\textwidth}|}
 %\centering
 \hline
- \textbf{Technical  heterogeneity}  &  includes all technical problems to realize the access of the data from the datasources.\\ \hline
- \textbf{Syntactic  heterogeneity}    &  includes problems in the presentation of data.\\ \hline
+ \textbf{Technical  heterogeneity}  &  Includes all technical problems to realize the access of the data from the datasources.\\ \hline
+ \textbf{Syntactic  heterogeneity}    &  Includes problems in the presentation of data.\\ \hline
  \textbf{Data model  heterogeneity} &  means problems in the presentation of data of the used data models. \\ \hline
- \textbf{Structural  heterogeneity}    &  includes differences in the structural representation of information. This heterogeneity is solved if semantic identical concepts are also structural equally modeled. \\ \hline
+ \textbf{Structural  heterogeneity}    &  Includes differences in the structural representation of information. This heterogeneity is solved if semantic identical concepts are also structural equally modeled. \\ \hline
  \textbf{Schematic  heterogeneity} &  Important special case of the structural heterogeneity, whereby there are differences in the used data model.\\ \hline
  \textbf{Semantic  heterogeneity}    &  Includes problems regarding the meaning of used terms and concepts.\\ \hline
 \caption{Kinds of heterogeneity \cite[p. 60/61]{DBLP:books/dp/LeserN2006}}
@@ -65,7 +66,7 @@ Heterogeneity is an issue we have to overcome in the thesis' project. It is nece
 \end{longtable}
 
 \subsection{Technical  heterogeneity}
-With this kind of heterogeneity are meant differences between information systems to access their data. There are different technical layers on which heterogeneity can exist \cite[p. 62]{DBLP:books/dp/LeserN2006}:
+This kind of heterogeneity defines differences between information systems to access their data. There are different technical layers on which heterogeneity can exist \cite[p. 62]{DBLP:books/dp/LeserN2006}:
 \begin{itemize}
 \item \textbf{Request function:} query language, parameterized  functions, canned queries (forms)
 \item \textbf{Query language:} SQL, XQuery, SPARQL, full text search
@@ -87,7 +88,7 @@ Syntactic heterogeneity describes differences in the presentation of the same fa
 This kind of heterogeneity is overcome if all data meaning the same are presented equally \cite[p. 61]{DBLP:books/dp/LeserN2006}.
 
 \subsection{Data model  heterogeneity}
-Data model heterogeneity arises if the integrated system and a data source manage their data in different data models \cite[p. 65]{DBLP:books/dp/LeserN2006}. With data model is usually meant the \emph{conceptual} or the \emph{logical} data model (or both), as the physical data model is only used for internal processing inside the data source and never propagated outwards.
+Data model heterogeneity arises if the integrated system and a data source manage their data in different data models \cite[p. 65]{DBLP:books/dp/LeserN2006}. Data model usually means the \emph{conceptual} or the \emph{logical} data model (or both), as the physical data model is only used for internal processing inside the data source and never propagated outwards.
 
 Important to note is the fact, that data model heterogeneity is independent from \emph{semantic} differences. Two systems can use two different data models both describing the same domain, e.g. describing data in the object oriented or relational data model. Nevertheless, it is to observe that differences in the data model often induces semantic heterogeneity.
 
@@ -96,14 +97,14 @@ Data model heterogeneity is solved if the data sources and the integrated system
 \subsection{Structural  heterogeneity}
 Using the same data model doesn't mean semantic equal data has to be described equally. We speak of structural heterogeneity if two schemas are different, even though they represent the same extract of the real world (i.d. the intension of their schema elements is equal) \cite[p. 67]{DBLP:books/dp/LeserN2006}. 
 
-Structural heterogeneity can have many reasons like different preferences of developers, different requirements, using different data models, technical restrictions, etc. . This arises from the \textit{design autonomity} of data sources. A Data source has design autonomity if it can freely decide in which way it provides its data, including the data format, the data model, the schema, syntactic represenation of data, the use of concept systems and the units of values \cite[p.55]{DBLP:books/dp/LeserN2006}.
+Structural heterogeneity can have many reasons like different preferences of developers, different requirements, using different data models, technical restrictions, etc. . This arises from the \textit{design autonomity} of data sources. A Data source has design autonomity if it can freely decide in which way it provides its data, including the data format, the data model, the schema, syntactic represenation of data, the use of concept systems, and the units of values \cite[p.55]{DBLP:books/dp/LeserN2006}.
 
 This heterogeneity is solved if semantic identical concepts are also structural equally modeled  \cite[p. 61]{DBLP:books/dp/LeserN2006}.
 
 \subsection{Schematic  heterogeneity}
 A special case of structural heterogeneity is schematic heterogeneity \cite[p. 67]{DBLP:books/dp/LeserN2006}. Schematic heterogeneity is present if different elements of the data model are used to model the same thing. In the relational model it is possible to model information as relations, as attributes or as values, for instance. 
 
-Schematic conflicts are particular difficult to resolve, as it isn't usually possible to overcome them with the query language \cite[p. 68]{DBLP:books/dp/LeserN2006}. E.g., it is mandatory to explicitly state attributes and relations in relational languages. If schematic heterogeneous data sources should be integrated, one would define a view. But the query has to be altered if something changes in the elements.
+Schematic conflicts are particularly difficult to resolve, as it isn't usually possible to overcome them with the query language \cite[p. 68]{DBLP:books/dp/LeserN2006}. For example, it is mandatory to explicitly state attributes and relations in relational languages. If schematic heterogeneous data sources should be integrated, one would define a view. But the query has to be altered if something changes in the elements.
 
 \subsection{Semantic  heterogeneity}
 Individual values have no implicit meaning in an information system. Looking at the number '20' on a table doesn't allow conclusions concerning its meaning. In fact, it could be anything. Only by \textit{interpreting} a datum it gets a meaning, and for interpretation one needs knowledge about the concrete use case and world knowledge. The interpretation of data is also called \textit{semantic}. Therefore, to interpret data in an information system, further information has to be consulted \cite[p. 73]{DBLP:books/dp/LeserN2006}:
@@ -113,13 +114,14 @@ Individual values have no implicit meaning in an information system. Looking at 
 \item Knowledge about the domain the schema is developed for.
 \item Other data values stored in the schema element
 \end{itemize}
-Comprehending all this information, we speak of the data's \textit{context} \cite[p. 74]{DBLP:books/dp/LeserN2006}. 
-Data only obtain its meaning by taking its context into account. But it should be considered that some parts of the context are given in machine-readable form (like the schema), and some not (e.g. domain specific knowledge). 
-Also absolutely identical schemas with different contexts can have different semantic meanings. Owing to circumstances, an integrated system has to make implicit context knowledge explicit e.g. by introducing new schema elements.
 
-Semantic conflicts relate to the interpretation of \emph{names} resp. \emph{symbols} \cite[p. 74]{DBLP:books/dp/LeserN2006}. 
+Comprehending all this information, we speak of the data's \textit{context} \cite[p. 74]{DBLP:books/dp/LeserN2006}. 
+Data only obtain its meaning by taking its context into account. But it should be considered that some parts of the context are given in machine-readable form (like the schema), and some are not (e.g. domain specific knowledge). 
+Also absolutely identical schemas with different contexts can have different semantic meanings. Owing to circumstances, an integrated system has to make implicit context knowledge explicit, e.g. by introducing new schema elements.
+
+Semantic conflicts relate to the interpretation of \emph{names} and \emph{symbols}, respectively \cite[p. 74]{DBLP:books/dp/LeserN2006}. 
 Semantic conflicts occur in the interaction of names and concepts in different systems. 
-A \textit{concept} means here the intension of a name. The set of real world objects of a name is called its \emph{extension}. 
+In this context, a \textit{concept} means the intension of a name. The set of real world objects of a name is called its \emph{extension}. 
 The most common semantic conflicts are synonyms and homonyms \cite[p. 75]{DBLP:books/dp/LeserN2006}. 
 Two names are \textit{synonyms} if they have the same intension, but are syntactic different. An example of synonyms are the words \emph{disease} and \emph{illness}. They mean the same but are different words.
 
@@ -147,9 +149,9 @@ Distribution can be structured into logical and physical distribution \cite[p. 5
 which geographically also can be located on different places. In turn, data is \textit{logical} distributed, if there exists multiple possible locations for storing the same data. 
 
 \subsection{Physical distribution}
-There have to be overcome several issues to integrate physical distributed data \cite[p. 51]{DBLP:books/dp/LeserN2006}: The first step is to detect the physical storage location of the data. Therefore computer, server, port, and network have to be identifiable and locatable. For identification, applications used in the internet use Uniform Resource Locators (URLs) to identify remote computers and services not knowing their exact location.
+In order to integrate physical distributed data several issues have to be solved \cite[p. 51]{DBLP:books/dp/LeserN2006}: the first step is to detect the physical storage location of the data. Therefore, computer, server, port, and network have to be identifiable and locatable. For identification, applications used in the internet use Uniform Resource Locators (URLs) to identify remote computers and services not knowing their exact location.
 
-The second problem resulting from physical distribution is data stored in different schemas \cite[p. 52]{DBLP:books/dp/LeserN2006}. But common query languages don't provide the possibility to query data residing in different schemas. There are two possible ways to overcome this hurdle:
+The second problem resulting from physical distribution is data stored in different schemas \cite[p. 52]{DBLP:books/dp/LeserN2006}. However, common query languages don't provide the possibility to query data residing in different schemas. There are two different solutions:
 \begin{itemize}
 \item Separating a query into several schema specific queries and consolidating the results in the integrated system.
 \item Developing a language able to handle several schemas in a posed query.
@@ -158,10 +160,11 @@ The second problem resulting from physical distribution is data stored in differ
 Physical distribution also changes the requirements for the query optimizer \cite[p. 52]{DBLP:books/dp/LeserN2006}: In a central database the optimizer's main function is minimizing  the accesses to the local storage, whereas for a distributed database the accesses over the network should be held as small as possible. This is important as remote accesses need considerably more time than accesses to the local storage.  
 
 \subsection{Logical distribution}
-If identical data is located on different places inside the same system, we speak of a logical distribution \cite[p. 52]{DBLP:books/dp/LeserN2006}. The key property of logical distribution is therefore the \textit{overlapping of the intension} of different data storage locations. Thereby it is insignificant where these systems physically really are. Two database instances on one computer induce already distribution issues.
+If identical data is located on different locations inside the same system, we speak of a logical distribution \cite[p. 52]{DBLP:books/dp/LeserN2006}. The key property of logical distribution is therefore the \textit{overlapping of the intension} of different data storage locations. Thereby, it is insignificant where these systems physically really are. Two database instances on one computer induce already distribution issues.
 
-A central point here plays the redundancy in a system \cite[p. 53]{DBLP:books/dp/LeserN2006}. A distributed system is called redundant if semantically identical data can be located at different places. In order to get a consistent view of a redundant system, redundancy has to be strictly controlled (e.g. using triggers or replication mechanisms). At anytime it has to be assured that the same data is at all different places. 
-But data integration typically has to deal with \textit{uncontrolled redundancy} for each data source is maintained independently. This fact results to several problems \cite[p. 53]{DBLP:books/dp/LeserN2006}:
+In this context redundany plays a major role in a system \cite[p. 53]{DBLP:books/dp/LeserN2006}. A distributed system is called redundant if semantically identical data can be located at different places. In order to get a consistent view of a redundant system, redundancy has to be strictly controlled (e.g. using triggers or replication mechanisms). At anytime it has to be assured that the same data is at all different places. 
+But data integration typically has to deal with \textit{uncontrolled redundancy} for each data source is maintained independently. This fact leads to several problems \cite[p. 53]{DBLP:books/dp/LeserN2006}:
+
 \begin{itemize}
 \item \textbf{Localization}: The integrated system has to provide meta data allowing to \textit{locate} data. E.g. this can be done by a catalog of all schemas and their descriptions or a global schema with mappings to source schemas.
 \item \textbf{Duplicates}: If it is possible that data exists on multiple locations, there will exist duplicates, i.e. objects stored on both locations. These objects have to be recognized by the integrated system.
@@ -176,11 +179,11 @@ In order to design a system for a data integration process, it is necessary to u
 %In the following basic database concepts, on which integrated systems base, are explained. Additionally different types of integrated systems are presented shortly.
 
 Integrated systems evolved from distributed databases which in turn are based on the classical \emph{monolithic database}. 
-This system is subdivided into three layers as shown in \ref{MonolithicDatabaseArchitecture} and is based on the ANSI/X3/SPARC three-layer architecture \cite{TSICHRITZIS1978173}, \cite[p. 84/85]{DBLP:books/dp/LeserN2006}.
+This system is subdivided into three layers as shown in figure \ref{MonolithicDatabaseArchitecture} and is based on the ANSI/X3/SPARC three-layer architecture \cite{TSICHRITZIS1978173}, \cite[p. 84/85]{DBLP:books/dp/LeserN2006}.
 
 The \textit{internal (or physical) view} is responsible for the storage of the data on the respective database. 
-One layer upwards comes the \textit{conceptual (or logical) view} modeling the data on a conceptual way. The conceptual schema defines which data model is used, which data is stored in the DBMS and the relations among the data.
-Splitting the data into the internal and conceptual view, makes the data independent from the physical storage medium. The top layer is called \textit{external (or export) view} and is being concerned with modeling of data as well as the conceptual view. However, it isn't modeled the whole application domain. The external view only specifies which part of the conceptual schema is provided to the respective application. An export schema is initially a subset of the conceptual schema, but can be transformed and aggregated. In the external view are defined access restrictions, too. Splitting up conceptual and external view ensures \textit{logical data independence}.
+One layer upwards comes the \textit{conceptual (or logical) view} modeling the data on a conceptual way. The conceptual schema defines which data model is used, which data is stored in the DBMS, and the relations among the data.
+Splitting the data into the internal and conceptual view makes the data independent from the physical storage medium. The top layer is called \textit{external (or export) view} and is responsible with modeling of data as well as the conceptual view. However, it isn't modeled the whole application domain. The external view only specifies which part of the conceptual schema is provided to the respective application. An export schema is initially a subset of the conceptual schema, but can be transformed and aggregated. In the external view are defined access restrictions, too. Splitting up conceptual and external view ensures \textit{logical data independence}.
 
 \begin{figure}[H]
 	\begin{center}
@@ -193,7 +196,7 @@ Splitting the data into the internal and conceptual view, makes the data indepen
 
 \subsection{Distributed Systems}
 
-From the monolothic database evolved the distributed database architecture, as shown in \ref{DistributedDatabaseArchitecture}.
+From the monolothic database evolved the distributed database architecture, as shown in figure \ref{DistributedDatabaseArchitecture}.
 
 \begin{figure}[H]
 	\begin{center}
@@ -206,8 +209,8 @@ From the monolothic database evolved the distributed database architecture, as s
 
 The idea with distributed systems is to distribute data onto several systems (physical and logical), but it should be possible to query all data at once. In order to achieve this, the architecture is subdivided into \textit{four layers}. Each datasource has a local internal and local conceptual schema. The latter only mirrors the data managed by the local database. Dependent on the used distribution strategy, the local conceptual schema is equal to the global conceptual schema  or an extract from it. Common distribution strategies are vertical and horizontal partitioning \cite[p. 92]{DBLP:books/dp/LeserN2006}: 
 \begin{itemize}
-\item horizontal partitioning: Data of big tables is distributed per tuples on different computers. A union operation consolidates these parts again.
-\item vertical partitioning: Data of big tables is distributed per attributes on different computers. Each partition contains additionally a shared key attribute. This makes it possible to consolidate the partitions with a join operation.
+\item \textbf{horizontal partitioning:} Data of big tables is distributed per tuples on different computers. A union operation consolidates these parts again.
+\item \textbf{vertical partitioning:} Data of big tables is distributed per attributes on different computers. Each partition contains additionally a shared key attribute. This makes it possible to consolidate the partitions with a join operation.
 \end{itemize}
 On top of the local conceptual schemes stands a global conceptual schema. This schema models the whole application domain and is the central point of reference for the external schemes playing the same role as in the three-layers-architecture.
 
@@ -217,7 +220,7 @@ Thus, this architecture is good for environments, there the datasources to be di
 
 \subsection{Multidatabase Systems}
 
-For to enable heterogeneous databases to connect, the Multidatabase System (MBS) architecture has been evolved (shown in \ref{MBSDatabaseArchitecture}). 
+For to enable heterogeneous databases to connect, the Multidatabase System (MBS) architecture has been evolved (shown in figure \ref{MBSDatabaseArchitecture}). 
 
 \begin{figure}[H]
 	\begin{center}
@@ -234,7 +237,7 @@ It can be noted that a MBS is only suitable for datasources that use the same da
 
 \subsection{Federated Systems}
 
-In contrast to MBSs, federated database management systems (FDBMS) have a global conceptual schema as seen in \ref{FDBMSArchitecture}. The schema is also called the \emph{federated schema}.
+In contrast to MBSs, federated database management systems (FDBMS) have a global conceptual schema as seen in figure \ref{FDBMSArchitecture}. The schema is also called the \emph{federated schema}.
 
 \begin{figure}[H]
 	\begin{center}
@@ -249,11 +252,11 @@ The federated schema is the central point of reference for all external schemes 
 All in all, a FDBMS consists of five different layers \cite[p. 95]{DBLP:books/dp/LeserN2006}:
 
 \begin{itemize}
-\item \textbf{Local conceptual schema}: defines the data of a data source. Is comparable with the conceptual schema of the three-layer architecture.
-\item \textbf{Local component schema}: defines the data of the local conceptual schema in the canonical data model. 
-\item \textbf{Local export schema}: does the same as the external view in the three-layer architecture: It defines which elements of the local component schema are visible/query-able from the outside.
-\item \textbf{Global conceptual/federated schema}: defines an integrated view over all data sources and is defined in the canonical data model. The federated schema consists of multiple export schemas \cite[p. 200]{Sheth:1990:FDS:96602.96604}.
-\item \textbf{External schema}: defines a subset of the global schema that should be visible to an application.
+\item \textbf{Local conceptual schema}: Defines the data of a data source. Is comparable with the conceptual schema of the three-layer architecture.
+\item \textbf{Local component schema}: Defines the data of the local conceptual schema in the canonical data model. 
+\item \textbf{Local export schema}: Does the same as the external view in the three-layer architecture, it defines which elements of the local component schema are visible/query-able from the outside.
+\item \textbf{Global conceptual/federated schema}: Defines an integrated view over all data sources and is defined in the canonical data model. The federated schema consists of multiple export schemas \cite[p. 200]{Sheth:1990:FDS:96602.96604}.
+\item \textbf{External schema}: Defines a subset of the global schema that should be visible to an application.
 \end{itemize}
 
 Remarkable is, a federal system can have several federated schemas that integrate differently the export schemas. This allows data with different semantic meaning within the federated system when combining query results of different federated schemas. But query results of a specific federated schema are always semantically integrated, so, there is no data co-existence between them. As we will see later, this is a crucial difference in respect to dataspaces.
