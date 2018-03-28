@@ -1,10 +1,10 @@
 \chapter{MeDSpace}
 
-In this chapter we will present the developed system MeDSpace (\textit{abbr.} for Medical Dataspace) whereas in the next chapter we will look at more implementation specific details.
+In this chapter we will present the developed system MeDSpace (\textit{abbr.} for Medical Dataspace), whereas in the next chapter we will look at more implementation specific details.
 
-The purpose of MeDSpace is to provide a distributed test environment of medical datasources. The focus thereby is the provision of a keyword search functionality over medical datasources. 
-As distributed keyword search is the foundation for every Dataspace system, MeDSpace can be used as a starting point for a much more evolved dataspace or as a framework for implementing advanced dataspace functionality.
-Although the system uses medical datasources for its test data, the system is general enough to be used for other dataspace-related projects or systems, that need keyword search functionality over a set of multiple heterogenous (multimedia) datasources. 
+The purpose of MeDSpace is to provide a distributed test environment of medical datasources. Thereby, the focus is the provision of a keyword search functionality over medical datasources. 
+As distributed keyword search is the foundation for every Dataspace system, MeDSpace can be used as a starting point for a much more evolved dataspace, or as a framework for implementing advanced dataspace functionality.
+Although the system uses medical datasources for its test data, the system is general enough to be used for other dataspace-related projects or systems that need keyword search functionality over a set of multiple heterogenous (multimedia) datasources. 
 
 In figure \ref{MeDSpaceOverview} the overview of the MeDSpace system is illustrated.
 \begin{figure}[H]
@@ -19,75 +19,92 @@ In figure \ref{MeDSpaceOverview} the overview of the MeDSpace system is illustra
 The system can roughly be divided into a \emph{wrapper} and a \emph{global MeDSpace} category: The \emph{wrapper} category includes everything from managing the data of a specific datasources (e.g. from a relational database). 
 Whereas the \emph{global MeDSpace} category comprises datasource management and services on a global view.  The modules belonging to this category are the \emph{Register}, the \emph{Data Collector}, the \emph{Query Executor}, and the \emph{Search Page}.  
 
-Now, we want look at the requirements met by MeDSpace. Therefore we look at the purposes of each module of the system.
+Now, we want to look at the requirements met by MeDSpace. Therefore we look at the purposes of each module of the system.
 
 \section{General} 
-MeDSpace uses RDF \cite{w3RDF} as its canonical data model. Although a dataspace system is not restrict to use a specific data model, it simplifies the complexity of data management.
+MeDSpace uses RDF \cite{w3RDF} as its canonical data model. Although a dataspace system is not restricted to use a specific data model, it simplifies the complexity of data management.
 Furthermore RDF is proposed to be used for Linked Data \cite{LinkedData} in the Semantic Web field. Although a different research field, both fields face semantic data-integration.
 
-All wrappers and the register have configuration files. These configuration files use XML and each configuration file has a corresponding \emph{XML Schema Definition} (XSD)\cite{w3XMLSchema} file, that is used to validate the configuration file. This allowed us to generate automatically Java classes out of the XSD files using \emph{Java Architecture for XML Binding} (JAXB) \cite{JAXB}.
+All wrappers and the register have configuration files. These configuration files use XML, and each configuration file has a corresponding \emph{XML Schema Definition} (XSD)\cite{w3XMLSchema} file, that is used to validate the configuration file. This allowed us to generate automatically Java classes out of the XSD files using \emph{Java Architecture for XML Binding} (JAXB) \cite{JAXB}.
 
 
 \subsection{Importance of unicode}
 
 A dataspace includes data sources possibly spread around the globe. It is near inferring to support a wide area of different languages. In terms of character sets, it is therefore necessary to use a unicode encoding.
-Unicode is a system assigning each character a unique code point and it is designed to support the worldwide interchange, processing and display of texts written in different languages\cite{UnicodeStandard}.\newline
-There exist several encodings for unicode. The more well known are the UTF and UCS encoding families. In the draft of HTML5 it is advised to use UTF-8 for new web pages\cite{HTML5Rec}. 
-Thus, to simplify processing, we follow the recommendation and use UTF-8 throughout MeDSpace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
+Unicode is a system assigning each character a unique code point and is designed to support the worldwide interchange, processing and display of texts written in different languages\cite{UnicodeStandard}.\newline
+There exist several encodings for unicode. The better known are are the UTF and UCS encoding families. In the draft of HTML5 is advised to use UTF-8 for new web pages\cite{HTML5Rec}. 
+Thus, to simplify processing we follow the recommendation and use UTF-8 throughout MeDSpace. If a data source doesn't use UTF-8, it is the task of its wrapper to do a proper conversion to UTF-8.
 
 \subsection{Keyword query language convention}
-As already previously told, the one service that every wrapper has to implement is the keyword search functionality. In order to search for specific keywords, it is important to define a convention how the keyword search should work, since there are several possibilities. E.g. if a query is posed with two keywords, should a query be created for all results that contains both keywords or is it enough if one of the keywords is contained? Should boolean operators be allowed (AND, OR, NOT)? 
+As already previously told, the one service that every wrapper has to implement is the keyword search functionality. In order to search for specific keywords, it is important to define a convention how the keyword search should work, since there are several possibilities. E.g. if a query is posed with two keywords, should a query be created for all results that contains both keywords, or is it enough if one of the keywords is contained? Should boolean operators be allowed (AND, OR, NOT)? 
 
-The design decision is at follows: Rudimentary keyword search functionality suffices and several keyword searches have to be interpreted in an 'AND like' manner by default, i.d. all of the stated keywords have to occur to fulfill the query condition. Additionally, the user should be able to use an 'OR' operator instead. This option is provided by the search page.
+The design decision is at follows: Rudimentary keyword search functionality suffices and several keyword searches have to be interpreted in an 'AND like' manner by default, i.e. all of the stated keywords have to occur to fulfill the query condition. Additionally the user should be able to use an 'OR' operator instead. This option is provided by the search page.
 
-The reasons are, that no complex global query language is necessary, that all wrappers have to implement which leads to much more flexible implementation decisions. 
-We think, that it is more likely for a user to want results that include all stated keywords and not only one of it. So we decided to use the 'AND' operator by default. In certain cases it should be useful to use the 'OR' operator, so we added it, too.
-As wrappers can provide as many services as they like it is easy to provide a much more powerful keyword search service. So this design decision doesn't restrict the power of a wrapper.
+The reasons are: no complex global query language is necessary that all wrappers have to implement, and this leads to much more flexible implementation decisions. 
+We think that it is more likely for a user to achieve results including all stated keywords and not only one of them. So we decided to use the 'AND' operator by default. 
+In certain cases the use of the 'OR' operator might be helpful, so we added it, too.
+As wrappers can provide as many services as wanted, it is easy to provide a much more powerful keyword search service. So this design decision doesn't restrict the power of a wrapper.
 
 
 \section{Wrappers}
 Each local datasource has its own wrapper. The wrapper is similar to the wrappers used in a mediator-based system, but provides dataspace specific functionality: the wrapper...
 \begin{itemize}
 	\item manages the data exchange between the datasource and extern MeDSpace services.
-	\item provides keyword search functionality (if the datasource doesn't provide it itself already). Therefore it creates an index of the data of the wrapped datasource and maintains it. 	
+	\item provides keyword search functionality (if the data source does not already provide it itself). Therefore it creates an index of the data of the wrapped datasource and maintains it. 	
 	\item converts search results from the datasource to the canonical data model.
-	\item registers and deregisters the datasource from MeDSpace by communicating with the \emph{Register} module. The wrapper informs the register what services the datasource and the wrapper provide.
+	\item registers and deregisters the datasource from MeDSpace by communicating with the \emph{Register} module. The wrapper informs the register about the services the datasource and the wrapper provide.
 	\item overcomes technical, syntactic and data model heterogeneity. 
 \end{itemize}
 
-Thereby the \emph{SQL Wrapper} is responsible for wrapping a relational database containg data created with the \emph{Patient Data Generation Framework} (PDGF) tool created by Schmiedbauer \cite{SchmidbauerBachelorThesis}. The \emph{Image Wrapper} provides access to case files of \emph{Digital Database for Screening Mammography} (DDSM)\cite{DDSM} and the \emph{PDF Wrapper} maintains a set of pdf files that were created specific for this system: the pdf files contain data based on Schmidbauer's test data.
+Thereby the \emph{SQL Wrapper} is responsible for wrapping a relational database containing data created with the \emph{Patient Data Generation Framework} (PDGF) tool created by Schmiedbauer \cite{SchmidbauerBachelorThesis}. The \emph{Image Wrapper} provides access to case files of \emph{Digital Database for Screening Mammography} (DDSM)\cite{DDSM} and the \emph{PDF Wrapper} maintains a set of pdf files that were created specific for this system: the pdf files contain data based on Schmidbauer's test data.
 
 \section{Register}
 The Register holds a list of active datasources that can be queried. Therefore it provides functionality so that wrappers can register and deregister a datasource. In order to know what services are provided by each datasource, the register also keeps records of these services. This allows other modules to use services of any datasource.
 \section{Query Executor}
-The task of the \emph{Query Executor} is to accept a given keyword search query, transform this query to a service call and instructs the \emph{Data Collector} module to call the keyword search service for each registered data sources. To know which datasources are registered, this module communicates with the \emph{Register} module. After the \emph{Data Collector} has collected the query results of all datasources the \emph{Query Executor} adds the search query to its query cache and returns the collected search result to the caller who requested the \emph{Query Executor}. On the next request, the cached query result will be returned without querying the datasources if no 'cache miss' has been occurred.
+The task of the \emph{Query Executor} is to accept a given keyword search query, transform this query to a service call, and instructs the \emph{Data Collector} module to call the keyword search service for each registered datasource. To know which datasources are registered, this module communicates with the \emph{Register} module. After the \emph{Data Collector} has collected the query results of all datasources the \emph{Query Executor} adds the search query to its query cache and returns the collected search result to the caller who requested the \emph{Query Executor}. On the next request the cached query result will be returned without querying the datasources if no 'cache miss' has been occurred.
 
 Note: It is not the task of the \emph{Query Executor} to actually collect the search result from the datasources. That is done by the \emph{Data Collector}. It does only instruct the \emph{Data Collector} to do the collecting.
 
 \section{Data Collector}
-The \emph{Data Collector} provides services that allow to query a specific  datasource and store the query result into a specific RDF repository that is maintained by this module. Furthermore the \emph{Data Collector} allows other modules to create and remove a repository that is coupled with a specific search query. This allows the \emph{Query Executor} to merge the search results of all datasources into a seperate RDF repository. Then, again the \emph{Query Executor} is able to delete the repository if the associated and cached query result should be deleted. 
+The \emph{Data Collector} provides services that allow to query a specific  datasource and store the query result into a specific RDF repository which is maintained by this module. Furthermore the \emph{Data Collector} allows other modules to create and remove a repository that is coupled with a specific search query. This allows the \emph{Query Executor} to merge the search results of all datasources into a seperate RDF repository. Then, again the \emph{Query Executor} is able to delete the repository if the associated and cached query result should be deleted. 
 
 \section{Search Page}
-Represents the \emph{graphical user interface} (GUI) so that a user can easily interact with the MeDSpace system using a common browser. It provides a page for stating and sending keyword searches, allows the user to display the search result in the browser or download it as a file. Furthermore the search page allows the user to inspect the list of the current registered datasources and it allows to delete the query cache.
+The Search Page represents the \emph{graphical user interface} (GUI) so that a user can easily interact with the MeDSpace system using a common browser. It provides a page for stating and sending keyword searches, allows the user to display the search result in the browser or download it as a file. Furthermore the search page allows the user to inspect the list of the current registered datasources and to delete the query cache.
 
 \chapter{Implementation}
-In this chapter we focus on implementation details of the MeDSpace system: What technology is used, how and why the implementation is structured, and also on details that developers should know to use the system rightly.
+In this chapter we focus on implementation details of the MeDSpace system: 
+
+\begin{itemize}
+\item the used technology
+\item the implementation structure
+\item reasons for using this kind of    
+   implementation structure
+\item details explained for users and developers to 
+   use the system correctly. 
+\end{itemize}
 
 \section{Used technologies}
 
-In this section we want to present the technologies that are most important and how and for what they are used in MeDSpace.
+In this section we want to present the technologies used in MeDSpace and explain for each technology the areas of application.
 
 \subsection{Programming language - Java}
-MeDSpace is written completely in Java 8. The reason for java are diverse: its platform independence is something very helpful in a heterogeneous environment. Java with its JIT compiler runs nearly as fast as C++ and outperforms several other languages. Performance is something that didn't is something too important, but it should not be neglected, especially as the system has to handle potentially very large data sets. And last but not least, Java has great library support for Web development. 
-Of course, other languages could be used, too. But Java is definitive a good choice.
+MeDSpace is written completely in Java 8. The reason for java are diverse: 
+\begin{itemize}
+\item its platform independence is very helpful in a heterogeneous environment
+\item Not reaching the performance of C++, Java with its JIT compiler has decent performance \cite[p. 425]{TABOADA2013425}. Even though performance isn't the most important, it should not be 
+  neglected, as the system potentially has to handle very large data sets
+\item last but not least, Java has great library support for Web development
+\end{itemize}
+
+Of course, other languages could be used, too, but Java definitively is a good choice.
 
 
 \subsection{Resource Description Framework}
 
-The \emph{Resource Description Framework} (RDF) \cite{w3RDF} is used as the canonical data model in MeDSpace. RDF is a graph-based abstract data model. With abstract, we mean it is a conceptual data model, so RDF says nothing about serializing data. But there exists plenty serialization formats that can be used to serialize RDF data. A popular RDF serialization format is Turtle \footnote{\url{https://www.w3.org/TR/turtle/}}, that is known to be easy human readable.
-It facilitates merging data expressed in different schemas, as objects are identified by URIs and with the help of ontologies, semantic data integration can be performed by logical inference. 
+The \emph{Resource Description Framework} (RDF) \cite{w3RDF} is used as the canonical data model in MeDSpace. Figure \ref{RdfTriple} shows how rdf data is structured. RDF is a graph-based abstract data model. With abstract we mean it is a conceptual data model, so RDF says nothing about serializing data. But there exists plenty serialization formats that can be used to serialize RDF data. A popular RDF serialization format is Turtle \footnote{\url{https://www.w3.org/TR/turtle/}} that is known to be easily human readable.
+It facilitates merging data expressed in different schemas, as objects are identified by URIs, and with the help of ontologies semantic data integration can be performed by logical inference. 
 
-Figure \ref{RdfTriple} shows how rdf data is structured.
+
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.75]{figures/rdf-graph.pdf}
@@ -98,23 +115,23 @@ Figure \ref{RdfTriple} shows how rdf data is structured.
 \end{figure}
 \footnotetext{\url{https://www.w3.org/TR/rdf11-concepts/rdf-graph.svg}}
 
-RDF data consists of resources, which are the nodes of the rdf graph, and predicates, which are directed edges between the resources. So rdf is a directed graph. 
+RDF data consists of resources which are the nodes of the rdf graph, and predicates which are directed edges between the resources. So RDF is a directed graph. 
 
-Resources can be IRIs, literals and blank nodes. 
+Resources can be IRIs, literals, and blank nodes. 
 Resources with an IRI are identified through its IRI. Two resources with the same IRI are supposed to be equal.
-Blank nodes are also called anonymous resources, as they specify the existence of a thing, but it is not identifiable. So blank nodes are always unique.
-Literals are used for values like numbers, strings or a date aren't identifiable, too.
+Blank nodes are also called anonymous resources, as they specify the existence of an abstract thing, but it is not identifiable. So blank nodes are always unique.
+Literals are used for values like numbers, strings or a date, but aren't identifiable, too.
 Predicates are always IRIs and can also be resources. They are also identified by their IRIs.
 
-The idea of RDF is, to represent data in form of triple statements, that consists of two resources (subject and object in figure \ref{RdfTriple}) and a predicate. The statement 'A has a property B' could be expressed in RDF with two resources A (the subject) and B (the object) and a predicate with an IRI, that should form the 'has' predicate. It should be noted that a subject can be an IRI or a blank node, but not a literal. As a result about a literal no statements can be made.
+The idea of RDF is to represent data in form of triple statements that consists of two resources (subject and object in figure \ref{RdfTriple}) and a predicate. The statement 'A has a property B' could be expressed in RDF with two resources, A (the subject) and B (the object) and a predicate with an IRI that should form the 'has' predicate. It should be noted that a subject can be an IRI or a blank node, but not a literal. As a result no statements can be made about a literal.
 
-Listing \ref{listing1} shows an example of how rdf data can look like using Turtle syntax. In line 3 we can see the aforementioned example statement 'A has B'. An interesting property of Turtle is the ability to define prefixes for namespaces, as done at line 1. Prefixes are used to shorten IRIs increasing readability. Thus, the statement in line 3 and the statement in line 5 are equal: in line 3 the fully qualified IRIs are used whereas in line 5 the 'ex' namespace prefix is used.
+Listing \ref{listing1} shows an example of how rdf data can look like using Turtle syntax. In line 3 we can see the aforementioned example statement 'A has B'. An interesting property of Turtle is the ability to define prefixes for namespaces, as done at line 1. Prefixes are used to shorten IRIs, thus increasing readability. Thus, the statement in line 3 and the statement in line 5 are equal: in line 3 the fully qualified IRIs are used, whereas in line 5 the 'ex' namespace prefix is used.
 
 Line 7 shows an example of a statement with a literal value.
 
-Line 8 and 9 shows to different ways of blank node usage: In line 8 a so-called 'labeled' blank node is created. This allows a developer to give a blank node same properties by using the labeled like an IRI. A property is stated for this labeled blank node at line 11.
-But it should be noted, that a blank node is not visible from the outside (i.e. in a SPARQL query).
-In line 9 the usage of an 'unlabeled' blank node is illustrated: all what belongs to the blank node is defined inside the rectangular brackets.
+Line 8 and 9 shows two different ways of blank node usage: In line 8 a so-called 'labeled' blank node is created. This allows a developer to give a blank node same properties by using the labeled like an IRI. A property is stated for this labeled blank node at line 11.
+But it should be noted that a blank node is not visible from the outside (i.e. in a SPARQL query).
+In line 9 the usage of an 'unlabeled' blank node is illustrated: everything that belongs to the blank node is defined inside the rectangular brackets. \\
 
 \begin{lstlisting}[style=RdfCodeStyle, caption=RDF example data in Turtle syntax, label=listing1]
 @prefix \[ex:\] <http://example.org/#>
@@ -131,7 +148,7 @@ In line 9 the usage of an 'unlabeled' blank node is illustrated: all what belong
 \end{lstlisting}
 
 
-In MeDSpace we used the RDF4J framework (version 2.2.2) \cite{RDF4J}, that enabled us to read and write RDF content from within Java. Originally we planned to use Apache Jena \cite{Jena}, but it wasn't possible for us to convert the RDF data into an appropriate input and output stream classes without the Jena PipedRDFIterator class \footnote{\url{https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/riot/lang/PipedRDFIterator.html}}, that unfortunately creates a new thread for processing the rdf triples. But that isn't an option for us, as this solution doesn't scale well. 
+In MeDSpace we used the RDF4J framework (version 2.2.2) \cite{RDF4J} that enabled us to read and write RDF content from within Java. Originally we planned to use Apache Jena \cite{Jena}, but it wasn't possible for us to convert the RDF data into appropriate input and output stream classes without the Jena PipedRDFIterator class \footnote{\url{https://jena.apache.org/documentation/javadoc/arq/org/apache/jena/riot/lang/PipedRDFIterator.html}}, that unfortunately creates a new thread for processing the rdf triples. But that isn't an option for us, as this solution doesn't scale well. 
 MeDSpace uses its own interfaces for handling rdf data in order to be independent from any third party framework. Thus it would be relatively easy to support a different rdf framework. To do so, one can implement a custom version of the \emph{de.unipassau.medspace.rdf.RDFProvider} interface. 
 
 \subsection{Apache Lucene}
@@ -140,27 +157,27 @@ Apache Lucene is a full-featured text search engine \cite{LuceneCore} at version
 
 \subsection{Play Framework}
 
-Play is a framework for web development and written in Scala, but it provides Java bindings \cite{Play}. So it is possible to use Play without any complications. In MeDSpace we used Play in its version 2.6.6 . We used the framework for implementing the REST services and for the GUI. 
+Play is a framework for web development and written in Scala, but it provides Java bindings \cite{Play}. So it is possible to use Play without any complications. In MeDSpace we used Play in its version 2.6.6. We utilized the framework for implementing the REST services and for the GUI. 
 
 Play has its own default folder structure. In order to understand how the modules are structured, it is necessary to have at least a rough understanding of it:
 
 \begin{itemize}
-\item \textbf{app} In this folder all the source code is stored. This includes also html templates that are used to generate dynamic html pages. These templates have to be stored in the subfolder  \emph{views}. The same applies to controllers, which have to to stored inside the \emph{controllers} subpackage.
+\item \textbf{app} In this folder all the source code is stored. This includes also html templates that are used to generate dynamic html pages. These templates have to be stored in the subfolder  \emph{views}. The same applies to controllers which have to be stored inside the \emph{controllers} subpackage.
 
-\item \textbf{conf} Contains configuration files. The  file \emph{application.conf} is used to configure the play framework (E.g. the port number for the http server should run on). The \emph{logback.xml} file is the configuration file for the logging backend logback \footnote{\url{https://logback.qos.ch/}} and the file \emph{routes} contains the definition of relative URL to java method mappings. This is used to define on which URL a service is located. As some modules call services by its URL name, the URLs routes shouldn't be modified carelessly. For example, if you change the relative URL for registering a datasource, all wrappers have to be updated to use the new URL.
+\item \textbf{conf} Contains configuration files. The  file \emph{application.conf} is used to configure the Play framework (e.g. the port number for the http server should run on). The \emph{logback.xml} file is the configuration file for the logging backend logback \footnote{\url{https://logback.qos.ch/}} and the file \emph{routes} contains the definition of relative URL to java method mappings. This is used to define on which URL a service is located. As some modules call services by its URL name, the URLs routes shouldn't be modified carelessly. For example, if you change the relative URL for registering a datasource, all wrappers have to be updated to use the new URL.
 
 \item \textbf{public} Resource folder for the http server. Here is stored static content that should be transferred to a client, like javascript files or css files.
 
 \item \textbf{project} Contains additional build configurations. E.g. we used the sbt-sass plugin to compile sass to a css file. 
 \end{itemize} 
 
-Play needs the Simple Build Tool \cite{SBT}(SBT). As a consequence we had to use SBT, too. Thus we used SBT as build tool for the whole project. If you just want to run MeDSpace, SBT is not required, but if you want compile it you have to have installed it at least on version 0.13.15 . 
+Play needs the Simple Build Tool \cite{SBT}(SBT). As a consequence we had to use SBT, too. Thus we used SBT as build tool for the whole project. If you just want to run MeDSpace, SBT is not required, but if you want to compile it you must have installed it at least on version 0.13.15 . 
 
-The play framework supports dependency injection powered by Google's Guice \footnote{\url{https://github.com/google/guice}}. This way it is possible to inject dependencies by defining a special class, that is instantiated by Play on startup. The definition of this class is done in the \emph{application.conf} file by assigning the property \emph{play.modules.enabled}. In MeDSpace, this functionality is used to inject global class instances, e.g. for providing access to the configuration files or access to rdf processing methods.
+The play framework supports dependency injection powered by Google's Guice \footnote{\url{https://github.com/google/guice}}. This way it is possible to inject dependencies by defining a special class that is instantiated by Play on startup. The definition of this class is done in the \emph{application.conf} file by assigning the property \emph{play.modules.enabled}. In MeDSpace this functionality is used to inject global class instances, e.g. for providing access to the configuration files or access to rdf processing methods.
 
 \subsection{JAXB}
 
-With the Java Architecture for XML Binding \cite{JAXB} (JAXB) we mapped the XML configuration files to auto-generated Java classes. This simplified the configuration reading, reduced programming faults and enabled us to do changes faster. If you want to generate the java classes by yourself, you have to look at the subfolder \emph{jaxb-generation} of your target module (e.g. sql wrapper). There you'll find batch and shell scripts you just have to execute. The only requirement is, that the \emph{xjc} binary is findable through the environment variable of your operating system. This should be the case, if you have installed properly the JDK.
+With the Java Architecture for XML Binding \cite{JAXB} (JAXB) we mapped the XML configuration files to auto-generated Java classes. This simplified the configuration reading, reduced programming faults, and enabled us to do changes faster. If you want to generate the java classes by yourself, you have to look at the subfolder \emph{jaxb-generation} of your target module (e.g. sql wrapper). There you'll find batch and shell scripts you just have to execute. The only requirement is that the \emph{xjc} binary is findable through the environment variable of your operating system. This should be the case if you properly have installed the JDK.
 
 All xjc generation commands are structured as follows:
 
@@ -222,7 +239,7 @@ Each wrapper supports keyword search functionality. The corresponding service ca
 \begin{itemize}
 \item \textbf{keywords}: A list of keywords to search for. The keywords have to separated by spaces or commas.
 \item \textbf{useOr}: Specifies if the OR operator should be used instead of AND. This argument is optional. Its default value is \emph{false}.
-\item \emph{attach}: Specifeis whether the result should be interpreted as a file attachment. This opetion is only relevant for browser. This argument is optional. Its default value is \emph{false}.
+\item \textbf{attach}: Specifeis whether the result should be interpreted as a file attachment. This opetion is only relevant for browser. This argument is optional. Its default value is \emph{false}.
 \end{itemize}
 
 
