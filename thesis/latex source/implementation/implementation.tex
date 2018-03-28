@@ -248,11 +248,11 @@ Each wrapper supports keyword search functionality. The corresponding service ca
 \section{SQL Wrapper}
 
 In this section we will talk about implementation details of the SQL wrapper. 
-The task of the SQL Wrapper is to convert the relational data into RDF and providing a keyword search functionality, as SQL databases doesn't provide such a functionality.
+The task of the SQL Wrapper is to convert the relational data into RDF and providing a keyword search functionality, as SQL databases don't provide this kind of  functionality.
 We used a MySQL datasource, but as several other relational databse vendors exist, one additional design goal was to produce a wrapper that can be used with any other database that uses SQL for querying. That will considerably reduce prospective maintenance work.
 Thus, a SQL wrapper was implemented, that doesn't use any vendor specific features.
 
-At first we want to look at how the MySQL database is setup properly before we discuss how the conversion from SQL to RDF is performed.
+Before discussing how to perform the conversion from SQL to RDF, we want to look at the proper setup of the MySQL database.
 
 
 
@@ -261,14 +261,14 @@ At first we want to look at how the MySQL database is setup properly before we d
 To setup a MySQL datasource get a recent stable MySQL community server\footnote{\url{https://www.mysql.de/downloads/}} 
 and install it for your target platform. Additionally you will need the Connector/J components, the official JDBC driver for MySQL. 
 
-At time of writing, the most recent stable versions are the community server 5.7.17 and the Connector/J 5.1.41. These versions are used for the thesis project and all following commands are related on them. If you're using 
+At time of writing the most recent stable versions are the community server 5.7.17 and the Connector/J 5.1.41. These versions are used for the thesis project and all following commands are related on them. If you're using 
 different versions, assure that the instructions are adapted properly. As a detailed installation instruction for all supported platforms would break the mold, the reader is encouraged to consult the official 
 manual\footnote{\url{https://dev.mysql.com/doc/}}. 
-Assure that the MySQL binary folder is integrated into your class path, so that you can access it globally in a shell/command line. Although not necessary it is recommended for security reasons 
+Assure that the MySQL binary folder is integrated into your class path, so that you can access it globally in a shell/command line. Although not necessary, it is recommended for security reasons 
 to set a password for the root user\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/default-privileges.html} , \url{https://dev.mysql.com/doc/refman/5.7/en/resetting-permissions.html}}. 
 After installing the server, do postinstallation setup and testing\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/postinstallation.html}}. 
 
-To support UTF-8, set in your my.cnf 
+To support UTF-8 set in your my.cnf 
 
 \begin{codebox}
 	default-character-set = utf8
@@ -281,43 +281,43 @@ in the mysql section and
 	collation\-server=utf8\_general\_ci
 \end{codebox}
 
-in the mysqld section. Then restart the mysqld daemon. In the following, it is assumed, that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system (before Windows 10) the command line isn't using UTF-8 by default
-\footnote{To set the encoding to UTF-8 on the windows command line, change the active code page to 65001 and set 'Lucida Console' as the displaying font. In contrast to the font, the code page is only active for the current console session. But you can automate this command with a AutoRun setting. For more information see \url{https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433}}.  
+in the mysqld section. Then restart the mysqld daemon. In the following it is assumed that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system (before Windows 10) the command line isn't using UTF-8 by default
+\footnote{To set the encoding to UTF-8 on the windows command line change the active code page to 65001 and set 'Lucida Console' as the displaying font. In contrast to the font the code page is only active for the current console session. But you can automate this command with a AutoRun setting. For more information see \url{https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433}}.  
 Now try to connect to the database as the user root:
 
 \begin{codebox}
 	mysql -u root -p 
 \end{codebox}
 
-If you've done all right, you should be connected to the database after entering and confirming the password, that you've previously stated for the user root.
+If you've done all right, you should be connected to the database after entering and confirming the password that you've previously stated for the user root.
 
-The next step is to validate, that UTF-8 is indeed continuously used. Execute:
+The next step is to validate that UTF-8 is indeed continuously used. Execute:
 
 \begin{codebox}
 	SHOW VARIABLES LIKE 'char\%';
 \end{codebox}
 
-and check, that the variables \emph{character\_set\_client}, \emph{character\_set\_connection}, \emph{character\_set\_database}, \emph{character\_set\_results}, \emph{character\_set\_server} and \emph{character\_set\_system} are all set to utf8.
-Basically, these variables are used to interpret and write data consistently in UTF-8. More information about the stated variables can be found on the manual
+and check that the variables \emph{character\_set\_client}, \emph{character\_set\_connection}, \emph{character\_set\_database}, \emph{character\_set\_results}, \emph{character\_set\_server} and \emph{character\_set\_system} are all set to utf8.
+Basically these variables are used to interpret and write data consistently in UTF-8. More information about the stated variables can be found on the manual
 \footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html\#sysvar_character_set_client}}.
 
-The next step is to initialize the data source with a database and some content. Further we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few rights as possible' we grant that user only reading rights for fetching data. The commands for initializing the data source and creating a read-user are in the file \textbf{init\_mysql.sql} which is located in the appendix data in the folder \textbf{implementation/SQL/mysql}.
+The next step is to initialize the data source with a database and some content. Further we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few rights as possible' we grant this user only reading rights for fetching data. The commands for initializing the data source and creating a read-user are in the file \textbf{init\_mysql.sql} which is located in the appendix data in the folder \textbf{implementation/SQL/mysql}.
 
-To execute commands from a file, execute while logged in as the root user:
+To execute commands from a file execute while logged in as the root user:
 
 \begin{codebox}
 	SOURCE \emph{path\_to\_sql\_file};
 \end{codebox}
 
 where \emph{path\_to\_sql\_file} is the full (absolute or relative) path to the sql file.
-Per default, the created database will be named \textbf{medspace} and the read-user will be called \textbf{medspace\_client}. If you want edit the init.sql file, beware that the file is encoded in UTF-8. As we instructed mysql to use UTF-8 in every case, this encoding is required. Assure that your file editor saves the file in that encoding, too. Otherwise, it could come to conversion errors.
+By default the created database will be named \textbf{medspace} and the read-user will be called \textbf{medspace\_client}. If you want to edit the init.sql file, beware that the file is encoded in UTF-8. As we instructed mysql to use UTF-8 in every case, this encoding is required. Assure that your file editor saves the file in that encoding, too. Otherwise, it could come to conversion errors.
 
 
 \subsection{D2RMap}
 
-In this sub section, we want to look at the conversion from SQL to RDF. To do this, the wrapper implements a specialized version of the D2rMap language. D2rMap was designed by Chris Bizer and is  a declarative language to describe mappings between relational databases schemata and OWL/RDFS ontologies\cite{D2rMap_aDatabaseToRdfMappingLanguage}.
+In this sub section we want to look at the conversion from SQL to RDF. To do this the wrapper implements a specialized version of the D2rMap language. D2rMap was designed by Chris Bizer and is  a declarative language to describe mappings between relational databases schemata and OWL/RDFS ontologies\cite{D2rMap_aDatabaseToRdfMappingLanguage}.
 
-D2rMap is a general purpose language to export any SQL data to RDF. To better suit the needs for a dataspace wrapper, the language was changed. The custom language is called \emph{MeDSpace D2RMap} and its language specification is defined in \emph{MeDSpace\_D2RMap\_Language\_Specification.pdf} which is shipped with MeDSpace. But in general it is very similar to the original D2rMap.
+D2rMap is a general purpose language to export any SQL data to RDF. To better suit the needs for a dataspace wrapper the language was changed. The custom language is called \emph{MeDSpace D2RMap} and its language specification is defined in \emph{MeDSpace\_D2RMap\_Language\_Specification.pdf} which is shipped with MeDSpace. But in general it is very similar to the original D2rMap.\\
 
 The mapping is done as follows: At first the user specifies mappings in a config file. 
 The mapping process is visualized in figure \ref{D2rMappingProcessFigure}.
@@ -330,7 +330,7 @@ The mapping process is visualized in figure \ref{D2rMappingProcessFigure}.
 	\label{D2rMappingProcessFigure}
 \end{figure}
 
-Each mapping is used to create RDF instances of a certain type. The mapping contains a SQL query, that represents all the data, that is necessary to create the instances. Furthermore, in the mapping are columns specified, that are used to create unique IDs for the created RDF instances.
+Each mapping is used to create RDF instances of a certain type. The mapping contains a SQL query that represents all the necessary data for creating the instances. Furthermore, in the mapping are columns specified that are used to create unique IDs for the created RDF instances.
 The next step is to fetch the SQL data and group the record set according to the fore mentioned columns. Now, each row of the grouped record set represents a RDF instance, so the instances can be created by proceeding all rows. The last step is the creation of the property statements of the RDF instances. Important to note is the seperation of the last two steps. As all RDF instances exists before the properties are created, it is possible to reference other RDF instances (from the same mapping or another).
 
 An example of a mapping between a SQL query and RDF data definition is showed in listing \ref{D2RMapMappingExample}
@@ -352,14 +352,14 @@ An example of a mapping between a SQL query and RDF data definition is showed in
 
 \end{lstlisting}
 
-In the listing relational data for doctors working in an hospital is mapped to RDF. The rdf type is specified in line \textbf{3} and in line \textbf{4} the SQL query is specified, that should be executed to collect the data. 
+In the listing relational data for doctors working in a hospital is mapped to RDF. The rdf type is specified in line \textbf{3}, and in line \textbf{4} the SQL query is specified that should be executed to collect the data. 
 
-With the \emph{DataTypePropertyBridge} tag, rdf statements are defined, that have a literal value (e.g. the name of the doctor). 
-With \emph{ObjectPropertyBridge} rdf statements to other class mappings can be defined. In the above example, the doctor class map references a hospital class map, that is not shown in the listing. 
+The \emph{DataTypePropertyBridge} tag defines rdf statements that have a literal value (e.g. the name of the doctor). 
+With \emph{ObjectPropertyBridge} rdf statements to other class mappings can be defined. In the above example the doctor class map references a hospital class map that is not shown in the listing. 
 
-Names, that are enclosed by two '@@' specify a value of a column. E.g. with '@@firstname@@' is meant the value of the column \emph{firstname}, which is part of the sql query 'SELECT * FROM doctor'.
+Names that are enclosed by two '@@' specify a value of a column. E.g. with '@@firstname@@' is meant the value of the column \emph{firstname} which is part of the sql query 'SELECT * FROM doctor'.
 
-With the \emph{MetaData} one can specify tags for the rdf data. This is useful for the keyword search in MeDSpace, as additional domain knowledge can be stated, that should be searchable. Through that, it is possible to get doctor rdf data in the search result, if you search for 'person' or 'clinician'. 
+With the \emph{MetaData} one can specify tags for the rdf data. This is useful for the keyword search in MeDSpace, as additional domain knowledge can be stated that should be searchable. That way it is possible to get doctor rdf data in the search result if you search for 'person' or 'clinician'. 
 
 \subsection{Keyword search}
 
