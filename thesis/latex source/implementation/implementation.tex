@@ -363,25 +363,27 @@ With the \emph{MetaData} one can specify tags for the rdf data. This is useful f
 
 \subsection{Keyword search}
 
-After discussing the SQL to RDF mapping, we look at the keyword search, now:
-Mainly there are two possibilities, to implement a keyword search functionality:
+After discussing the SQL to RDF mapping we now look at the keyword search, now:
+Mainly there are two possibilities to implement a keyword search functionality:
 \begin{itemize}
-	\item {Construct a keyword search query in SQL and let the database answer the query.}
+	\item {Construct a keyword search query in SQL and let the database answer the query}
 	
 	\item {Use a keyword search engine that answers the query based on an external index}
 \end{itemize}
 
-At first glance, the first option sounds obviously simple, but after implementing it showed several disadvantages: SQL is not designed to provide search functionality based on keywords. SQL uses the \textbf{\emph{LIKE}} operator for pattern matching. But in order to do a Full-text search, the SQL Query executor cannot use any index resulting in poor query answer performance. Another problem of \emph{LIKE} is, that there is no way to define, that only whole words should be searched and not just sub word matching. Whole word matching is very important, as e.g. a user searching for data about male patients should not also get data about female patients.
-As a result, the \emph{LIKE} operator is not suitable for a proper keyword search service as expected to be provided by a dataspace wrapper. Several SQL database vendors provide often own solutions for Full-Text search queries. But these solutions have often other restrictions as e.g. only column fields having the datatype \emph{TEXT} (on MySQL) and the fields have to be specified as fulltext fields (in their creation or through an update operation), so that the SQL engine is able to create an index for it (at MySQL databases at least).\\
-A Wrapper could use vendor specific services but that would exclude other SQL database vendors, obviously.
+At first glance the first option sounds obviously simple, but after implementing it showed several disadvantages: SQL is not designed to provide search functionality based on keywords. SQL uses the \textbf{\emph{LIKE}} operator for pattern matching. But in order to do a Full-text search the SQL Query executor cannot use any index resulting in poor query answer performance. Another problem of \emph{LIKE} is that there is no way to define searching only whole words and not just sub word matching. Whole word matching is very important, as e.g. a user searching for data about male patients should not get also data about female patients.
+As a result the \emph{LIKE} operator is not suitable for a proper keyword search service as expected to be provided by a dataspace wrapper. Several SQL database vendors often provide own solutions for Full-Text search queries. But these solutions often have restrictions, as e.g. only column fields having the datatype \emph{TEXT} (on MySQL), and the fields have to be specified as fulltext fields (in their creation or through an update operation) so that the SQL engine is able to create an index for it (at MySQL databases at least).\\
+A Wrapper could use vendor specific services but obviously that would exclude other SQL database vendors.
 
 The second option doesn't rise the aforementioned issues of option one. For the Wrapper a keyword searcher was implemented using the fulltext search engine Apache Lucene. The advantage of using Lucene is it's high-performance and scaling of keyword searches over large data sets. Additionally it allows a fine granular configuration about the query construction and sorts automatically the query result by relevance (so called query result ranking). \\
-The major disadvantage of using lucene is that the SQL data have to be extracted and indexed outside the database. If the data changes or rows are added resp. deleted, the index has to be updated accordingly. The update process can be very complex, as not only new data has to be indexed resp. existing data has to be removed, but also data that references the deleted or new data that depends on it.\\
-A simpler but obviously slower solution is to reindex the whole data set. Reindexing the whole data set is only advised if updates occur not that often or if it is acceptable if the wrapper updates the index not instantly and thus provides potentially outdated data.
+The major disadvantage of using lucene is that the SQL data have to be extracted and indexed outside the database. If the data changes or rows are added resp. deleted, the index has to be updated accordingly. The update process can be very complex, as not only new data has to be indexed resp. existing data has to be removed, but also data that references the deleted, or new data that depends on it.\\
+A simpler but obviously slower solution is to reindex the whole data set. Reindexing the whole data set is only advised if updates occur not very often, or if acceptably, when the wrapper updates the index not instantly and thus provides potentially outdated data.
 
-The decision which method is more suitable depends primarily on the use case and the domain. As the project is designed to be used as a test suite for medical datasources and medical science, it is acceptable if the data is outdated a bit to some degree and will be updated at every database change. So, changes on the datasource haven't to be updated in near-realtime. \\
-Than, one of the design goals for this project was to design a SQL wrapper that can be used with arbitrary vendors. As a result, vendor specific services are not an option, too.\\
-Having this in mind, the preferred method for the keyword search functionality clearly is Apache Lucene Core, as the  advantages clearly outweigh its disadvantages. Thus, a full functional keyword searcher was implemented powered by Lucene.
+The decision which method is more suitable depends primarily on the use case and the domain. As the project is designed to be used as a test suite for medical datasources and medical science, it is acceptable if the data is outdated a bit to some degree and will be updated at every database change. So, changes on the datasource haven't to be updated in near-realtime.
+
+Then one of the design goals for this project was to design a SQL wrapper that can be used with arbitrary vendors. As a result, vendor specific services are not an option.
+
+All things considered the preferred method for the keyword search functionality clearly is Apache Lucene Core, as the advantages by far outweigh outweigh its disadvantages. Thus, a full functional keyword searcher was implemented powered by Lucene.
 
 
 \section{Image Wrapper}
