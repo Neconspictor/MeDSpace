@@ -205,16 +205,18 @@ In listing \ref{jaxbExample} you can see an extract of \emph{medspace-d2rmap-bin
 
 \section{Wrappers - General}
 
-This section targets to present implementation details, that is used by all wrapper implementations.
+This section targets to present implementation details that is used by all wrapper implementations.
 
-Each wrapper has a \emph{general-wrapper-config.xml} configuration file, that is located in the \emph{medspace} subfolder of the respective wrapper. This configuration file has to follow a specific structure that is defined in \emph{medspace-wrapper-config-specification.xsd}. This XSD file is used to validate the general wrapper configuration file. The XSD file can be found as a resource file in the \emph{commons} package: \\
+Each wrapper has a \emph{general-wrapper-config.xml} configuration file that is located in the \emph{medspace} subfolder of the respective wrapper. This configuration file has to follow a specific structure that is defined in \emph{medspace-wrapper-config-specification.xsd}. This XSD file is used to validate the general wrapper configuration file. The XSD file can be found as a resource file in the \emph{commons} package: \\
 \emph{\{medspace-root-folder\}/commons/src/main/resources}
 
-The following things can be configured through this configuration file:
+The following items can be configured through this configuration file:
 \begin{itemize}
-\item \textbf{Services}: Specifies which services the wrapper supports. The name of the service is thereby the relative path for calling the service. MeDSpace translate this then to an absolute URL by using the wrapper host address: the url would be \emph{\{wrapper-address\}/\{service-name\}}. Example: if the wrapper address is \emph{http://localhost:9300} and the service  name is \emph{keyword-search} then the resulting absolute URL would be: \emph{http://localhost:9300/keyword-search}. 
+\item \textbf{Services}: Specifies which services the wrapper supports. The name of the service is thereby the relative path for calling the service. MeDSpace translate this then to an absolute URL by using the wrapper host address, the url would be \emph{\{wrapper-address\}/\{service-name\}}. 
 
-It should be noted, that MeDSpace expects the services in \textbf{lower case}. So you shouldn't define service URLs that use upper case characters, as URLs are \textbf{case sensitive}.
+Example: if the wrapper address is \emph{http://localhost:9300} and the service  name is \emph{keyword-search}, then the resulting absolute URL would be: \emph{http://localhost:9300/keyword-search}. 
+
+It should be noted that MeDSpace expects the services in \textbf{lower case}. So you shouldn't define service URLs that use upper case characters, as URLs are \textbf{case sensitive}.
 Furthermore is expected from every wrapper to support the keyword-search service. So it is not explicitly necessary to state it in the configuration file.
 
 \item \textbf{IndexDirectoy}: The directory where index data should be stored. If the directory already contains indexed data, the wrapper will use it.
@@ -230,16 +232,16 @@ Furthermore is expected from every wrapper to support the keyword-search service
 
 \subsection{Indexing}
 
-On startup, the wrapper tries to fetch and index the data from the datasource for the keyword search functionality. If the index exists already (e.g. from a previous run), the wrapper won't reindex the data. But the wrapper provides a service for reindexing the data on runtime. The service can be found at \emph{/reindex}, uses no argument and http \emph{GET}.
+On startup the wrapper tries to fetch and index the data from the datasource for the keyword search functionality. If the index exists already (e.g. from a previous run), the wrapper won't reindex the data. But the wrapper provides a service for reindexing the data on runtime. The service can be found at \emph{/reindex}, uses no argument and http \emph{GET}.
 
 \subsection{Keyword search service}
 
 Each wrapper supports keyword search functionality. The corresponding service can be found under 
 \textbf{/keyword-search}, uses http GET, and needs the following arguments:
 \begin{itemize}
-\item \textbf{keywords}: A list of keywords to search for. The keywords have to separated by spaces or commas.
+\item \textbf{keywords}: A list of keywords to search for. The keywords have to be separated by spaces or commas.
 \item \textbf{useOr}: Specifies if the OR operator should be used instead of AND. This argument is optional. Its default value is \emph{false}.
-\item \textbf{attach}: Specifeis whether the result should be interpreted as a file attachment. This opetion is only relevant for browser. This argument is optional. Its default value is \emph{false}.
+\item \textbf{attach}: Specifies whether the result should be interpreted as a file attachment. This opetion is only relevant for browser. This argument is optional. Its default value is \emph{false}.
 \end{itemize}
 
 
