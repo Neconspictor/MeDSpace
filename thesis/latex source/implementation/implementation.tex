@@ -480,7 +480,7 @@ When the register is shutting down it saves all registered datasources into a lo
 
 \subsection{IO-Error policy}
 
-If a datasource doesn't respond anymore, e.g. the network is overloaded or the wrapper doesn't derigester itself for any reason every try to call it's services would inevitable result in a lot of io-errors, slowing down query query answering. Therefore we implemented an io-error policy that works as follows: for every registered datasource a counter for the happened io-errors is hold. Whenever an io-error occurs the counter gets increased. Should the counter exceed a specified limit, the datasource gets deregistered automatically. The default value of the io-error limit is 5, but this can be configured in the \emph{medspace-config.xml} from the \emph{medspace} project.
+If a datasource doesn't respond anymore, e.g. the network is overloaded or the wrapper doesn't deregister itself for any reason, every try to call it's services would inevitable result in a lot of io-errors, slowing down query answering. Therefore we implemented an io-error policy that works as follows: for every registered datasource a counter for the happened io-errors is hold. Whenever an io-error occurs the counter gets increased. Should the counter exceed a specified limit, the datasource gets deregistered automatically. The default value of the io-error limit is 5, but this can be configured in the \emph{medspace-config.xml} from the \emph{medspace} project.
 
 \section{GUI}
 In this section is explained how the GUI of MeDSpace was created.
