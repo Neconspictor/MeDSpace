@@ -389,38 +389,38 @@ All things considered the preferred method for the keyword search functionality 
 \section{Image Wrapper}
  
 In this section details about the implementation of the image wrapper are presented. 
-At first we want to look at the data the image wrapper is managing. Then, we will discuss how the data is indexed, mapped, and converted to RDF. Finally we present the multimedia file download service, that allows others to access the source files of DDSM cases.
+At first we want to look at the data the image wrapper is managing. Then we will discuss how the data is indexed, mapped, and converted to RDF. Finally we present the multimedia file download service that allows others to access the source files of DDSM cases.
 
 \subsection{DDSM}
 
-The data managed by the image wrapper are DDSM case file, that are publicly available\footnote{\url{http://marathon.csee.usf.edu/Mammography/Database.html}}.
-DDSM is a resource for mammographic image analysis and it contains data about approximately 2500 cases \cite{DDSM}. As one case needs relative much disk space, we decided to use only a subset of 50 cases, that take altogether 3.7 GB.
+The data managed by the image wrapper are DDSM case file that are publicly available\footnote{\url{http://marathon.csee.usf.edu/Mammography/Database.html}}.
+DDSM is a resource for mammographic image analysis and it contains data about approximately 2500 cases \cite{DDSM}. As one case needs relative much disk space, we decided to use only a subset of 50 cases that take altogether 3.7 GB.
 
 In the following we will touch upon the content of a case, but for more details, please consult the specification of a DDSM case \cite{DDSM_CASE_SPEC}. 
 
-For each study, a case contains two LJPEG images for each breast (so 4 images in total) and related patient information. LJPEG is a very old image format, that isn't used anymore that often today. In fact, we didn't found a tool, that could display it. Thus, we decided to convert the images to PNG. Therefore we used Sharma's \emph{DDSMUtility} \cite{DDSM_UTILITY}.
+For each study a case contains two LJPEG images for each breast (so 4 images in total) and related patient information. LJPEG is a very old image format that nowadays isn’t used very often anymore. In fact, we didn't found a tool, that could display it. Thus, we decided to convert the images to PNG. Hence, we used Sharma's \emph{DDSMUtility} \cite{DDSM_UTILITY}.
 
-A case also contais a 16\_PGM image, that is an overview of the whole case. But the 16\_PGM image is not really needed and as 16\_PGM is a really old image format, we didn't used it.
+A case also contains a 16\_PGM image that is an overview of the whole case. But the 16\_PGM image is not really needed and as 16\_PGM is a really old image format, we didn't used it.
 
-Each case has a ics file, that holds general information about the case. It also specifies, if a so-called overlay is defined for each breast image. 
+Each case has a ICS file that holds general information about the case. It also specifies if a so-called overlay is defined for each breast image. 
 
-An overlay files are used to specify found abnormalities in the breast images. An overlay file contains the number of found abnormalities, the type of each abnormality and defines outline boundaries which specify where the abnormality can be found in the source image.
+Overlay files are used to specify found abnormalities in the breast images. An overlay file contains the number of found abnormalities, the type of each abnormality, and defines outline boundaries which specify where the abnormality can be found in the source image.
 
 \subsection{RDF conversion}
 
-The data for each DDSM case is collected and useful data is extracted to create java objects from it. We created java classes for the ics file, overlay file, abnormality, and the lesion types calcification and mass. The content of each java object, that is created using the aforementioned method, is indexed and stored locally. 
+The data for each DDSM case is collected and useful data is extracted to create java objects from it. We created java classes for the ics file, overlay file, abnormality, and the lesion types, calcification and mass. The content of each java object, that is created using the aforementioned method, is indexed and stored locally. 
 
-When a keyword search query is executed, the searching module queries the indexed documents. Each document is assigned to a specific java class in order to know that a document represent an ics file, an overlay file, etc. .  
+When a keyword search query is executed, the searching module queries the indexed documents. Each document is assigned to a specific java class in order to know that a document represents an ICS file, an overlay file, etc. .  
 
-We defined for each type a RDF mapping, that is specified in the configuration file \emph{medspace-ddsm-mapping.xml}. The configuration file has a specification file \emph{medspace-ddsm-mapping-specification.xsd}, so that the mapping types can be auto-generated using JAXB.
+We defined for each type a RDF mapping that is specified in the configuration file \emph{medspace-ddsm-mapping.xml}. The configuration file has a specification file \emph{medspace-ddsm-mapping-specification.xsd}, so that the mapping types can be auto-generated using JAXB.
 
 With the mapping configuration it is possible to generate RDF data from each document.
 
 \subsection{File downloading service}
 
-For the exported rdf types \emph{IcsFile} and \emph{Overlay}, which represent an ics file resp. overlay file of a DDSM case, we defined statements, that point to a URL location of the source file. We decided to implement a service on the image wrapper, that allows others to download these image files. 
+For the exported rdf types \emph{IcsFile} and \emph{Overlay}, which represent an ics file resp. overlay file of a DDSM case, we defined statements that point to a URL location of the source file. We decided to implement a service on the image wrapper that allows others to download these image files. 
 
-In listing \ref{FileDonwloadResultExample} you can see an example of created RDF data for a breast image. The highlighted URL specifies the source image. In this example, the image wrapper is running at localhost on port 9300, and as stated before, by following the link (e.g. in the browser) it would possible to download the source image.
+In listing \ref{FileDonwloadResultExample} you can see an example of created RDF data for a breast image. The highlighted URL specifies the source image. In this example the image wrapper is running at localhost on port 9300, and as stated before, by following the link (e.g. in the browser) it would be possible to download the source image.
 
 \begin{lstlisting}[style=RdfCodeStyle, caption=image RDF conversion example, label=FileDonwloadResultExample]
 <http://www.medspace.com/images/ddsm/image#cancers/cancer_01/case0001/C_0001_1.LEFT_CC.png>
@@ -431,15 +431,15 @@ image:source \["http://localhost:9300/get-file?relativePath=cancers/cancer_01/ca
 
 \section{PDF Wrapper}
 In this section details about the implementation of the PDF wrapper are presented.
-At first we look at what data is managed by this wrapper. Then we look at how the data is indexed, mapped and converted to RDF. Finally we present the multimedia file download service, that allows others to access the pdf files.
+At first we look at what data is managed by this wrapper. Then we take a closer look at how the data is indexed, mapped, and converted to RDF. Finally we present the multimedia file download service, that allows others to access the pdf files.
 
 \subsection{PDF Data}
 
-Actually it was planned to use existing PDF files, but we didn't found suitable pdf files that are publicly available and contain healthcare data. As a result, we generated our own PDF files. For that we used again Schmiedbauer's data set: we wrote a little pdf generation program, that establishes a JDBC connection to the MySQL database and fetches some data. From that data we created PDF files. For the PDF generation we used the framework Apache PDFBox \cite{PDFBox}.  
+Actually it was planned to use existing PDF files, but we didn't found suitable PDF files that are publicly available and contain healthcare data. As a result, we generated our own PDF files. For this we used again Schmiedbauer's data set and wrote a little PDF generation program that establishes a JDBC connection to the MySQL database and fetches some data. From that data we created PDF files. For the PDF generation we used the framework Apache PDFBox \cite{PDFBox}.  
 
 \subsection{RDF conversion}
 
-On startup the PDF wrapper extracts the content from the pdf files and index it. This way it is possible to do a full-text search over all pdf files. 
+On startup the PDF wrapper extracts the content from the pdf files and indexes it. This way it is possible to do a full-text search over all pdf files. 
 
 The mapping to RDF is straight forward: Each pdf file is mapped to a rdf type called 'PdfFile'. The specification of this type is done in the file \emph{medspace-pdf-wrapper-config-specification.xsd} which is used to create auto-generated java classes with JAXB. Also it is used to validate the mapping configuration file. The definition of the mapping is done in the corresponding configuration file \emph{medspace-pdf-wrapper-config.xml}. Listing \ref{PDFWrapperMappingConfig} shows an extract of the configuration file:
 
@@ -452,13 +452,13 @@ The mapping to RDF is straight forward: Each pdf file is mapped to a rdf type ca
 \end{lstlisting}
 
 In line \textbf{1} the directory is specified, where all pdf files are located.
-Starting from line \textbf{2} is the definition of the RDF type \emph{PdfFile}, which contains the source file location and (optional) meta data tags (as the other wrappers use it).
+Starting from line \textbf{2} is the definition of the RDF type \emph{PdfFile} which contains the source file location and (optional) meta data tags (as the other wrappers use it).
 
 \subsection{File downloading service}
 
 This service works similar like the one of the image wrapper: every PDF file that is mapped to RDF is assigned a download link so that it can be downloaded from external programs.
 
-Every pdf file gets assigned an id so that the downloading service can distinguish and locate them. The id is thereby the file path in relation to the pdf file root directory, that is specified in the configuration file.
+Every pdf file gets assigned an ID so that the downloading service can distinguish and locate them. The ID thereby is the file path in relation to the pdf file root directory that is specified in the configuration file.
 
 \section{Global MeDSpace}
 
@@ -466,9 +466,9 @@ In this section implementation details of the global MeDSpace application (\emph
 
 
 \subsection{Query Caching}
-In this section details about the implementation of the query caching, a functionality that is implemented in the \emph{Query Executor} module.
+In this passage details about the implementation of the query caching are explained, a functionality that is implemented in the \emph{Query Executor} module.
 
-For each keyword search query, we created unique strings in order to avoid caching duplicates.
+For each keyword search query we created unique strings in order to avoid caching duplicates.
 The algorithm works as follows: the keywords are transformed to lower case, trimmed, lexically sorted, and finally duplicates are deleted.
 For actually caching the query, we used EHCache \cite{EHCache}. 
 It should be noted that only the queries itself are cached by EHCache. The result of the query is stored by the \emph{Data Collector} using a \emph{NativeStore}\footnote{\url{http://docs.rdf4j.org/javadoc/2.2/org/eclipse/rdf4j/sail/nativerdf/NativeStore.html}} from the RDF4J framework.
@@ -476,7 +476,7 @@ It should be noted that only the queries itself are cached by EHCache. The resul
 \subsection{Datasource storing}
 In this section details about the implementation of the \emph{Register} module are presented.
 
-When the register is shutting down it saves all registered datasources into a local file \emph{datasources.json} in the current working directory. The datasources are serialized to JSON in this file. On startup, if MeDSpace finds the aforementioned file, it will auto-register them without contacting the respective datasources.
+When the register is shutting down it saves all registered datasources into a local file \emph{datasources.json} in the current working directory. The datasources are serialized to JSON in this file. If MeDSpace finds the aforementioned file, it will auto-register them on startup without contacting the respective datasources.
 
 \subsection{IO-Error policy}
 
@@ -485,9 +485,9 @@ If a datasource doesn't respond anymore, e.g. the network is overloaded or the w
 \section{GUI}
 In this section is explained how the GUI of MeDSpace was created.
 
-For dynamic (html) page creation we used Play's template engine \emph{Twirl} \footnote{\url{https://github.com/playframework/twirl}}. The templates are normal text files, that are enriched by Scala code \cite{PlayJavaTemplates}.
+For dynamic (html) page creation we used Play's template engine \emph{Twirl} \footnote{\url{https://github.com/playframework/twirl}}. The templates are normal text files that are enriched by Scala code \cite{PlayJavaTemplates}.
 
-For styling the html content, we used SASS, an extension of CSS, that is used to generate CSS files \cite{SASS}. In order to auto-compile the SASS files, we've used the \emph{sbt-sassify} plugin \footnote{\url{https://github.com/irundaia/sbt-sassify}}. 
+For styling the html content, we used SASS, an extension of CSS that is used to generate CSS files \cite{SASS}. In order to auto-compile the SASS files we've used the \emph{sbt-sassify} plugin \footnote{\url{https://github.com/irundaia/sbt-sassify}}. 
 
 The look of the search page is illustrated in figure \ref{MeDSpaceSearchPage}:
 
@@ -499,9 +499,9 @@ The look of the search page is illustrated in figure \ref{MeDSpaceSearchPage}:
 	\label{MeDSpaceSearchPage}
 \end{figure}
 
-The search page contains a blue header with the writing 'MeDSpace - Testsuite for Medical Information'. Then the navigation menu comes, which contains buttons to navigate to the search and datasources page. For each button exists a tooltip describing the respective page. An example of this tooltips is illustrated in figure \ref{MeDSpaceDataTooltip}. 
+The search page contains a blue header with the writing 'MeDSpace - Testsuite for Medical Information'. Then the navigation menu follows which contains buttons to navigate to the search and datasources page. For each button exists a tooltip describing the respective page. An example of this tooltips is illustrated in figure \ref{MeDSpaceDataTooltip}. 
 
-In the page body is an input field allowing a user to state a keyword search query. The user can state if he wishes to use the OR operator instead of the AND operator, and he can state whether he wants the rdf query result to be returned as a file. Both this options can be activated by using the check boxes under the text input field. With the \emph{Search} button the query gets executed.
+In the page body is an input field allowing a user to state a keyword search query. The user can state if he wishes to use the OR operator instead of the AND operator, and he can state whether he wants the rdf query result to be returned as a file. Both options can be activated by using the check boxes under the text input field. With the \emph{Search} button the query gets executed.
 
 \begin{figure}[H]
 	\begin{center}
@@ -524,4 +524,4 @@ The \emph{Data Sources} page lists all registered datasources, as illustrated in
 
 \textcolor{red}{TODO: Better image}
 
-For each datasource is listed its URL, a description of it, what services it provides, when it registered itself and how much io errors occurred since its registration.
+For each datasource is listed its URL, a description of it, what services it provides, when it registered itself, and how much io errors occurred since its registration.
