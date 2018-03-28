@@ -33,6 +33,9 @@ libraryDependencies += "dnsjava" % "dnsjava" % "2.1.8"
 
 libraryDependencies += ws
 
+// Connector/J
+libraryDependencies +=	"mysql" % "mysql-connector-java" % "5.1.46"
+
 // https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime
 libraryDependencies += "org.eclipse.rdf4j" % "rdf4j-runtime" % "2.2.2"
 

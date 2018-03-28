@@ -23,9 +23,7 @@ scalaVersion := "2.12.2"
 
 // library dependencies. (orginization name) % (project name) % (version)
 libraryDependencies ++= Seq(
-	// Connector/J
-	"mysql" % "mysql-connector-java" % "5.1.42",
-
+	
 	"com.h2database" % "h2" % "1.4.195",
 
 // Logging

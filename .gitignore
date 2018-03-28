@@ -19,6 +19,7 @@
 *.iws
 *.ipr
 *.idea
+*.csv
 
 
 //D2Rmap build and distribution files

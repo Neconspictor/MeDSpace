@@ -14,12 +14,12 @@
 	<!--poolSize="10" -->
 	<d2r:DBConnection
 			jdbcDriver="com.mysql.jdbc.Driver"
-			jdbcDSN="jdbc:mysql://localhost:3306/medspace_test?useSSL=false"
+			jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"
 			poolSize="10"
 	>
 
 		<!-->DBAuthentification is used to authenticate in the database with username and password<-->
-		<d2r:DBAuthentification username="medspace_client_test" password="k4N!rT"/>
+		<d2r:DBAuthentification username="medspace_client" password="k4N!rT"/>
 
 		<!--database specific properties-->
 		<d2r:DataSourceProperty name="cachePrepStmts" value="true"/>

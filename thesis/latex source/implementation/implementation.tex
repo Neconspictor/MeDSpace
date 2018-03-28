@@ -58,17 +58,24 @@ Each local datasource has its own wrapper. The wrapper is similar to the wrapper
 
 Thereby the \emph{SQL Wrapper} is responsible for wrapping a relational database containing data created with the \emph{Patient Data Generation Framework} (PDGF) tool created by Schmiedbauer \cite{SchmidbauerBachelorThesis}. The \emph{Image Wrapper} provides access to case files of \emph{Digital Database for Screening Mammography} (DDSM)\cite{DDSM} and the \emph{PDF Wrapper} maintains a set of pdf files that were created specific for this system: the pdf files contain data based on Schmidbauer's test data.
 
-\section{Register}
+
+\section{MeDSpace server}
+
+We decided to create a server application that integrates global functionality of the MeDSpace system. This functionality is separated into modules. Our design goal was to design the modules in such a way that the global MedSpace server can be distributed in future iterations. 
+Therefore the modules have to communicate by using REST services.
+In the following we will present this modules.
+
+\subsection{Register}
 The Register holds a list of active datasources that can be queried. Therefore it provides functionality so that wrappers can register and deregister a datasource. In order to know what services are provided by each datasource, the register also keeps records of these services. This allows other modules to use services of any datasource.
-\section{Query Executor}
+\subsection{Query Executor}
 The task of the \emph{Query Executor} is to accept a given keyword search query, transform this query to a service call, and instructs the \emph{Data Collector} module to call the keyword search service for each registered datasource. To know which datasources are registered, this module communicates with the \emph{Register} module. After the \emph{Data Collector} has collected the query results of all datasources the \emph{Query Executor} adds the search query to its query cache and returns the collected search result to the caller who requested the \emph{Query Executor}. On the next request the cached query result will be returned without querying the datasources if no 'cache miss' has been occurred.
 
 Note: It is not the task of the \emph{Query Executor} to actually collect the search result from the datasources. That is done by the \emph{Data Collector}. It does only instruct the \emph{Data Collector} to do the collecting.
 
-\section{Data Collector}
+\subsection{Data Collector}
 The \emph{Data Collector} provides services that allow to query a specific  datasource and store the query result into a specific RDF repository which is maintained by this module. Furthermore the \emph{Data Collector} allows other modules to create and remove a repository that is coupled with a specific search query. This allows the \emph{Query Executor} to merge the search results of all datasources into a seperate RDF repository. Then, again the \emph{Query Executor} is able to delete the repository if the associated and cached query result should be deleted. 
 
-\section{Search Page}
+\subsection{Search Page}
 The Search Page represents the \emph{graphical user interface} (GUI) so that a user can easily interact with the MeDSpace system using a common browser. It provides a page for stating and sending keyword searches, allows the user to display the search result in the browser or download it as a file. Furthermore the search page allows the user to inspect the list of the current registered datasources and to delete the query cache.
 
 \chapter{Implementation}
@@ -207,14 +214,15 @@ In listing \ref{jaxbExample} you can see an extract of \emph{medspace-d2rmap-bin
 
 This section targets to present implementation details that is used by all wrapper implementations.
 
-Each wrapper has a \emph{general-wrapper-config.xml} configuration file that is located in the \emph{medspace} subfolder of the respective wrapper. This configuration file has to follow a specific structure that is defined in \emph{medspace-wrapper-config-specification.xsd}. This XSD file is used to validate the general wrapper configuration file. The XSD file can be found as a resource file in the \emph{commons} package: \\
-\emph{\{medspace-root-folder\}/commons/src/main/resources}
+Each wrapper has a \emph{general-wrapper-config.xml} configuration file that is located in the \emph{bin/medspace} subfolder of the respective wrapper. This configuration file has to follow a specific structure that is defined in \emph{medspace-wrapper-config-specification.xsd}. This XSD file is used to validate the general wrapper configuration file. The XSD file is packaged in the jar libraries of the wrappers, but the it can be found as a resource file in the \emph{commons} package: \\
+\emph{\{medspace-root-folder\}/project-sources/commons/src/main/resources}
 
-The following items can be configured through this configuration file:
+The following items can be configured through the general wrapper configuration file:
 \begin{itemize}
 \item \textbf{Services}: Specifies which services the wrapper supports. The name of the service is thereby the relative path for calling the service. MeDSpace translate this then to an absolute URL by using the wrapper host address, the url would be \emph{\{wrapper-address\}/\{service-name\}}. 
 
-Example: if the wrapper address is \emph{http://localhost:9300} and the service  name is \emph{keyword-search}, then the resulting absolute URL would be: \emph{http://localhost:9300/keyword-search}. 
+Example: if the wrapper address is \emph{http://localhost:9300} and the service  name is \emph{keyword-search}, then the resulting absolute URL would be:\\
+\emph{http://localhost:9300/keyword-search}. 
 
 It should be noted that MeDSpace expects the services in \textbf{lower case}. So you shouldn't define service URLs that use upper case characters, as URLs are \textbf{case sensitive}.
 Furthermore is expected from every wrapper to support the keyword-search service. So it is not explicitly necessary to state it in the configuration file.
@@ -244,6 +252,12 @@ Each wrapper supports keyword search functionality. The corresponding service ca
 \item \textbf{attach}: Specifies whether the result should be interpreted as a file attachment. This opetion is only relevant for browser. This argument is optional. Its default value is \emph{false}.
 \end{itemize}
 
+\subsection{Starting a wrapper}
+
+Before the wrappers are started the \emph{medspace} server should be started.
+Each wrapper has start scripts for Windows and Unix systems that can be found at \\
+\emph{\{medspace-root-folder\}/\{wrapper\}/bin }. It is recommended to use them so that all gets properly configured (library paths, etc.).
+
 
 \section{SQL Wrapper}
 
@@ -261,27 +275,31 @@ Before discussing how to perform the conversion from SQL to RDF, we want to look
 To setup a MySQL datasource get a recent stable MySQL community server\footnote{\url{https://www.mysql.de/downloads/}} 
 and install it for your target platform. Additionally you will need the Connector/J components, the official JDBC driver for MySQL. 
 
-At time of writing the most recent stable versions are the community server 5.7.17 and the Connector/J 5.1.41. These versions are used for the thesis project and all following commands are related on them. If you're using 
+At time of writing the most recent stable versions are the community server 5.7.21 and the Connector/J 5.1.46. These versions are used for the thesis project and all following commands are related on them. If you're using 
 different versions, assure that the instructions are adapted properly. As a detailed installation instruction for all supported platforms would break the mold, the reader is encouraged to consult the official 
 manual\footnote{\url{https://dev.mysql.com/doc/}}. 
 Assure that the MySQL binary folder is integrated into your class path, so that you can access it globally in a shell/command line. Although not necessary, it is recommended for security reasons 
 to set a password for the root user\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/default-privileges.html} , \url{https://dev.mysql.com/doc/refman/5.7/en/resetting-permissions.html}}. 
 After installing the server, do postinstallation setup and testing\footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/postinstallation.html}}. 
 
-To support UTF-8 set in your my.cnf 
+To support UTF-8 add the following settings to your my.cnf (or my.ini):
 
 \begin{codebox}
-	default-character-set = utf8
+\textbf{[client]}\\
+\noindent\hspace*{4mm}  default-character-set = utf8mb4
+
+\textbf{[mysql]}\\
+\noindent\hspace*{4mm}  default-character-set = utf8mb4
+
+\textbf{[mysqld]}\\
+\noindent\hspace*{4mm}  skip-character-set-client-handshake\\
+\noindent\hspace*{4mm}  collation-server= utf8mb4\_unicode\_ci\\
+\noindent\hspace*{4mm}  character-set-server= utf8mb4\\
 \end{codebox}
 
-in the mysql section and
+Note that we use the character set \emph{utf8mb4} instead of \emph{utf8}. The reason is that we default \emph{utf8} character set in MySQL actually uses only up to 3 bytes. Thus this character set represents only a subset of unicode. For more information about this topic we encourage you to read a blog post\footnote{\url{https://mathiasbynens.be/notes/mysql-utf8mb4}} of Mathias Bynens, a developer from Google and a specialist regarding Unicode.
 
-\begin{codebox}
-	character-set-server=utf8\newline
-	collation\-server=utf8\_general\_ci
-\end{codebox}
-
-in the mysqld section. Then restart the mysqld daemon. In the following it is assumed that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system (before Windows 10) the command line isn't using UTF-8 by default
+Then restart the mysqld daemon. In the following it is assumed that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system (before Windows 10) the command line isn't using UTF-8 by default
 \footnote{To set the encoding to UTF-8 on the windows command line change the active code page to 65001 and set 'Lucida Console' as the displaying font. In contrast to the font the code page is only active for the current console session. But you can automate this command with a AutoRun setting. For more information see \url{https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433}}.  
 Now try to connect to the database as the user root:
 
@@ -294,14 +312,34 @@ If you've done all right, you should be connected to the database after entering
 The next step is to validate that UTF-8 is indeed continuously used. Execute:
 
 \begin{codebox}
-	SHOW VARIABLES LIKE 'char\%';
+	SHOW VARIABLES WHERE Variable\_name LIKE \textquotesingle{}character\textbackslash\_set\textbackslash\_\%\textquotesingle{} OR Variable\_name LIKE \textquotesingle{}collation\%\textquotesingle{};
 \end{codebox}
 
-and check that the variables \emph{character\_set\_client}, \emph{character\_set\_connection}, \emph{character\_set\_database}, \emph{character\_set\_results}, \emph{character\_set\_server} and \emph{character\_set\_system} are all set to utf8.
+
+The output should be as follows:
+
+\begin{lstlisting}[style=RdfCodeStyle, caption=Expected character set output, label=MySQLCharacterTest]
++--------------------------+--------------------+
+| Variable_name            | Value              |
++--------------------------+--------------------+
+| character_set_client     | utf8mb4            |
+| character_set_connection | utf8mb4            |
+| character_set_database   | utf8mb4            |
+| character_set_filesystem | binary             |
+| character_set_results    | utf8mb4            |
+| character_set_server     | utf8mb4            |
+| character_set_system     | utf8               |
+| collation_connection     | utf8mb4_unicode_ci |
+| collation_database       | utf8mb4_unicode_ci |
+| collation_server         | utf8mb4_unicode_ci |
++--------------------------+--------------------+
+10 rows in set (0.00 sec)
+\end{lstlisting}
+Note that all variables except \emph{character\_set\_filesystem} and \emph{character\_set\_system} are set to use \emph{utf8mb4}.
 Basically these variables are used to interpret and write data consistently in UTF-8. More information about the stated variables can be found on the manual
 \footnote{\url{https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html\#sysvar_character_set_client}}.
 
-The next step is to initialize the data source with a database and some content. Further we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few rights as possible' we grant this user only reading rights for fetching data. The commands for initializing the data source and creating a read-user are in the file \textbf{init\_mysql.sql} which is located in the appendix data in the folder \textbf{implementation/SQL/mysql}.
+The next step is to initialize the data source with a database and some content. Further we need a user which is used by the wrapper to communicate with the data source. The wrapper needs no writing rights and indeed we don't want it to change the data, so following the security rule 'As few rights as possible' we grant this user only reading rights for fetching data. The commands for initializing the data source and creating a read-user are in the file \textbf{init\_mysql.sql} which is located in the appendix data in the folder \textbf{SqlWrapper/SQL/MySQL}.
 
 To execute commands from a file execute while logged in as the root user:
 
@@ -310,7 +348,8 @@ To execute commands from a file execute while logged in as the root user:
 \end{codebox}
 
 where \emph{path\_to\_sql\_file} is the full (absolute or relative) path to the sql file.
-By default the created database will be named \textbf{medspace} and the read-user will be called \textbf{medspace\_client}. If you want to edit the init.sql file, beware that the file is encoded in UTF-8. As we instructed mysql to use UTF-8 in every case, this encoding is required. Assure that your file editor saves the file in that encoding, too. Otherwise, it could come to conversion errors.
+Ensure that you \textbf{don't} have created a \textbf{medspace} database by yourself since \emph{init\_mysql.sql} will \textbf{drop} (delete) the database. The created read-user will be called\\ 
+\textbf{medspace\_client}. If you want to edit the init\_mysql.sql file, beware that the file is encoded in UTF-8. As we instructed mysql to use UTF-8 in every case, this encoding is required. Assure that your file editor saves the file in that encoding, too. Otherwise, it could come to conversion errors.
 
 
 \subsection{D2RMap}
@@ -460,9 +499,14 @@ This service works similar like the one of the image wrapper: every PDF file tha
 
 Every pdf file gets assigned an ID so that the downloading service can distinguish and locate them. The ID thereby is the file path in relation to the pdf file root directory that is specified in the configuration file.
 
-\section{Global MeDSpace}
+\section{MeDSpace server}
 
-In this section implementation details of the global MeDSpace application (\emph{Query Executor}, \emph{Data Collector}, \emph{Register}) are presented.
+In this section implementation details of the MeDSpace server application are presented. The MeDSpace server combines all gloabal functionality of the MeDSpace system. This includes the modules \emph{Query Executor}, \emph{Data Collector}, and \emph{Register}.
+
+\subsection{Starting the MeDSpace server}
+
+There are start scripts for Windows and Unix systems that can be found at \\
+\emph{\{medspace-root-folder\}/medspace/bin }. It is recommended to use them so that all gets properly configured (library paths, etc.).
 
 
 \subsection{Query Caching}

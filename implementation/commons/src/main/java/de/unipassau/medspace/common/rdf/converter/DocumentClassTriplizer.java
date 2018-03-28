@@ -62,8 +62,8 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
 
   /**
    * TODO
-   * @param adapter
-   * @param document
+   * @param adapter TODO
+   * @param document TODO
    * @return
    */
   protected List<Triple> convert(DocumentAdapter<?, DocType, FieldType> adapter, DocType document) {
