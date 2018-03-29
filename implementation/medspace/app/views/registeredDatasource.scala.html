@@ -1,0 +1,51 @@
+@import de.unipassau.medspace.common.register.Datasource
+@import de.unipassau.medspace.common.register.DatasourceState
+
+@(datasource: Datasource, datasourceState: DatasourceState)
+
+<div class="RegisteredDatasource">
+    <div class="RegisteredDatasourceHeader center-block">Datasource</div>
+    <ul>
+        <dl class="RegisteredDatasourcePropertyField">
+            <dt>URI:</dt>
+            <dd><a target="_blank" href="@datasource.getUrl()">
+                @datasource.getUrl()
+            </a></dd>
+        </dl>
+        <dl class="RegisteredDatasourcePropertyField">
+            <dt>Description:</dt>
+            <dd>
+                @datasource.getDescription()
+            </dd>
+        </dl>
+        <dl class="RegisteredDatasourcePropertyField">
+            <dt>Services:</dt>
+            <dd>
+                <input class="spoilerbutton button grayGradient" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';">
+                <div class="spoiler">
+                    <div class="spoilerContent">
+                        <ul>
+                            @for(service <- datasource.getServices()) {
+                                <li>
+                                @service.getName()
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </dd>
+        </dl>
+        <dl class="RegisteredDatasourcePropertyField">
+            <dt>Last update:</dt>
+            <dd>
+                @datasourceState.getTimestamp()
+            </dd>
+        </dl>
+        <dl class="RegisteredDatasourcePropertyField">
+            <dt>IO Errors:</dt>
+            <dd>
+                @datasourceState.getIoErrors()
+            </dd>
+        </dl>
+    </ul>
+</div>

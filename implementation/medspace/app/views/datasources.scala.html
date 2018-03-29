@@ -26,63 +26,21 @@
                 <li class="ToolTip" data-tooltip="Browse dataspace by keywords"><a class="menuItem"
                 href="@routes.MeDSpaceController.gui()">Search</a>
                 </li>
-                <li class=""><a class="menuItem ToolTip" data-tooltip="Browse available data sources" href="#">Data Sources</a>
+                <li class=""><a class="menuItem ToolTip" data-tooltip="Browse available datasources" href="#">Datasources</a>
                 </li>
             </ul>
         </div>
     </header>
 
 
-        <!--<div class="verticalContentSeparatorSmall"></div>-->
     <div class= "centeredBlock">
-
-        <h2>Registered Datasources</h2>
-
-        <ul>
+        <ul class="RegisteredDatasourceList">
         @for(datasource <- datasources) {
             <li>
-                <h4>URI</h4>
-                @datasource.getUrl()
-                <h4>Description</h4>
-                @datasource.getDescription()
-                <h4>Services</h4>
-                <ul>
-                @for(service <- datasource.getServices()) {
-                    <li>
-                    @service.getName()
-                    </li>
-                }
-                </ul>
-                <h4>Last update</h4>
-                @modifiedMap.get(datasource).getTimestamp()
-                <h4>IO Errors</h4>
-                @modifiedMap.get(datasource).getIoErrors()
+              @registeredDatasource(datasource,
+                                    modifiedMap.get(datasource))
             </li>
         }
-        </ul>
-    </div>
-
-    <div class= "centeredBlock ResultPage">
-        <ul class="ResultList">
-            <li class="SearchResult">
-                <ul>
-                    <li class="SearchResultEntry"><h4>URI:</h4> <a href="#">url</a></li>
-                    <li class="SearchResultEntry"><h4>Description:</h4> bla bla bla</li>
-                    <li class="SearchResultEntry"><h4>Services:</h4>
-                        <input class="spoilerbutton button grayGradient" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';">
-                        <div class="spoiler">
-                            <div class="spoilerContent">
-                                <ul>
-                                    <li>keyword-search</li>
-                                    <li>another-service</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="SearchResultEntry"><h4>Last update</h4> 2018-03-19 23:54:14.887</li>
-                    <li class="SearchResultEntry"><h4>IO Errors:</h4> 0 </li>
-                </ul>
-            </li>
         </ul>
     </div>
 }

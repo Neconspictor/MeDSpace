@@ -107,9 +107,9 @@ h1 {
 
 
 .centeredBlock {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 50em;
+    margin: auto;
+    display: table;
+    //max-width: 50em;
 }
 
 .queryField {
@@ -460,4 +460,57 @@ h1 {
     display: table-cell;
     border-bottom: 1px solid black;
     padding-left: 0.3em;
+}
+
+
+.RegisteredDatasourceList {
+  display:table-row;
+  overflow:auto;
+  list-style: none;
+}
+
+
+/**
+ * Search results
+ */
+.RegisteredDatasource {
+  display:block;
+  list-style: none;
+  border: 1px solid black;
+  -webkit-border-radius: 0.3em;
+  -moz-border-radius : 0.3em;
+  border-radius : 0.3em;
+  padding: 0.5em;
+  margin-bottom: 1em;
+  /*overflow: scroll;*/
+  overflow: hidden;
+  font-size: medium;
+
+}
+
+.RegisteredDatasourceHeader {
+  list-style: none;
+  font-weight: bold;
+  font-size: 120%;
+  margin: auto;
+  display: table;
+}
+
+.RegisteredDatasourcePropertyField {
+  list-style: none;
+  padding: 5px;
+  display: table-row;
+
+  dt {
+    display: table-cell;
+    float: left;
+    font-weight: bold;
+    padding-right: 10px;
+  }
+
+  dd {
+    display: table-cell;
+    width: 20em;
+    padding-left: 10px;
+  }
 }
