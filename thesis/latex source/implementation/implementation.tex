@@ -58,6 +58,10 @@ Each local datasource has its own wrapper. The wrapper is similar to the wrapper
 
 Thereby the \emph{SQL Wrapper} is responsible for wrapping a relational database containing data created with the \emph{Patient Data Generation Framework} (PDGF) tool created by Schmiedbauer \cite{SchmidbauerBachelorThesis}. The \emph{Image Wrapper} provides access to case files of \emph{Digital Database for Screening Mammography} (DDSM)\cite{DDSM} and the \emph{PDF Wrapper} maintains a set of pdf files that were created specific for this system: the pdf files contain data based on Schmidbauer's test data.
 
+\subsection{File downloading service}
+
+Image Wrapper and PDF Wrapper both provide access to data coming from files. We decided that these wrappers add source URLs to the exported data. Additionally theses wrappers function as file servers so that it is possible that MeDSpace clients are able to access the source files from the exported RDF data. This is useful for datasources that have unstructured data. 
+
 
 \section{MeDSpace server}
 
@@ -184,7 +188,7 @@ The play framework supports dependency injection powered by Google's Guice \foot
 
 \subsection{JAXB}
 
-With the Java Architecture for XML Binding \cite{JAXB} (JAXB) we mapped the XML configuration files to auto-generated Java classes. This simplified the configuration reading, reduced programming faults, and enabled us to do changes faster. If you want to generate the java classes by yourself, you have to look at the subfolder \emph{jaxb-generation} of your target module (e.g. sql wrapper). There you'll find batch and shell scripts you just have to execute. The only requirement is that the \emph{xjc} binary is findable through the environment variable of your operating system. This should be the case if you properly have installed the JDK.
+With the Java Architecture for XML Binding \cite{JAXB} (JAXB) we mapped the XML configuration files to auto-generated Java classes. This simplified the configuration reading, reduced programming faults, and enabled us to do changes faster. If you want to generate the java classes by yourself, you have to look at the subfolder \emph{jaxb-generation} of your target module (e.g. SqlWrapper). There you'll find batch and shell scripts you just have to execute. The only requirement is that the \emph{xjc} binary is findable through the environment variable of your operating system. This should be the case if you properly have installed the JDK.
 
 All xjc generation commands are structured as follows:
 
@@ -264,7 +268,9 @@ Each wrapper has start scripts for Windows and Unix systems that can be found at
 In this section we will talk about implementation details of the SQL wrapper. 
 The task of the SQL Wrapper is to convert the relational data into RDF and providing a keyword search functionality, as SQL databases don't provide this kind of  functionality.
 We used a MySQL datasource, but as several other relational databse vendors exist, one additional design goal was to produce a wrapper that can be used with any other database that uses SQL for querying. That will considerably reduce prospective maintenance work.
-Thus, a SQL wrapper was implemented, that doesn't use any vendor specific features.
+Thus, a SQL wrapper was implemented, that doesn't use any vendor specific features. 
+
+It should be noted that a suitable JDBC driver has to be in the library directory of the SQL Wrapper, but it is not necessary to recompile the wrapper. Out of the box is supported MySQL. If other vendors should be supported, the user is encouraged to add the JDBC library to \emph{\{medspace-root-folder\}/SqlWrapper/lib}. It will automatically be added to the classpath by the start script.
 
 Before discussing how to perform the conversion from SQL to RDF, we want to look at the proper setup of the MySQL database.
 
@@ -297,7 +303,7 @@ To support UTF-8 add the following settings to your my.cnf (or my.ini):
 \noindent\hspace*{4mm}  character-set-server= utf8mb4\\
 \end{codebox}
 
-Note that we use the character set \emph{utf8mb4} instead of \emph{utf8}. The reason is that we default \emph{utf8} character set in MySQL actually uses only up to 3 bytes. Thus this character set represents only a subset of unicode. For more information about this topic we encourage you to read a blog post\footnote{\url{https://mathiasbynens.be/notes/mysql-utf8mb4}} of Mathias Bynens, a developer from Google and a specialist regarding Unicode.
+Note that we use the character set \emph{utf8mb4} instead of \emph{utf8}. The reason is that we default \emph{utf8} character set in MySQL actually uses only up to 3 bytes. Thus this character set represents only a subset of unicode. For more information about this topic we encourage you to read a blog post\footnote{\url{https://mathiasbynens.be/notes/mysql-utf8mb4}} of Mathias Bynens, a developer from Google and a specialist for Unicode.
 
 Then restart the mysqld daemon. In the following it is assumed that you have a running MySQL server now that can be accessed via shell/command line. Before you connect to the MySQL server, you should assure that the application you use for connecting is using UTF-8 for user input and sending statements. So, validate that your shell/command line is using UTF-8. E.g. on windows system (before Windows 10) the command line isn't using UTF-8 by default
 \footnote{To set the encoding to UTF-8 on the windows command line change the active code page to 65001 and set 'Lucida Console' as the displaying font. In contrast to the font the code page is only active for the current console session. But you can automate this command with a AutoRun setting. For more information see \url{https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433}}.  
@@ -351,6 +357,10 @@ where \emph{path\_to\_sql\_file} is the full (absolute or relative) path to the 
 Ensure that you \textbf{don't} have created a \textbf{medspace} database by yourself since \emph{init\_mysql.sql} will \textbf{drop} (delete) the database. The created read-user will be called\\ 
 \textbf{medspace\_client}. If you want to edit the init\_mysql.sql file, beware that the file is encoded in UTF-8. As we instructed mysql to use UTF-8 in every case, this encoding is required. Assure that your file editor saves the file in that encoding, too. Otherwise, it could come to conversion errors.
 
+\subsection{Startup}
+
+On startup the SQL Wrapper connects to the MySQL database. Therefore, the wrapper uses the JDBC URL that has been specified in \emph{medspace-d2r-mapping.xml}. By default the port \emph{3306} is stated in that file. If you use a different port you have to change it. If the wrapper is unable to connect to the database, it tries to reconnect two times. If no try succeeds, the wrapper shutdowns automatically.  
+
 
 \subsection{D2RMap}
 
@@ -399,6 +409,22 @@ With \emph{ObjectPropertyBridge} rdf statements to other class mappings can be d
 Names that are enclosed by two '@@' specify a value of a column. E.g. with '@@firstname@@' is meant the value of the column \emph{firstname} which is part of the sql query 'SELECT * FROM doctor'.
 
 With the \emph{MetaData} one can specify tags for the rdf data. This is useful for the keyword search in MeDSpace, as additional domain knowledge can be stated that should be searchable. That way it is possible to get doctor rdf data in the search result if you search for 'person' or 'clinician'. 
+
+\subsubsection{MeDSpace reimplementation} 
+
+Chris Bizer published in 2003 a processor for D2RMap. We used this implementation, but it was necessary to reimplement it, as the original implementation didn't meet our requirements. We did the following changes:
+
+\begin{itemize}
+\item The processor was changed to be used as a library.
+\item The processor was updated to Java 8.
+\item Type safety issues were resolved
+\item Jena dependency was removed.  Library uses now RDF interfaces from MeDSpace. That allows to use the library with any RDF framework backend.
+\item XML configuration was adapted to the needs of MeDSpace.
+\item Manual XML configuration loading was replaced by JAXB.
+\item Previously an RDF graph was produced that was stored completely in memory. Now, RDF triples are created and streamed 'on demand'. Thus memory usage is capped. This also allows to handle very large RDF graphs. 
+\item Previously the whole SQL result data was temporarily stored in memory. Now a fix fetch size is used. Thus memory usage is capped.
+\end{itemize}  
+
 
 \subsection{Keyword search}
 
@@ -531,7 +557,7 @@ In this section is explained how the GUI of MeDSpace was created.
 
 For dynamic (html) page creation we used Play's template engine \emph{Twirl} \footnote{\url{https://github.com/playframework/twirl}}. The templates are normal text files that are enriched by Scala code \cite{PlayJavaTemplates}.
 
-For styling the html content, we used SASS, an extension of CSS that is used to generate CSS files \cite{SASS}. In order to auto-compile the SASS files we've used the \emph{sbt-sassify} plugin \footnote{\url{https://github.com/irundaia/sbt-sassify}}. 
+For styling the html content, we used SASS, an extension of CSS that is used to generate CSS files \cite{SASS}. In order to auto-compile the SASS files we've used the \emph{sbt-sassify} plugin \footnote{\url{https://github.com/irundaia/sbt-sassify}}. The SASS source file which we used for MeDSpace can be found at \emph{\{medspace-root-folder\}/project-sources/medspace/app/assets/stylesheets/}
 
 The look of the search page is illustrated in figure \ref{MeDSpaceSearchPage}:
 
@@ -566,4 +592,4 @@ The \emph{Data Sources} page lists all registered datasources, as illustrated in
 	\label{MeDSpaceDataSourcePage}
 \end{figure}
 
-For each datasource is listed its URL, a description of it, what services it provides, when it registered itself, and how much io errors occurred since its registration.
+For each datasource is listed its URL, a description of it, what services it provides, when it registered itself, and how much io errors occurred since its registration. The services are initially hidden and can be made visible by clicking the 'Show' button.
