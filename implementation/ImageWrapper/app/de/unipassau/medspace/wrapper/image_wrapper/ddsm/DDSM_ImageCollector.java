@@ -11,43 +11,29 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO
+ * A multimedia collector for DDSM image files.
  */
 public class DDSM_ImageCollector implements MultiMediaCollector {
 
-  /**
-   * TODO
-   */
   private final static String LEFT_CC = "LEFT_CC";
 
-  /**
-   * TODO
-   */
   private final static String LEFT_MLO = "LEFT_MLO";
 
-  /**
-   * TODO
-   */
   private final static String RIGHT_CC = "RIGHT_CC";
 
-  /**
-   * TODO
-   */
   private final static String RIGHT_MLO = "RIGHT_MLO";
 
-  /**
-   * TODO
-   */
   private final static String OVERLAY = "OVERLAY";
 
 
-  /**
-   * TODO
-   */
-  final String image_ext;
+  final String imageFileExtension;
 
-  public DDSM_ImageCollector(String imageExtension) {
-    image_ext = imageExtension;
+  /**
+   * Creates a new DDSM_ImageCollector object.
+   * @param imageFileExtension The file extension of the images.
+   */
+  public DDSM_ImageCollector(String imageFileExtension) {
+    this.imageFileExtension = imageFileExtension;
   }
 
   @Override
@@ -65,11 +51,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return result;
   }
 
-  /**
-   * TODO
-   * @param files
-   * @return
-   */
   private List<MultiMediaContainer> collectContainers(List<File> files) {
     List<MultiMediaContainer> result = new ArrayList<>();
 
@@ -83,18 +64,12 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return result;
   }
 
-  /**
-   * TODO
-   * @param icsFile
-   * @param folderFiles
-   * @return
-   */
   private MultiMediaContainer createIcsContainer(File icsFile, List<File> folderFiles) {
 
-    File leftccFile = getByNameEnding(folderFiles, "." + LEFT_CC + "." + image_ext);
-    File leftMloFile = getByNameEnding(folderFiles, "." + LEFT_MLO + "." + image_ext);
-    File rightccFile = getByNameEnding(folderFiles, "." + RIGHT_CC + "." + image_ext);
-    File rightMloFile = getByNameEnding(folderFiles, "." + RIGHT_MLO + "." + image_ext);
+    File leftccFile = getByNameEnding(folderFiles, "." + LEFT_CC + "." + imageFileExtension);
+    File leftMloFile = getByNameEnding(folderFiles, "." + LEFT_MLO + "." + imageFileExtension);
+    File rightccFile = getByNameEnding(folderFiles, "." + RIGHT_CC + "." + imageFileExtension);
+    File rightMloFile = getByNameEnding(folderFiles, "." + RIGHT_MLO + "." + imageFileExtension);
 
     //optional files
     File leftccOverlayFile = getByNameEnding(folderFiles, "." + LEFT_CC + "." + OVERLAY);
@@ -123,12 +98,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return container;
   }
 
-  /**
-   * TODO
-   * @param imageFile
-   * @param overlayFile
-   * @return
-   */
   private MultiMediaFile createImage(File imageFile, File overlayFile) {
     if (imageFile == null) return null;
 
@@ -142,11 +111,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return image;
   }
 
-  /**
-   * TODO
-   * @param file
-   * @return
-   */
   private String getFileName(File file) {
     String fileName = file.getName();
     String extension = getFileExtension(file);
@@ -155,12 +119,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return fileName;
   }
 
-  /**
-   * TODO
-   * @param files
-   * @param extension
-   * @return
-   */
   private List<File> filterByExtension(List<File> files, String extension) {
     List<File> result = new ArrayList<>();
     extension = extension.toUpperCase();
@@ -175,13 +133,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return result;
   }
 
-
-  /**
-   * TODO
-   * @param files
-   * @param subName
-   * @return
-   */
   private File getByNameEnding(List<File> files, String subName) {
     for (File file : files) {
       String fileName = file.getName();
@@ -199,11 +150,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return null;
   }
 
-  /**
-   * TODO
-   * @param file
-   * @return
-   */
   private String getFileExtension(File file) {
     String fileName = file.getAbsolutePath();
     String extension = "";
@@ -217,11 +163,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return extension;
   }
 
-  /**
-   * TODO
-   * @param root
-   * @return
-   */
   private List<File> getSubFolders(File root) {
     List<File> result = new ArrayList<>();
 
@@ -234,12 +175,6 @@ public class DDSM_ImageCollector implements MultiMediaCollector {
     return result;
   }
 
-
-  /**
-   * TODO
-   * @param root
-   * @return
-   */
   private List<File> getNonFolderFiles (File root) {
     List<File> result = new ArrayList<>();
 
