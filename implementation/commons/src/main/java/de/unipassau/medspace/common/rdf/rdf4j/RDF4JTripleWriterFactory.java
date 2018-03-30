@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Created by David Goeth on 29.10.2017.
+ * A triple writer factory for RDF4J.
  */
 public class RDF4JTripleWriterFactory implements TripleWriterFactory {
   @Override

@@ -14,7 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 /**
- * Created by David Goeth on 29.10.2017.
+ * A triple writer for RDF4J.
  */
 public class RDF4JTripleWriter implements TripleWriter {
 
@@ -26,6 +26,12 @@ public class RDF4JTripleWriter implements TripleWriter {
   private final OutputStream out;
   private boolean closed = false;
 
+  /**
+   * Creates a new RDF4JTripleWriter object.
+   * @param out The output stream used for writing.
+   * @param format The language format to use.
+   * @throws IOException If any IO error occurs.
+   */
   public RDF4JTripleWriter(OutputStream out, RDFFormat format) throws IOException {
 
     writerInternal = new OutputStreamWriter(out);

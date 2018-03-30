@@ -7,16 +7,31 @@ import org.eclipse.rdf4j.rio.RDFParserRegistry;
 import java.util.*;
 
 /**
- * Created by David Goeth on 29.10.2017.
+ * Holds language formats supported by RDF4J.
  */
 public class RDF4JLanguageFormats {
 
+  /**
+   * The supported language formats.
+   */
   public static final Set<RDFFormat> formats = getFormats();
 
+  /**
+   * Map of names to supported RDF formats.
+   */
   public static final Map<String, RDFFormat> mappedFormats = getMappedFormats();
 
+  /**
+   * A formatted string that lists all supported language formats that can be used for printing.
+   */
   public static final String formatsPrettyPrint = constructPrettyPrint();
 
+  /**
+   * Provides a language format from a string.
+   * @param format A string that is a key for the language format.
+   * @return The language format.
+   * @throws NoValidArgumentException If the language format couldn't be found.
+   */
   public static RDFFormat getFormatFromString(String format) throws NoValidArgumentException {
     RDFFormat result = getFormatNoException(format);
 
@@ -26,10 +41,19 @@ public class RDF4JLanguageFormats {
     return result;
   }
 
+  /**
+   * Provides a formatted string that lists all supported language formats that can be used for printing.
+   * @return a formatted string that lists all supported language formats that can be used for printing.
+   */
   public static String getFormatsPrettyPrint() {
     return formatsPrettyPrint;
   }
 
+  /**
+   * Checks if a given format is supported.
+   * @param format The format to check.
+   * @return true if the format is supported.
+   */
   public static boolean isValidFormat(String format) {
     return getFormatNoException(format) != null;
   }

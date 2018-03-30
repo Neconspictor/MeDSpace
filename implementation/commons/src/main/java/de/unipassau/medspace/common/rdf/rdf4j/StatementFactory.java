@@ -1,17 +1,24 @@
 package de.unipassau.medspace.common.rdf.rdf4j;
 
-import de.unipassau.medspace.common.rdf.RDFValue;
 import de.unipassau.medspace.common.rdf.Triple;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
- * Created by David Goeth on 29.10.2017.
+ * Used to create RDF4J statements from MeDSpace RDF triples.
  */
 public class StatementFactory {
 
+  /**
+   * The used value factory.
+   */
   protected static final ValueFactory factory = SimpleValueFactory.getInstance();
 
+  /**
+   * Converts a MeDSpace RDF triple to a RDF4J statement.
+   * @param triple The triple to convert.
+   * @return The converted RDF4J statement.
+   */
   public Statement createFromWrapped(Triple triple) {
 
     if (! (triple instanceof WrappedStatement)) {

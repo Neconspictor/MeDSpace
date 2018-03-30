@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * TODO
+ * An RDF provider for RDF4J.
  */
 public class RDF4J_RDFProvider  implements RDFProvider {
 
@@ -23,6 +23,9 @@ public class RDF4J_RDFProvider  implements RDFProvider {
 
   private final RDFFactory primitiveValueFactory;
 
+  /**
+   * Creates a new RDF4J_RDFProvider object.
+   */
   public RDF4J_RDFProvider() {
     factory = new RDF4JTripleWriterFactory();
     primitiveValueFactory = new RDF4J_Factory();

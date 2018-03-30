@@ -5,7 +5,7 @@ import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
- * Created by David Goeth on 31.10.2017.
+ * An RDF factory for RDF4J.
  */
 public class RDF4J_Factory implements RDFFactory {
 

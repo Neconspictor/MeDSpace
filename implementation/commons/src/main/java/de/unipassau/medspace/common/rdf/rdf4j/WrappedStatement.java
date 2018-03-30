@@ -4,12 +4,16 @@ import de.unipassau.medspace.common.rdf.Triple;
 import org.eclipse.rdf4j.model.Statement;
 
 /**
- * Created by David Goeth on 31.10.2017.
+ * A wrapper for RDF4J statements.
  */
 public class WrappedStatement implements Triple {
 
   private final Statement statement;
 
+  /**
+   *  Creates a new WrappedStatement object.
+   * @param statement The RDF4J statement to wrap.
+   */
   public WrappedStatement(Statement statement) {
     this.statement = statement;
   }
@@ -29,6 +33,10 @@ public class WrappedStatement implements Triple {
     return statement.getObject().toString();
   }
 
+  /**
+   * Provides the wrapped statement.
+   * @return the wrapped statement.
+   */
   public Statement getStatement() {
     return statement;
   }
