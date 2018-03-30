@@ -15,49 +15,47 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * TODO
+ * A DDSM adapter for a ICS file.
  */
 public class IcsFileAdapter extends DDSM_CaseAdapter<IcsFile> {
 
+  private static final String ICSFILE_FOLDER_STRUCTURE_METADATA = "ICSFILE_FOLDER_STRUCTURE_METADATA";
 
-  /**
-   * TODO
-   */
-  public static final String ICSFILE_FOLDER_STRUCTURE_METADATA = "ICSFILE_FOLDER_STRUCTURE_METADATA";
 
   private final IcsFileMapping icsFileParsing;
 
   private final ImageMapping imageParsing;
 
   /**
-   * TODO
-   * @param icsFileParsing
-   * @param imageParsing
-   * @param root
+   * Creates a new IcsFileAdapter object.
+   *
+   * @param icsFileMapping The mapping for an ICS file.
+   * @param imageMapping The mapping for an image.
+   * @param root The DDSM root folder.
    */
-  public IcsFileAdapter(IcsFileMapping icsFileParsing,
-                        ImageMapping imageParsing,
+  public IcsFileAdapter(IcsFileMapping icsFileMapping,
+                        ImageMapping imageMapping,
                         File root,
                         String downloadService) {
 
-    super(icsFileParsing,
-        new LuceneDocFileAdapter<IdentifiableFile>(icsFileParsing,
+    super(icsFileMapping,
+        new LuceneDocFileAdapter<IdentifiableFile>(icsFileMapping,
             root,
             downloadService,
             null));
 
-    this.icsFileParsing = icsFileParsing;
-    this.imageParsing = imageParsing;
+    this.icsFileParsing = icsFileMapping;
+    this.imageParsing = imageMapping;
 
-    addPair(IcsFile.DATE_OF_STUDY, icsFileParsing.getDateOfStudy());
-    addPair(IcsFile.PATIENT_AGE, icsFileParsing.getPatientAge());
-    addPair(IcsFile.DENSITY, icsFileParsing.getDensity());
-    addPair(IcsFile.DATE_DIGITIZED, icsFileParsing.getDateDigitized());
-    addPair(IcsFile.DIGITIZER, icsFileParsing.getDigitizer());
-    addPair(IcsFile.LEFT_CC, icsFileParsing.getLeftCc());
-    addPair(IcsFile.LEFT_MLO, icsFileParsing.getLeftMlo());
-    addPair(IcsFile.RIGHT_CC, icsFileParsing.getRightCc());
-    addPair(IcsFile.RIGHT_MLO, icsFileParsing.getRightMlo());
+    addPair(IcsFile.DATE_OF_STUDY, icsFileMapping.getDateOfStudy());
+    addPair(IcsFile.PATIENT_AGE, icsFileMapping.getPatientAge());
+    addPair(IcsFile.DENSITY, icsFileMapping.getDensity());
+    addPair(IcsFile.DATE_DIGITIZED, icsFileMapping.getDateDigitized());
+    addPair(IcsFile.DIGITIZER, icsFileMapping.getDigitizer());
+    addPair(IcsFile.LEFT_CC, icsFileMapping.getLeftCc());
+    addPair(IcsFile.LEFT_MLO, icsFileMapping.getLeftMlo());
+    addPair(IcsFile.RIGHT_CC, icsFileMapping.getRightCc());
+    addPair(IcsFile.RIGHT_MLO, icsFileMapping.getRightMlo());
 
     this.metaDataFields.add(ICSFILE_FOLDER_STRUCTURE_METADATA);
   }
@@ -87,11 +85,6 @@ public class IcsFileAdapter extends DDSM_CaseAdapter<IcsFile> {
     return null;
   }
 
-  /**
-   * TODO
-   * @param property
-   * @return
-   */
   private boolean isImageReference(PropertyMapping property) {
     if (property.equals(icsFileParsing.getLeftCc())) return true;
     if (property.equals(icsFileParsing.getLeftMlo())) return true;

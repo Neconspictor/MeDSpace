@@ -15,49 +15,40 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * TODO
+ * A DDSM adapter for an image file.
  */
 public class ImageAdapter extends DDSM_CaseAdapter<Image> {
 
-  /**
-   * TODO
-   */
-  public static final String SOURCE = "SOURCE";
+  private static final String SOURCE = "SOURCE";
 
-  /**
-   * TODO
-   */
-  public static final String OVERLAY = "OVERLAY";
-
-  /**
-   * TODO
-   */
-  private final ImageMapping imageParsing;
-
-  /**
-   * TODO
-   */
-  private final OverlayMapping overlayParsing;
+  private static final String OVERLAY = "OVERLAY";
 
   private static final String IMAGE_FOLDER_STRUCTURE_METADATA = "IMAGE_FOLDER_STRUCTURE_METADATA";
 
+  private final ImageMapping imageParsing;
+
+  private final OverlayMapping overlayParsing;
+
+
   /**
-   * TODO
-   * @param imageParsing
-   * @param overlayParsing
+   * Creates a new ImageAdapter object.
+   * @param imageMapping The mapping for an image file.
+   * @param overlayMapping The mapping for an overlay file.
+   * @param root The DDSM root folder.
+   * @param downloadService The base URL of the downloading service
    */
-  public ImageAdapter(ImageMapping imageParsing,
-                      OverlayMapping overlayParsing,
+  public ImageAdapter(ImageMapping imageMapping,
+                      OverlayMapping overlayMapping,
                       File root,
                       String downloadService) {
 
-    super(imageParsing,
-        new LuceneDocFileAdapter<>(imageParsing, root, downloadService, null));
-    this.overlayParsing = overlayParsing;
+    super(imageMapping,
+        new LuceneDocFileAdapter<>(imageMapping, root, downloadService, null));
+    this.overlayParsing = overlayMapping;
 
     //addPair(SOURCE, imageParsing.getSource());
-    addPair(OVERLAY, imageParsing.getOverlay());
-    this.imageParsing = imageParsing;
+    addPair(OVERLAY, imageMapping.getOverlay());
+    this.imageParsing = imageMapping;
 
     this.metaDataFields.add(IMAGE_FOLDER_STRUCTURE_METADATA);
 
@@ -83,11 +74,6 @@ public class ImageAdapter extends DDSM_CaseAdapter<Image> {
     return null;
   }
 
-  /**
-   * TODO
-   * @param property
-   * @return
-   */
   private boolean isOverlayReference(PropertyMapping property) {
     if (imageParsing.getOverlay().equals(property)) return true;
     return false;

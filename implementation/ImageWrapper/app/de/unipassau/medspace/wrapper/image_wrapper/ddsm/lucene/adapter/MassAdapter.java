@@ -10,24 +10,18 @@ import org.javatuples.Pair;
 import java.io.IOException;
 
 /**
- * TODO
+ * A DDSM adapter for a mass.
  */
 public class MassAdapter extends DDSM_CaseAdapter<Mass> {
 
-  /**
-   * TODO
-   */
-  public static final String SHAPE = "SHAPE";
+  private static final String SHAPE = "SHAPE";
 
-  /**
-   * TODO
-   */
-  public static final String MARGINS = "MARGINS";
+  private static final String MARGINS = "MARGINS";
 
 
   /**
-   * TODO
-   * @param massParsing
+   * Creates a new MassAdapter object.
+   * @param massParsing The mapping for a mass.
    */
   public MassAdapter(MassMapping massParsing) {
     super(massParsing, null);

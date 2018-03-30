@@ -12,44 +12,34 @@ import org.javatuples.Pair;
 import java.io.IOException;
 
 /**
- * TODO
+ * A DDSM adapter for an overlay file.
  */
 public class OverlayAdapter extends DDSM_CaseAdapter<OverlayMetaData> {
 
-  /**
-   * TODO
-   */
-  public static final String TOTAL_ABNORMALITIES = "TOTAL_ABNORMALITIES";
 
-  /**
-   * TODO
-   */
-  public static final String ABNORMALITY = "ABNORMALITY";
+  private static final String TOTAL_ABNORMALITIES = "TOTAL_ABNORMALITIES";
 
-  /**
-   * TODO
-   */
+  private static final String ABNORMALITY = "ABNORMALITY";
+
+
   private final OverlayMapping overlayParsing;
 
-  /**
-   * TODO
-   */
   private final AbnormalityMapping abnormalityParsing;
 
   /**
-   * TODO
+   * Creates a new OverlayAdapter object.
    *
-   * @param overlayParsing
-   * @param abnormalityParsing
+   * @param overlayMapping The mapping for an overlay file.
+   * @param abnormalityMapping The mapping for an abnormality.
    */
-  protected OverlayAdapter(OverlayMapping overlayParsing,
-                           AbnormalityMapping abnormalityParsing) {
-    super(overlayParsing, null);
-    this.overlayParsing = overlayParsing;
-    this.abnormalityParsing = abnormalityParsing;
+  protected OverlayAdapter(OverlayMapping overlayMapping,
+                           AbnormalityMapping abnormalityMapping) {
+    super(overlayMapping, null);
+    this.overlayParsing = overlayMapping;
+    this.abnormalityParsing = abnormalityMapping;
 
-    addPair(TOTAL_ABNORMALITIES, overlayParsing.getTotalAbnormalities());
-    addPair(ABNORMALITY, overlayParsing.getAbnormality());
+    addPair(TOTAL_ABNORMALITIES, overlayMapping.getTotalAbnormalities());
+    addPair(ABNORMALITY, overlayMapping.getAbnormality());
   }
 
   @Override
@@ -73,12 +63,7 @@ public class OverlayAdapter extends DDSM_CaseAdapter<OverlayMetaData> {
     }
     return null;
   }
-
-  /**
-   * TODO
-   * @param property
-   * @return
-   */
+  
   private boolean isAbnormalityReference(PropertyMapping property) {
 
     if (overlayParsing.getAbnormality().equals(property)) return true;
