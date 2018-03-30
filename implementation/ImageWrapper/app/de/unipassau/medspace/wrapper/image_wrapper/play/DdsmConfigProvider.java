@@ -18,7 +18,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
 /**
- * TODO
+ * A Provider for the DDSM configurations.
  */
 public class DdsmConfigProvider extends GeneralConfigProvider {
 
@@ -28,45 +28,25 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
    */
   private static Logger log = LoggerFactory.getLogger(DdsmConfigProvider.class);
 
-
-  /**
-   * TODO
-   */
   private static final String DDSM_CONFIG_FILE_ID = "MeDSpaceDdsmConfig";
 
-
-  /**
-   * TODO
-   */
   private static final String DDSM_MAPPING_CONFIG_FILE_ID = "MeDSpaceDdsmMappingConfig";
 
-
-  /**
-   * TODO
-   */
   private static final String DDSM_CONFIG_SPECIFICATION_FILE_ID = "MeDSpaceDdsmConfigSpecification";
 
-  /**
-   * TODO
-   */
   private static final String DDSM_MAPPING_CONFIG_SPECIFICATION_FILE_ID = "MeDSpaceDdsmMappingConfigSpecification";
 
 
-  /**
-   * TODO
-   */
   private DDSMConfig ddsmConfig;
 
-  /**
-   * TODO
-   */
   private RootMapping ddsmMappingConfig;
 
   /**
-   * TODO
-   * @param playConfig
-   * @param provider
-   * @param shutdownService
+   * Creates a new DdsmConfigProvider object.
+   *
+   * @param playConfig The Play configuration.
+   * @param provider The RDF provider
+   * @param shutdownService The shutdown service
    */
   @Inject
   public DdsmConfigProvider(com.typesafe.config.Config playConfig,
@@ -84,16 +64,6 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
     log.info("Reading MeDSpace DDSM Image configuration done.");
   }
 
-
-  /**
-   * TODO
-   * @param playConfig
-   * @throws IOException
-   * @throws ConfigException.Missing
-   * @throws ConfigException.WrongType
-   * @throws JAXBException
-   * @throws SAXException
-   */
   private void init(Config playConfig)
       throws IOException,
       ConfigException.Missing,
@@ -122,8 +92,8 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the general DDSM configuration.
+   * @return the general DDSM configuration.
    */
   public DDSMConfig getDdsmConfig() {
     return ddsmConfig;
@@ -131,8 +101,8 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
 
 
   /**
-   * TODO
-   * @return
+   * Provides the DDSM mapping configuration.
+   * @return the DDSM mapping configuration.
    */
   public RootMapping getDdsmMappingConfig() {
     return ddsmMappingConfig;
