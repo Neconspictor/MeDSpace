@@ -3,84 +3,62 @@ package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.LesionType;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO
+ * Represents an abnormality.
  */
 public class Abnormality extends DDSM_CaseIdentifiable {
 
   /**
-   * TODO
+   * The ABNORMALITY token in an overlay file.
    */
   public static final String ABNORMALITY = "ABNORMALITY";
 
-
   /**
-   * TODO
+   * The ASSESSMENT token in an overlay file.
    */
   public static final String ASSESSMENT = "ASSESSMENT";
 
-
   /**
-   * TODO
+   * The SUBTLETY token in an overlay file.
    */
   public static final String SUBTLETY = "SUBTLETY";
 
   /**
-   * TODO
+   * The PATHOLOGY token in an overlay file.
    */
   public static final String PATHOLOGY = "PATHOLOGY";
 
-
   /**
-   * TODO
+   * The TOTAL_OUTLINES token in an overlay file.
    */
   public static final String TOTAL_OUTLINES = "TOTAL_OUTLINES";
 
 
-  public static final List<String> FIELD_META_DATA = Arrays.asList(ABNORMALITY, ASSESSMENT, SUBTLETY, PATHOLOGY,TOTAL_OUTLINES);
 
-
-  /**
-   * TODO
-   */
   private int abnormalityNumber;
 
-  /**
-   * TODO
-   */
   private List<LesionType> lesionTypes;
 
-  /**
-   * TODO
-   */
   private int assessment;
 
-  /**
-   * TODO
-   */
   private int subtlety;
 
-  /**
-   * TODO
-   */
   private String pathology;
 
-  /**
-   * TODO
-   */
   private int totalOutlines;
 
   /**
-   * TODO
-   * @param abnormalityNumber
-   * @param lesionTypes
-   * @param assessment
-   * @param subtlety
-   * @param pathology
-   * @param totalOutlines
+   * Creates a new Abnormality object.
+   * @param abnormalityNumber he abnormality number.
+   * @param lesionTypes the lesion types.
+   * @param assessment the assessment.
+   * @param subtlety the subtlety
+   * @param pathology the pathology
+   * @param totalOutlines the total outline number
+   * @param id the ID of this abnormality
+   * @param caseName The name of the case this lesion belongs to.
    */
   public Abnormality(int abnormalityNumber,
                      List<LesionType> lesionTypes,
@@ -100,35 +78,40 @@ public class Abnormality extends DDSM_CaseIdentifiable {
   }
 
   /**
-   * TODO
+   * Provides the abnormality number.
+   * @return the abnormality number.
    */
   public int getAbnormalityNumber() {
     return abnormalityNumber;
   }
 
   /**
-   * TODO
+   * Provides the lesion types.
+   * @return the lesion types.
    */
   public List<LesionType> getLesionTypes() {
     return lesionTypes;
   }
 
   /**
-   * TODO
+   * Provides the assessment
+   * @return the assessment
    */
   public int getAssessment() {
     return assessment;
   }
 
   /**
-   * TODO
+   * Provides the pathology
+   * @return the pathology
    */
   public String getPathology() {
     return pathology;
   }
 
   /**
-   * TODO
+   * Provides the total outlines.
+   * @return the total outlines.
    */
   public int getTotalOutlines() {
     return totalOutlines;
@@ -155,7 +138,8 @@ public class Abnormality extends DDSM_CaseIdentifiable {
   }
 
   /**
-   * TODO
+   * Provides the subtlety.
+   * @return the subtlety.
    */
   public int getSubtlety() {
     return subtlety;
