@@ -12,30 +12,22 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
- * TODO
+ * A stream that collects all ICS files from a given root folder.
  */
 public class IcsFileCollectorStream implements Stream<IcsFile> {
 
-  /**
-   * TODO
-   */
   private final File root;
 
-  /**
-   * TODO
-   */
   private final List<MultiMediaContainer> imageContainers;
 
-  /**
-   * TODO
-   */
   private final String imageFileEnding;
 
   /**
-   * TODO
-   * @param root
-   * @param imageFileEnding
-   * @throws IOException
+   * Creates a new IcsFileCollectorStream object.
+   *
+   * @param root The root folder used as a starting point to collect the ICS files.
+   * @param imageFileEnding The file ending of the images specified in the ICS files.
+   * @throws IOException If an IO error occurs.
    */
   public IcsFileCollectorStream(File root, String imageFileEnding) throws IOException {
 
@@ -84,36 +76,18 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
       // Nothing has to be closed
   }
 
-  /**
-   * TODO
-   * @param root
-   * @param destination
-   * @return
-   * @throws UnsupportedEncodingException
-   */
+
   private static String createID(File root, File destination) throws UnsupportedEncodingException {
     return FileUtil.getRelativePath(root, destination);
     //return URLEncoder.encode(id, "UTF-8");
   }
 
-  /**
-   * TODO
-   * @param source
-   * @param ending
-   * @return
-   */
+
   private static boolean endsWith(File source, String ending) {
     String name = source.getName();
     return name.matches(".*" + ending);
   }
 
-  /**
-   * TODO
-   * @param container
-   * @param ending
-   * @return
-   * @throws IOException
-   */
   private Image getByNameEnding(MultiMediaContainer container, String ending, String caseName) throws IOException {
 
     for (MultiMediaFile multiMediaFile: container.getData()) {
@@ -135,12 +109,7 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
 
     throw new IOException("Couldn't create DDSM_Image by name ending search: '" + ending + "'");
   }
-
-  /**
-   * TODO
-   * @param file
-   * @return
-   */
+  
   private String getCaseName(File file) {
     assert file.isFile();
     File folder = file.getParentFile();
