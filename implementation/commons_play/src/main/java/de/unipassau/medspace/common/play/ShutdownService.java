@@ -13,17 +13,17 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
- * TODO
+ * A service for gracefully shutting down a Play application.
  */
 public class ShutdownService {
 
   /**
-   * TODO
+   * Exit code when an error had been occurred.
    */
   public static final int EXIT_ERROR = -1;
 
   /**
-   * TODO
+   * Exit code when no error had been occurred.
    */
   public static final int EXIT_SUCCESS = 0;
 
@@ -33,20 +33,15 @@ public class ShutdownService {
    */
   private static Logger log = LoggerFactory.getLogger(ShutdownService.class);
 
-  /**
-   * TODO
-   */
+
   private final ApplicationLifecycle lifecycle;
 
-  /**
-   * TODO
-   */
   private final Provider<Application> application;
 
   /**
-   * TODO
-   * @param lifecycle
-   * @param application
+   * Creates a new ShutdownService object.
+   * @param lifecycle The play application lifecycle.
+   * @param application The play application.
    */
   @Inject
   public ShutdownService(ApplicationLifecycle lifecycle, Provider<Application> application) {
@@ -57,6 +52,7 @@ public class ShutdownService {
 
   /**
    * Does a graceful shutdown.
+   * @param errorCode The error code to use for exiting the application.
    */
   public void gracefulShutdown(int errorCode) {
     log.info("Graceful shutdown is initiated...");

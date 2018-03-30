@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * TODO
+ * A wrapper service calls functionality from a wrapper.
  */
 public class WrapperService {
 
@@ -34,6 +34,11 @@ public class WrapperService {
    */
   protected final Wrapper wrapper;
 
+  /**
+   * Creates a new WrapperService object.
+   * @param generalConfig The general wrapper configuration.
+   * @param wrapper The  wrapper.
+   */
   public WrapperService(GeneralWrapperConfig generalConfig,
                         Wrapper wrapper) {
 

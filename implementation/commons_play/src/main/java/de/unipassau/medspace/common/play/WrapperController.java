@@ -24,7 +24,7 @@ import java.util.Set;
 
 
 /**
- * TODO
+ * A base play controller for wrappers.
  */
 public class WrapperController extends Controller {
 
@@ -35,23 +35,33 @@ public class WrapperController extends Controller {
 
 
   /**
-   * TODO
+   * The general wrapper configuration.
    */
   protected final GeneralWrapperConfig generalConfig;
 
   /**
-   * TODO
+   * The RDF provider.
    */
   protected final RDFProvider rdfProvider;
 
   /**
-   * TODO
+   * A factory for creating triple writers.
    */
   protected final TripleWriterFactory tripleWriterFactory;
 
+  /**
+   * The used wrapper service.
+   */
   protected final WrapperService wrapperService;
 
 
+  /**
+   * Creates a new WrapperController object.
+   *
+   * @param generalConfig The general wrapper configuration.
+   * @param rdfProvider The RDF provider.
+   * @param wrapperService he used wrapper service.
+   */
   public WrapperController(GeneralWrapperConfig generalConfig,
                            RDFProvider rdfProvider,
                            WrapperService wrapperService) {
@@ -64,8 +74,9 @@ public class WrapperController extends Controller {
 
 
   /**
-   * Does invoke a keyword keywordSearch on the SQL wrapper and provides the result as serialized rdf triples.
-   * @param keywords The keywords to keywordSearch for on the SQl wrapper.
+   * Does invoke a keyword keywordSearch on the wrapper and provides the result as serialized rdf triples.
+   * @param keywords The keywords to keywordSearch for on the wrapper.
+   * @param useOr Should the 'OR' operator be used instead of the 'AND' operator?
    * @param attach Specifies if the caller wants the result stored in an HTML attachment field.
    * @return RDF triples representing the keyword keywordSearch result.
    */
@@ -101,7 +112,9 @@ public class WrapperController extends Controller {
       return internalServerError("Couldn't construct triple input stream");
     }
 
+    // text is encoded in UTF-8
     String mimeType = "text/plain; charset=utf-8";
+
     String formatMimeType = rdfProvider.getDefaultMimeType(outputFormat);
 
     if (formatMimeType == null) formatMimeType = mimeType;
@@ -131,10 +144,10 @@ public class WrapperController extends Controller {
   }
 
   /**
-   * The SQL wrapper does reindex the data from the underlying datasource.
+   * Reindexes the data of the datasource.
    *
    * NOTE: This service is not intended o be used in production. Use it just for testing purposes!
-   * @return Status report whether the reindexing was successfull.
+   * @return Status report whether the reindexing was successful.
    */
   public Result reindex() {
     if (!wrapperService.getWrapper().isIndexUsed())

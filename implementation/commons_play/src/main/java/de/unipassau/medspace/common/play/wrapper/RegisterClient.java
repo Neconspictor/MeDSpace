@@ -17,7 +17,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 /**
- * TODO
+ * This is a helper for communicating with the MeDSpace Register module.
  */
 public class RegisterClient implements WSBodyReadables, WSBodyWritables {
 
@@ -26,53 +26,47 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
    */
   private static Logger log = LoggerFactory.getLogger(RegisterClient.class);
 
-  /**
-   * TODO
-   */
+
   private static final String REGISTER_ADD_SERVICE_SUBPATH = "add";
 
-  /**
-   * TODO
-   */
+
   private static final String REGISTER_REMOVE_SERVICE_SUBPATH = "remove";
 
-  /**
-   * TODO
-   */
+
   private final WSClient ws;
 
+  /**
+   * Creates a new RegisterClient object.
+   * @param ws The websocket client used for networking.
+   */
   @Inject
   public RegisterClient(WSClient ws) {
     this.ws = ws;
   }
 
   /**
-   * TODO
-   * @param datasource
-   * @param registerBase
-   * @return
+   * Invokes the deRegister REST service of the Register for a datasource.
+   *
+   * @param datasource The datasource.
+   * @param registerBase The base URL of the register.
+   * @return true if the service call was successful
    */
   public boolean deRegister(Datasource datasource, URL registerBase) {
     return invokeRegisterService(registerBase, REGISTER_REMOVE_SERVICE_SUBPATH, datasource);
   }
 
   /**
-   * TODO
-   * @param datasource
-   * @param registerBase
-   * @return
+   * Invokes the register REST service of the Register for a datasource.
+   *
+   * @param datasource The datasource.
+   * @param registerBase The base URL of the register.
+   * @return true if the service call was successful
    */
   public boolean register(Datasource datasource, URL registerBase) {
     return invokeRegisterService(registerBase, REGISTER_ADD_SERVICE_SUBPATH, datasource);
   }
 
-  /**
-   * TODO
-   * @param registerBase
-   * @param serviceSubPath
-   * @param datasource
-   * @return
-   */
+
   private boolean invokeRegisterService(URL registerBase, String serviceSubPath, Datasource datasource) {
     if (datasource == null) throw new NullPointerException("datasource mustn't be null!");
     if (registerBase == null) throw new NullPointerException("registerBase mustn't be null!");
@@ -112,13 +106,7 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
     return response.getSuccess();
   }
 
-  /**
-   * TODO
-   * @param request
-   * @param body
-   * @param triesOnFailure
-   * @return
-   */
+
   private Result postAndWait(WSRequest request, JsonNode body, int triesOnFailure) {
 
     assert triesOnFailure >= 1;
@@ -156,12 +144,12 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
   private static class Result {
 
     /**
-     * TODO
+     * The json data of the result.
      */
     public JsonNode data; // public modifier as this class contains no logic.
 
     /**
-     * TODO
+     * The thrown exception (if one has occurred).
      */
     public Exception exception;
   }
