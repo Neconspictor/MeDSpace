@@ -7,7 +7,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * TODO
+ * An utility class for zipping files of a folder.
  */
 public class ZipProject {
 
@@ -15,6 +15,12 @@ public class ZipProject {
   private String outputFile;
   private String sourceFolder;
 
+  /**
+   * Creates a new ZipProject object.
+   * @param sourceFolder The folder to zip the files from.
+   * @param outputFile The output file path.
+   * @throws IOException If any io error occurs.
+   */
   public ZipProject(String sourceFolder, String outputFile) throws IOException {
     this.outputFile = outputFile;
     this.sourceFolder = sourceFolder;
@@ -33,6 +39,10 @@ public class ZipProject {
   }
 
 
+  /**
+   * Zips the content of this project.
+   * @throws IOException If any io error occurs.
+   */
   public void zip() throws IOException {
     byte[] buffer = new byte[1024];
     FileOutputStream fos = null;
