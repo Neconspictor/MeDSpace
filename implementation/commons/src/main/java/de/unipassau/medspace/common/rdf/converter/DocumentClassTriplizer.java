@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * Used to create RDF triples from documents that are mapped to a specific RDF class.
  */
 public abstract class DocumentClassTriplizer<DocType, FieldType> implements Converter<DocType, List<Triple>> {
 
   /**
-   * TODO
+   * The adapters used to create RDF triples.
    */
   protected final List<? extends DocumentAdapter<?, DocType, FieldType>> adapters;
 
@@ -31,15 +31,16 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
   protected final QNameNormalizer normalizer;
 
   /**
-   * TODO
+   * Used to create RDF triples.
    */
   protected final RDFFactory rdfFactory;
 
   /**
-   * TODO
-   * @param adapters
-   * @param normalizer
-   * @param rdfFactory
+   * Creates a new DocumentClassTriplizer.
+   *
+   * @param adapters The adapters to use.
+   * @param normalizer Used to normalize RDF triples.
+   * @param rdfFactory USed to create RDF triples.
    */
   public DocumentClassTriplizer(List<? extends DocumentAdapter<?, DocType, FieldType>> adapters,
                                 QNameNormalizer normalizer,
@@ -61,9 +62,9 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
   }
 
   /**
-   * TODO
-   * @param adapter TODO
-   * @param document TODO
+   * Creates RDF triples from a document a given adapter.
+   * @param adapter The adapter.
+   * @param document The document.
    * @return
    */
   protected List<Triple> convert(DocumentAdapter<?, DocType, FieldType> adapter, DocType document) {
@@ -89,11 +90,11 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
   }
 
   /**
-   * TODO
-   * @param field
-   * @param adapter
-   * @param pair
-   * @param subject
+   * Creates an RDF triple statement for an RDF resource.
+   * @param field The field to create a triple from.
+   * @param adapter The adapter used for conversion.
+   * @param pair The pair of field name and property mapping.
+   * @param subject The resource to create the statement for.
    * @return
    */
   protected Triple createTriple(FieldType field,
@@ -113,16 +114,16 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
   }
 
   /**
-   * TODO
-   * @param document
-   * @return
+   * Provides the list of fields for a given field name from a document.
+   * @param document The document to get the list from.
+   * @return The list of fields.
    */
   protected abstract List<FieldType> getFields(DocType document, String name);
 
   /**
-   * TODO
-   * @param field
-   * @return
+   * Provides the value of a field.
+   * @param field The field.
+   * @return The string value of the field.
    */
   protected abstract String getStringValue(FieldType field);
 }
