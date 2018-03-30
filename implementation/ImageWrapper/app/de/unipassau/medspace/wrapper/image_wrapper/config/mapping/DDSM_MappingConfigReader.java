@@ -31,6 +31,8 @@ public class DDSM_MappingConfigReader {
   /**
    * Parses a DDSM maping configuration file.
    * @param fileName The DDSM maping configuration file.
+   * @return The parsed configuration.
+   *
    * @throws JAXBException If an error occurs regarding JAXB-
    * @throws IOException If an IO error occurs.
    * @throws SAXException If an XML error occurs.

@@ -11,14 +11,14 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * TODO
+ * A reader for the DDSM configuration.
  */
 public class DDSM_ConfigReader {
 
   private final String specificationSchema;
 
   /**
-   * TODO
+   * Creates a DDSM_ConfigReader object.
    * @param specificationSchema
    */
   public DDSM_ConfigReader(String specificationSchema) {
@@ -26,11 +26,13 @@ public class DDSM_ConfigReader {
   }
 
   /**
-   * TODO
-   * @param fileName
-   * @throws JAXBException
-   * @throws IOException
-   * @throws SAXException
+   * Parses a DDSM maping configuration file.
+   * @param fileName The DDSM maping configuration file.
+   * @return The parsed configuration.
+   *
+   * @throws JAXBException If an error occurs regarding JAXB-
+   * @throws IOException If an IO error occurs.
+   * @throws SAXException If an XML error occurs.
    */
   public DDSMConfig parse(String fileName) throws JAXBException, IOException, SAXException {
     JAXBContext context = JAXBContext.newInstance(DDSMConfig.class);
