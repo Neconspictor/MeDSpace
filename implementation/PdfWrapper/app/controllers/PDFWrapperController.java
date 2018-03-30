@@ -32,10 +32,12 @@ public class PDFWrapperController extends WrapperController {
 
   private final File root;
 
+
   /**
-   * Creates a new SQLWrapperController
-   * @param wrapperService TODO
-   * @param rdfProvider
+   * Creates a new SQLWrapperController object.
+   * @param wrapperService The wrapper service to use.
+   * @param rdfProvider The RDF provider to use.
+   * @param configProvider The configuration provider.
    */
   @Inject
   PDFWrapperController(PdfWrapperService wrapperService,
@@ -49,9 +51,9 @@ public class PDFWrapperController extends WrapperController {
   }
 
   /**
-   * TODO
-   * @param relativePath
-   * @return
+   * Provides a file by its relative file path (seen from the root folder specified in the configuration file).
+   * @param relativePath The relative file path.
+   * @return The file specified by the relative path.
    */
   public Result getFile(String relativePath) {
 
@@ -94,15 +96,16 @@ public class PDFWrapperController extends WrapperController {
 
 
   /**
-   * Provides the test page of the SQL Wrapper.
-   * @return
+   * Provides the test page of the PDF Wrapper.
+   * @return the test page of the PDF Wrapper.
    */
   public Result guiTest() {
     return ok(views.html.testGui.render());
   }
 
   /**
-   * Provides the SQL Wrapper status and debug page.
+   * Provides the PDF Wrapper status and debug page.
+   * @return the PDF Wrapper status and debug page.
    */
   public Result index() {
     return ok(views.html.index.render(pdfWrapperService, generalConfig));
