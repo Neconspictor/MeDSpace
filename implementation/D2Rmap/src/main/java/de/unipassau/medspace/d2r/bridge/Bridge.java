@@ -27,9 +27,9 @@ abstract public class Bridge {
     protected String propertyQName;
 
     /**
-     * TODO
+     * The RDF factory used by this class.
      */
-    protected RDFFactory primitiveValueFactory;
+    protected RDFFactory factory;
 
     /**
      * Logger instance for this class.
@@ -38,11 +38,11 @@ abstract public class Bridge {
 
 
     /**
-     * TODO
-     * @param primitiveValueFactory
+     * Creates a new Bridge object.
+     * @param factory The RDF factory to be used.
      */
-    public Bridge(RDFFactory primitiveValueFactory) {
-        this.primitiveValueFactory = primitiveValueFactory;
+    public Bridge(RDFFactory factory) {
+        this.factory = factory;
     }
 
 
@@ -53,7 +53,7 @@ abstract public class Bridge {
      */
     public RDFResource createProperty(QNameNormalizer normalizer) {
         String propURI = normalizer.normalize(propertyQName);
-        return primitiveValueFactory.createResource(propURI);
+        return factory.createResource(propURI);
     }
 
     /**
@@ -65,8 +65,8 @@ abstract public class Bridge {
     }
 
     /**
-     * TODO
-     * @return
+     * Provides the qualified name of the property.
+     * @return the qualified name of the property.
      */
     public String getPropertyQName() { return propertyQName; }
 

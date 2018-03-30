@@ -33,19 +33,15 @@ public class ConfigurationReader {
    */
   private static Logger log = LoggerFactory.getLogger(ConfigurationReader.class);
 
-  /**
-   * TODO
-   */
+
   private RDFProvider provider;
 
-  /**
-   * TODO
-   */
   private RDFFactory rdfFactory;
 
 
   /**
-   * Constructs a new ConfigurationReader.
+   * Constructs a new ConfigurationReader object.
+   * @param provider The RDF provider to use.
    */
   public ConfigurationReader(RDFProvider provider) {
     this.provider = provider;
@@ -66,16 +62,7 @@ public class ConfigurationReader {
     }
   }
 
-  /**
-   * TODO
-   * @param filename
-   * @return
-   * @throws IOException
-   * @throws ClassNotFoundException
-   * @throws URISyntaxException
-   * @throws D2RException
-   * @throws JAXBException
-   */
+
   private Configuration parse(String filename) throws
       IOException,
       ClassNotFoundException,
@@ -110,12 +97,7 @@ public class ConfigurationReader {
     return config;
   }
 
-  /**
-   * TODO
-   * @param mapParsing
-   * @param config
-   * @throws D2RException
-   */
+
   private void addBridges(ClassMapParsing mapParsing, Configuration config) throws D2RException {
 
     List<D2rMap> maps = config.getMaps();
@@ -160,13 +142,7 @@ public class ConfigurationReader {
     }
   }
 
-  /**
-   * TODO
-   * @param parsedConnection
-   * @param config
-   * @throws URISyntaxException
-   * @throws ClassNotFoundException
-   */
+
   private void addDBConnection(DBConnectionParsing parsedConnection, Configuration config) throws
       URISyntaxException,
       ClassNotFoundException {
@@ -190,12 +166,7 @@ public class ConfigurationReader {
     }
   }
 
-  /**
-   * TODO
-   * @param mapParsing
-   * @param config
-   * @throws D2RException
-   */
+
   private void addMap(ClassMapParsing mapParsing, Configuration config) throws D2RException {
     D2rMap map = new D2rMap(rdfFactory);
 
@@ -236,21 +207,14 @@ public class ConfigurationReader {
     map.addBridge(typeProperty);
   }
 
-  /**
-   * TODO
-   * @param namespaceParsing
-   * @return
-   */
+
   private Namespace convert(NamespaceParsing namespaceParsing) {
     String prefix = namespaceParsing.getPrefix();
     String uri = namespaceParsing.getNamespace();
     return new Namespace(prefix, uri);
   }
 
-  /**
-   * Creates a new ConfigurationReader and initializes it with default values specified in {@link D2R}.
-   * @return
-   */
+
   private Configuration createDefaultConfig() {
     Configuration config = new Configuration();
     config.getNamespaces().put(D2R.RDFNS_PREFIX, new Namespace(D2R.RDFNS_PREFIX, D2R.RDFNS));
@@ -264,14 +228,8 @@ public class ConfigurationReader {
     return config;
   }
 
-  /**
-   * TODO
-   * @param referredClassID
-   * @param maps
-   * @return
-   * @throws D2RException
-   */
-  D2rMap getMapByID(String referredClassID, List<D2rMap> maps) throws D2RException {
+
+  private D2rMap getMapByID(String referredClassID, List<D2rMap> maps) throws D2RException {
 // search the referred class on the base on its id
     for (D2rMap map : maps) {
       if (map.compareIdTo(referredClassID)) {
@@ -298,8 +256,8 @@ public class ConfigurationReader {
 
   /**
    * Tests whether a given sql query is valid for a sql attribute from a ClassMap element.
-   * @param sqlQuery TODO
-   * @throws D2RException
+   * @param sqlQuery The SQL query.
+   * @throws D2RException If the SQL query is not valid.
    */
   private static void validateSqlQuery(String sqlQuery) throws D2RException {
     String ucQuery = sqlQuery.toUpperCase();

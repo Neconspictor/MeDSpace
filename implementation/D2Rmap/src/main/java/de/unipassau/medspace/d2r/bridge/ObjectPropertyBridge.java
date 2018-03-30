@@ -129,7 +129,7 @@ public class ObjectPropertyBridge
     else if (pattern != null) {
       String value = getFromPattern(tuple);
       value = normalizer.normalize(value);
-      referredResource = primitiveValueFactory.createResource(value);
+      referredResource = factory.createResource(value);
     }
 
     return referredResource;
@@ -211,7 +211,7 @@ public class ObjectPropertyBridge
     // build the resource having its id
     String resourceID = resourceIDBuilder.toString();
     String uri = referredClass.urify(resourceID);
-    return primitiveValueFactory.createResource(uri);
+    return factory.createResource(uri);
   }
 
   /**

@@ -55,7 +55,7 @@ public class LuceneD2rResultFactory  {
   /**
    * Creates a new LuceneD2rResultFactory
    * @param mapField Will be stored in the created documents, to assign documents a D2rMap.
-   * @param maps TODO
+   * @param maps The list of D2rMaps
    */
   public LuceneD2rResultFactory(String mapField, List<D2rMap> maps) {
     this.mapField = mapField;

@@ -27,7 +27,7 @@ public class D2rMap implements Serializable {
   private List<Bridge> bridges;
 
   /**
-   * TODO
+   * The rdf type of the defined mapping.
    */
   private Bridge rdfTypeProperty;
 

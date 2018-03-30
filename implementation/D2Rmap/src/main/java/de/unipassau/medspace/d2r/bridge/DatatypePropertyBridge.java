@@ -47,14 +47,14 @@ public class DatatypePropertyBridge extends Bridge {
     // The lang tag specifies indirectly the dataType (rdf:langeString)
     // Thus the lang tag has a higher priority than the dataType tag
     if ((value != null) && (getLangTag() != null)) {
-      object = primitiveValueFactory.createLiteral(value, getLangTag());
+      object = factory.createLiteral(value, getLangTag());
     } else if ((value != null) && (getDataType() != null)) {
       // if no lang tag is set but the dataType tag createDoc a typed literal
       String dataType = normalizer.normalize(this.dataType);
-      object = primitiveValueFactory.createTypedLiteral(value, dataType);
+      object = factory.createTypedLiteral(value, dataType);
     }  else {
       // no lang tag and dataType set; assume xsd:string is the data type
-      object = primitiveValueFactory.createLiteral(value);
+      object = factory.createLiteral(value);
     }
     return object;
   }

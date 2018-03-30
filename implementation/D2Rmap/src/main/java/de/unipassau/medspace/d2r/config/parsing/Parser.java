@@ -13,15 +13,15 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * TODO
+ * A parser for the D2R mapping configuration.
  */
 public class Parser {
 
   /**
-   * TODO
-   * @param fileName
-   * @return
-   * @throws JAXBException
+   * Parses a D2R mapping configuration file.
+   * @param fileName The D2R mapping configuration file.
+   * @return The parsed configuration file.
+   * @throws JAXBException If the file couldn't be parsed.
    */
   public RootParsing parse(String fileName) throws JAXBException, SAXException, IOException {
     JAXBContext context = JAXBContext.newInstance(RootParsing.class);
