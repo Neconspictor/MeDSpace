@@ -7,21 +7,37 @@ import com.fasterxml.jackson.databind.JsonNode;
  * retrieving the data.
  */
 public class JsonResponse {
-  private JsonNode data; // public modifier as this class contains no logic.
-  private Exception exception;
+  private JsonNode data = null;
+  private Exception exception = null;
 
+  /**
+   * Provides the json data.
+   * @return the json data.
+   */
   public JsonNode getData() {
     return data;
   }
 
+  /**
+   * Sets the json data.
+   * @param data the json data.
+   */
   public void setData(JsonNode data) {
     this.data = data;
   }
 
+  /**
+   * Provides the thrown exception.
+   * @return the thrown exception.
+   */
   public Exception getException() {
     return exception;
   }
 
+  /**
+   * Sets the thrown exception
+   * @param exception the thrown exception
+   */
   public void setException(Exception exception) {
     this.exception = exception;
   }

@@ -11,12 +11,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
- * Created by David Goeth on 17.11.2017.
+ * A writer that writes http messages in chunks.
  */
 public class HttpChunkedWriter {
 
   private CompletableFuture<Done> resultFuture;
 
+  /**
+   * Creates a new HttpChunkedWriter object.
+   * @param source The source byte content.
+   * @param out The output stream for writing.
+   * @param materializer the materializer to use.
+   */
   public HttpChunkedWriter(Source<ByteString, ?> source, OutputStream out, Materializer materializer) {
 
     // The sink that writes to the output stream
@@ -28,6 +34,10 @@ public class HttpChunkedWriter {
         .toCompletableFuture();
   }
 
+  /**
+   * Provides the result future.
+   * @return the result future.
+   */
   public CompletableFuture<Done> future() {
     return resultFuture;
   }

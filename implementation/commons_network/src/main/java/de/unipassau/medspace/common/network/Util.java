@@ -22,12 +22,19 @@ import java.util.function.Supplier;
 
 
 /**
- * Created by David Goeth on 06.10.2017.
+ * Utility methods useful when doing network communication.
  */
 public final class Util {
 
   private static Logger log = LoggerFactory.getLogger(Util.class);
 
+  /**
+   * Executes a function that provides a completion stage object for a Json object.
+   * Then this method waits until the response has been arrived.
+   * @param function The function to call.
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return The Json response message.
+   */
   public static JsonResponse executeAndWaitJson(Supplier<CompletionStage<? extends WSResponse>>
                                             function, int triesOnFailure) {
     assert triesOnFailure >= 1;
@@ -59,10 +66,13 @@ public final class Util {
   }
 
   /**
-   * TODO
-   * @param function
-   * @param triesOnFailure
-   * @return
+   * Executes a function that provides a completion stage object for a WSResponse object.
+   * Then this method waits until the response has been arrived.
+   * @param function The function to call.
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return The response message.
+   *
+   * @throws IOException if the response message couldn't be retrieved after  (triesOnFailure + 1) tries.
    */
   public static WSResponse executeAndWait(Supplier<CompletionStage<? extends WSResponse>>
                                                     function, int triesOnFailure) throws IOException {
@@ -98,28 +108,82 @@ public final class Util {
     return response;
   }
 
+  /**
+   * Executes a http request using the GET method. This methods waits for the response.
+   * @param request The http request
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return the response message
+   * @throws IOException if the response message couldn't be retrieved after  (triesOnFailure + 1) tries.
+   */
   public static WSResponse getAndWait(WSRequest request, int triesOnFailure) throws IOException {
     return executeAndWait(() -> request.get(), triesOnFailure);
   }
 
+  /**
+   * Executes a http request using the GET method. It is expected that the response message will be a JSON response.
+   * This methods waits for the response.
+   * @param request The http request
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return the response message
+   */
   public static JsonResponse getAndWaitJson(WSRequest request, int triesOnFailure) {
     return executeAndWaitJson(() -> request.get(), triesOnFailure);
   }
 
+  /**
+   * Executes a http request using the POST method.
+   * This methods waits for the response.
+   *
+   * @param request The http request
+   * @param body The http POST body
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return the response message
+   * @throws IOException if the response message couldn't be retrieved after  (triesOnFailure + 1) tries.
+   */
   public static WSResponse postJsonAndWait(WSRequest request, JsonNode body, int triesOnFailure) throws IOException {
     return executeAndWait(()-> request.post(body), triesOnFailure);
   }
 
+  /**
+   * Executes a http request using the POST method.
+   * It is expected that the response message will be a JSON response.
+   * This methods waits for the response.
+   *
+   * @param request The http request
+   * @param body The http POST body
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return the response message
+   */
   public static JsonResponse postAndWaitJson(WSRequest request, JsonNode body, int triesOnFailure) {
     return executeAndWaitJson(()-> request.post(body), triesOnFailure);
   }
 
+  /**
+   * Executes a http request using the POST method. As POST body a file will be included.
+   * @param request The http request
+   * @param file Will be set as POST the body
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return the response message
+   * @throws IOException if the response message couldn't be retrieved after  (triesOnFailure + 1) tries.
+   */
   public static WSResponse postFileAndWait(WSRequest request, File file, int triesOnFailure) throws IOException {
 
     return executeAndWait(()->request.post(file), triesOnFailure);
   }
 
-  public static WSResponse postInputStreamAndWait(WSRequest request, InputStream in, int triesOnFailure) throws IOException {
+  /**
+   * Sends content from an input stream using http POST.
+   * The input stream will be sent by using chunked http messages.
+   * This methods waits for the response.
+   *
+   * @param request The http request
+   * @param in The content to sent.
+   * @param triesOnFailure Maximal tries if an error occurrs while waiting for a response.
+   * @return the response message
+   * @throws IOException if the response message couldn't be retrieved after  (triesOnFailure + 1) tries.
+   */
+  public static WSResponse postInputStreamAndWait(WSRequest request, InputStream in, int triesOnFailure)
+      throws IOException {
 
     Source<ByteString, ?> source = StreamConverters.fromInputStream(()->in);
 
@@ -127,6 +191,13 @@ public final class Util {
     return executeAndWait(()->request.post(new SourceBodyWritable(source)), triesOnFailure);
   }
 
+  /**
+   * Executes a http request using the GET method.
+   * The result of the request is returned as an input stream.
+   * @param request The http request to execute.
+   * @return The response message.
+   * @throws IOException If an io error occurs.
+   */
   public static InputStream getGETInputStream(WSRequest request) throws IOException {
     StringBuilder builder = new StringBuilder();
     String query = "";
