@@ -224,7 +224,7 @@ public class Datasource implements Comparable<Datasource> {
     private List<Service> services;
 
     /**
-     * TODO
+     * Creates a new Builder object.
      */
     public Builder() {
       url = null;
@@ -234,8 +234,8 @@ public class Datasource implements Comparable<Datasource> {
     }
 
     /**
-     * TODO
-     * @param datasource
+     * Creates a new Builder object and initializes it with a given datasource.
+     * @param datasource Used to initialize this Builder.
      */
     public Builder(Datasource datasource) {
       url = datasource.url;
