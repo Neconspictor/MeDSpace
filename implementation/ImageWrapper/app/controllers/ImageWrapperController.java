@@ -109,6 +109,11 @@ public class ImageWrapperController extends WrapperController {
     return ok(target).as(mimeType).withHeader("Content-Disposition", dispositionValue);
   }
 
+  /**
+   * Provides a zip file of a given folder.
+   * @param relativePath The relative path of the folder-
+   * @return the zip file of a given folder.
+   */
   public Result getDirectory(String relativePath) {
     Result result;
     try {
