@@ -30,14 +30,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
+ * A provider of the DDSM Image Wrapper.
  */
 public class WrapperProvider implements Provider<Wrapper> {
 
   /**
-   * TODO
+   * The image file ending.
    */
-  public static String IMAGE_FILE_ENDING = "png";
+  public static final String IMAGE_FILE_ENDING = "png";
 
   /**
    * Logger instance for this class.
@@ -45,18 +45,22 @@ public class WrapperProvider implements Provider<Wrapper> {
   private static Logger log = LoggerFactory.getLogger(WrapperProvider.class);
 
   /**
-   * TODO
+   * The root folder for the DDSM cases.
    */
-  private File imageDirectory;
+  private File caseDirectory;
 
 
   /**
-   * TODO
+   * The created wrapper.
    */
   private Wrapper wrapper;
 
   /**
-   * TODO
+   * Creates a new WrapperProvider object.
+   *
+   * @param configProvider The provider for the DDSM configurations.
+   * @param shutdownService The shutdown service.
+   * @throws IOException If an IO error occurs.
    */
   @Inject
   public WrapperProvider(DdsmConfigProvider configProvider,
@@ -65,12 +69,12 @@ public class WrapperProvider implements Provider<Wrapper> {
     RootMapping rootParsing = configProvider.getDdsmMappingConfig();
     DDSMConfig ddsmConfig = configProvider.getDdsmConfig();
 
-    imageDirectory = new File(ddsmConfig.getImageDirectory());
+    caseDirectory = new File(ddsmConfig.getImageDirectory());
 
-    if (!imageDirectory.isDirectory()) throw new IOException("The image directory is not a valid directory: " + imageDirectory);
+    if (!caseDirectory.isDirectory()) throw new IOException("The image directory is not a valid directory: " + caseDirectory);
 
     String downloadFileServiceURL = createGetFileServiceURL(configProvider);
-    DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(imageDirectory, rootParsing,
+    DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(caseDirectory, rootParsing,
         downloadFileServiceURL);
     List<LuceneClassAdapter<?>> adapters = adapterFactory.createAdapters();
 
@@ -98,7 +102,7 @@ public class WrapperProvider implements Provider<Wrapper> {
     wrapper = new DDSM_ImageWrapper<>(tripleIndexManager,
         IMAGE_FILE_ENDING,
         namespaces,
-        imageDirectory);
+        caseDirectory);
 
     wrapper.getIndex().open();
     boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
@@ -110,11 +114,7 @@ public class WrapperProvider implements Provider<Wrapper> {
     }
   }
 
-  /**
-   * TODO
-   * @param configProvider
-   * @return
-   */
+
   private String createGetFileServiceURL(DdsmConfigProvider configProvider) {
     String testParam = "test";
 
