@@ -4,23 +4,17 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * TODO
+ * A flat map stream maps a 'stream of a stream of type T' to 'a stream of type T'.
  */
 public class FlatMapStream<T> implements Stream<T> {
 
-  /**
-   * TODO
-   */
   private final Stream<Stream<T>> source;
 
-  /**
-   * TODO
-   */
   private Stream<T> current;
 
   /**
-   * TODO
-   * @param source
+   * Creates a new FlatMapStream object.
+   * @param source The stream to flat map.
    */
   public FlatMapStream(Stream<Stream<T>> source) {
     this.source = source;
@@ -46,10 +40,6 @@ public class FlatMapStream<T> implements Stream<T> {
     return current.hasNext();
   }
 
-  /**
-   * TODO
-   * @return
-   */
   private Stream<T> fetchNewCollection() throws IOException {
     if (!source.hasNext()) return null;
     return source.next();

@@ -1,6 +1,5 @@
 package de.unipassau.medspace.common.stream;
 
-import de.unipassau.medspace.common.stream.Stream;
 import de.unipassau.medspace.common.util.Converter;
 
 import java.io.IOException;

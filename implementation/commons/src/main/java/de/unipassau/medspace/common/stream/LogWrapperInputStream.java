@@ -7,23 +7,20 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * TODO
+ * An input stream that wraps another input stream in order to log events.
  */
 public class LogWrapperInputStream extends InputStream {
 
-  /**
-   * TODO
-   */
   private static Logger log = LoggerFactory.getLogger(LogWrapperInputStream.class);
 
   /**
-   * TODO
+   * The wrapped input stream.
    */
   protected InputStream source;
 
   /**
-   * TODO
-   * @param in
+   * Creates a new LogWrapperInputStream object.
+   * @param in The input stream to wrap.
    */
   public LogWrapperInputStream(InputStream in) {
     this.source = in;

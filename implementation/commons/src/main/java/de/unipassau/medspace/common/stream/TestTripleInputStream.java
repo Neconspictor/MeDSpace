@@ -14,8 +14,8 @@ import java.io.InputStream;
 import java.util.Set;
 
 /**
- * An input stream from a serialized de.unipassau.medspace.common.stream.Stream of jena rdf triples.
- * This class allows to serialize a stream of jena rdf triples and provide an input stream of the
+ * An input stream from a serialized stream of rdf triples.
+ * This class allows to serialize a stream of rdf triples and provide an input stream of the
  * serialization. For the serialization this class uses a serialization language and
  * an optional PrefixMapping for prefixing rdf namespaces.
  */
@@ -27,7 +27,7 @@ public class TestTripleInputStream extends InputStream {
   private final ResettableByteArrayInputStream in;
 
   /**
-   * The stream of jena rdf triples.
+   * The stream of rdf triples.
    */
   private final Stream<Triple> triples;
 
@@ -40,16 +40,10 @@ public class TestTripleInputStream extends InputStream {
   private TripleWriter writer;
 
   /**
-   * Creates a new TripleInputStream from a stream of jena rdf triples, a org.apache.jena.riot.Lang
-   * to use as the serialization output format and org.apache.jena.shared.PrefixMapping that defines the namespace
-   * prefixes to use in the serialization process of the rdf triples.
-   * @param triples The stream of jena rdf triples that should be serialized. The result of the serialization can
+   * Creates a new TripleInputStream from a stream of rdf triples.
+   * @param triples The stream of rdf triples that should be serialized. The result of the serialization can
    *                than be read from this input stream.
-   * @param format The serialization output format. Note, that not all org.apache.jena.riot.Lang classes are supported,
-   *             but only which one, that can be streamed. See
-   *             <a href="https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang">
-   *             https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang</a>
-   *             for a list of supported languages.
+   * @param format The serialization output format.
    * @param namespaces The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
    */
   public TestTripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces, TripleWriterFactory factory)
