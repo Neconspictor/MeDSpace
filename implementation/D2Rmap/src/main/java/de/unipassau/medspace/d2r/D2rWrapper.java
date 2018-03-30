@@ -50,14 +50,17 @@ public class D2rWrapper<DocType> extends AbstractWrapper<DocType, MappedSqlTuple
   /**
    * Creates a new D2rWrapper.
    * @param connectionPool The connction pool to use to get a connection to the datasource.
+   * @param indexManager The index manager to use.
    * @param maps The list of D2rMaps that this wrapper should use.
    * @param namespaces A mapping of namespaces this wrapper should use.
-   * @throws D2RException If the wrapper couldn't be created successfully.
+   * @param useIndex If the wrapper should uses an index.
+   * @throws IOException If the wrapper couldn't be created successfully.
    */
   public D2rWrapper(ConnectionPool connectionPool,
                     List<D2rMap> maps,
                     Map<String, Namespace> namespaces,
-                    TripleIndexManager<DocType, MappedSqlTuple> indexManager, boolean useIndex) throws IOException {
+                    TripleIndexManager<DocType, MappedSqlTuple> indexManager,
+                    boolean useIndex) throws IOException {
     super(indexManager, namespaces);
     this.proxy = new D2rProxy(connectionPool);
 

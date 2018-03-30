@@ -74,6 +74,7 @@ public class D2rMap implements Serializable {
 
   /**
    * Default constructor. Creates a new D2rMap.
+   * @param rdfFactory The RDF factory to use.
    */
   public D2rMap(RDFFactory rdfFactory) {
     bridges = new ArrayList<>();
@@ -128,6 +129,8 @@ public class D2rMap implements Serializable {
    * Creates a list of rdf triples from a given sql result tuple.
    * @param tuple The sql result tuple to create rdf triples from.
    * @return A  list of rdf triples that represent the sql result tuple.
+   *
+   * @throws IOException If an IO error occurs
    */
   public List<Triple> createTriples(SQLResultTuple tuple) throws IOException {
     List<Triple> triples = new ArrayList<>();
@@ -179,7 +182,7 @@ public class D2rMap implements Serializable {
   /**
    * Provides the id of this D2rMap.
    * Warranty: The result isn't null
-   * @return
+   * @return the id of this D2rMap.
    */
   public String getId() {
     assert id != null;
@@ -244,7 +247,7 @@ public class D2rMap implements Serializable {
 
   /**
    * Provides the sql query used to fetch data from a datasource.
-   * @return
+   * @return the sql query used to fetch data from a datasource.
    */
   public String getSql() {
     return sql;

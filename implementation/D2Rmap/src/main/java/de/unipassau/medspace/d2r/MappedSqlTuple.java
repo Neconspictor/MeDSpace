@@ -31,7 +31,7 @@ public class MappedSqlTuple {
 
   /**
    * Provides the D2rMap the sql tuple is assigned to.
-   * @return
+   * @return the D2rMap the sql tuple is assigned to.
    */
   public D2rMap getMap() {
     return map;
@@ -39,7 +39,7 @@ public class MappedSqlTuple {
 
   /**
    * Provides the sql tuple that is assigned to the D2rMap.
-   * @return
+   * @return the sql tuple that is assigned to the D2rMap.
    */
   public SQLResultTuple getSource() {
     return source;

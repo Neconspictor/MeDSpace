@@ -60,9 +60,9 @@ public class ObjectPropertyBridge
    * @throws D2RException thrown if referredClassID isn't null and no D2rMap could be found, whose id matches
    * 'referredClassID'.
    */
-  public ObjectPropertyBridge(RDFFactory primitiveValueFactory, String referredClassID,
+  public ObjectPropertyBridge(RDFFactory factory, String referredClassID,
                               List<D2rMap> maps) throws D2RException {
-    super(primitiveValueFactory);
+    super(factory);
     referredColumns = new ArrayList<>();
     setReferredClassID(referredClassID);
     init(maps);

@@ -21,7 +21,9 @@ public class Parser {
    * Parses a D2R mapping configuration file.
    * @param fileName The D2R mapping configuration file.
    * @return The parsed configuration file.
+   * @throws IOException If an io error occurs
    * @throws JAXBException If the file couldn't be parsed.
+   * @throws SAXException If an XML parse error occurs.
    */
   public RootParsing parse(String fileName) throws JAXBException, SAXException, IOException {
     JAXBContext context = JAXBContext.newInstance(RootParsing.class);
