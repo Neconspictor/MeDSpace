@@ -59,16 +59,16 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
   }
 
   /**
-   *
-   * @return
+   * Provides the list of abnormalities.
+   * @return the list of abnormalities.
    */
   public List<Abnormality> getAbnormalities() {
     return abnormalities;
   }
 
   /**
-   *
-   * @return
+   * Provides the total number of abnormalities.
+   * @return the total number of abnormalities.
    */
   public int getTotalAbnormalities() {
     return totalAbnormalities;
@@ -92,7 +92,7 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
   }
 
   /**
-   * TODO
+   * A Parser for an overlay file.
    */
   private static class Parser{
 
@@ -101,18 +101,20 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
     private int lesionTypeCounter = 0;
 
     /**
-     * TODO
-     * @param overlayID
+     * Creates a new Parser object.
+     * @param overlayID The overlay id to use.
      */
     private Parser(String overlayID) {
       this.overlayID = overlayID;
     }
 
     /**
-     * TODO
-     * @param file
-     * @return
-     * @throws IOException
+     * Parses overlay meta data from an overlay file.
+     * @param file The overlay file.
+     * @param caseName The name of the case the overlay file belongs to.
+     *
+     * @return overlay meta data from an overlay file.
+     * @throws IOException If an IO error occurs.
      */
     public OverlayMetaData parse(File file, String caseName) throws IOException  {
       List<String> content = FileUtil.getLineContent(file);
