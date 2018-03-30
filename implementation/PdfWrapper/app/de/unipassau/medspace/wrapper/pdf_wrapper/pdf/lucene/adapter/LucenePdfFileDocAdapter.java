@@ -1,5 +1,6 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter;
 
+import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
 import de.unipassau.medspace.common.rdf.mapping.ClassMapping;
 import de.unipassau.medspace.common.rdf.mapping.Identifiable;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
@@ -20,83 +21,38 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * TODO
+ * A document adapter for PDF files.
  */
 public abstract class LucenePdfFileDocAdapter<ClassType extends Identifiable>
-    implements DocumentAdapter<ClassType, Document> {
+    extends LuceneClassAdapter<ClassType> {
 
 
   /**
-   * TODO
-   */
-  public static final String CLASS_ID = "CLASS_ID";
-
-  /**
-   * TODO
-   */
-  public static final String OBJECT_ID = "ID";
-
-  /**
-   * TODO
-   */
-  protected static final String META_DATA_TAGS = "META_DATA_TAGS";
-
-  /**
-   * TODO
-   */
-  protected static final String OBJECT_ID_META_DATA_TAGS = "OBJECT_ID_META_DATA_TAGS";
-
-  /**
-   * TODO
-   */
-  protected List<Pair<String, PropertyMapping>> fieldNamePropertyPairs;
-
-  /**
-   * TODO
-   */
-  protected List<String> metaDataFields;
-
-  /**
-   * TODO
+   * A list of fields that should be considered for searching but are not used for exporting RDF data.
    */
   protected List<String> notExportedSearchableFields;
 
-  /**
-   * TODO
-   */
-  protected final ClassMapping classParsing;
 
   /**
-   * TODO
+   * Creates a new LucenePdfFileDocAdapter object.
+   * @param classMapping The class mapping to use.
    */
-  protected LucenePdfFileDocAdapter(ClassMapping classParsing) {
-    this.fieldNamePropertyPairs = new ArrayList<>();
+  protected LucenePdfFileDocAdapter(ClassMapping classMapping) {
+    super(classMapping, null);
     this.notExportedSearchableFields = new ArrayList<>();
-    this.classParsing = classParsing;
-    this.metaDataFields = new ArrayList<>();
-
-    metaDataFields.add(META_DATA_TAGS);
-    metaDataFields.add(OBJECT_ID_META_DATA_TAGS);
-
   }
 
 
-  /**
-   * TODO
-   * @param source The object to convert
-   * @return
-   * @throws IOException
-   */
   @Override
   public final Document convert(ClassType source) throws IOException {
     Document document = new Document();
     //assign it the id
-    document.add(new StringField(CLASS_ID, classParsing.getClassId(), Field.Store.YES));
+    document.add(new StringField(CLASS_ID, classMapping.getClassId(), Field.Store.YES));
     document.add(new StringField(OBJECT_ID, source.getId(), Field.Store.YES));
     addFields(source, document);
 
     //add meta data tags
-    String tags = createListString(classParsing.getMetaData());
+    String tags = createListString(classMapping.getMetaData());
     document.add(createField(META_DATA_TAGS, tags));
 
     // add content of the image folder structure as searchable meta-data
@@ -109,123 +65,21 @@ public abstract class LucenePdfFileDocAdapter<ClassType extends Identifiable>
     return document;
   }
 
-  /**
-   * TODO
-   * @param document
-   * @return
-   */
-  public boolean isConvertible(Document document) {
-    IndexableField field = document.getField(CLASS_ID);
-    if (field == null) return false;
-    return field.stringValue().equals(classParsing.getClassId());
-  }
-
 
   /**
-   * TODO
-   * @param document
-   * @return
+   * Provides the list of not exported but searchable fields.
+   * @return the list of not exported but searchable fields.
    */
-  public String getObjectId(Document document) {
-    return document.get(OBJECT_ID);
-  }
-
-  /**
-   * TODO
-   * @return
-   */
-  public List<Pair<String, PropertyMapping>>getFieldNamePropertyPairs() {
-    return Collections.unmodifiableList(fieldNamePropertyPairs);
-  }
-
   public List<String> getNotExportedSearchableFields() {
     return Collections.unmodifiableList(notExportedSearchableFields);
   }
 
-  /**
-   * TODO
-   * @return
-   */
-  public String getClassBaseURI() {
-    return classParsing.getRdfType();
-  }
 
   /**
-   * TODO
-   * @param source
-   * @param doc
-   * @throws IOException
-   */
-  protected abstract void addFields(ClassType source, Document doc) throws IOException;
-
-
-  /**
-   * TODO
-   * @param fieldName
+   * Adds a field to the list of not exported but searchable fields.
+   * @param fieldName a field that should be searchable ,but not exported.
    */
   protected void addNotExportableSearchableField(String fieldName) {
     notExportedSearchableFields.add(fieldName);
-  }
-
-  /**
-   * TODO
-   * @param fieldName
-   * @param property
-   */
-  protected void addPair(String fieldName, PropertyMapping property) {
-    fieldNamePropertyPairs.add(new Pair<>(fieldName, property));
-  }
-
-
-  /**
-   * TODO
-   * @param fieldName
-   * @param value
-   * @return
-   */
-  protected IndexableField createField(String fieldName, String value) {
-    return new TextField(fieldName, value, Field.Store.YES);
-  }
-
-  /**
-   * TODO
-   * @param fieldName
-   * @param value
-   * @return
-   */
-  protected IndexableField createField(String fieldName, int value) {
-    return new TextField(fieldName, String.valueOf(value), Field.Store.YES);
-  }
-
-  /**
-   * TODO
-   * @param fieldName
-   * @param value
-   * @return
-   */
-  protected IndexableField createField(String fieldName, Date value) {
-    return new TextField(fieldName, RdfUtil.format(value), Field.Store.YES);
-  }
-
-  protected String createListString(List<String> list) {
-    StringBuilder builder = new StringBuilder();
-    for (String elem : list)
-      builder.append(elem + " ");
-    return builder.toString().trim();
-  }
-
-  /**
-   * TODO
-   * @param pair
-   * @param field
-   * @return
-   */
-  public abstract String createValue(Pair<String, PropertyMapping> pair, IndexableField field);
-
-  /**
-   * TODO
-   */
-  public List<String> getMetaDataFields() {
-    return metaDataFields;
   }
 }

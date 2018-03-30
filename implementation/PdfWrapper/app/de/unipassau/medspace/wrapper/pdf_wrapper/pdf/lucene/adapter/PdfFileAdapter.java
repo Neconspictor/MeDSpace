@@ -55,8 +55,8 @@ public class PdfFileAdapter extends LucenePdfFileDocAdapter<PdfFile> {
   }
 
   @Override
-  public String createValue(Pair<String, PropertyMapping> pair, IndexableField field) {
-    return field.stringValue();
+  protected String getValue(Pair<String, PropertyMapping> pair, IndexableField field) {
+    return null;
   }
 
   private String extractText(PdfFile source) throws IOException {

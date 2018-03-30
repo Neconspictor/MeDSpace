@@ -33,7 +33,7 @@ public class PdfConfigReader {
 
   /**
    * Parses the PDF wrapper RDF mappings from a given file.
-   * 
+   *
    * @param fileName The file to parse.
    * @throws JAXBException If an error related to JAXB occurs.
    * @throws IOException If an IO error occurs.
