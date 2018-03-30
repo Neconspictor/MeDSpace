@@ -30,19 +30,11 @@ public class ImageWrapperService extends WrapperService {
    */
   private static Logger log = LoggerFactory.getLogger(ImageWrapperService.class);
 
-  /**
-   * TODO
-   */
+
   private RegisterClient registerClient;
 
-  /**
-   * TODO
-   */
   private boolean connectToRegister;
 
-  /**
-   * TODO
-   */
   private Datasource wrapperDatasource;
 
 
@@ -51,7 +43,7 @@ public class ImageWrapperService extends WrapperService {
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
-   * @param wrapper TODO
+   * @param wrapper The wrapper.
    */
   @Inject
   public ImageWrapperService(ApplicationLifecycle lifecycle,
@@ -129,9 +121,7 @@ public class ImageWrapperService extends WrapperService {
     log.info("Initialized SQL Wrapper");
   }
 
-  /**
-   * TODO
-   */
+
   private void deregister() {
     boolean success = registerClient.deRegister(wrapperDatasource, generalConfig.getRegisterURL());
 
