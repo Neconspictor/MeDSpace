@@ -20,38 +20,57 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * TODO
+ * A lucene class adapter that is used for mapping identifiables to lucene documents.
  */
 public abstract class LuceneClassAdapter<ClassType extends Identifiable>
     implements DocumentAdapter<ClassType, Document, IndexableField> {
 
   /**
-   * TODO
+   * Specifies a lucene field that is used to store the class id of the class mapping.
    */
   public static final String CLASS_ID = "CLASS_ID";
 
+  /**
+   * Specifies a lucene field that is used to store meta data tags specified in the configuration file.
+   * This type of meta data is the same for all objects assigned to the same class mapping.
+   */
   public static final String META_DATA_TAGS = "META_DATA_TAGS";
 
   /**
-   * TODO
+   * Specifies a lucene field that is used to store the id of the identifiable.
    */
   public static final String OBJECT_ID = "ID";
 
+  /**
+   * Specifies a lucene field that is used to store meta data tags that are unique for the identifiable.
+   */
   public static final String OBJECT_ID_META_DATA_TAGS = "OBJECT_ID_META_DATA_TAGS";
 
 
+  /**
+   * A decorator that is able to customize the mapping (e.g. by adding more content to index).
+   */
   private final LuceneClassAdapter<? super ClassType> decorator;
 
+  /**
+   * The list of field name to property mapping.
+   */
   protected final List<Pair<String, PropertyMapping>> fieldNamePropertyPairs;
 
+  /**
+   * Additional fields that should be used for storing meta data.
+   */
   protected final List<String> metaDataFields;
 
+  /**
+   * The class mapping assigns the lucene document a certain (rdf) class type.
+   */
   protected final ClassMapping classMapping;
 
 
   /**
-   * TODO
-   * @param decorator
+   * Creates a new LuceneClassAdapter.
+   * @param decorator Another LuceneClassAdapter that should be used as a decorator.
    */
   public LuceneClassAdapter(LuceneClassAdapter<? super ClassType> decorator) {
     this(null, decorator);
@@ -59,9 +78,12 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
 
 
   /**
-   * TODO
-   * @param decorator
-   * @param classMapping
+   * Creates a new LuceneClassAdapter from a given class mapping and a decorator.
+   *
+   * @param decorator Another LuceneClassAdapter that should be used as a decorator.
+   * @param classMapping The class mapping that specifies the RDF type for the lucene documents.
+   * @throw IllegalArgumentException If the decorator uses another class mapping than the one that
+   * was specified to use for this object.
    */
   public LuceneClassAdapter(ClassMapping classMapping, LuceneClassAdapter<? super ClassType> decorator) {
     this.decorator = decorator;
@@ -165,28 +187,33 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
 
 
   /**
-   * TODO
-   * @param source
-   * @param doc
-   * @throws IOException
+   * Adds lucene fields to a lucene document. The field content is created by the source argument.
+   * @param source The source to create the fields from.
+   * @param doc The document to add the created fields to.
+   * @throws IOException If any io error occurs.
    */
   protected abstract void addFields(ClassType source, Document doc) throws IOException;
 
 
   /**
-   * TODO
-   * @param fieldName
-   * @param property
+   * Adds a mapping of a field name to a property mapping to this object.
+   * @param fieldName The field name.
+   * @param property The property mapping.
    */
   protected void addPair(String fieldName, PropertyMapping property) {
     fieldNamePropertyPairs.add(new Pair<>(fieldName, property));
   }
 
   /**
-   * TODO
-   * @param pair
-   * @param field
-   * @return
+   * Cretaes a string value from a lucene field and a pair of a field name and a property mapping.
+   * The created value can be resolved by this object or by its decorator.
+   *
+   * NOTE: This object has a higher priority. Thus if this object and its decorator could provide a value for the field,
+   * the decorator will be ignored.
+   * @param pair a pair of a field name and a property mapping.
+   * @param field a lucene field
+   * @return The value for the lucene
+   * field.
    */
   protected final String createDecoratedValue (Pair<String, PropertyMapping> pair, IndexableField field) {
     String value = getValue(pair, field);
@@ -203,30 +230,30 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
   }
 
   /**
-   * TODO
-   * @param fieldName
-   * @param value
-   * @return
+   * Factory method for creating a lucene field out of a field name and a text value.
+   * @param fieldName a lucene field
+   * @param value a text value
+   * @return A lucene field.
    */
   protected IndexableField createField(String fieldName, String value) {
     return new TextField(fieldName, value, Field.Store.YES);
   }
 
   /**
-   * TODO
-   * @param fieldName
-   * @param value
-   * @return
+   * Factory method for creating a lucene field out of a field name and a integer value.
+   * @param fieldName a lucene field
+   * @param value a integer value
+   * @return a lucene field.
    */
   protected IndexableField createField(String fieldName, int value) {
     return new TextField(fieldName, String.valueOf(value), Field.Store.YES);
   }
 
   /**
-   * TODO
-   * @param fieldName
-   * @param value
-   * @return
+   * Factory method for creating a lucene field out of a field name and a date.
+   * @param fieldName a lucene field
+   * @param value a date
+   * @return a lucene field.
    */
   protected IndexableField createField(String fieldName, Date value) {
     //return new TextField(fieldName, Util.format(value), Field.Store.YES);
@@ -234,9 +261,9 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
   }
 
   /**
-   * TODO
-   * @param list
-   * @return
+   * Concates a list of strings to one string. The elements of the list will be separated by spaces.
+   * @param list The list of strings.
+   * @return The concatenated list elements separated by spaces.
    */
   protected String createListString(List<String> list) {
     StringBuilder builder = new StringBuilder();
@@ -246,10 +273,10 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
   }
 
   /**
-   * TODO
-   * @param source
-   * @param doc
-   * @throws IOException
+   * Decorates a given document using a source object.
+   * @param source The source object
+   * @param doc a lucene document.
+   * @throws IOException If an io error occurs.
    */
   protected final void decorate(ClassType source, Document doc) throws IOException {
     if (decorator != null) {
@@ -259,5 +286,12 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
     addFields(source, doc);
   }
 
+  /**
+   * Provides the content of a field using a pair of a field name and a property mapping.
+   * This method is different from createDecoratedValue as it mustn't consult the decorator.
+   * @param pair The pair of a field name and a property mapping
+   * @param field The lucee field
+   * @return The content of the field
+   */
   protected abstract String getValue(Pair<String, PropertyMapping> pair, IndexableField field);
 }

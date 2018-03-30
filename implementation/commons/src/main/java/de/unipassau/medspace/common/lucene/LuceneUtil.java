@@ -7,7 +7,7 @@ import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import java.io.IOException;
 
 /**
- * TODO
+ * Contains methods that are useful when working with lucene.
  */
 public class LuceneUtil {
 

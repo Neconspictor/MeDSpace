@@ -13,35 +13,46 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * TODO
+ * A lucence class-document adapter for RDF types representing a file.
  */
 public class LuceneDocFileAdapter<FileType extends IdentifiableFile>
     extends LuceneClassAdapter<FileType> {
 
   /**
-   * TODO
+   * Specifies a lucene field that is used to store the URL to the source file.
    */
   public static final String SOURCE = "SOURCE";
 
   /**
-   * TODO
+   * Specifies a lucene field that is used to store meta data about the file folder structure.
    */
   public static final String FILE_FOLDER_STRUCTURE_METADATA = "FILE_FOLDER_STRUCTURE_METADATA";
 
+  /**
+   * Used to create relative paths for source files.
+   */
   protected final File root;
 
+  /**
+   * The class mapping for this class.
+   */
   protected final FileMapping fileMapping;
 
+  /**
+   * The donwload service URL is used in combination with the relative file path (created with the root file)
+   * to create a donwload link for the source file.
+   */
   protected final String downloadService;
 
 
 
   /**
-   * TODO
-   * @param fileMapping
-   * @param root
-   * @param downloadService
-   * @param decorator
+   * Creates a new LuceneDocFileAdapter object.
+   * @param fileMapping The class mapping for this class.
+   * @param root Used to create relative paths for source files.
+   * @param downloadService The donwload service URL is used in combination with the relative file path (created with the root file)
+   * to create a donwload link for the source file.
+   * @param decorator Another LuceneClassAdapter that should be used as a decorator.
    */
   public LuceneDocFileAdapter(FileMapping fileMapping,
                               File root,
@@ -82,9 +93,9 @@ public class LuceneDocFileAdapter<FileType extends IdentifiableFile>
   }
 
   /**
-   * TODO
-   * @param property
-   * @return
+   * Checks if a given property mapping is equal to the file mapping property of this object.
+   * @param property The property mapping to check.
+   * @return true if the property mapping and 'fileMapping' are equal.
    */
   protected boolean isFileReference(PropertyMapping property) {
     if (fileMapping.getSource().equals(property)) return true;

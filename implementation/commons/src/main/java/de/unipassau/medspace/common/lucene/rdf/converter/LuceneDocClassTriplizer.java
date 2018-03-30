@@ -11,17 +11,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO
+ * Creates RDF triples out of a lucene document.
  */
 public class LuceneDocClassTriplizer extends DocumentClassTriplizer<Document,IndexableField> {
 
 
   /**
-   * TODO
+   * Creates a new lucene document class triplizer.
    *
-   * @param documentAdapters
-   * @param normalizer
-   * @param rdfFactory
+   * @param documentAdapters The class adapters to use for triplizing.
+   * @param normalizer The normalizer used to normalize rdf IRIs.
+   * @param rdfFactory Used to create RDF triples.
    */
   public LuceneDocClassTriplizer(List<LuceneClassAdapter<?>> documentAdapters,
                                  QNameNormalizer normalizer,
