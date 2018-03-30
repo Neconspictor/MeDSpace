@@ -29,7 +29,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, MappedSq
 
   /**
    * Creates a new LuceneIndexFactory.
-   * @param maps
+   * @param maps The list of D2rMaps to use.
    * @param directory The directory the created index should store its data.
    */
   public LuceneIndexFactory(List<D2rMap> maps, String directory) {

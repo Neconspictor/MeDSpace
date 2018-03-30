@@ -54,6 +54,7 @@ public class ObjectPropertyBridge
    * Creates a new ObjectPropertyBridge class instance. If the parameter 'referredClassID' is not null,
    * This class uses it to find the D2rMap in the accompanying list 'maps', that has the same id.
    *
+   * @param factory The RDF factory to use.
    * @param referredClassID Specifies the id of the referred D2rMap or null, if the pattern should be used for creating
    *                        property values instead of a D2rMap.
    * @param maps Used to get the referred D2rMap for creating property values.
@@ -178,7 +179,7 @@ public class ObjectPropertyBridge
    * Sets the id for the referred D2rMap.
    * If a D2rMap should be referred by this ObjectPropertyBridge, this method has to be called before the method 'init'
    * is called, as that method automatically searches the referred D2rMap on the base of the 'referredClassID' member.
-   * @param id
+   * @param id the id for the referred D2rMap.
    */
   protected void setReferredClassID(String id) {
 

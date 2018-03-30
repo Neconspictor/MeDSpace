@@ -23,11 +23,11 @@ public class DatatypePropertyBridge extends Bridge {
   protected String langTag;
 
   /**
-   * TODO
-   * @param primitiveValueFactory
+   * Creates a new DatatypePropertyBridge object.
+   * @param factory The RDF factory to use.
    */
-  public DatatypePropertyBridge(RDFFactory primitiveValueFactory) {
-    super(primitiveValueFactory);
+  public DatatypePropertyBridge(RDFFactory factory) {
+    super(factory);
   }
 
   /**

@@ -246,6 +246,8 @@ public class LuceneD2rResultFactory  {
    * Creates rdf triples from a document.
    * @param doc The document to create triples from.
    * @return A list of rdf triples that represent the document.
+   *
+   * @throws IOException If an IO error occurs.
    */
   protected List<Triple> triplize(Document doc) throws IOException {
     if (doc == null) throw new IllegalStateException("Document mustn't be null!");
