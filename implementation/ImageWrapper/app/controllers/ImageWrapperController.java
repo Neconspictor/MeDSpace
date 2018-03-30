@@ -19,7 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * This controller handles the access of the DDSM image wrapper services and manages the proper GUI rendering of the services.
+ * This controller handles the access of the DDSM image wrapper services and manages the proper GUI rendering of the
+ * services.
  */
 @Singleton
 public class ImageWrapperController extends WrapperController {
@@ -34,14 +35,17 @@ public class ImageWrapperController extends WrapperController {
    */
   private final ImageWrapperService imageWrapperService;
 
+  /**
+   * The root file for the images.
+   */
   private final File root;
 
 
   /**
-   * Creates a new ImageWrapperController
-   * @param wrapperService TODO
-   * @param rdfProvider
-   * @param configProvider
+   * Creates a new ImageWrapperController object.
+   * @param wrapperService The service of the image wrapper.
+   * @param rdfProvider The RDF provider.
+   * @param configProvider The configuration provider.
    */
   @Inject
   ImageWrapperController(ImageWrapperService wrapperService,
@@ -55,12 +59,17 @@ public class ImageWrapperController extends WrapperController {
 
   /**
    * Provides the test page of the DDSM image Wrapper.
-   * @return
+   * @return the test page of the DDSM image Wrapper.
    */
   public Result guiTest() {
     return ok(views.html.testGui.render());
   }
 
+  /**
+   * Provides a file by its relative path (seen from the root file).
+   * @param relativePath the relative file path.
+   * @return a file by its relative path (seen from the root file).
+   */
   public Result getFile(String relativePath) {
 
     String path;
@@ -112,6 +121,12 @@ public class ImageWrapperController extends WrapperController {
   }
 
 
+  /**
+   * Provides the content of a folder as a zip file.
+   * @param relativePath the relative folder path (seen from the root folder).
+   * @return the content of a folder as a zip file.
+   * @throws IOException If an IO error occurs.
+   */
   Result getZipFromDirectory(String relativePath) throws IOException {
     String path = root.getCanonicalPath();
 
@@ -173,6 +188,7 @@ public class ImageWrapperController extends WrapperController {
 
   /**
    * Provides the DDSM image Wrapper status and debug page.
+   * @return the DDSM image Wrapper status and debug page.
    */
   public Result index() {
     return ok(views.html.index.render(imageWrapperService, generalConfig));
