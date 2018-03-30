@@ -180,7 +180,6 @@ public class FileUtil {
    * @param root The root directory
    * @param subFile The file to get the relative path from.
    * @return The relative path of the file.
-   * @throws IOException If any io error occurs
    * @throws IllegalArgumentException if root is not a directory or root isn't a parent of subFile.
    */
   public static String getRelativePath(File root, File subFile)  {
@@ -208,7 +207,7 @@ public class FileUtil {
   /**
    * Creates a path structure that is platform independent.
    * @param file Used to get the path.
-   * @return
+   * @return a path structure that is platform independent.
    */
   public static String makePlatformIndependentPathStructure(File file) {
     String canonicalRoot = file.getAbsolutePath();

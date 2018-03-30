@@ -24,7 +24,7 @@ public class SqlUtil {
    * @param columnNames The columns that should contain one or more of the keywords.
    * @param operator Specifies the operator to use. Use {@link Operator#OR} if it suffices if one keyword is found
    *                 or use {@link Operator#AND} if all keywords have to occur.
-   * @return
+   * @return a new keyword condition, that can be used to search for keywords on a sql database.
    */
   public static String createKeywordCondition(List<String> keywords, List<String> columnNames, Operator operator) {
     StringBuilder builder = new StringBuilder();

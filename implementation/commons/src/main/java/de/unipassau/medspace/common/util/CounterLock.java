@@ -32,6 +32,7 @@ public class CounterLock {
 
   /**
    * Decrements the lock and executes a callback method if the counter has reached zero.
+   * @param onUnlockCallback a callback method if the counter has reached zero.
    */
   public void decrementLock(Runnable onUnlockCallback) {
     try {
@@ -75,7 +76,7 @@ public class CounterLock {
 
   /**
    * The current thread is suspended until the lock is unlocked.
-   * @throws InterruptedException If the thread is interrupted while waiting for the unlock event.
+   * @throws IllegalMonitorStateException If the thread is interrupted while waiting for the unlock event.
    */
   public void waitTillUnlocked() {
     try {

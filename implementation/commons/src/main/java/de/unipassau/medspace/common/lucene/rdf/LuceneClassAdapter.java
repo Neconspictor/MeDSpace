@@ -82,10 +82,11 @@ public abstract class LuceneClassAdapter<ClassType extends Identifiable>
    *
    * @param decorator Another LuceneClassAdapter that should be used as a decorator.
    * @param classMapping The class mapping that specifies the RDF type for the lucene documents.
-   * @throw IllegalArgumentException If the decorator uses another class mapping than the one that
+   * @throws IllegalArgumentException If the decorator uses another class mapping than the one that
    * was specified to use for this object.
    */
-  public LuceneClassAdapter(ClassMapping classMapping, LuceneClassAdapter<? super ClassType> decorator) {
+  public LuceneClassAdapter(ClassMapping classMapping, LuceneClassAdapter<? super ClassType> decorator)
+  throws IllegalArgumentException {
     this.decorator = decorator;
 
 

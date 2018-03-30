@@ -30,6 +30,7 @@ public abstract class AbstractWrapper<DocType, ElemType> implements Wrapper {
    * Creates a new AbstractWrapper object.
    * @param indexManager The used index manager, mustn't be null
    * @param namespaces The prefix-namespace mappings
+   * @throws IOException if an io error occurs
    */
   public AbstractWrapper(TripleIndexManager<DocType, ElemType> indexManager,
                          Map<String, Namespace> namespaces) throws IOException {

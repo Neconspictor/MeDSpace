@@ -36,7 +36,7 @@ public class TempFile implements Closeable {
 
   /**
    * Provides the file this class holds.
-   * @return
+   * @return the file this class holds.
    */
   public File get() {
     return source;

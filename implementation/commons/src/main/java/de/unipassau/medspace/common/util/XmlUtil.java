@@ -93,6 +93,7 @@ public class XmlUtil {
    * @return The compound schema. The returned schema will always be valid and not null.
    * @throws NullPointerException If <b>schemaFilenames</b> is <b>null</b>
    * @throws SAXException If no compound XSD schema could be created.
+   * @throws IOException if any io error occurs.
    */
   public static Schema createSchema(String[] schemaFilenames) throws SAXException, IOException {
 

@@ -126,6 +126,7 @@ public class LuceneKeywordSearcher implements KeywordSearcher<Document> {
    * Constructs a new keyword query for the lucene index.
    * @param fieldNameArray The names of a list of {@link org.apache.lucene.document.Field} to consider for searching.
    * @param keywords The keywords to search for in the specified {@link org.apache.lucene.document.Field}s.
+   * @param defaultOperator The default operator to use.
    * @return A new query that searches for the specified keywords.
    * @throws ParseException If the query couldn't be constructed.
    */

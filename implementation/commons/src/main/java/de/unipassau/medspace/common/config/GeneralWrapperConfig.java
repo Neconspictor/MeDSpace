@@ -50,21 +50,24 @@ public class GeneralWrapperConfig {
   }
 
   /**
-   * The directory the wrapper should store indexed data.
+   * Provides the directory the wrapper should store indexed data.
+   * @return the directory the wrapper should store indexed data.
    */
   public Path getIndexDirectory() {
     return data.indexDirectory;
   }
 
   /**
-   * A prefix namespace mapping read from the config file.
+   * Provides the prefix namespace mapping read from the config file.
+   * @return the prefix namespace mapping read from the config file.
    */
   public Map<String, Namespace> getNamespaces() {
     return Collections.unmodifiableMap(data.namespaces);
   }
 
   /**
-   * The export rdf language.
+   * Provides the export rdf language.
+   * @return the export rdf language.
    */
   public String getOutputFormat() {
     return data.outputFormat;
@@ -187,7 +190,7 @@ public class GeneralWrapperConfig {
 
     /**
      * Builds an immutable GeneralWrapperConfig object from this builder object.
-     * @return
+     * @return an immutable GeneralWrapperConfig object from this builder object.
      */
     public GeneralWrapperConfig build() {
       return new GeneralWrapperConfig(this);
@@ -344,6 +347,7 @@ public class GeneralWrapperConfig {
 
     /**
      * Provides the list of supported services.
+     * @return the list of supported services.
      */
     public List<Service> getServices() {
       return services;

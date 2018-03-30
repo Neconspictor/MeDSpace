@@ -35,6 +35,7 @@ public class GeneralWrapperConfigReader {
 
   /**
    * Constructs a new {@link GeneralWrapperConfigReader}.
+   * @param provider The RDF provider to use.
    */
   public GeneralWrapperConfigReader(RDFProvider provider) {
     this.provider = provider;

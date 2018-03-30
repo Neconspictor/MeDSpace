@@ -9,23 +9,25 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * TODO
+ * Contains utility methods useful when working with RDF.
  */
 public class RdfUtil {
 
   /**
-   * TODO
-   * @param value
-   * @param propertyParsing
-   * @return
+   * Creates a new literal.
+   * @param factory Used to create the literal
+   * @param normalizer The normalizer Used to normalize the literal.
+   * @param value The literal value
+   * @param propertyMapping Used for property mapping
+   * @return The created literal.
    */
   public static RDFObject createLiteral(RDFFactory factory,
                                         QNameNormalizer normalizer,
-                                        DataTypePropertyMapping propertyParsing,
+                                        DataTypePropertyMapping propertyMapping,
                                         String value) {
 
-    String dataType = propertyParsing.getDataType();
-    String lang = propertyParsing.getLang();
+    String dataType = propertyMapping.getDataType();
+    String lang = propertyMapping.getLang();
     RDFObject object;
 
     // The lang tag specifies indirectly the dataType (rdf:lang)
@@ -44,26 +46,27 @@ public class RdfUtil {
   }
 
   /**
-   * TODO
-   * @param propertyParsing
-   * @return
+   * Create a new property.
+   * @param factory Used to create the property.
+   * @param normalizer Used to normalize the property.
+   * @param propertyMapping Used to create the property.
+   * @return a new property.
    */
   public static RDFResource createProperty(RDFFactory factory,
                                            QNameNormalizer normalizer,
-                                           PropertyMapping propertyParsing) {
-    String propertyQName = propertyParsing.getPropertyType();
+                                           PropertyMapping propertyMapping) {
+    String propertyQName = propertyMapping.getPropertyType();
     String propURI = normalizer.normalize(propertyQName);
     return factory.createResource(propURI);
   }
 
   /**
-   * TODO
+   * Creates a new resource id.
    *
-   * @param normalizer
-   * @param baseURI
-   * @param id
-   * @return
-   * @throws IllegalArgumentException
+   * @param normalizer Used to normalize the resource
+   * @param baseURI The base URI.
+   * @param id The id for the resource.
+   * @return a new resource id.
    */
   public static String createResourceId(QNameNormalizer normalizer, String baseURI, String id) {
     String subject = baseURI + "#" + id;
@@ -71,9 +74,9 @@ public class RdfUtil {
   }
 
   /**
-   * TODO
-   * @param date
-   * @return
+   * Creates a formatted string that represents a date.
+   * @param date The date
+   * @return a formatted string that represents a date.
    */
   public static String format(Date date) {
     SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
@@ -116,6 +119,7 @@ public class RdfUtil {
 
   /**
    * Translates a qName to an URI using a specified namespace mapping.
+   * @param namespaces The namespace mapping
    * @param qName Qualified name to be translated. See <a href="https://www.w3.org/TR/REC-xml-names/#dt-qualname">
    *              https://www.w3.org/TR/REC-xml-names/#dt-qualname</a> for a detailed description
    * @return the URI of the qualified name.
@@ -135,27 +139,29 @@ public class RdfUtil {
 
 
   /**
-   * TODO
-   * @param propertyParsing
-   * @param subject
-   * @param value
-   * @return
+   * Creates an RDF triple for a given RDF resource.
+   * @param factory Used to create the RDF triple.
+   * @param normalizer Used to normalize IRIs of the triple.
+   * @param propertyMapping The property mapping to use.
+   * @param subject The resource to create the triple statement for.
+   * @param value The value of the triple statement.
+   * @return an RDF triple for a given RDF resource.
    */
   public static Triple triplize(RDFFactory factory,
                                 QNameNormalizer normalizer,
-                                PropertyMapping propertyParsing,
+                                PropertyMapping propertyMapping,
                                 RDFResource subject,
                                 String value) {
 
     // create property
-    RDFResource property = createProperty(factory, normalizer, propertyParsing);
+    RDFResource property = createProperty(factory, normalizer, propertyMapping);
 
     // create object
     RDFObject object;
-    if (propertyParsing instanceof DataTypePropertyMapping) {
+    if (propertyMapping instanceof DataTypePropertyMapping) {
       object = createLiteral(factory,
           normalizer,
-          (DataTypePropertyMapping) propertyParsing,
+          (DataTypePropertyMapping) propertyMapping,
           value);
     } else {
       object = factory.createResource(value);
