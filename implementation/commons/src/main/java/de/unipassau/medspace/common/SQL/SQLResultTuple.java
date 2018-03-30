@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by David Goeth on 26.06.2017.
+ * A result tuple of an SQL query.
  */
 public class SQLResultTuple {
   private String[] columns;
@@ -18,6 +18,10 @@ public class SQLResultTuple {
   private HashMap<String, Integer> indices;
   private int columnCount;
 
+  /**
+   * Creates a new SQLResultTuple object.
+   * @param tuple The content of the SQL result tuple.
+   */
   public  SQLResultTuple(ArrayList<Pair<String, String>> tuple) {
     columnCount = tuple.size();
     columns = new String[columnCount];
@@ -32,6 +36,12 @@ public class SQLResultTuple {
     }
   }
 
+  /**
+   * Fetches a result tuple from a SQL result set.
+   * @param resultSet the  SQL result set.
+   * @return The fetched result tuple.
+   * @throws SQLException If an SQL exception occurrs.
+   */
   public static SQLResultTuple create(ResultSet resultSet) throws SQLException {
     ResultSetMetaData meta = resultSet.getMetaData();
     int numColumns = meta.getColumnCount();
@@ -45,10 +55,21 @@ public class SQLResultTuple {
     return new SQLResultTuple(tuple);
   }
 
+  /**
+   * Provides the number of columns this tuple has.
+   * @return
+   */
   public int getColumnCount() {
     return columnCount;
   }
 
+  /**
+   * Provides the value of a given column name.
+   * @param columnName The colunmn name.
+   * @return the value of the given column name.
+   *
+   * @throws IllegalArgumentException if the column name is not valid for this tuple.
+   */
   public String getValue(String columnName) {
     Integer index = indices.get(columnName);
     if (index == null)
@@ -65,18 +86,35 @@ public class SQLResultTuple {
     return builder.toString();
   }
 
+  /**
+   * Provides the value of a given tuple index.
+   * @param index The index to get the value from.
+   * @return the value of the given index.
+   *
+   * @throws IndexOutOfBoundsException If the index is smaller zero or is greater/equal
+   * the number of columns this tuple has.
+   */
   public String getValue(int index) {
     if (index < 0 || index >= columnCount)
       throw new IndexOutOfBoundsException("Index is not bounded to [0, " + columnCount + ") : index=" + index);
     return values[index];
   }
 
+  /**
+   * Provides the column name of a given tuple index.
+   * @param index The index to get the column name from.
+   * @return the column name of the given index.
+   *
+   * @throws IndexOutOfBoundsException If the index is smaller zero or is greater/equal
+   * the number of columns this tuple has.
+   */
   public String getColumnName(int index) {
     if (index < 0 || index >= columnCount)
       throw new IndexOutOfBoundsException("Index is not bounded to [0, " + columnCount + ") : index=" + index);
     return columns[index];
   }
 
+  @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
     final String semi = ", ";
