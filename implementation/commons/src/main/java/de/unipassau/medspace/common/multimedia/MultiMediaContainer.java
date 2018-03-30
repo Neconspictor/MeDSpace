@@ -5,22 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A multimedia container is used to group multimedia files that belong together.
  */
 public class MultiMediaContainer {
 
-  /**
-   * TODO
-   */
   private List<MultiMediaFile> data;
 
-  /**
-   * TODO
-   */
   private List<File> metaData;
 
   /**
-   * TODO
+   * Creates a new MultiMediaContainer.
    */
   public MultiMediaContainer() {
     data = new ArrayList<>();
@@ -28,16 +22,16 @@ public class MultiMediaContainer {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the list of multimedia files.
+   * @return the list of multimedia files.
    */
   public List<MultiMediaFile> getData() {
     return data;
   }
 
   /**
-   * TODO
-   * @param data
+   * Sets the list of multimedia files.
+   * @param data the list of multimedia files.
    */
   public void setData(List<MultiMediaFile> data) {
     this.data = data;
@@ -61,10 +55,18 @@ public class MultiMediaContainer {
     return builder.toString();
   }
 
+  /**
+   * Provides the list of meta data files.
+   * @return the list of meta data files.
+   */
   public List<File> getMetaData() {
     return metaData;
   }
 
+  /**
+   * Sets the lists of multimedia files.
+   * @param metaData the lists of multimedia files.
+   */
   public void setMetaData(List<File> metaData) {
     this.metaData = metaData;
   }

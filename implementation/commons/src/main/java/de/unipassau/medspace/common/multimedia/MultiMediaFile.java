@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A class representing a multimedia file. A multimedia file contains of a multimedia source file and (optional)
+ * additionally meta data files.
  */
 public class MultiMediaFile {
 
   /**
-   * The multi-media file
+   * The multimedia file
    */
   private File source;
 
@@ -20,39 +21,39 @@ public class MultiMediaFile {
   private List<File> metaData;
 
   /**
-   * TODO
+   * Creates a new multimedia file.
    */
   public MultiMediaFile() {
     metaData = new ArrayList<>();
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the source file.
+   * @return the source file.
    */
   public File getSource() {
     return source;
   }
 
   /**
-   * TODO
-   * @param source
+   * Sets the source file.
+   * @param source the source file.
    */
   public void setSource(File source) {
     this.source = source;
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the the meta data file list.
+   * @return the the meta data file list.
    */
   public List<File> getMetaData() {
     return metaData;
   }
 
   /**
-   * TODO
-   * @param metaData
+   * Sets the the meta data file list.
+   * @param metaData the the meta data file list.
    */
   public void setMetaData(List<File> metaData) {
     this.metaData = metaData;
