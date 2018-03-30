@@ -64,10 +64,13 @@ public class SQLWrapperService extends WrapperService {
 
 
   /**
-   * Creates a new SQLWrapperService.
+   *  Creates a new SQLWrapperService.
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
+   * @param connectionPool A connection pool to the relational database.
+   * @param shutdownService The shutdown service.
+   * @param d2rWrapper The SQL wrapper.
    */
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
@@ -192,9 +195,6 @@ public class SQLWrapperService extends WrapperService {
     return metaData;
   }
 
-  /**
-   * TODO
-   */
   private void deregister() {
     boolean success = registerClient.deRegister(wrapperDatasource, generalConfig.getRegisterURL());
 

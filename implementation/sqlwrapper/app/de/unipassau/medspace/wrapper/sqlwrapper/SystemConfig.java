@@ -22,35 +22,22 @@ import play.api.Application;
 @Singleton
 public class SystemConfig {
 
-  /**
-   * TODO
-   */
+
   private static Logger log = LoggerFactory.getLogger(SystemConfig.class);
 
-  /**
-   * TODO
-   */
+
   private File customWorkingDirectory;
 
-  /**
-   * TODO
-   */
   private String customWorkingDirectoryPath;
 
-  /**
-   * TODO
-   */
   private File playRootDirectory;
 
-  /**
-   * TODO
-   */
   private final Application application;
 
   /**
    * Creates a new SystemConfig
    * @param environment The environment of the play framework.
-   * @param application TODO
+   * @param application The Play application.
    * @param playConfig The configuration of the play framework.
    */
   @Inject

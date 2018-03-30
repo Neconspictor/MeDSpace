@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
+ * A provider for the SQL wrapper.
  */
 public class WrapperProvider implements Provider<D2rWrapper<?>> {
 
@@ -36,16 +36,13 @@ public class WrapperProvider implements Provider<D2rWrapper<?>> {
    */
   private static Logger log = LoggerFactory.getLogger(WrapperProvider.class);
 
-  /**
-   * TODO
-   */
   private D2rWrapper<?> wrapper;
 
   /**
-   * TODO
-   * @param configProvider
-   * @param connectionPool
-   * @param shutdownService
+   * Creates a new WrapperProvider object.
+   * @param configProvider The configuration provider.
+   * @param connectionPool The SQL connection pool.
+   * @param shutdownService The shutdown service.
    */
   @Inject
   public WrapperProvider(ConfigProvider configProvider,
@@ -62,14 +59,7 @@ public class WrapperProvider implements Provider<D2rWrapper<?>> {
     }
   }
 
-  /**
-   * TODO
-   * @param d2rConfig
-   * @param generalConfig
-   * @param connectionPool
-   * @throws D2RException
-   * @throws IOException
-   */
+
   private void init(Configuration d2rConfig,
                     GeneralWrapperConfig generalConfig,
                     ConnectionPool connectionPool) throws D2RException, IOException {
