@@ -32,7 +32,7 @@ public class Mass extends LesionType {
    * @param shape The shape of this mass.
    * @param margins The margins of this mass.
    * @param id The id of this mass.
-   * @param caseName The name of the case this lesion belongs to.
+   * @param caseName The name of the case this object belongs to.
    */
   public Mass(String shape, String margins, String id, String caseName) {
     super(MASS, id, caseName);

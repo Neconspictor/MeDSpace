@@ -17,7 +17,7 @@ public class DDSM_CaseFile extends DDSM_CaseIdentifiable implements Identifiable
   /**
    * Creates a new DDSM_CaseFile object.
    * @param id the ID of this case file.
-   * @param caseName The name of the case this lesion belongs to.
+   * @param caseName The name of the case this object belongs to.
    * @param source The source file.
    */
   public DDSM_CaseFile(String id, String caseName, File source) {

@@ -84,7 +84,7 @@ public class IcsFile extends DDSM_CaseFile {
    * Creates a new IcsFile object.
    *
    * @param id the ID of this ICS file.
-   * @param caseName The name of the case this lesion belongs to.
+   * @param caseName The name of the case this objects belongs to.
    * @param source The source ICS file.
    */
   private IcsFile(String id,

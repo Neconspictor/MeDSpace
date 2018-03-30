@@ -58,7 +58,7 @@ public class Abnormality extends DDSM_CaseIdentifiable {
    * @param pathology the pathology
    * @param totalOutlines the total outline number
    * @param id the ID of this abnormality
-   * @param caseName The name of the case this lesion belongs to.
+   * @param caseName The name of the case this objects belongs to.
    */
   public Abnormality(int abnormalityNumber,
                      List<LesionType> lesionTypes,

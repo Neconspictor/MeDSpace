@@ -3,25 +3,20 @@ package de.unipassau.medspace.wrapper.image_wrapper.ddsm;
 import java.io.File;
 
 /**
- * TODO
+ * Represents an image of a  DDSM case.
  */
 public class Image extends DDSM_CaseFile {
 
-  /**
-   * TODO
-   */
   private final File source;
 
-  /**
-   * TODO
-   */
   private final OverlayMetaData overlay;
 
   /**
-   * TODO
-   * @param source
-   * @param overlay
-   * @param id
+   * Creates a new Image object.
+   * @param source The source file image.
+   * @param overlay The overlay meta data for this image.
+   * @param id The ID of this image.
+   * @param caseName The name of the case this objects belongs to.
    */
   public Image(File source,
                OverlayMetaData overlay,
@@ -33,14 +28,8 @@ public class Image extends DDSM_CaseFile {
   }
 
   /**
-   * TODO
-   */
-  public File getSource() {
-    return source;
-  }
-
-  /**
-   * TODO
+   * Provides the overlay meta data.
+   * @return the overlay meta data.
    */
   public OverlayMetaData getOverlay() {
     return overlay;

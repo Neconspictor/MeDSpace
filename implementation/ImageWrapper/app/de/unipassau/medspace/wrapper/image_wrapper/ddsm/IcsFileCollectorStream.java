@@ -109,7 +109,7 @@ public class IcsFileCollectorStream implements Stream<IcsFile> {
 
     throw new IOException("Couldn't create DDSM_Image by name ending search: '" + ending + "'");
   }
-  
+
   private String getCaseName(File file) {
     assert file.isFile();
     File folder = file.getParentFile();
