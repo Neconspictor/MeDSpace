@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * TODO
+ * A reader for the PDF wrapper configuration.
  */
 public class PdfConfigReader {
 
@@ -20,6 +20,11 @@ public class PdfConfigReader {
 
   private final String rdfMappingSpec;
 
+  /**
+   * Creates a new PdfConfigReader object.
+   * @param pdfConfigSpecificationSchema The XSD validation schema for the PDF wrapper configuration.
+   * @param rdfMappingSpec The XSD validation schema for the RDF mapping.
+   */
   public PdfConfigReader(String pdfConfigSpecificationSchema, String rdfMappingSpec) {
     this.pdfConfigSpecificationSchema = pdfConfigSpecificationSchema;
     this.rdfMappingSpec = rdfMappingSpec;
@@ -27,11 +32,12 @@ public class PdfConfigReader {
 
 
   /**
-   * TODO
-   * @param fileName
-   * @throws JAXBException
-   * @throws IOException
-   * @throws SAXException
+   * Parses the PDF wrapper RDF mappings from a given file.
+   * 
+   * @param fileName The file to parse.
+   * @throws JAXBException If an error related to JAXB occurs.
+   * @throws IOException If an IO error occurs.
+   * @throws SAXException If an error related to XML parsing occurs.
    */
   public RootMapping parse(String fileName) throws JAXBException, IOException, SAXException {
     JAXBContext context = JAXBContext.newInstance(RootMapping.class);
