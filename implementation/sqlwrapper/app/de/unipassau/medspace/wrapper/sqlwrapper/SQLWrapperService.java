@@ -5,6 +5,7 @@ import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.play.WrapperService;
+import de.unipassau.medspace.common.play.wrapper.RegisterClient;
 import de.unipassau.medspace.common.register.Datasource;
 import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.d2r.D2rWrapper;
@@ -47,17 +48,17 @@ public class SQLWrapperService extends WrapperService {
   private DatabaseMetaData metaData;
 
   /**
-   * TODO
+   * The used register client.
    */
   private RegisterClient registerClient;
 
   /**
-   * TODO
+   * Specifies if this wrapper should connect to the register.
    */
   private boolean connectToRegister;
 
   /**
-   * TODO
+   * The datasource wrapped by this wrapper.
    */
   private Datasource wrapperDatasource;
 
