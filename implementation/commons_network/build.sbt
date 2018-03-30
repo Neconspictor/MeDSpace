@@ -20,6 +20,8 @@ publishMavenStyle := true
 
 scalaVersion := "2.12.2"
 
+javacOptions in Compile ++= Seq("-Xdoclint:none")
+
 // library dependencies. (orginization name) % (project name) % (version)
 libraryDependencies ++= Seq(
 

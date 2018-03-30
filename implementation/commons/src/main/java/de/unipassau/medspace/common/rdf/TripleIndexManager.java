@@ -33,6 +33,7 @@ public abstract class TripleIndexManager<DocType, ElemType> extends IndexManager
   /**
    * Creates a new keyword searcher that searches the index from this class and returns the result represented as
    * {@link Triple}s
+   * @param operator The operator to use.
    * @return A keyword searcher that returns triples.
    * @throws IOException If an IO-Error occurs.
    */

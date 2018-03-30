@@ -36,14 +36,14 @@ public interface RDFProvider {
 
   /**
    * Checks if a given RDF language format is supported.
-   * @param format
-   * @return
+   * @param format The RDF language format
+   * @return true if a given RDF language format is supported.
    */
   boolean isValid(String format);
 
   /**
    * Provides a set of supported language formats.
-   * @return
+   * @return a set of supported language formats.
    */
   Set<String> getSupportedFormats();
 

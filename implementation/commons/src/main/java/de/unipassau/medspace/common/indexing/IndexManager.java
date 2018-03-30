@@ -63,7 +63,8 @@ public abstract class IndexManager<DocType, ObjectType> implements Closeable {
 
   /**
    * Provides a converter that converts objects to documents for the index.
-   * @return
+   * @param source The stream to convert.
+   * @return a converter that converts objects to documents for the index.
    */
   public abstract Stream<DocType> convert(Stream<ObjectType> source);
 

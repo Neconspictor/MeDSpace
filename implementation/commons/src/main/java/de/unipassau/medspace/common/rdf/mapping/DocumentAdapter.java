@@ -22,7 +22,7 @@ public interface DocumentAdapter<ClassType extends Identifiable, DocType, FieldT
 
   /**
    * Provides the base URI of the rdf class type.
-   * @return
+   * @return the base URI of the rdf class type.
    */
   String getClassBaseURI();
 

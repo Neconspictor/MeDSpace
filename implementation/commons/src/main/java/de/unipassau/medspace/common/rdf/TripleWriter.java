@@ -10,7 +10,7 @@ public interface TripleWriter extends Closeable {
 
   /**
    * Checks if this writer is closed.
-   * @return
+   * @return true if this writer is closed.
    */
   boolean isClosed();
 

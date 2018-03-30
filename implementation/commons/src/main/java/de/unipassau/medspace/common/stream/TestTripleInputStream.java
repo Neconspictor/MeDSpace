@@ -40,11 +40,15 @@ public class TestTripleInputStream extends InputStream {
   private TripleWriter writer;
 
   /**
-   * Creates a new TripleInputStream from a stream of rdf triples.
+   * Creates a new TestTripleInputStream from a stream of rdf triples.
    * @param triples The stream of rdf triples that should be serialized. The result of the serialization can
    *                than be read from this input stream.
    * @param format The serialization output format.
    * @param namespaces The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
+   * @param factory Used to create the a triple writer.
+   *
+   *  @throws IOException If an io error occurs.
+   *  @throws NoValidArgumentException If the language format is not supported.
    */
   public TestTripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces, TripleWriterFactory factory)
       throws IOException, NoValidArgumentException {

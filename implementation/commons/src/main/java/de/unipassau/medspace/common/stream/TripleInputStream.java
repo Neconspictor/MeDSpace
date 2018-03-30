@@ -45,6 +45,10 @@ public class TripleInputStream extends InputStream {
    *                than be read from this input stream.
    * @param format The serialization output format.
    * @param namespaces The namespace prefixes to use in the serialization process or null, if no prefixes should be used.
+   * @param factory Used to create the a triple writer.
+   *
+   *  @throws IOException If an io error occurs.
+   *  @throws NoValidArgumentException If the language format is not supported.
    */
   public TripleInputStream(Stream<Triple> triples, String format, Set<Namespace> namespaces, TripleWriterFactory factory)
       throws IOException, NoValidArgumentException {

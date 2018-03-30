@@ -11,6 +11,8 @@ public interface Converter<A, B> {
    * Converts object 'source' from type A to one object of type 'B'
    * @param source The object to convert
    * @return The converted object.
+   *
+   * @throws IOException if an io error occurs.
    */
   B convert(A source) throws IOException;
 }

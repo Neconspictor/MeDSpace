@@ -22,6 +22,8 @@ lazy val commons_network = RootProject(file("../commons_network"))
 
 scalaVersion := "2.12.2"
 
+javacOptions in Compile ++= Seq("-Xdoclint:none")
+
 // Enables publishing to maven repo
 publishMavenStyle := true
 

@@ -65,7 +65,7 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
    * Creates RDF triples from a document a given adapter.
    * @param adapter The adapter.
    * @param document The document.
-   * @return
+   * @return RDF triples from a document a given adapter.
    */
   protected List<Triple> convert(DocumentAdapter<?, DocType, FieldType> adapter, DocType document) {
     List<Triple> triples = new ArrayList<>();
@@ -95,7 +95,7 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
    * @param adapter The adapter used for conversion.
    * @param pair The pair of field name and property mapping.
    * @param subject The resource to create the statement for.
-   * @return
+   * @return an RDF triple statement for an RDF resource.
    */
   protected Triple createTriple(FieldType field,
                               DocumentAdapter<?, DocType, FieldType> adapter,
@@ -116,6 +116,7 @@ public abstract class DocumentClassTriplizer<DocType, FieldType> implements Conv
   /**
    * Provides the list of fields for a given field name from a document.
    * @param document The document to get the list from.
+   * @param name the field name
    * @return The list of fields.
    */
   protected abstract List<FieldType> getFields(DocType document, String name);

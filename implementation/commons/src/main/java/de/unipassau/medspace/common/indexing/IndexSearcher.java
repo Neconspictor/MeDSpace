@@ -27,7 +27,7 @@ public abstract class IndexSearcher<DocType> implements Closeable {
 
   /**
    * Creates a keyword searcher for initiating keyword searches onto the indexed data.
-   * TODO
+   * @param operator The operator to use.
    * @return A keyword searcher for the wrapped index.
    * @throws IOException If an error occurs.
    */

@@ -49,6 +49,8 @@ public abstract class TripleCacheStream<E> implements Stream<Triple> {
    * Converts an object to a list of triples.
    * @param elem The object to convert.
    * @return A list of triples representing the converted object.
+   *
+   * @throws IOException if an io error occurs.
    */
   protected abstract List<Triple> createTriples(E elem) throws IOException;
 

@@ -99,9 +99,16 @@ public class Datasource implements Comparable<Datasource> {
   /**
    * Creates a copy from the provided Datasource, but updates the time stamp.
    * @param other The Datasource to copy.
+   *
+   * @return a copy from the provided Datasource, but updates the time stamp.
    */
-  public static Datasource copyUpdateTimeStamp(Datasource other) throws MalformedURLException, NoValidArgumentException {
-    return new Datasource(other.url, other.description, other.rdfFormat, other.services);
+  public static Datasource copyUpdateTimeStamp(Datasource other)  {
+
+    try {
+      return new Datasource(other.url, other.description, other.rdfFormat, other.services);
+    } catch (NoValidArgumentException e) {
+      throw new RuntimeException("Couldn't copy and update timestamp!");
+    }
   }
 
   @JsonCreator
@@ -157,8 +164,8 @@ public class Datasource implements Comparable<Datasource> {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the rdf format.
+   * @return the rdf format.
    */
   public String getRdfFormat() {
     return rdfFormat;
@@ -248,6 +255,7 @@ public class Datasource implements Comparable<Datasource> {
      * Creates an immutable Datasource object from this Builder object.
      * @return A Datasource object, that represents the same datasource as the mutable one. Or null, if
      * no valid datasource object could be created.
+     * @throws NoValidArgumentException if the builder is wrong configured.
      */
     public Datasource build() throws NoValidArgumentException {
       Set<Service> set = new HashSet<>();
@@ -287,7 +295,8 @@ public class Datasource implements Comparable<Datasource> {
     }
 
     /**
-     * The rdf format the datasource uses for publishing rdf data.
+     * Provides the rdf format the datasource uses for publishing rdf data.
+     * @return The rdf format the datasource uses for publishing rdf data.
      */
     public String getRdfFormat() {
       return rdfFormat;

@@ -57,7 +57,7 @@ public class SQLResultTuple {
 
   /**
    * Provides the number of columns this tuple has.
-   * @return
+   * @return the number of columns this tuple has.
    */
   public int getColumnCount() {
     return columnCount;

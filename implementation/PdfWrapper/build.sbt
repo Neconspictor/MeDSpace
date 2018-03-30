@@ -21,6 +21,8 @@ lazy val commons_play = RootProject(file("../commons_play"))
 
 scalaVersion := "2.12.2"
 
+javacOptions in Compile ++= Seq("-Xdoclint:none")
+
 libraryDependencies += guice
 
 libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"

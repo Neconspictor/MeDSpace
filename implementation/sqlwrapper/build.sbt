@@ -24,6 +24,8 @@ lazy val d2rmap = RootProject(file("../D2Rmap"))
 
 scalaVersion := "2.12.2"
 
+javacOptions in Compile ++= Seq("-Xdoclint:none")
+
 libraryDependencies += guice
 
 libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"

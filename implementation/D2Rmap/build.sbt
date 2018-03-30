@@ -20,6 +20,8 @@ publishMavenStyle := true
 
 scalaVersion := "2.12.2"
 
+javacOptions in Compile ++= Seq("-Xdoclint:none")
+
 
 lazy val d2rmap = (project in file("."))
   .aggregate(commons)
