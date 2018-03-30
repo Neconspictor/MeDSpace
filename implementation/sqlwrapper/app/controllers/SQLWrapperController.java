@@ -46,21 +46,21 @@ public class SQLWrapperController extends WrapperController {
 
 
   /**
-   * TODO
+   * The connection pool.
    */
   private final ConnectionPool connectionPool;
 
   /**
-   * TODO
+   * The D2R mapping configuration.
    */
   private final Configuration d2rConfig;
 
 
   /**
    * Creates a new SQLWrapperController
-   * @param wrapperService TODO
-   * @param formFactory
-   * @param rdfProvider
+   * @param wrapperService The wrapper service to use.
+   * @param formFactory The form factory to use.
+   * @param rdfProvider The RDF provider to use.
    */
   @Inject
   SQLWrapperController(SQLWrapperService wrapperService,
@@ -78,7 +78,7 @@ public class SQLWrapperController extends WrapperController {
 
   /**
    * Provides the test page of the SQL Wrapper.
-   * @return
+   * @return the test page of the SQL Wrapper.
    */
   public Result guiTest() {
     return ok(views.html.testGui.render());
@@ -86,6 +86,7 @@ public class SQLWrapperController extends WrapperController {
 
   /**
    * Provides the SQL Wrapper status and debug page.
+   * @return the SQL Wrapper status and debug page.
    */
   public Result index() {
     return ok(views.html.index.render(sqlWrapperService, d2rConfig, generalConfig, connectionPool,
