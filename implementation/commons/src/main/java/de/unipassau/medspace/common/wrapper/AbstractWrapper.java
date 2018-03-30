@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * TODO
+ * An abtrsact wrapper which implements common used functionality of a wrapper.
  */
 public abstract class AbstractWrapper<DocType, ElemType> implements Wrapper {
 
@@ -27,7 +27,7 @@ public abstract class AbstractWrapper<DocType, ElemType> implements Wrapper {
   protected final Map<String, Namespace> namespaces;
 
   /**
-   * TODO
+   * Creates a new AbstractWrapper object.
    * @param indexManager The used index manager, mustn't be null
    * @param namespaces The prefix-namespace mappings
    */
