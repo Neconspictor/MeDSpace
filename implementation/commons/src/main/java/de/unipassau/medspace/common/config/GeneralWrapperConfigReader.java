@@ -28,7 +28,7 @@ public class GeneralWrapperConfigReader {
   private static Logger log = LoggerFactory.getLogger(GeneralWrapperConfigReader.class);
 
   /**
-   * TODO
+   * The RDF provider.
    */
   private RDFProvider provider;
 

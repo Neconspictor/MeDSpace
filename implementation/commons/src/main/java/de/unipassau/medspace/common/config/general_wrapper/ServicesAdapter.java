@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.List;
 
 /**
- * Created by David Goeth on 1/24/2018.
+ * An XML adapter used to convert MeDSpace services and their respective XML configuration objects.
  */
 public class ServicesAdapter extends XmlAdapter<Services, List<Service>> {
 

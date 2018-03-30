@@ -19,13 +19,14 @@ import java.util.Map;
 public class GeneralWrapperConfig {
 
   /**
-   * TODO
+   * This builder object is used so that users can build a confugration file
+   * but the resulting configuration (this class) remains immutable.
    */
   private final GeneralWrapperConfigData data;
 
   /**
-   * TODO
-   * @param data
+   * Creates a new GeneralWrapperConfig from a builder object.
+   * @param data The builder object.
    */
   private GeneralWrapperConfig(GeneralWrapperConfigData data) {
     // Use the copy constructor so that data is not modifiable outside from this class (-> immutability).
@@ -33,16 +34,16 @@ public class GeneralWrapperConfig {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the datasource description.
+   * @return The datasource description.
    */
   public String getDescription() {
     return data.description;
   }
 
   /**
-   * TODO
-   * @return
+   * Provides an unmodifiable list of supported services.
+   * @return An unmodifiable list of supported services.
    */
   public List<Service> getServices() {
     return Collections.unmodifiableList(data.services);
@@ -86,8 +87,8 @@ public class GeneralWrapperConfig {
   }
 
   /**
-   * TODO
-   * @return
+   * Specifies whether the wrapper should connect to the register on startup.
+   * @return true if the wrapper should connect to the register on startup.
    */
   public boolean getConnectToRegister() {
     return data.connectToRegister;
@@ -106,12 +107,12 @@ public class GeneralWrapperConfig {
   public static class GeneralWrapperConfigData {
 
     /**
-     * TODO
+     * The datasource description.
      */
     private String description;
 
     /**
-     * TODO
+     * The list of supported services.
      */
     private List<Service> services;
 
@@ -146,6 +147,9 @@ public class GeneralWrapperConfig {
      */
     private boolean connectToRegister;
 
+    /**
+     * Creates a default GeneralWrapperConfigData object.
+     */
     public GeneralWrapperConfigData() {
       indexDirectory = null; // null hints, that no index directory should be used
       namespaces = new HashMap<>();
@@ -182,7 +186,7 @@ public class GeneralWrapperConfig {
     }
 
     /**
-     * TODO
+     * Builds an immutable GeneralWrapperConfig object from this builder object.
      * @return
      */
     public GeneralWrapperConfig build() {
@@ -263,8 +267,8 @@ public class GeneralWrapperConfig {
     }
 
     /**
-     * TODO
-     * @param registerURL
+     * Sets the URL to the register.
+     * @param registerURL The URL to the register.
      */
     public void setRegisterURL(URL registerURL) {
       String url = registerURL.toExternalForm();
@@ -307,47 +311,47 @@ public class GeneralWrapperConfig {
     }
 
     /**
-     * TODO
-     * @return
+     * The description of the datasource.
+     * @return The description of the datasource.
      */
     public String getDescription() {
       return description;
     }
 
     /**
-     * TODO
-     * @param description
+     * Sets the description of the datasource.
+     * @param description the description of the datasource.
      */
     public void setDescription(String description) {
       this.description = description;
     }
 
     /**
-     * TODO
-     * @return
+     * Should the wrapper should connect to the register on startup ?
+     * @return true if the wrapper should connect to the register on startup.
      */
     public boolean getConnectToRegister() {
       return connectToRegister;
     }
 
     /**
-     * TODO
-     * @param connectToRegister
+     * Specifies whether the wrapper should connect to the register on startup.
+     * @param connectToRegister Should the wrapper connect to the register on startup?
      */
     public void setConnectToRegister(boolean connectToRegister) {
       this.connectToRegister = connectToRegister;
     }
 
     /**
-     * TODO
+     * Provides the list of supported services.
      */
     public List<Service> getServices() {
       return services;
     }
 
     /**
-     * TODO
-     * @param services
+     * Sets the list of supported services.
+     * @param services The list of supported services.
      */
     public void setServices(List<Service> services) {
       this.services = services;

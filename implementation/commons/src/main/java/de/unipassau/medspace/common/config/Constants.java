@@ -1,15 +1,18 @@
 package de.unipassau.medspace.common.config;
 
 /**
- * Created by David Goeth on 03.10.2017.
+ * Contains constants that are used for the general wrapper configuration.
  */
 public final class Constants {
 
   /**
-   * The schema, that defines the structure and content of a valid general wrapper config file
+   * The schema that defines the structure and content of a valid general wrapper config file
    */
   public static final String WRAPPER_VALIDATION_SCHEMA = "/medspace-wrapper-config-specification.xsd";
 
+  /**
+   * The schema that defines basic XML types that can be used for defining RDF mappings.
+   */
   public static final String RDF_MAPPING_SCHEMA = "/medspace-rdf-mapping-specification.xsd";
 
     /**

@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
+ * An Xml Adapter for XML namespaces property.
  */
 public class NamespacesAdapter extends XmlAdapter<Namespaces,
-    Map<String, de.unipassau.medspace.common.rdf.Namespace>> {
+    Map<String, de.unipassau.medspace.common.rdf.Namespace>>
+{
   @Override
   public Map<String, de.unipassau.medspace.common.rdf.Namespace> unmarshal(Namespaces v) throws Exception {
     Map<String, de.unipassau.medspace.common.rdf.Namespace> result = new HashMap<>();
@@ -33,20 +34,20 @@ public class NamespacesAdapter extends XmlAdapter<Namespaces,
 
 
   /**
-   * TODO
-   * @param v
-   * @return
-   * @throws Exception
+   * Converts an XML Namespace property to an RDF Namespace.
+   * @param v The XML Namespace property to convert.
+   * @return The converted RDF namespace.
+   * @throws Exception If an error occurs.
    */
   private de.unipassau.medspace.common.rdf.Namespace convert(Namespace v) throws Exception {
     return new de.unipassau.medspace.common.rdf.Namespace(v.getPrefix(), v.getNamespace());
   }
 
   /**
-   * TODO
-   * @param v
-   * @return
-   * @throws Exception
+   * Converts an RDF namespace to an XML namespace property.
+   * @param v The RDF namespace to convert.
+   * @return The converted XML namespace property.
+   * @throws Exception If an error occurs.
    */
   private Namespace convert(de.unipassau.medspace.common.rdf.Namespace v) throws Exception {
 

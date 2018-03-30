@@ -3,10 +3,10 @@ package de.unipassau.medspace.common.config.general_wrapper;
 import de.unipassau.medspace.common.register.Service;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.util.List;
 
 /**
- * Created by David Goeth on 1/25/2018.
+ * An XML adapter for an XML service property. Is used to convert
+ * between a Service and its string representation.
  */
 public class ServiceAdapter  extends XmlAdapter<String, Service> {
   @Override
