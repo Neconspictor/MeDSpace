@@ -1,38 +1,38 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion;
 
 /**
- * TODO
+ * Represents a mass.
  */
 public class Mass extends LesionType {
 
   /**
-   * TODO
+   * The MASS token in an overlay file.
    */
   public static final String MASS = "MASS";
 
   /**
-   * TODO
+   * The SHAPE token in an overlay file.
    */
   public static final String SHAPE = "SHAPE";
 
 
   /**
-   * TODO
+   * The MARGINS token in an overlay file.
    */
   public static final String MARGINS = "MARGINS";
 
-  /**
-   * TODO
-   */
+
   private String shape;
 
-  /**
-   * TODO
-   */
   private String margins;
 
   /**
-   * TODO
+   * Creates a new Mass object.
+   *
+   * @param shape The shape of this mass.
+   * @param margins The margins of this mass.
+   * @param id The id of this mass.
+   * @param caseName The name of the case this lesion belongs to.
    */
   public Mass(String shape, String margins, String id, String caseName) {
     super(MASS, id, caseName);
@@ -42,14 +42,16 @@ public class Mass extends LesionType {
 
 
   /**
-   * TODO
+   * Provides the shape.
+   * @return the shape.
    */
   public String getShape() {
     return shape;
   }
 
   /**
-   * TODO
+   * Provides the margins.
+   * @return the margins.
    */
   public String getMargins() {
     return margins;

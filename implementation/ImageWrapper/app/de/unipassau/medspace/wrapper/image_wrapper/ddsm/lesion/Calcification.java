@@ -1,39 +1,40 @@
 package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion;
 
 /**
- * TODO
+ * Represents a calcification.
  */
 public class Calcification extends LesionType {
 
   /**
-   * TODO
+   * The token of a calcification type in an overlay file.
    */
   public static final String CALCIFICATION = "CALCIFICATION";
 
 
   /**
-   * TODO
+   *  The type token in an overlay file.
    */
   public static final String TYPE = "TYPE";
 
   /**
-   * TODO
+   *  The distribution token in an overlay file.
    */
   public static final String DISTRIBUTION = "DISTRIBUTION";
 
-  /**
-   * TODO
-   */
+
   private String type;
 
-  /**
-   * TODO
-   */
+
   private String distribution;
 
 
+
   /**
-   * TODO
+   * Creates a new Calcification object.
+   * @param type The type value
+   * @param distribution The distribution value
+   * @param id The calcification id
+   * @param caseName The name of the case this calcification belongs to.
    */
   public Calcification(String type, String distribution, String id, String caseName) {
     super(CALCIFICATION, id, caseName);
@@ -43,16 +44,16 @@ public class Calcification extends LesionType {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the type value.
+   * @return the type value.
    */
   public String getType() {
     return type;
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the distribution value.
+   * @return the distribution value.
    */
   public String getDistribution() {
     return distribution;

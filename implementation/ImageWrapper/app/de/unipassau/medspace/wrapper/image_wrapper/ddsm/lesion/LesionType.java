@@ -3,25 +3,28 @@ package de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion;
 import de.unipassau.medspace.wrapper.image_wrapper.ddsm.DDSM_CaseIdentifiable;
 
 /**
- * TODO
+ * Represents a lesion type.
  */
 public abstract class LesionType extends DDSM_CaseIdentifiable {
 
   /**
-   * TODO
+   * The LESION_TYPE token in an overlay file.
    */
   public static final String LESION_TYPE = "LESION_TYPE";
 
 
   /**
-   * TODO
+   * The lesion type value
    */
   protected String lesionType;
 
 
   /**
-   * TODO
-   * @param lesionType
+   * Creates a new LesionType object.
+   *
+   * @param lesionType The lesion type.
+   * @param id The id of this lesion.
+   * @param caseName The name of the case this lesion belongs to.
    */
   public LesionType(String lesionType, String id, String caseName) {
     super(id,caseName);
@@ -29,8 +32,8 @@ public abstract class LesionType extends DDSM_CaseIdentifiable {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the lesion type value.
+   * @return the lesion type value.
    */
   public String getLesionType() {
     return lesionType;
