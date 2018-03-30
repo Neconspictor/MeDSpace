@@ -10,7 +10,6 @@ import de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static de.unipassau.medspace.wrapper.image_wrapper.ddsm.Abnormality.*;
@@ -19,34 +18,26 @@ import static de.unipassau.medspace.wrapper.image_wrapper.ddsm.lesion.Mass.*;
 
 
 /**
- * TODO
+ * Represents meta data of an overlay file.
  */
 public class OverlayMetaData extends DDSM_CaseIdentifiable {
 
   /**
-   * TODO
+   * The TOTAL_ABNORMALITIES token in an overlay file.
    */
   public static final String TOTAL_ABNORMALITIES = "TOTAL_ABNORMALITIES";
 
 
-  public static final List<String> FIELD_META_DATA = Arrays.asList(TOTAL_ABNORMALITIES, "OVERLAY", "DDSM");
 
-
-
-  /**
-   * TODO
-   */
   private List<Abnormality> abnormalities;
 
-  /**
-   * TODO
-   */
   private int totalAbnormalities;
 
 
-
   /**
-   * TODO
+   * Creates a new OverlayMetaData object.
+   * @param id The ID for this overlay file.
+   * @param caseName The name of the case this objects belongs to.
    */
   private OverlayMetaData(String id, String caseName) {
     super(id, caseName);
@@ -55,8 +46,10 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
   }
 
   /**
-   * TODO
-   * @param file
+   * Parses overlay meta data from an overlay file.
+   * @param file The overlay source file
+   * @param id The ID for the overlay file.
+   * @param caseName The name of the case the overlay file belongs to.
    * @return
    * @throws IOException
    */
@@ -66,14 +59,16 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
   }
 
   /**
-   * TODO
+   *
+   * @return
    */
   public List<Abnormality> getAbnormalities() {
     return abnormalities;
   }
 
   /**
-   * TODO
+   *
+   * @return
    */
   public int getTotalAbnormalities() {
     return totalAbnormalities;
@@ -101,14 +96,8 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
    */
   private static class Parser{
 
-    /**
-     * TODO
-     */
     private final String overlayID;
 
-    /**
-     * TODO
-     */
     private int lesionTypeCounter = 0;
 
     /**
@@ -151,12 +140,7 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
       return result;
     }
 
-    /**
-     * TODO
-     * @param content
-     * @return
-     * @throws IOException
-     */
+
     private Abnormality parseAbnormality(List<String> content, String caseName) throws IOException {
 
       // Get abnormality number
@@ -214,12 +198,7 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
           caseName);
     }
 
-    /**
-     * TODO
-     * @param content
-     * @return
-     * @throws IOException
-     */
+
     private List<LesionType> parseLesionTypes(List<String> content, String caseName) throws IOException {
 
       List<LesionType> result = new ArrayList<>();
@@ -232,12 +211,7 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
       return result;
     }
 
-    /**
-     * TODO
-     * @param content
-     * @return
-     * @throws IOException
-     */
+
     private LesionType parseLesionType(List<String> content, String caseName) throws IOException {
 
       List<String> tokens = StringUtil.tokenize(content.remove(0), " \t");
@@ -256,12 +230,7 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
       return lesionType;
     }
 
-    /**
-     * TODO
-     * @param tokens
-     * @return
-     * @throws IOException
-     */
+
     private Calcification parseCalcification(List<String> tokens, String caseName) throws IOException {
       ParserUtil.pullExpectedToken(tokens, TYPE);
       String type = tokens.remove(0);
@@ -272,12 +241,7 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
       return new Calcification(type, distribution, createLesionTypeId(), caseName);
     }
 
-    /**
-     * TODO
-     * @param tokens
-     * @return
-     * @throws IOException
-     */
+
     private Mass parseMass(List<String> tokens, String caseName) throws IOException {
       ParserUtil.pullExpectedToken(tokens, SHAPE);
       String shape = tokens.remove(0);
@@ -288,12 +252,7 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
       return new Mass(shape, margins, createLesionTypeId(), caseName);
     }
 
-    /**
-     * TODO
-     * @param content
-     * @return
-     * @throws IOException
-     */
+
     private static int parseTotalAbnormalityCount(List<String> content) throws IOException {
 
       //the first line contains the total abnormality field
