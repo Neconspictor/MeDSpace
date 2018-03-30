@@ -9,111 +9,83 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * TODO
+ * Represents an ICS file.
  */
 public class IcsFile extends DDSM_CaseFile {
 
 
   /**
-   * TODO
+   * The DATE_OF_STUDY token in an overlay file.
    */
   public static final String DATE_OF_STUDY = "DATE_OF_STUDY";
 
   /**
-   * TODO
+   * The PATIENT_AGE token in an overlay file.
    */
   public static final String PATIENT_AGE = "PATIENT_AGE";
 
   /**
-   * TODO
+   * The DENSITY token in an overlay file.
    */
   public static final String DENSITY = "DENSITY";
 
   /**
-   * TODO
+   * The DATE_DIGITIZED token in an overlay file.
    */
   public static final String DATE_DIGITIZED = "DATE_DIGITIZED";
 
   /**
-   * TODO
+   * The DIGITIZER token in an overlay file.
    */
   public static final String DIGITIZER = "DIGITIZER";
 
   /**
-   * TODO
+   * The LEFT_CC token in an overlay file.
    */
   public static final String LEFT_CC = "LEFT_CC";
 
   /**
-   * TODO
+   * The LEFT_MLO token in an overlay file.
    */
   public static final String LEFT_MLO = "LEFT_MLO";
 
-
   /**
-   * TODO
+   * The RIGHT_CC token in an overlay file.
    */
   public static final String RIGHT_CC = "RIGHT_CC";
 
-
   /**
-   * TODO
+   * The RIGHT_MLO token in an overlay file.
    */
   public static final String RIGHT_MLO = "RIGHT_MLO";
 
-  public static final List<String> FIELD_META_DATA = Arrays.asList(DATE_OF_STUDY, PATIENT_AGE, DENSITY, DATE_DIGITIZED,
-      DIGITIZER, LEFT_CC, LEFT_MLO, RIGHT_CC, "ICS FILE", "DDSM");
 
 
-  /**
-   * TODO
-   */
   private Date dateOfStudy;
 
-  /**
-   * TODO
-   */
   private int patientAge;
 
-  /**
-   * TODO
-   */
   private int density;
 
-  /**
-   * TODO
-   */
   private Date dateDigitized;
 
-  /**
-   * TODO
-   */
   private String digitizer;
 
-
-  /**
-   * TODO
-   */
   private Image leftCC;
 
-  /**
-   * TODO
-   */
   private Image leftMLO;
 
-  /**
-   * TODO
-   */
   private Image rightCC;
 
-  /**
-   * TODO
-   */
   private Image rightMLO;
 
 
   /**
-   * TODO
+   * Creates a new IcsFile object.
+   *
+   * @param id the ID of this ICS file.
+   * @param caseName The name of the case this lesion belongs to.
+   * @param source The source ICS file.
    */
   private IcsFile(String id,
                   String caseName,
@@ -122,10 +94,17 @@ public class IcsFile extends DDSM_CaseFile {
   }
 
   /**
-   * TODO
-   * @param file
-   * @return
-   * @throws IOException
+   * Parses an IcsFile from a given file.
+   * @param file  The source ICS file.
+   * @param id the ID of this ICS file.
+   * @param caseName The name of the case this lesion belongs to.
+   * @param leftCC The leftCC image
+   * @param leftMLO The leftMLO image
+   * @param rightCC The rightCC image
+   * @param rightMLO The rightMLO image
+   * @return an IcsFile from a given file.
+   *
+   * @throws IOException If an IO error occurs.
    */
   public static IcsFile parse(File file,
                               String id,
@@ -144,36 +123,42 @@ public class IcsFile extends DDSM_CaseFile {
     return result;
   }
 
+
   /**
-   * TODO
+   * Provides the date of study.
+   * @return the date of study.
    */
   public Date getDateOfStudy() {
     return dateOfStudy;
   }
 
   /**
-   * TODO
+   * Provides the age of the patient.
+   * @return the age of the patient.
    */
   public int getPatientAge() {
     return patientAge;
   }
 
   /**
-   * TODO
+   * Provides the density
+   * @return the density
    */
   public int getDensity() {
     return density;
   }
 
   /**
-   * TODO
+   * Provides the date the images were digitized.
+   * @return the date the images were digitized.
    */
   public Date getDateDigitized() {
     return dateDigitized;
   }
 
   /**
-   * TODO
+   * Provides the name of the used digitizer.
+   * @return the name of the used digitizer.
    */
   public String getDigitizer() {
     return digitizer;
@@ -202,51 +187,51 @@ public class IcsFile extends DDSM_CaseFile {
   }
 
   /**
-   * TODO
+   * Provides the leftCC image.
+   * @return the leftCC image.
    */
   public Image getLeftCC() {
     return leftCC;
   }
 
   /**
-   * TODO
+   * Provides the leftMLO image
+   * @return the leftMLO image.
    */
   public Image getLeftMLO() {
     return leftMLO;
   }
 
   /**
-   * TODO
+   * Provides the rightCC image.
+   * @return the rightCC image.
    */
   public Image getRightCC() {
     return rightCC;
   }
 
   /**
-   * TODO
+   * Provides the rightMLO image.
+   * @return the rightMLO image.
    */
   public Image getRightMLO() {
     return rightMLO;
   }
 
-  /**
-   * TODO
-   */
-  public File getSource() {
-    return source;
-  }
 
 
   /**
-   * TODO
+   * A parser for an ICSFile
    */
-  private static class Parser{
+  private static class Parser {
 
     /**
-     * TODO
-     * @param file
-     * @return
-     * @throws IOException
+     * Parses an ICS file
+     * @param file The source ICS file
+     * @param id The id for the ICS file
+     * @param caseName The name of the DDSM case the ICS file belongs to.
+     * @return The parsed IcsFile
+     * @throws IOException If an IO error occurs.
      */
     public static IcsFile parse(File file, String id, String caseName) throws IOException {
       IcsFile data = createUninitialized(id, caseName, file);
@@ -264,10 +249,6 @@ public class IcsFile extends DDSM_CaseFile {
       return data;
     }
 
-    /**
-     * TODO
-     * @return
-     */
     private static IcsFile createUninitialized(String id, String caseName, File source) {
       IcsFile data = new IcsFile(id, caseName, source);
       data.dateOfStudy = null;
@@ -278,11 +259,7 @@ public class IcsFile extends DDSM_CaseFile {
       return data;
     }
 
-    /**
-     * TODO
-     * @param data
-     * @return
-     */
+
     private static boolean check(IcsFile data) {
       return data.digitizer != null &&
           data.dateDigitized != null &&
@@ -291,12 +268,7 @@ public class IcsFile extends DDSM_CaseFile {
           data.dateOfStudy != null;
     }
 
-    /**
-     * TODO
-     * @param tokens
-     * @param data
-     * @throws IOException
-     */
+
     private static void setField(List<String> tokens, IcsFile data) throws IOException {
 
       //at least we need two tokens (key-value pair)
