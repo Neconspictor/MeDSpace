@@ -26,14 +26,8 @@ public class RegisterClient implements WSBodyReadables, WSBodyWritables {
    */
   private static Logger log = LoggerFactory.getLogger(RegisterClient.class);
 
-  /**
-   * TODO
-   */
   private static final String REGISTER_ADD_SERVICE_SUBPATH = "add";
 
-  /**
-   * TODO
-   */
   private static final String REGISTER_REMOVE_SERVICE_SUBPATH = "remove";
 
   /**

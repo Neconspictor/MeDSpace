@@ -17,7 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * TODO
+ * A configuration provider for the SQL wrapper.
  */
 public class ConfigProvider {
 
@@ -27,68 +27,35 @@ public class ConfigProvider {
    */
   private static Logger log = LoggerFactory.getLogger(ConfigProvider.class);
 
-  /**
-   * TODO
-   */
+
   private static final String ADDRESS_ID_HTTP = "play.server.http.address";
 
-  /**
-   * TODO
-   */
   private static final String PORT_ID_HTTP = "play.server.http.port";
 
-  /**
-   * TODO
-   */
   private static final String ADDRESS_ID_HTTPS = "play.server.https.address";
 
-  /**
-   * TODO
-   */
   private static final String PORT_ID_HTTPS = "play.server.https.port";
 
-
-  /**
-   * TODO
-   */
   private static final String HTTP_PROTOCOL = "http://";
 
-  /**
-   * TODO
-   */
   private static final String HTTPS_PROTOCOL = "https://";
 
-  /**
-   * TODO
-   */
   private static final String WRAPPER_CONFIG_FILE_ID = "MeDSpaceWrapperConfig";
 
-  /**
-   * TODO
-   */
   private static final String D2R_CONFIG_FILE_ID = "MeDSpaceD2rConfig";
 
 
-  /**
-   * TODO
-   */
   private Configuration d2rConfig;
 
-  /**
-   * TODO
-   */
   private GeneralWrapperConfig generalWrapperConfig;
 
-  /**
-   * TODO
-   */
   private ServerConfig serverConfig;
 
   /**
-   * TODO
-   * @param playConfig
-   * @param provider
-   * @param shutdownService
+   * Creates a new ConfigProvider object.
+   * @param playConfig The play configuration.
+   * @param provider The RDF provider to use.
+   * @param shutdownService The shutdown service to use.
    */
   @Inject
   public ConfigProvider(com.typesafe.config.Config playConfig,
@@ -105,14 +72,7 @@ public class ConfigProvider {
     log.info("Reading MeDSpace D2RMap configuration done.");
   }
 
-  /**
-   * TODO
-   * @param playConfig
-   * @param provider
-   * @throws IOException
-   * @throws ConfigException.Missing
-   * @throws ConfigException.WrongType
-   */
+
   private void init(Config playConfig, RDFProvider provider)
       throws IOException,
       ConfigException.Missing,
@@ -154,24 +114,24 @@ public class ConfigProvider {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the general wrapper configuration.
+   * @return the general wrapper configuration.
    */
   public GeneralWrapperConfig getGeneralWrapperConfig() {
     return generalWrapperConfig;
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the server configuration.
+   * @return the server configuration.
    */
   public ServerConfig getServerConfig() {
     return serverConfig;
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the d2r mapping configuration.
+   * @return the d2r mapping configuration.
    */
   public Configuration getD2rConfig() {
     return d2rConfig;

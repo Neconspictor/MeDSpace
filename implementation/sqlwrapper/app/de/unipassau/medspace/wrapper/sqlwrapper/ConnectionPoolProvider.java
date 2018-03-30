@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * TODO
+ * A provider for a SQL connection pool.
  */
 public class ConnectionPoolProvider implements Provider<ConnectionPool> {
 
@@ -23,16 +23,13 @@ public class ConnectionPoolProvider implements Provider<ConnectionPool> {
    */
   private static Logger log = LoggerFactory.getLogger(ConnectionPoolProvider.class);
 
-  /**
-   * TODO
-   */
   private ConnectionPool connectionPool;
 
   /**
-   * TODO
-   * @param provider
-   * @param lifecycle
-   * @param shutdownService
+   * Creates a new ConnectionPoolProvider object.
+   * @param provider The configuration provider.
+   * @param lifecycle The applicaiton lifecycle.
+   * @param shutdownService The shutdown service.
    */
   @Inject
   public ConnectionPoolProvider(ConfigProvider provider, ApplicationLifecycle lifecycle,
