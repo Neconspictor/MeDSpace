@@ -1,7 +1,7 @@
 package de.unipassau.medspace.common.rdf;
 
 /**
- * Created by David Goeth on 28.10.2017.
+ * A simple RDF triple.
  */
 public class SimpleTriple implements Triple {
 
@@ -9,6 +9,12 @@ public class SimpleTriple implements Triple {
   private final String predicate;
   private final RDFValue object;
 
+  /**
+   * Creates a new SimpleTriple object.
+   * @param subject the subject
+   * @param predicate the predicate
+   * @param object the object
+   */
   public SimpleTriple(String subject, String predicate, RDFValue object) {
     this.subject = subject;
     this.predicate = predicate;

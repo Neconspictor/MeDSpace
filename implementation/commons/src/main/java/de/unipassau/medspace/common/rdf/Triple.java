@@ -1,25 +1,25 @@
 package de.unipassau.medspace.common.rdf;
 
 /**
- * TODO
+ * Represents an RDF triple statement.
  */
 public interface Triple {
 
   /**
-   * TODO
-   * @return
+   * Provides the subject.
+   * @return the subject.
    */
   String getSubject();
 
   /**
-   * TODO
-   * @return
+   * Provides the predicate.
+   * @return the predicate.
    */
   String getPredicate();
 
   /**
-   * TODO
-   * @return
+   * Provides the object.
+   * @return the object.
    */
   String getObject();
 }

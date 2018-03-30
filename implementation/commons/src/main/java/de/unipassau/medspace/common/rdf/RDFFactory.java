@@ -1,46 +1,46 @@
 package de.unipassau.medspace.common.rdf;
 
 /**
- * TODO
+ * An RDF factory is used to create resources, literals, and triples.
  */
 public interface RDFFactory {
 
   /**
-   * TODO
-   * @param label
-   * @return
+   * Creates an RDF literal from a string value.
+   * @param label The string value
+   * @return An RDF literal representing the string value.
    */
   RDFLiteral createLiteral(String label);
 
   /**
-   * TODO
-   * @param label
-   * @param language
-   * @return
+   * Creates an RDF literal from a string value.
+   * @param label The string value
+   * @param language A language tag for the string value.
+   * @return An RDF literal representing the string value.
    */
   RDFLiteral createLiteral(String label, String language);
 
   /**
-   * TODO
-   * @param iri
-   * @return
+   * Creates an RDF resource from an IRI.
+   * @param iri The IRI
+   * @return An RDF resource representing the IRI.
    */
   RDFResource createResource(String iri);
 
   /**
-   * TODO
-   * @param label
-   * @param dataType
-   * @return
+   * Creates an RDF literal from a string value that has a data type.
+   * @param label The string value
+   * @param dataType The data type
+   * @return A typed RDF literal representing the string value.
    */
   RDFLiteral createTypedLiteral(String label, String dataType);
 
   /**
-   * TODO
-   * @param subject
-   * @param predicate
-   * @param object
-   * @return
+   * Creates an RDF triple.
+   * @param subject The subject
+   * @param predicate The predicate
+   * @param object The object.
+   * @return an RDF triple.
    */
   Triple createTriple(RDFResource subject, RDFResource predicate, RDFObject object);
 }
