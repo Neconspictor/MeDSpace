@@ -62,8 +62,6 @@ public class D2rWrapper<DocType> extends AbstractWrapper<DocType, MappedSqlTuple
     this.proxy = new D2rProxy(connectionPool);
 
     // We won't change the list; being cautious we make it unmodifiable.
-    // TODO make the list elements itself immutable after they are initialized
-    // TODO to assure that no concurrency problems can occur
     this.maps = Collections.unmodifiableList(maps);
     this.connectionPool = connectionPool;
     indexUsed = useIndex;

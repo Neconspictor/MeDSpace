@@ -63,7 +63,7 @@ public class D2rMap implements Serializable {
   private final List<String> metaDataTags;
 
   /**
-   * TODO
+   * The used RDF factory.
    */
   private RDFFactory rdfFactory;
 
@@ -107,17 +107,17 @@ public class D2rMap implements Serializable {
 
 
   /**
-   * TODO
-   * @param resourceIdPattern
+   * Sets the resource ID pattern.
+   * @param resourceIdPattern the resource ID pattern.
    */
   public void setResourceIdPattern(String resourceIdPattern) {
     this.resourceIdPattern = resourceIdPattern;
   }
 
   /**
-   * TODO
-   * @param id
-   * @return
+   * Comapres an ID with the ID of this D2rMap.
+   * @param id The ID to compare.
+   * @return true if the IDs are equal.
    */
   public boolean compareIdTo(String id) {
     if (id == null) return false;
@@ -211,10 +211,8 @@ public class D2rMap implements Serializable {
   }
 
   /**
-   * TODO
-   * Provides an unmodifiable list of resource id columns that is used to create unique URIs for rdf resources which are created by
-   * this class.
-   * @return An unmodifiable list of the resource id columns.
+   * Provides the resource ID pattern.
+   * @return the resource ID pattern.
    */
   public String getResourceIdPattern() {
     return resourceIdPattern;
@@ -224,7 +222,7 @@ public class D2rMap implements Serializable {
    * Inits this D2rMap. The Datasource is needed to get column names of the query and verify that the select query of
    * is valid.
    * @param dataSource The datasource used to init the select query.
-   * @throws D2RException
+   * @throws D2RException If an error occurs.
    */
   public void init(DataSource dataSource) throws D2RException {
     try {
