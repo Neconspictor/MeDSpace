@@ -15,47 +15,47 @@ public class IcsFile extends DDSM_CaseFile {
 
 
   /**
-   * The DATE_OF_STUDY token in an overlay file.
+   * The DATE_OF_STUDY token in an ICS file.
    */
   public static final String DATE_OF_STUDY = "DATE_OF_STUDY";
 
   /**
-   * The PATIENT_AGE token in an overlay file.
+   * The PATIENT_AGE token in an ICS file.
    */
   public static final String PATIENT_AGE = "PATIENT_AGE";
 
   /**
-   * The DENSITY token in an overlay file.
+   * The DENSITY token in an ICS file.
    */
   public static final String DENSITY = "DENSITY";
 
   /**
-   * The DATE_DIGITIZED token in an overlay file.
+   * The DATE_DIGITIZED token in an ICS file.
    */
   public static final String DATE_DIGITIZED = "DATE_DIGITIZED";
 
   /**
-   * The DIGITIZER token in an overlay file.
+   * The DIGITIZER token in an ICS file.
    */
   public static final String DIGITIZER = "DIGITIZER";
 
   /**
-   * The LEFT_CC token in an overlay file.
+   * The LEFT_CC token in an ICS file.
    */
   public static final String LEFT_CC = "LEFT_CC";
 
   /**
-   * The LEFT_MLO token in an overlay file.
+   * The LEFT_MLO token in an ICS file.
    */
   public static final String LEFT_MLO = "LEFT_MLO";
 
   /**
-   * The RIGHT_CC token in an overlay file.
+   * The RIGHT_CC token in an ICS file.
    */
   public static final String RIGHT_CC = "RIGHT_CC";
 
   /**
-   * The RIGHT_MLO token in an overlay file.
+   * The RIGHT_MLO token in an ICS file.
    */
   public static final String RIGHT_MLO = "RIGHT_MLO";
 
