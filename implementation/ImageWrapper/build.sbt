@@ -22,6 +22,9 @@ lazy val common_play = RootProject(file("../commons_play"))
 scalaVersion := "2.12.2"
 
 javacOptions in Compile ++= Seq("-Xdoclint:none")
+scalacOptions in (Compile, doc) ++= Seq(
+  "-no-link-warnings" // Suppresses problems with Scaladoc @throws links
+)
 
 libraryDependencies += guice
 
