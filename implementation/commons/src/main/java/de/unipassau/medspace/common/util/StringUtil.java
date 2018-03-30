@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * TODO
+ * Utility methods useful when working with strings.
  */
 public final class StringUtil {
 
 
     /**
-     * TODO
-     * @param line
-     * @param expectedToken
-     * @return
+     * Checks if a given string starts with an expected token.
+     * @param line The string.
+     * @param expectedToken The expected token.
+     * @return true if the string starts with the token, otherwise false.
      */
     public static boolean beginsWithToken(String line, String expectedToken) {
       List<String> tokens = StringUtil.tokenize(line, " \t");
@@ -29,14 +29,14 @@ public final class StringUtil {
     }
 
     /**
-     * TODO
-     * @param hash
-     * @return
+     * Provides a hexadecimal string representation of an byte array.
+     * @param array The byte array.
+     * @return a hexadecimal string representation of the byte array.
      */
-  public static String bytesToHex(byte[] hash) {
+  public static String bytesToHex(byte[] array) {
     StringBuffer hexString = new StringBuffer();
-    for (int i = 0; i < hash.length; i++) {
-      String hex = Integer.toHexString(0xff & hash[i]);
+    for (int i = 0; i < array.length; i++) {
+      String hex = Integer.toHexString(0xff & array[i]);
       if(hex.length() == 1) hexString.append('0');
       hexString.append(hex);
     }
@@ -44,11 +44,10 @@ public final class StringUtil {
   }
 
   /**
-   * TODO
-   * @param list
-   * @param seperator
-   * @return
-       * @throws IOException
+   * Concates a list of strings and separates the elements with a given separator token.
+   * @param list The list of strings
+   * @param seperator The separator token
+   * @return A concazenated string.
    */
   public static String concat(List<String> list, String seperator) {
     StringBuilder builder = new StringBuilder();
@@ -65,9 +64,9 @@ public final class StringUtil {
   }
 
   /**
-   * TODO
-   * @param source
-   * @return
+   * Encodes a string with SHA-256.
+   * @param source The string to encode.
+   * @return An encoded string.
    */
   public static String encodeString(String source) {
 
@@ -85,11 +84,10 @@ public final class StringUtil {
   }
 
   /**
-   * TODO
-   * @param value
-   * @param seperator
-   * @return
-   * @throws IOException
+   * tokenizes a string with a given separator.
+   * @param value The string to tokenize.
+   * @param seperator The separator token to use.
+   * @return The tokenized string.
    */
   public static List<String> tokenize(String value, String seperator) {
 

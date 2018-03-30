@@ -117,10 +117,10 @@ public class FileUtil {
 
 
   /**
-   * TODO
-   * @param file
-   * @return
-   * @throws IOException
+   * Provides the content of the file as a list of lines.
+   * @param file The file.
+   * @return A list of lines.
+   * @throws IOException If any io error occurs.
    */
   public static List<String> getLineContent(File file) throws IOException {
     List<String> result = new LinkedList<>();
@@ -176,11 +176,12 @@ public class FileUtil {
   }
 
   /**
-   * TODO
-   * @param root
-   * @param subFile
-   * @return
-   * @throws IOException
+   * Provides the relative path of a file seen from a root directory file.
+   * @param root The root directory
+   * @param subFile The file to get the relative path from.
+   * @return The relative path of the file.
+   * @throws IOException If any io error occurs
+   * @throws IllegalArgumentException if root is not a directory or root isn't a parent of subFile.
    */
   public static String getRelativePath(File root, File subFile)  {
 
@@ -205,8 +206,8 @@ public class FileUtil {
   }
 
   /**
-   * TODO
-   * @param file
+   * Creates a path structure that is platform independent.
+   * @param file Used to get the path.
    * @return
    */
   public static String makePlatformIndependentPathStructure(File file) {

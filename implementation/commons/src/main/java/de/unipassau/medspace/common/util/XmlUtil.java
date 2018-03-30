@@ -22,8 +22,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.unipassau.medspace.common.util.FileUtil.closeSilently;
-
 /**
  * Utility class for parsing XML and XSD files.
  */

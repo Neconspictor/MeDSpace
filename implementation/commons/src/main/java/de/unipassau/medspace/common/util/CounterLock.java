@@ -4,27 +4,18 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * TODO
+ * A lock for a counter.
  */
 public class CounterLock {
 
-  /**
-   * TODO
-   */
   private ReentrantLock lock;
 
-  /**
-   * TODO
-   */
   private long counter;
 
-  /**
-   * TODO
-   */
   private Condition condition;
 
   /**
-   * TODO
+   * Creates a new CounterLock object.
    */
   public CounterLock() {
     lock = new ReentrantLock();
@@ -33,14 +24,14 @@ public class CounterLock {
   }
 
   /**
-   * TODO
+   * Decrrements the lock counter.
    */
   public void decrementLock() {
     decrementLock(null);
   }
 
   /**
-   * TODO
+   * Decrements the lock and executes a callback method if the counter has reached zero.
    */
   public void decrementLock(Runnable onUnlockCallback) {
     try {
@@ -58,7 +49,7 @@ public class CounterLock {
   }
 
   /**
-   * TODO
+   * Increments the lock counter.
    */
   public void incrementLock() {
     try{
@@ -70,8 +61,8 @@ public class CounterLock {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the counter.
+   * @return the counter.
    */
   public long getCounter() {
     try {
@@ -83,8 +74,8 @@ public class CounterLock {
   }
 
   /**
-   * TODO
-   * @throws InterruptedException
+   * The current thread is suspended until the lock is unlocked.
+   * @throws InterruptedException If the thread is interrupted while waiting for the unlock event.
    */
   public void waitTillUnlocked() {
     try {

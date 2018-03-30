@@ -36,8 +36,6 @@ public class SqlUtil {
     }
 
     for (String keyword : keywords) {
-      //MATCH(column) AGAINST('string')
-      //TODO if database supports full-text search, it would be nice to us it, but this is vendor specific.
       String condition = createOrColumnCondition("%s LIKE '%%" + keyword + "%%'", placeholders);
       builder.append("(");
       builder.append(condition);

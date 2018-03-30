@@ -7,15 +7,15 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * TODO
+ * Utilities for parsing file content.
  */
 public class ParserUtil {
 
   /**
-   * TODO
-   * @param tokens
-   * @return
-   * @throws IOException
+   * Pulls the first element of a token list and converts it to a date object.
+   * @param tokens The token list
+   * @return The created date object
+   * @throws IOException If no date object could be created.
    */
   public static Date pullDateField(List<String> tokens) throws IOException {
     // we need three tokens (Day, Month, Year)
@@ -38,10 +38,11 @@ public class ParserUtil {
   }
 
   /**
-   * TODO
-   * @param tokens
-   * @param expectedToken
-   * @throws IOException
+   * Pulls the first element of a token list and compares it with a given token. If the token doesn't match the
+   * expected token an io error is thrown.
+   * @param tokens The token list
+   * @param expectedToken The expected token.
+   * @throws IOException If the token doesn't match the expected token
    */
   public static void pullExpectedToken(List<String> tokens, String expectedToken) throws IOException {
     if (!tokens.remove(0).equals(expectedToken)) {
@@ -50,10 +51,10 @@ public class ParserUtil {
   }
 
   /**
-   * TODO
-   * @param tokens
-   * @return
-   * @throws IOException
+   * Pulls the first element of a token list and converts it to an integer.
+   * @param tokens The token list
+   * @return The parsed integer.
+   * @throws IOException If the token cannot be converted to an integer.
    */
   public static int pullInt(List<String> tokens) throws IOException {
     // we need one token
