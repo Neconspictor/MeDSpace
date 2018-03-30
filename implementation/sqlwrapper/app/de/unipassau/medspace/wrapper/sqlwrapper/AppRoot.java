@@ -3,6 +3,7 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.play.wrapper.RegisterClient;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.d2r.D2rWrapper;
