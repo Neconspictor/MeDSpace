@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A stream that converts an ICS file to a document stream.
  */
 public class IcsFileToDocStream implements Stream<Document> {
 
@@ -36,6 +36,18 @@ public class IcsFileToDocStream implements Stream<Document> {
 
   private List<Document> documents;
 
+  /**
+   * Creates a new IcsFileToDocStream object.
+   *
+   * @param icsFile The ICS file.
+   * @param icsFileAdapter An ICS file adapter.
+   * @param overlayAdapter An overlay adapter.
+   * @param abnormalityAdapter An overlay adapter.
+   * @param imageAdapter An image adapter.
+   * @param calcificationAdapter A calcification adapter.
+   * @param massAdapter A mass adapter.
+   * @throws IOException If an IO error occurs.
+   */
   public IcsFileToDocStream(IcsFile icsFile,
                      IcsFileAdapter icsFileAdapter,
                      OverlayAdapter overlayAdapter,

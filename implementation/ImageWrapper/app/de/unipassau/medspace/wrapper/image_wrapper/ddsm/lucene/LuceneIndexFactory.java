@@ -21,12 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A lucene index factory for the Image Wrapper.
  */
 public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile> {
 
+
   /**
-   * TODO
+   * The used adpters.
    */
   private final List<LuceneClassAdapter<?>> adpaters;
 
@@ -36,21 +37,22 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
   private final String directory;
 
   /**
-   * TODO
+   * The RDF factory.
    */
   private final RDFFactory factory;
 
   /**
-   * TODO
+   * The used normalizer.
    */
   private final QNameNormalizer normalizer;
 
   /**
-   * TODO
-   * @param directory
-   * @param adpaters
-   * @param factory
-   * @param normalizer
+   * Creates a new LuceneIndexFactory object.
+   *
+   * @param directory The folder for storing index data.
+   * @param adpaters The adapters to use.
+   * @param factory The RDF factory to use.
+   * @param normalizer The normalizer to use.
    */
   public LuceneIndexFactory(String directory,
                             List<LuceneClassAdapter<?>> adpaters,
@@ -77,10 +79,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
     return new IcsFileTripleIndexManager(searcher, converter, adpaters);
   }
 
-  /**
-   * TODO
-   * @return
-   */
+
   private List<String> createFields() {
     List<String> fields = new ArrayList<>();
     for (LuceneClassAdapter<?> adapter : adpaters) {
@@ -96,20 +95,17 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, IcsFile>
   }
 
   /**
-   * TODO
+   * A triple index manager for ICS files.
    */
   private static class IcsFileTripleIndexManager extends TripleIndexManager<Document, IcsFile> {
 
-    /**
-     * TODO
-     */
     private final List<LuceneClassAdapter<?>> adapters;
 
     /**
-     * Creates a new TripleIndexManager.
+     * Creates a new IcsFileTripleIndexManager.
      * @param searcher              Used for searching an {@link de.unipassau.medspace.common.indexing.Index}.
      * @param tripleSearchConverter Used to convert documents to triples.
-     * @param adapters TODO
+     * @param adapters The adapters to use.
      */
     public IcsFileTripleIndexManager(IndexSearcher<Document> searcher,
                                      Converter<KeywordSearcher<Document>, KeywordSearcher<Triple>> tripleSearchConverter,

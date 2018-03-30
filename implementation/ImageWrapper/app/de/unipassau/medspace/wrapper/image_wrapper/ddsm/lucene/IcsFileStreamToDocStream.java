@@ -8,7 +8,7 @@ import org.apache.lucene.document.Document;
 import java.io.IOException;
 
 /**
- * TODO
+ * A stream that converts ICS files to a 'stream of steam of documents'.
  */
 public class IcsFileStreamToDocStream implements Stream<Stream<Document>> {
 
@@ -26,6 +26,17 @@ public class IcsFileStreamToDocStream implements Stream<Stream<Document>> {
 
   private final MassAdapter massAdapter;
 
+  /**
+   * Creates a new IcsFileStreamToDocStream object.
+   *
+   * @param source A stream of ICS files.
+   * @param icsFileAdapter An ICS file adapter.
+   * @param overlayAdapter An overlay adapter.
+   * @param abnormalityAdapter An abnormality adapter.
+   * @param imageAdapter An image adapter.
+   * @param calcificationAdapter A calcification adapter.
+   * @param massAdapter A mass adapter.
+   */
   public IcsFileStreamToDocStream(Stream<IcsFile> source,
                                   IcsFileAdapter icsFileAdapter,
                                   OverlayAdapter overlayAdapter,

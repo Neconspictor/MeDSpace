@@ -63,7 +63,7 @@ public class OverlayAdapter extends DDSM_CaseAdapter<OverlayMetaData> {
     }
     return null;
   }
-  
+
   private boolean isAbnormalityReference(PropertyMapping property) {
 
     if (overlayParsing.getAbnormality().equals(property)) return true;
