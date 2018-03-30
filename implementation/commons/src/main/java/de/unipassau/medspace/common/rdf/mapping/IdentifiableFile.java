@@ -3,13 +3,13 @@ package de.unipassau.medspace.common.rdf.mapping;
 import java.io.File;
 
 /**
- * TODO
+ * An identifiable which also is a file.
  */
 public interface IdentifiableFile extends Identifiable {
 
   /**
-   * TODO
-   * @return
+   * Provides the source file.
+   * @return The source file.
    */
   File getSource();
 }

@@ -1,13 +1,13 @@
 package de.unipassau.medspace.common.rdf.mapping;
 
 /**
- * TODO
+ * An identifiable is an object that has an ID which can be represented as a string value.
  */
 public interface Identifiable {
 
   /**
-   * TODO
-   * @return
+   * Provides the ID.
+   * @return The ID.
    */
   String getId();
 }
