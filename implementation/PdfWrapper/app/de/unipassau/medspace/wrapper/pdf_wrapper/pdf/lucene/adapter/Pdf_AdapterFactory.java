@@ -7,32 +7,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * An adapter factory for PDF files.
  */
 public class Pdf_AdapterFactory {
 
-  /**
-   * TODO
-   */
+
   private final RootMapping rootParsing;
 
-  /**
-   * TODO
-   */
   private final String downloadService;
 
+
   /**
-   * TODO
-   * @param rootParsing
+   * Creates a new Pdf_AdapterFactory object.
+   * @param rootMapping The root mapping.
+   * @param downloadService the base URL of the file download service.
    */
-  public Pdf_AdapterFactory(RootMapping rootParsing, String downloadService) {
-    this.rootParsing = rootParsing;
+  public Pdf_AdapterFactory(RootMapping rootMapping, String downloadService) {
+    this.rootParsing = rootMapping;
     this.downloadService = downloadService;
   }
 
   /**
-   * TODO
-   * @return
+   * Creates the adapter list.
+   * @return the created adapter list.
    */
   public List<LucenePdfFileDocAdapter<?>> createAdapters() {
     List<LucenePdfFileDocAdapter<?>> adapters = new ArrayList<>();
