@@ -9,13 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A factory for DDSM adapters.
  */
 public class DDSM_AdapterFactory {
 
-  /**
-   * TODO
-   */
+
   private final RootMapping rootParsing;
 
   private final File root;
@@ -23,20 +21,20 @@ public class DDSM_AdapterFactory {
   private final String fileDownloadService;
 
   /**
-   * TODO
-   * @param root
-   * @param rootParsing
-   * @param fileDownloadService
+   * Creates a new DDSM_AdapterFactory object.
+   * @param root The root directory of the DDSM cases.
+   * @param rootMapping The mapping for the root configuration.
+   * @param fileDownloadService The file donwload service base URL
    */
-  public DDSM_AdapterFactory(File root, RootMapping rootParsing, String fileDownloadService) {
-    this.rootParsing = rootParsing;
+  public DDSM_AdapterFactory(File root, RootMapping rootMapping, String fileDownloadService) {
+    this.rootParsing = rootMapping;
     this.root = root;
     this.fileDownloadService = fileDownloadService;
   }
 
   /**
-   * TODO
-   * @return
+   * Creates the list of DDSM adapters.
+   * @return the list of DDSM adapters.
    */
   public List<LuceneClassAdapter<?>> createAdapters() {
     List<LuceneClassAdapter<?>> adapters = new ArrayList<>();

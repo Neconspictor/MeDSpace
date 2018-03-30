@@ -14,84 +14,54 @@ import org.javatuples.Pair;
 import java.io.IOException;
 
 /**
- * TODO
+ * A DDSM adapter for an abnormality.
  */
 public class AbnormalityAdapter extends DDSM_CaseAdapter<Abnormality> {
 
+  private static final String ABNORMALITY = "ABNORMALITY";
 
-  /**
-   * TODO
-   */
-  public static final String ABNORMALITY = "ABNORMALITY";
+  private static final String CALCIFICATION = "CALCIFICATION";
 
-  /**
-   * TODO
-   */
-  public static final String CALCIFICATION = "CALCIFICATION";
+  private static final String MASS = "MASS";
 
-  /**
-   * TODO
-   */
-  public static final String MASS = "MASS";
+  private static final String ASSESSMENT = "ASSESSMENT";
 
-  /**
-   * TODO
-   */
-  public static final String ASSESSMENT = "ASSESSMENT";
+  private static final String SUBTLETY = "SUBTLETY";
 
-  /**
-   * TODO
-   */
-  public static final String SUBTLETY = "SUBTLETY";
+  private static final String PATHOLOGY = "PATHOLOGY";
 
-  /**
-   * TODO
-   */
-  public static final String PATHOLOGY = "PATHOLOGY";
-
-  /**
-   * TODO
-   */
-  public static final String TOTAL_OUTLINES = "TOTAL_OUTLINES";
+  private static final String TOTAL_OUTLINES = "TOTAL_OUTLINES";
 
 
-  /**
-   * TODO
-   */
+
   private final AbnormalityMapping abnormalityParsing;
 
-  /**
-   * TODO
-   */
   private final CalcificationMapping calcificationParsing;
 
-  /**
-   * TODO
-   */
   private final MassMapping massParsing;
 
   /**
-   * TODO
+   * Creates a new AbnormalityAdapter object.
    *
-   * @param abnormalityParsing
-   * @param calcificationParsing
-   * @param massParsing
+   * @param abnormalityMapping The mapping for an abnormality
+   * @param calcificationMapping The mapping for calcification
+   * @param massMapping The mapping for a mass
    */
-  protected AbnormalityAdapter(AbnormalityMapping abnormalityParsing,
-                               CalcificationMapping calcificationParsing,
-                               MassMapping massParsing) {
-    super(abnormalityParsing, null);
-    this.abnormalityParsing = abnormalityParsing;
-    this.calcificationParsing = calcificationParsing;
-    this.massParsing = massParsing;
+  protected AbnormalityAdapter(AbnormalityMapping abnormalityMapping,
+                               CalcificationMapping calcificationMapping,
+                               MassMapping massMapping) {
+    super(abnormalityMapping, null);
+    this.abnormalityParsing = abnormalityMapping;
+    this.calcificationParsing = calcificationMapping;
+    this.massParsing = massMapping;
 
-    addPair(ABNORMALITY, abnormalityParsing.getAbnormality());
-    addPair(CALCIFICATION, abnormalityParsing.getCalcification());
-    addPair(MASS, abnormalityParsing.getMass());
-    addPair(ASSESSMENT, abnormalityParsing.getAssessment());
-    addPair(SUBTLETY, abnormalityParsing.getSubtlety());
-    addPair(PATHOLOGY, abnormalityParsing.getPathology());
-    addPair(TOTAL_OUTLINES, abnormalityParsing.getTotalOutlines());
+    addPair(ABNORMALITY, abnormalityMapping.getAbnormality());
+    addPair(CALCIFICATION, abnormalityMapping.getCalcification());
+    addPair(MASS, abnormalityMapping.getMass());
+    addPair(ASSESSMENT, abnormalityMapping.getAssessment());
+    addPair(SUBTLETY, abnormalityMapping.getSubtlety());
+    addPair(PATHOLOGY, abnormalityMapping.getPathology());
+    addPair(TOTAL_OUTLINES, abnormalityMapping.getTotalOutlines());
   }
 
   @Override

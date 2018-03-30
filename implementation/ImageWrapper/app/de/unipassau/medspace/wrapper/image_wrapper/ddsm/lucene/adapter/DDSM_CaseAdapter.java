@@ -13,19 +13,17 @@ import org.javatuples.Pair;
 import java.io.IOException;
 
 /**
- * TODO
+ * An abstract adapter for a DDSM case.
  */
 public abstract class DDSM_CaseAdapter<ClassType extends DDSM_CaseIdentifiable>
     extends LuceneClassAdapter<ClassType> {
 
+  private static final String DDSM_CASE_META_DATA_TAG = "DDSM_CASE_META_DATA_TAG";
 
   /**
-   * TODO
-   */
-  public static final String DDSM_CASE_META_DATA_TAG = "DDSM_CASE_META_DATA_TAG";
-
-  /**
-   * TODO
+   * Creates a new DDSM_CaseAdapter object.
+   * @param classMapping The RDF class mapping.
+   * @param decorator Another LuceneClassAdapter that should be used as a decorator.
    */
   public DDSM_CaseAdapter(ClassMapping classMapping,
                           LuceneClassAdapter<? super ClassType> decorator) {
@@ -36,7 +34,8 @@ public abstract class DDSM_CaseAdapter<ClassType extends DDSM_CaseIdentifiable>
 
 
   /**
-   * TODO
+   * Creates a new DDSM_CaseAdapter object.
+   * @param decorator Another LuceneClassAdapter that should be used as a decorator.
    */
   public DDSM_CaseAdapter(LuceneClassAdapter<ClassType> decorator) {
     super(decorator);

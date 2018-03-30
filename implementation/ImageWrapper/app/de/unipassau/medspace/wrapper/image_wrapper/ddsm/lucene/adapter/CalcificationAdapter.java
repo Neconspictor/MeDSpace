@@ -10,31 +10,25 @@ import org.javatuples.Pair;
 import java.io.IOException;
 
 /**
- * TODO
+ * A DDSM adapter for a calcification.
  */
 public class CalcificationAdapter extends DDSM_CaseAdapter<Calcification> {
 
-  /**
-   * TODO
-   */
-  public static final String TYPE = "TYPE";
+  private static final String TYPE = "TYPE";
 
-  /**
-   * TODO
-   */
-  public static final String DISTRIBUTION = "DISTRIBUTION";
+  private static final String DISTRIBUTION = "DISTRIBUTION";
 
 
   /**
-   * TODO
+   * Creates a new AbnormalityAdapter object.
    *
-   * @param calcificationParsing
+   * @param calcificationMapping The mapping for calcification
    */
-  protected CalcificationAdapter(CalcificationMapping calcificationParsing) {
-    super(calcificationParsing, null);
+  protected CalcificationAdapter(CalcificationMapping calcificationMapping) {
+    super(calcificationMapping, null);
 
-    addPair(TYPE, calcificationParsing.getType());
-    addPair(DISTRIBUTION, calcificationParsing.getDistribution());
+    addPair(TYPE, calcificationMapping.getType());
+    addPair(DISTRIBUTION, calcificationMapping.getDistribution());
   }
 
   @Override
