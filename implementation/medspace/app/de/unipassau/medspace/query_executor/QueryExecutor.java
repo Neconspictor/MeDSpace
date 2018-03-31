@@ -74,7 +74,7 @@ public class QueryExecutor implements Closeable {
     InputStream in;
 
     try {
-      in = serviceInvoker.invokeDataCollectorQueryQueryResult(dataCollectorBase, resultID, rdfFormat);
+      in = serviceInvoker.invokeDataCollectorGetQueryResult(dataCollectorBase, resultID, rdfFormat);
     } catch (IOException e) {
       try{
         serviceInvoker.invokeDataCollectorDeleteQueryResult(dataCollectorBase, resultID);
