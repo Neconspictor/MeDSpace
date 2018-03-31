@@ -14,6 +14,7 @@ import de.unipassau.medspace.wrapper.pdf_wrapper.PdfWrapper;
 import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.PdfFile;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.LuceneIndexFactory;
+import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.PdfFileAdapter;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.Pdf_AdapterFactory;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
@@ -29,22 +30,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
+ * A provider for the PDF wrapper.
  */
 public class WrapperProvider implements Provider<Wrapper> {
 
-  /**
-   * Logger instance for this class.
-   */
   private static Logger log = LoggerFactory.getLogger(WrapperProvider.class);
 
-  /**
-   * TODO
-   */
+
   private Wrapper wrapper;
 
   /**
-   * TODO
+   * Creates a new WrapperProvider object.
+   * @param configProvider The provider of the PDF wrapper configuration.
+   * @param shutdownService The shutdown service.
+   * @throws IOException IF an IO error occurs.
    */
   @Inject
   public WrapperProvider(PdfWrapperConfigProvider configProvider,
@@ -62,7 +61,7 @@ public class WrapperProvider implements Provider<Wrapper> {
     String downloadService = host + "get-file?relativePath=";
 
     Pdf_AdapterFactory adapterFactory = new Pdf_AdapterFactory(rootParsing, downloadService);
-    List<LucenePdfFileDocAdapter<?>> adapters = adapterFactory.createAdapters();
+    List<PdfFileAdapter> adapters = adapterFactory.createAdapters();
 
     Map<String, Namespace> namespaces = new HashMap<>();
 

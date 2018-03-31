@@ -18,26 +18,20 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * TODO
+ * A wrapper for local PDF files.
  */
 public class PdfWrapper<DocType> extends AbstractWrapper<DocType, PdfFile> {
 
-  /**
-   * Logger
-   */
   private static Logger log = LoggerFactory.getLogger(PdfWrapper.class);
 
-
-  /**
-   * TODO
-   */
   private final File root;
 
   /**
-   * TODO
-   * @param indexManager
-   * @param namespaces
-   * @param root
+   * Creates a new PdfWrapper object.
+   * @param indexManager The triple index manager to use.
+   * @param namespaces The namespaces to use for the created RDF data.
+   * @param root The root folder for collecting PDF files.
+   * @throws IOException If an IO error occurs.
    */
   public PdfWrapper(TripleIndexManager<DocType, PdfFile> indexManager,
                     Map<String, Namespace> namespaces,

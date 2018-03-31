@@ -25,33 +25,22 @@ import java.util.concurrent.CompletableFuture;
 @Singleton
 public class PdfWrapperService extends WrapperService {
 
-  /**
-   * Logger instance for this class.
-   */
   private static Logger log = LoggerFactory.getLogger(PdfWrapperService.class);
 
-  /**
-   * TODO
-   */
+
   private RegisterClient registerClient;
 
-  /**
-   * TODO
-   */
   private boolean connectToRegister;
 
-  /**
-   * TODO
-   */
   private Datasource wrapperDatasource;
 
 
   /**
-   * Creates a new SQLWrapperService.
+   * Creates a new PdfWrapperService object.
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
-   * @param wrapper TODO
+   * @param wrapper The wrapper to use.
    */
   @Inject
   public PdfWrapperService(ApplicationLifecycle lifecycle,
@@ -130,9 +119,7 @@ public class PdfWrapperService extends WrapperService {
     log.info("Initialized SQL Wrapper");
   }
 
-  /**
-   * TODO
-   */
+
   private void deregister() {
     boolean success = registerClient.deRegister(wrapperDatasource, generalConfig.getRegisterURL());
 

@@ -18,38 +18,24 @@ import java.io.IOException;
 import static de.unipassau.medspace.common.config.Constants.RDF_MAPPING_SCHEMA;
 
 /**
- * TODO
+ * A provider for the configuration of the PDF wrapper.
  */
 public class PdfWrapperConfigProvider extends GeneralConfigProvider {
 
-
-  /**
-   * Logger instance for this class.
-   */
   private static Logger log = LoggerFactory.getLogger(PdfWrapperConfigProvider.class);
 
-
-  /**
-   * TODO
-   */
   private static final String PDF_CONFIG_FILE_ID = "MeDSpacePdfWrapperConfig";
 
-  /**
-   * TODO
-   */
   private static final String PDF_CONFIG_SPECIFICATION_FILE_ID = "MeDSpacePdfWrapperConfigSpecification";
 
 
-  /**
-   * TODO
-   */
   private RootMapping pdfConfig;
 
   /**
-   * TODO
-   * @param playConfig
-   * @param provider
-   * @param shutdownService
+   * Creates a new PdfWrapperConfigProvider object.
+   * @param playConfig The Play configuration.
+   * @param provider The RDF provider
+   * @param shutdownService The shutdown service.
    */
   @Inject
   public PdfWrapperConfigProvider(com.typesafe.config.Config playConfig,
@@ -68,16 +54,6 @@ public class PdfWrapperConfigProvider extends GeneralConfigProvider {
   }
 
 
-  /**
-   * TODO
-   * @param playConfig
-   * @param provider
-   * @throws IOException
-   * @throws ConfigException.Missing
-   * @throws ConfigException.WrongType
-   * @throws JAXBException
-   * @throws SAXException
-   */
   private void init(Config playConfig, RDFProvider provider)
       throws IOException,
       ConfigException.Missing,
@@ -99,8 +75,8 @@ public class PdfWrapperConfigProvider extends GeneralConfigProvider {
   }
 
   /**
-   * TODO
-   * @return
+   * Provides the PDF wrapper configuration.
+   * @return the PDF wrapper configuration.
    */
   public RootMapping getPdfConfig() {
     return pdfConfig;

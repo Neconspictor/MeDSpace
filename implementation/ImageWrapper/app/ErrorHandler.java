@@ -6,7 +6,7 @@ import java.util.concurrent.CompletionStage;
 import javax.inject.Singleton;
 
 /**
- * Hanldes HTTP errors. This class is automatically created by Play.
+ * Handles HTTP errors. This class is automatically created by Play.
  */
 @Singleton
 public class ErrorHandler implements HttpErrorHandler {

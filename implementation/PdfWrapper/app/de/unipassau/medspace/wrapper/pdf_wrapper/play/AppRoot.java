@@ -14,7 +14,7 @@ import play.api.Environment;
 import java.util.Locale;
 
 /**
- * The AppRoot is a configuration class that configures the play framework for the sql wrapper.
+ * The AppRoot is a configuration class that configures the play framework for the PDF wrapper.
  * It's main purpose is the definition of Dependency Injection definitions.
  */
 public class AppRoot extends AbstractModule {
