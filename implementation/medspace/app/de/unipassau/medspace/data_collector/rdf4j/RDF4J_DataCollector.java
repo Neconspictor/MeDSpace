@@ -69,7 +69,7 @@ public class RDF4J_DataCollector extends DataCollector {
       String repoName = resultID.toString();
     try {
       manager.removeRepository(repoName);
-    } catch (InterruptedException e) {
+    } catch (IOException | IllegalArgumentException e) {
       throw new IOException("Couldn't remove repo with id: " + resultID, e);
     }
     return true;
