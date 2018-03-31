@@ -23,6 +23,10 @@ scalaVersion := "2.12.2"
 
 javacOptions in Compile ++= Seq("-Xdoclint:none")
 
+scalacOptions in (Compile, doc) ++= Seq(
+  "-no-link-warnings" // Suppresses problems with Scaladoc @throws links
+)
+
 libraryDependencies += guice
 
 libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"
