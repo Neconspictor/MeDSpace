@@ -24,20 +24,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * TODO
+ * A Data collector implementation suing RDF4J as RDF backend.
  */
 public class RDF4J_DataCollector extends DataCollector {
 
-  /**
-   * TODO
-   */
+  private final static String NAMED_GRAPH_BASE_IRI = "http://medspace.com/data_collector_ids/#";
+
   private final RepoManagerWrapper manager;
 
   /**
-   * TODO
+   * Creates a new RDF4J_DataCollector object.
+   * @param manager The repository manager to use.
    */
-  private final static String NAMED_GRAPH_BASE_IRI = "http://medspace.com/data_collector_ids/#";
-
   @Inject
   public RDF4J_DataCollector(LocalRepositoryManager manager) {
     this.manager = new RepoManagerWrapper(manager);
@@ -109,34 +107,23 @@ public class RDF4J_DataCollector extends DataCollector {
     }
   }
 
-  /**
-   * TODO
-   * @param resultID
-   * @return
-   */
   private Resource getNamedGraph(BigInteger resultID) {
     return SimpleValueFactory.getInstance().createIRI(NAMED_GRAPH_BASE_IRI + resultID);
   }
 
   /**
-   * TODO
+   * A triple stream that wraps a repository result.
    */
   private class RepositoryResultStream implements Stream<Triple> {
 
-    /**
-     * TODO
-     */
     private final RepositoryResult<Statement> result;
 
-    /**
-     * TODO
-     */
     private final RepositoryConnection conn;
 
     /**
-     * TODO
-     * @param result
-     * @param conn
+     * Creates a new RepositoryResultStream object.
+     * @param result The repository query result.
+     * @param conn The repository connection.
      */
     public RepositoryResultStream(RepositoryResult<Statement> result, RepositoryConnection conn) {
       this.result = result;

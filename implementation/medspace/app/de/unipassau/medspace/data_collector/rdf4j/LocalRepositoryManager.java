@@ -26,7 +26,7 @@ public class LocalRepositoryManager {
     root = createAndCleanDirectory(rootDir);
     this.createdRepos = new ConcurrentHashMap<>();
   }
-  
+
   /**
    * Opens a registered repository.
    * @param subPath The sub folder path the repository is stored.
