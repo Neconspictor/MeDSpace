@@ -8,25 +8,18 @@ import org.apache.lucene.document.Document;
 import java.io.IOException;
 
 /**
- * TODO
+ * A stream that converts a stream of PDF files to a stream of documents.
  */
 public class PdfFileToDocStream implements Stream<Document> {
 
-  /**
-   * TODO
-   */
   private final Stream<PdfFile> source;
 
-  /**
-   * TODO
-   */
   private final PdfFileAdapter pdfFileAdapter;
 
   /**
-   * TODO
-   * @param source
-   * @param pdfFileAdapter
-   * @throws IOException
+   * Creates a new PdfFileToDocStream object.
+   * @param source The PDF files stream.
+   * @param pdfFileAdapter Adapter for creating documents from the PDF files.
    */
   public PdfFileToDocStream(Stream<PdfFile> source,
                             PdfFileAdapter pdfFileAdapter) {
@@ -34,12 +27,7 @@ public class PdfFileToDocStream implements Stream<Document> {
     this.pdfFileAdapter = pdfFileAdapter;
   }
 
-  /**
-   * TODO
-   * @param pdfFile
-   * @return
-   * @throws IOException
-   */
+
   private Document createDocs(PdfFile pdfFile) throws IOException {
 
     //icsFile
