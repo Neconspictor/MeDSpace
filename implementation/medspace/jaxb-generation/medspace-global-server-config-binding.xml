@@ -1,0 +1,24 @@
+<jxb:bindings 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    version="2.1">
+
+    <jxb:bindings schemaLocation="../app/resources/medspace_global_server_config_specification.xsd">
+			
+		<jxb:bindings node="//xsd:element[@name='Config']">
+            <jxb:class name="ConfigMapping"/>
+        </jxb:bindings>	
+		
+		<jxb:bindings node="//xsd:complexType[@name='DataCollector']">
+			<jxb:class name="DataCollectorMapping"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='QueryExecutor']">
+			<jxb:class name="QueryExecutorMapping"/>
+		</jxb:bindings>
+		
+		<jxb:bindings node="//xsd:complexType[@name='Register']">
+			<jxb:class name="RegisterMapping"/>
+		</jxb:bindings>
+    </jxb:bindings>
+</jxb:bindings>

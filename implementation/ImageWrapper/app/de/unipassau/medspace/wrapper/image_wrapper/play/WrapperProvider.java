@@ -1,6 +1,8 @@
 package de.unipassau.medspace.wrapper.image_wrapper.play;
 
+import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
@@ -64,6 +66,7 @@ public class WrapperProvider implements Provider<Wrapper> {
    */
   @Inject
   public WrapperProvider(DdsmConfigProvider configProvider,
+                         ServerConfigProvider serverConfigProvider,
                          ShutdownService shutdownService) throws IOException {
 
     RootMapping rootParsing = configProvider.getDdsmMappingConfig();
@@ -73,7 +76,7 @@ public class WrapperProvider implements Provider<Wrapper> {
 
     if (!caseDirectory.isDirectory()) throw new IOException("The image directory is not a valid directory: " + caseDirectory);
 
-    String downloadFileServiceURL = createGetFileServiceURL(configProvider);
+    String downloadFileServiceURL = createGetFileServiceURL(configProvider, serverConfigProvider.getServerConfig());
     DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(caseDirectory, rootParsing,
         downloadFileServiceURL);
     List<LuceneClassAdapter<?>> adapters = adapterFactory.createAdapters();
@@ -115,10 +118,10 @@ public class WrapperProvider implements Provider<Wrapper> {
   }
 
 
-  private String createGetFileServiceURL(DdsmConfigProvider configProvider) {
+  private String createGetFileServiceURL(DdsmConfigProvider configProvider, ServerConfig serverConfig) {
     String testParam = "test";
 
-    String host = configProvider.getServerConfig().getServerURL().toExternalForm();
+    String host = serverConfig.getServerURL().toExternalForm();
 
     if (host.endsWith("/")) {
       host = host.substring(0, host.length() -1);

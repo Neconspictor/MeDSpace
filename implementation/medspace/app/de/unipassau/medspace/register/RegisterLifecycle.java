@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.unipassau.medspace.common.register.Datasource;
 
 import de.unipassau.medspace.common.register.DatasourceState;
+import de.unipassau.medspace.global.config.GlobalConfigProvider;
+import de.unipassau.medspace.global.config.mapping.RegisterMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.inject.ApplicationLifecycle;
@@ -15,7 +17,6 @@ import play.libs.Json;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -38,13 +39,16 @@ public class RegisterLifecycle {
    * @throws IOException If an IO error occurs.
    */
   @Inject
-  public RegisterLifecycle(ApplicationLifecycle lifecycle) throws IOException {
+  public RegisterLifecycle(ApplicationLifecycle lifecycle,
+                           GlobalConfigProvider provider) throws IOException {
 
     log.info("Load saved datasources to register...");
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addKeyDeserializer(Datasource.class, new DatasourceKeyDeserializer());
     simpleModule.addKeySerializer(Datasource.class, new DatasourceKeySerializer());
     Json.mapper().registerModule(simpleModule);
+
+    RegisterMapping registerMapping = provider.getGlobalConfig().getRegister();
 
 
     Map<Datasource, DatasourceState> datasources = null;
@@ -53,7 +57,7 @@ public class RegisterLifecycle {
     } catch (IOException e) {
      log.error("Couldn't load stored datasources from disk", e);
     }
-    register = new Register(datasources);
+    register = new Register(datasources, registerMapping.getIOErrorLimit());
 
     lifecycle.addStopHook(() -> {
       log.info("shutdown is executing...");

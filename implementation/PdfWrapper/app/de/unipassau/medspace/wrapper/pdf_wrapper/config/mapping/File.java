@@ -17,12 +17,12 @@ import de.unipassau.medspace.common.rdf.mapping.DataTypePropertyMapping;
 
 
 /**
- * <p>Java class for PdfFile complex type.
+ * <p>Java class for File complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="PdfFile">
+ * &lt;complexType name="File">
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.medspace.com/rdf-mapping}Class">
  *       &lt;sequence>
@@ -36,10 +36,10 @@ import de.unipassau.medspace.common.rdf.mapping.DataTypePropertyMapping;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PdfFile", propOrder = {
+@XmlType(name = "File", namespace = "http://www.medspace.com/rdf-mapping", propOrder = {
     "source"
 })
-public class PdfFileMapping
+public class File
     extends ClassMapping
 {
 

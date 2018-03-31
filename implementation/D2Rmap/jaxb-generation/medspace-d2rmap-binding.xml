@@ -3,7 +3,7 @@
     xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
     version="2.1">
 
-    <jxb:bindings schemaLocation="Medspace_D2Rmap.xsd">
+    <jxb:bindings schemaLocation="../src/main/resources/Medspace_D2Rmap.xsd">
 
 
 		<jxb:bindings node="//xsd:complexType[@name='Bridge']">

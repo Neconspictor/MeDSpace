@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.medspace.com/images/ddsm"
+	xmlns:pdf="http://www.medspace.com/images/ddsm"
+    xmlns:rdf-mapping="http://www.medspace.com/rdf-mapping"
+	elementFormDefault="qualified">
+
+	<xsd:import namespace="http://www.medspace.com/rdf-mapping"/>
+
+	<!-->
+		The root element for the D2R mapping.
+		It defines the structure of a valid D2R config file.
+	<-->
+	<xsd:element name="Root">
+		<xsd:complexType>
+			<xsd:sequence>
+				<!-->Elements that have to stated exact once, but have to occur<-->
+				<!-->Elements that can occur any number of times <-->
+				<xsd:element name="Namespace" type="rdf-mapping:Namespace" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="PdfRootDirectory" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="PdfFile" type="pdf:PdfFile" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:complexType name="PdfFile">
+        <xsd:complexContent>
+            <xsd:extension base="rdf-mapping:Class">
+                <xsd:sequence>
+                    <xsd:element name="source" type="rdf-mapping:DataTypeProperty"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema> 

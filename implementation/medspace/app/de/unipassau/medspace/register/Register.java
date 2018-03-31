@@ -60,16 +60,17 @@ public class Register {
    * A limit for IO errors that are allowed to occur for a datasource.
    * When the limit is exceeded, the datasource should be removed.
    */
-  private static final int IO_ERROR_LIMIT = 5;
+  private final int ioErrorLimit;
 
   /**
    * Creates a new Register object.
    * @param datasources The registered datasources. Can be null
    */
-  public Register(Map<Datasource, DatasourceState> datasources) {
+  public Register(Map<Datasource, DatasourceState> datasources, int ioErrorLimit) {
     if (datasources == null) datasources = new HashMap<>();
     this.datasources = new TreeMap<>(datasources);
     this.readWriteLock = new ReentrantReadWriteLock();
+    this.ioErrorLimit = ioErrorLimit;
   }
 
   /**
@@ -141,7 +142,7 @@ public class Register {
       datasources.put(datasource, state);
 
       // If the io error count exceeds a limit remove the data source if its cool down isn't active
-      if (state.getIoErrors() > IO_ERROR_LIMIT ) {
+      if (state.getIoErrors() > ioErrorLimit) {
         datasourceNoRespond(datasource);
       }
 

@@ -3,6 +3,7 @@ package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.play.WrapperService;
 import de.unipassau.medspace.common.play.wrapper.RegisterClient;
@@ -39,12 +40,14 @@ public class PdfWrapperService extends WrapperService {
    * Creates a new PdfWrapperService object.
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
-   * @param provider Used to read configurations.
+   * @param provider Used to read wrapper configuration.
+   * @param serverConfigProvider Used to read server configuration.
    * @param wrapper The wrapper to use.
    */
   @Inject
   public PdfWrapperService(ApplicationLifecycle lifecycle,
                            RegisterClient registerClient,
+                           ServerConfigProvider serverConfigProvider,
                            PdfWrapperConfigProvider provider,
                            ShutdownService shutdownService,
                            Wrapper wrapper) {
@@ -55,16 +58,16 @@ public class PdfWrapperService extends WrapperService {
     this.connectToRegister = generalConfig.getConnectToRegister();
 
       try {
-        startup(provider);
+        startup(provider, serverConfigProvider);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
-        log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
+        log.error("Error on startup: ", e);
         log.info("Graceful shutdown is initiated...");
         shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
       } catch(Throwable e) {
 
         // Catching Throwable is regarded to be a bad habit, but as we catch the Throwable only
         // for allowing the application to shutdown gracefully, it is ok to do so.
-        log.error("Failed to initialize SQL Wrapper", e);
+        log.error("Failed to initialize Wrapper", e);
         log.info("Graceful shutdown is initiated...");
         shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
       }
@@ -79,19 +82,21 @@ public class PdfWrapperService extends WrapperService {
 
   /**
    * Does startup the sql wrapper.
-   * @param provider A provider used to access the wrapper and server configurations
+   * @param provider A provider used to access the wrapper configuration
+   * @param serverConfigProvider Used to read server configuration.
    * @throws IOException If an IO-Error occurs.
    */
-  private void startup(PdfWrapperConfigProvider provider) throws IOException {
+  private void startup(PdfWrapperConfigProvider provider,
+                       ServerConfigProvider serverConfigProvider) throws IOException {
 
-    log.info("initializing SQL Wrapper...");
+    log.info("initializing Wrapper...");
 
     if (!generalConfig.isIndexUsed()) {
       throw new IOException("This wrapper needs an index, but no index directory is stated "
           + "in the general wrapper configuration.");
     }
 
-    ServerConfig serverConfig = provider.getServerConfig();
+    ServerConfig serverConfig = serverConfigProvider.getServerConfig();
 
     Datasource.Builder builder = new Datasource.Builder();
     builder.setDescription(generalConfig.getDescription());
@@ -102,7 +107,7 @@ public class PdfWrapperService extends WrapperService {
     try{
       wrapperDatasource = builder.build();
     }catch (NoValidArgumentException e) {
-      throw new IOException("Couldn't create datasource object for sql wrapper", e);
+      throw new IOException("Couldn't create datasource object for the wrapper", e);
     }
 
 
@@ -116,7 +121,7 @@ public class PdfWrapperService extends WrapperService {
       }
     }
 
-    log.info("Initialized SQL Wrapper");
+    log.info("Initialized Wrapper");
   }
 
 

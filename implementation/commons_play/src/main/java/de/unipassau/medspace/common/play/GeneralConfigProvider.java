@@ -25,38 +25,6 @@ public class GeneralConfigProvider {
   private static Logger log = LoggerFactory.getLogger(GeneralConfigProvider.class);
 
   /**
-   * the key for the http address.
-   */
-  protected static final String ADDRESS_ID_HTTP = "play.server.http.address";
-
-  /**
-   * The key for the https address,
-   */
-  protected static final String ADDRESS_ID_HTTPS = "play.server.https.address";
-
-
-  /**
-   * The http protocol.
-   */
-  protected static final String HTTP_PROTOCOL = "http://";
-
-  /**
-   * The https protocol.
-   */
-  protected static final String HTTPS_PROTOCOL = "https://";
-
-
-  /**
-   * The key for the http port.
-   */
-  protected static final String PORT_ID_HTTP = "play.server.http.port";
-
-  /**
-   * The key for the https port.
-   */
-  protected static final String PORT_ID_HTTPS = "play.server.https.port";
-
-  /**
    * The key for thegeneral wrapper config file.
    */
   protected static final String WRAPPER_CONFIG_FILE_ID = "MeDSpaceWrapperConfig";
@@ -65,11 +33,6 @@ public class GeneralConfigProvider {
    * The general wrapper configuration.
    */
   protected GeneralWrapperConfig generalWrapperConfig;
-
-  /**
-   * The server configuration.
-   */
-  protected ServerConfig serverConfig;
 
 
   /**
@@ -96,20 +59,9 @@ public class GeneralConfigProvider {
       ConfigException.Missing,
       ConfigException.WrongType {
 
-    String addressHTTP = playConfig.getString(ADDRESS_ID_HTTP);
-    String addressHTTPS = playConfig.getString(ADDRESS_ID_HTTP);
-    int portHTTP = playConfig.getInt(PORT_ID_HTTP);
-    int portHTTPS = playConfig.getInt(PORT_ID_HTTP);
+
     String wrapperConfigFile = playConfig.getString(WRAPPER_CONFIG_FILE_ID);
-
-    log.debug(ADDRESS_ID_HTTP + " = " + addressHTTP);
-    log.debug(PORT_ID_HTTP + " = " + portHTTP);
-    //log.debug(ADDRESS_ID_HTTPS + " = " + addressHTTPS);
-    //log.debug(PORT_ID_HTTPS + " = " + portHTTPS);
     log.debug(WRAPPER_CONFIG_FILE_ID + " = " + wrapperConfigFile);
-
-    //right now, only http is supported
-    serverConfig = new ServerConfig(HTTP_PROTOCOL, addressHTTP, portHTTP);
 
     File generalWrapperConfigFile = new File(wrapperConfigFile);
 
@@ -132,13 +84,5 @@ public class GeneralConfigProvider {
    */
   public GeneralWrapperConfig getGeneralWrapperConfig() {
     return generalWrapperConfig;
-  }
-
-  /**
-   * Provides the server configuration.
-   * @return the server configuration.
-   */
-  public ServerConfig getServerConfig() {
-    return serverConfig;
   }
 }

@@ -4,7 +4,7 @@ name := "medspace_commons_network"
 // orgnization name (e.g., the package name of the project)
 organization := "de.unipassau.medspace"
 
-version := "0.1-PROTOTYPE"
+version := "1.0"
 
 // project description
 description := "MeDSpace Commons Network"
@@ -13,14 +13,19 @@ description := "MeDSpace Commons Network"
 publishMavenStyle := true
 
 // Do not append Scala versions to the generated artifacts
-//crossPaths := false
+crossPaths := false
 
 // This forbids including Scala related libraries into the dependency
-//autoScalaLibrary := false
+autoScalaLibrary := false
 
+//fix the scala version (used by play and akka)
 scalaVersion := "2.12.2"
 
+// we don't want to use the strict mode of javadocs in Java 8
 javacOptions in Compile ++= Seq("-Xdoclint:none")
+
+// Force SBT to create javadocs and not scaladocs!
+sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".java"))
 
 // library dependencies. (orginization name) % (project name) % (version)
 libraryDependencies ++= Seq(

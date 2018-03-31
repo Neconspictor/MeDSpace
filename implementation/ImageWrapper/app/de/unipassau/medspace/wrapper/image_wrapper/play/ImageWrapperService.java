@@ -3,6 +3,7 @@ package de.unipassau.medspace.wrapper.image_wrapper.play;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.play.WrapperService;
 import de.unipassau.medspace.common.play.wrapper.RegisterClient;
@@ -43,12 +44,14 @@ public class ImageWrapperService extends WrapperService {
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
+   * @param serverConfigProvider The server configuration provider
    * @param wrapper The wrapper.
    */
   @Inject
   public ImageWrapperService(ApplicationLifecycle lifecycle,
                              RegisterClient registerClient,
                              DdsmConfigProvider provider,
+                             ServerConfigProvider serverConfigProvider,
                              ShutdownService shutdownService,
                              Wrapper wrapper) {
 
@@ -57,7 +60,7 @@ public class ImageWrapperService extends WrapperService {
     this.connectToRegister = generalConfig.getConnectToRegister();
 
       try {
-        startup(provider);
+        startup(provider, serverConfigProvider.getServerConfig());
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
         log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
         log.info("Graceful shutdown is initiated...");
@@ -82,9 +85,10 @@ public class ImageWrapperService extends WrapperService {
   /**
    * Does startup the sql wrapper.
    * @param provider A provider used to access the wrapper and server configurations
+   * @param serverConfig The server configuration
    * @throws IOException If an IO-Error occurs.
    */
-  private void startup(DdsmConfigProvider provider) throws IOException {
+  private void startup(DdsmConfigProvider provider, ServerConfig serverConfig) throws IOException {
 
     log.info("initializing SQL Wrapper...");
 
@@ -92,8 +96,6 @@ public class ImageWrapperService extends WrapperService {
       throw new IOException("This wrapper needs an index, but no index directory is stated "
           + "in the general wrapper configuration.");
     }
-
-    ServerConfig serverConfig = provider.getServerConfig();
 
     Datasource.Builder builder = new Datasource.Builder();
     builder.setDescription(generalConfig.getDescription());

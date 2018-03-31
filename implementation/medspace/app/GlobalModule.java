@@ -1,17 +1,21 @@
 import com.google.inject.AbstractModule;
 
+import de.unipassau.medspace.common.config.ServerConfig;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.data_collector.DataCollectorLifecycle;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.data_collector.DataCollector;
 import de.unipassau.medspace.data_collector.rdf4j.LocalRepositoryManager;
 import de.unipassau.medspace.data_collector.rdf4j.RDF4J_DataCollector;
+import de.unipassau.medspace.global.config.GlobalConfigProvider;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import de.unipassau.medspace.register.RegisterLifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.api.Configuration;
-import play.api.Environment;
+import play.Configuration;
+import play.Environment;
 
 /**
  * The GlobalModule is a configuration class that configures the play framework for the global MeDSpace server.
@@ -38,9 +42,12 @@ public class GlobalModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    if (environment.asJava().isTest()) return;
+    if (environment.isTest()) return;
 
     log.info("GlobuleModule configures dependencies...");
+    bind(ShutdownService.class).asEagerSingleton();
+    bind(ServerConfigProvider.class).asEagerSingleton();
+    bind(GlobalConfigProvider.class).asEagerSingleton();
     bind(RDFProvider.class).to(RDF4J_RDFProvider.class).asEagerSingleton();
     bind(RegisterLifecycle.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();

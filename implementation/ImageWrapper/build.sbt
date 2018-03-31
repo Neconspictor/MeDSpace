@@ -6,6 +6,36 @@ description := "ImageWrapper"
 
 version := "0.1-PROTOTYPE"
 
+// Enables publishing to maven repo
+publishMavenStyle := true
+
+// Do not append Scala versions to the generated artifacts
+crossPaths := false
+
+// This forbids including Scala related libraries into the dependency
+autoScalaLibrary := false
+
+//fix the scala version (used by play and akka)
+scalaVersion := "2.12.2"
+
+// we don't want to use the strict mode of javadocs in Java 8
+javacOptions in Compile ++= Seq("-Xdoclint:none")
+
+
+javacOptions ++= Seq("-Xlint:unchecked")
+
+// we use Java 8 for the source code
+javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8")
+
+//disable link warnings
+scalacOptions in (Compile, doc) ++= Seq(
+  "-no-link-warnings" // Suppresses problems with Scaladoc @throws links
+)
+
+// Force SBT to create javadocs and not scaladocs!
+sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".java"))
+
+
 lazy val image_wrapper = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin) //, LauncherJarPlugin
   .aggregate(commons)
@@ -19,12 +49,6 @@ lazy val commons = RootProject(file("../commons"))
 lazy val commons_network = RootProject(file("../commons_network"))
 lazy val common_play = RootProject(file("../commons_play"))
 
-scalaVersion := "2.12.2"
-
-javacOptions in Compile ++= Seq("-Xdoclint:none")
-scalacOptions in (Compile, doc) ++= Seq(
-  "-no-link-warnings" // Suppresses problems with Scaladoc @throws links
-)
 
 libraryDependencies += guice
 

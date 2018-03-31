@@ -4,8 +4,8 @@
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
 
-        targetNamespace="http://www.medspace.com/dataspace/config-specification"
-        xmlns:ds="http://www.medspace.com/dataspace/config-specification"
+        targetNamespace="http://www.medspace.com/global/global-server-config-specification"
+        xmlns:global="http://www.medspace.com/global/global-server-config-specification"
         elementFormDefault="qualified"
 
         xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns="http://java.sun.com/xml/ns/jaxws"
@@ -18,28 +18,34 @@
         The root element for a general wrapper configuration file.
         It defines the structure of a valid wrapper configuration file.
     <-->
-    <xsd:element name="Root">
+    <xsd:element name="Config">
         <xsd:complexType>
             <xsd:sequence>
                 <!-->Elements that can occur any number of times and in any order<-->
-                <xsd:element name="QueryExecutor" type="ds:QueryExecutor" minOccurs="1" maxOccurs="1"/>
-                <xsd:element name="DataCollector" type="ds:DataCollector" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="DataCollector" type="global:DataCollector" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="QueryExecutor" type="global:QueryExecutor" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="Register" type="global:Register" minOccurs="1" maxOccurs="1"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
 
 
-    <xsd:complexType name="QueryExecutor">
-        <xsd:sequence>
-            <xsd:element name="NativeStoreDirectory" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="DataCollectorSubPath" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
     <xsd:complexType name="DataCollector">
         <xsd:sequence>
             <xsd:element name="NativeStoreDirectory" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="DataCollectorSubPath" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="QueryExecutor">
+        <xsd:sequence>
+            <xsd:element name="DataCollectorBaseURL" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="RegisterBaseURL" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Register">
+        <xsd:sequence>
+            <xsd:element name="IO-Error-Limit" type="xsd:int" minOccurs="1" maxOccurs="1"/>
         </xsd:sequence>
     </xsd:complexType>
 

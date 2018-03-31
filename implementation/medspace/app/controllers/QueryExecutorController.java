@@ -1,9 +1,13 @@
 package controllers;
 
 import com.typesafe.config.Config;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.stream.LogWrapperInputStream;
+import de.unipassau.medspace.global.config.GlobalConfigProvider;
+import de.unipassau.medspace.global.config.mapping.DataCollectorMapping;
+import de.unipassau.medspace.global.config.mapping.QueryExecutorMapping;
 import de.unipassau.medspace.query_executor.QueryExecutor;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import org.slf4j.Logger;
@@ -50,13 +54,15 @@ public class QueryExecutorController extends Controller {
   public QueryExecutorController(ApplicationLifecycle lifecycle,
                                  ServiceInvoker serviceInvoker,
                                  Config playConfig,
+                                 ServerConfigProvider serverConfigProvider,
+                                 GlobalConfigProvider globalConfigProvider,
                                  RDFProvider rdfProvider) throws MalformedURLException {
 
-    //TODO the url (with port) should be stated in the config file for the QueryExecutor once it is split from the register
-    int port = playConfig.getInt("play.server.http.port");
-    log.warn("Readed port number: " +  port);
-    queryExecutor = new QueryExecutor(serviceInvoker, new URL("http://localhost:" + port + "/register/"),
-        new URL("http://localhost:" + port + "/data-collector/"));
+
+    QueryExecutorMapping queryExecutorMapping = globalConfigProvider.getGlobalConfig().getQueryExecutor();
+
+    queryExecutor = new QueryExecutor(serviceInvoker, new URL(queryExecutorMapping.getRegisterBaseURL()),
+        new URL(queryExecutorMapping.getDataCollectorBaseURL()));
     this.rdfProvider = rdfProvider;
 
     lifecycle.addStopHook(()->{

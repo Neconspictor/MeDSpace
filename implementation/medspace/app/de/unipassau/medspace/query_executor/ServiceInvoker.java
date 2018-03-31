@@ -1,8 +1,6 @@
 package de.unipassau.medspace.query_executor;
 
 import akka.stream.*;
-import akka.stream.javadsl.Source;
-import akka.util.ByteString;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.unipassau.medspace.common.exception.UnsupportedServiceException;

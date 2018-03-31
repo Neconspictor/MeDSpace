@@ -16,32 +16,24 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * TODO
+ * A wrapper for DDSM case images
  */
 public class DDSM_ImageWrapper<DocType> extends AbstractWrapper<DocType, IcsFile> {
 
-  /**
-   * Logger
-   */
   private static Logger log = LoggerFactory.getLogger(DDSM_ImageWrapper.class);
 
-  /**
-   * TODO
-   */
+
   private final String imageFileEnding;
 
-
-  /**
-   * TODO
-   */
   private final File root;
 
   /**
-   * TODO
-   * @param indexManager
-   * @param imageFileEnding
-   * @param namespaces
-   * @param root
+   * Creates a new DDSM_ImageWrapper object.
+   * @param indexManager The triple index manager to use.
+   * @param imageFileEnding The file ending of the images.
+   * @param namespaces The namespaces to use for exported RDF data.
+   * @param root The root folder to use for collecting cases.
+   * @throws IOException If an IO error occurs.
    */
   public DDSM_ImageWrapper(TripleIndexManager<DocType, IcsFile> indexManager,
                            String imageFileEnding,
@@ -55,8 +47,6 @@ public class DDSM_ImageWrapper<DocType> extends AbstractWrapper<DocType, IcsFile
 
   @Override
   public void reindexData() throws IOException {
-    long before = System.currentTimeMillis();
-
     Index<DocType> index = indexManager.getIndex();
 
     Stream<IcsFile> stream = new IcsFileCollectorStream(root, imageFileEnding);
@@ -72,9 +62,6 @@ public class DDSM_ImageWrapper<DocType> extends AbstractWrapper<DocType, IcsFile
     } finally {
       FileUtil.closeSilently(docStream, true);
     }
-
-    long now = System.currentTimeMillis();
-    log.debug("Needed time: " + (now - before)/1000.0f + " seconds");
   }
 
   @Override

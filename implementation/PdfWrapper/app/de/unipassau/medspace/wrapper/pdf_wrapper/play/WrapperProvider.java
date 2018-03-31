@@ -1,6 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 
 import de.unipassau.medspace.common.config.ServerConfig;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
@@ -47,12 +48,13 @@ public class WrapperProvider implements Provider<Wrapper> {
    */
   @Inject
   public WrapperProvider(PdfWrapperConfigProvider configProvider,
+                         ServerConfigProvider serverConfigProvider,
                          ShutdownService shutdownService) throws IOException {
 
     RootMapping rootParsing = configProvider.getPdfConfig();
 
 
-    ServerConfig serverConfig = configProvider.getServerConfig();
+    ServerConfig serverConfig = serverConfigProvider.getServerConfig();
     String host = serverConfig.getServerURL().toString();
     if (!host.endsWith("/")) {
       host += "/";
