@@ -14,7 +14,7 @@ import play.api.Configuration;
 import play.api.Environment;
 
 /**
- * The GlobalModule is a configuration class that configures the play framework for the sql wrapper.
+ * The GlobalModule is a configuration class that configures the play framework for the global MeDSpace server.
  * It's main purpose is the definition of Dependency Injection definitions.
  */
 public class GlobalModule extends AbstractModule {
