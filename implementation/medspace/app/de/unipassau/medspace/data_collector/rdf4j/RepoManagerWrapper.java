@@ -11,28 +11,21 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * TODO
+ * A wrapper for a local repository manager.
+ * This class provides synchronized access to the repository manager.
  */
 public class RepoManagerWrapper {
 
-  /**
-   * TODO
-   */
   private LocalRepositoryManager manager;
 
-  /**
-   * TODO
-   */
   private ConcurrentHashMap<String, CounterLock> repoLocks;
 
-  /**
-   * TODO
-   */
   private Lock createLock;
 
+
   /**
-   * TODO
-   * @param repositoryManager
+   * Creates a new RepoManagerWrapper object.
+   * @param repositoryManager The repository manager.
    */
   public RepoManagerWrapper(LocalRepositoryManager repositoryManager) {
     manager = repositoryManager;
@@ -41,10 +34,12 @@ public class RepoManagerWrapper {
   }
 
   /**
-   * TODO
-   * @param id
+   * Creates a new repository.
+   * @param id The id for the new repository.
+   * @throws IOException If an IO error occurs.
+   * @throws IllegalArgumentException If the id is already assigned to another repository.
    */
-  public void createRepository(String id) throws IOException {
+  public void createRepository(String id) throws IOException, IllegalArgumentException {
 
     //no create method should be called!
     createLock.lock();
@@ -65,10 +60,10 @@ public class RepoManagerWrapper {
   }
 
   /**
-   * TODO
-   * @param id
-   * @return
-   * @throws IOException
+   * Provides a connection to a repository.
+   * @param id The id of the repsoitory.
+   * @return a connection to the repository.
+   * @throws IOException If an IO error occurs.
    */
   public RepositoryConnection getConnection(String id) throws IOException {
     CounterLock repoLock = repoLocks.get(id);
@@ -103,12 +98,13 @@ public class RepoManagerWrapper {
 
 
   /**
-   * TODO
-   * @param id
-   * @throws InterruptedException
-   * @throws IOException
+   * Deletes a repository.
+   *
+   * @param id The id of the repsoitory.
+   * @throws IOException If an IO error occurs.
+   * @throws IllegalArgumentException If the id cannot be matched to a repository.
    */
-  public void removeRepository(String id) throws InterruptedException, IOException {
+  public void removeRepository(String id) throws IOException, IllegalArgumentException {
 
     //get lock for repo and unregister the repo lock
     CounterLock repoLock = repoLocks.remove(id);
@@ -125,11 +121,7 @@ public class RepoManagerWrapper {
     manager.remove(id);
   }
 
-  /**
-   * TODO
-   * @param id
-   * @throws InterruptedException
-   */
+
   private void closeRepository(String id) {
 
     //get lock for the repo
@@ -145,10 +137,7 @@ public class RepoManagerWrapper {
     manager.close(id);
   }
 
-  /**
-   * TODO this function is only allowed to be called from a Repository -/Connection Wrapper
-   * @param id
-   */
+
   private void releaseReadWriteAccess(String id, Runnable onUnlock) {
     CounterLock repoLock = repoLocks.get(id);
     if (repoLock == null) {
