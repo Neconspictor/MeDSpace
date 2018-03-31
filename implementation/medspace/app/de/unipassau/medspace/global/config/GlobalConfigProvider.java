@@ -3,6 +3,7 @@ package de.unipassau.medspace.global.config;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.config.ServerConfig;
+import de.unipassau.medspace.common.play.ResourceProvider;
 import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.global.config.mapping.ConfigMapping;
@@ -12,6 +13,7 @@ import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -36,12 +38,13 @@ public class GlobalConfigProvider {
 
   @Inject
   public GlobalConfigProvider(com.typesafe.config.Config playConfig,
+                              ResourceProvider resourceProvider,
                               ShutdownService shutdownService,
                               ServerConfigProvider serverConfigProvider) {
     try {
       serverConfig = serverConfigProvider.getServerConfig();
       thisBaseURL = serverConfig.getServerURL().toExternalForm();
-      init(playConfig);
+      init(playConfig, resourceProvider);
     } catch (ConfigException.Missing | ConfigException.WrongType | IOException | JAXBException | SAXException e) {
       log.error("Couldn't init config provider: ", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
@@ -54,11 +57,16 @@ public class GlobalConfigProvider {
     return globalConfig;
   }
 
-  private void init(Config playConfig) throws JAXBException, IOException, SAXException {
+  private void init(Config playConfig, ResourceProvider resourceProvider) throws JAXBException, IOException, SAXException {
     log.info("Parsing global configuration...");
 
     String globalConfigFilePath = playConfig.getString(GLOBAL_CONFIG_FILE_ID);
+    File globalConfigFile = resourceProvider.getResourceAsFile(globalConfigFilePath);
+    globalConfigFilePath = globalConfigFile.getAbsolutePath();
+
     String globalConfigSpecificationFilePath = playConfig.getString(GLOBAL_CONFIG_SPECIFICATION_FILE_ID);
+    File globalConfigSpecificationFile = resourceProvider.getResourceAsFile(globalConfigSpecificationFilePath);
+    globalConfigSpecificationFilePath = globalConfigSpecificationFile.getAbsolutePath();
 
     GlobalMeDSpaceConfigReader configReader = new GlobalMeDSpaceConfigReader(globalConfigSpecificationFilePath);
     globalConfig = configReader.parse(globalConfigFilePath);

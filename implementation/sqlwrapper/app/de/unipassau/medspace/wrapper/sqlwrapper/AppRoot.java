@@ -3,6 +3,9 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.play.ResourceProvider;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.play.wrapper.RegisterClient;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
@@ -47,6 +50,8 @@ public class AppRoot extends AbstractModule {
 
     log.info("GlobuleModule configures dependencies...");
     bind(ShutdownService.class).asEagerSingleton();
+    bind(ServerConfigProvider.class).asEagerSingleton();
+    bind(ResourceProvider.class).asEagerSingleton();
 
     bind(RDFProvider.class)
         .to(RDF4J_RDFProvider.class)

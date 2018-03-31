@@ -4,12 +4,12 @@
 >
 
 	<wrapper:Description>
-		A Wrapper for a MySQL Database
+		A Wrapper for a PDF File Server
 	</wrapper:Description>
 
 	<!-- service list -->
 	<wrapper:Services>
-		<wrapper:Service>SEARCH</wrapper:Service>
+		<wrapper:Service>keyword-search</wrapper:Service>
 	</wrapper:Services>
 
 	<!-->
@@ -37,7 +37,7 @@
 	<-->
 	<wrapper:OutputFormat>TURTLE</wrapper:OutputFormat>
 
-	<wrapper:RegisterUrl>http://localhost:9500</wrapper:RegisterUrl>
+	<wrapper:RegisterUrl>http://localhost:9500/register</wrapper:RegisterUrl>
 
 	<wrapper:ConnectToRegister>false</wrapper:ConnectToRegister>
 

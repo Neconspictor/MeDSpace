@@ -14,7 +14,7 @@
 	<pdf:Namespace prefix="pdf_file" namespace="http://www.medspace.com/pdf/pdf_file#"/>
 
 
-    <pdf:PdfRootDirectory>./_work/pdfFiles/</pdf:PdfRootDirectory>
+    <pdf:PdfRootDirectory>[project-folder]/_work/pdfFiles/</pdf:PdfRootDirectory>
 
     <pdf:PdfFile rdfType="http://www.medspace.com/pdf/pdf_file" classId="pdfFile">
 		<rdf-mapping:metaData>test</rdf-mapping:metaData>

@@ -3,6 +3,7 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.indexing.IndexManager;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
 import de.unipassau.medspace.common.rdf.TripleIndexFactory;

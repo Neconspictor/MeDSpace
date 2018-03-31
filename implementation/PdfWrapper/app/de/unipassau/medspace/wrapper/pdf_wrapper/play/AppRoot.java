@@ -1,6 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 
 import com.google.inject.AbstractModule;
+import de.unipassau.medspace.common.play.ResourceProvider;
 import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.play.wrapper.RegisterClient;
@@ -47,6 +48,8 @@ public class AppRoot extends AbstractModule {
 
     log.info("GlobuleModule configures dependencies...");
     bind(ShutdownService.class).asEagerSingleton();
+
+    bind(ResourceProvider.class).asEagerSingleton();
 
     bind(ServerConfigProvider.class).asEagerSingleton();
 

@@ -4,7 +4,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
-import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * TODO
+ * A provider for the general wrapper configuration.
  */
 public class GeneralConfigProvider {
 
@@ -39,22 +38,32 @@ public class GeneralConfigProvider {
    * Creates a new GeneralConfigProvider object.
    * @param playConfig The Play configuration.
    * @param provider The RDF provider.
+   * @param resourceProvider The resource provider
    * @param shutdownService The shutdown service.
    */
   @Inject
   public GeneralConfigProvider(com.typesafe.config.Config playConfig,
                         RDFProvider provider,
+                        ResourceProvider resourceProvider,
                         ShutdownService shutdownService) {
 
     try {
-      init(playConfig, provider);
+      init(playConfig, provider, resourceProvider);
     } catch (ConfigException.Missing | ConfigException.WrongType | IOException  e) {
       log.error("Couldn't init general config provider: ", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
   }
 
-  private void init(Config playConfig, RDFProvider provider)
+  /**
+   * Provides the general wrapper configuration.
+   * @return the general wrapper configuration.
+   */
+  public GeneralWrapperConfig getGeneralWrapperConfig() {
+    return generalWrapperConfig;
+  }
+
+  private void init(Config playConfig, RDFProvider provider, ResourceProvider resourceProvider)
       throws IOException,
       ConfigException.Missing,
       ConfigException.WrongType {
@@ -63,7 +72,8 @@ public class GeneralConfigProvider {
     String wrapperConfigFile = playConfig.getString(WRAPPER_CONFIG_FILE_ID);
     log.debug(WRAPPER_CONFIG_FILE_ID + " = " + wrapperConfigFile);
 
-    File generalWrapperConfigFile = new File(wrapperConfigFile);
+    File generalWrapperConfigFile = resourceProvider.getResourceAsFile(wrapperConfigFile);
+    wrapperConfigFile = generalWrapperConfigFile.getAbsolutePath();
 
     // The general wrapper file has to exist
     if (!generalWrapperConfigFile.exists()) {
@@ -76,13 +86,5 @@ public class GeneralConfigProvider {
 
     log.info("Reading general wrapper configuration done: ");
     log.debug(generalWrapperConfig.toString());
-  }
-
-  /**
-   * Provides the general wrapper configuration.
-   * @return the general wrapper configuration.
-   */
-  public GeneralWrapperConfig getGeneralWrapperConfig() {
-    return generalWrapperConfig;
   }
 }

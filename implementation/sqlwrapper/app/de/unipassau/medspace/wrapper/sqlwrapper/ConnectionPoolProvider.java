@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import com.zaxxer.hikari.pool.HikariPool;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.d2r.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

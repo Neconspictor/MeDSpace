@@ -15,7 +15,7 @@ public class ServerConfigProvider {
   /**
    * Logger instance for this class.
    */
-  private static Logger log = LoggerFactory.getLogger(GeneralConfigProvider.class);
+  private static Logger log = LoggerFactory.getLogger(ServerConfigProvider.class);
 
   /**
    * the key for the http address.

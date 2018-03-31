@@ -4,6 +4,8 @@ import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
+import de.unipassau.medspace.common.play.ServerConfigProvider;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.play.WrapperService;
 import de.unipassau.medspace.common.play.wrapper.RegisterClient;
 import de.unipassau.medspace.common.register.Datasource;
@@ -69,6 +71,7 @@ public class SQLWrapperService extends WrapperService {
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
    * @param connectionPool A connection pool to the relational database.
+   * @param serverConfigProvider The server configuration provider
    * @param shutdownService The shutdown service.
    * @param d2rWrapper The SQL wrapper.
    */
@@ -77,6 +80,7 @@ public class SQLWrapperService extends WrapperService {
                            RegisterClient registerClient,
                            ConfigProvider provider,
                            ConnectionPool connectionPool,
+                           ServerConfigProvider serverConfigProvider,
                            ShutdownService shutdownService,
                            D2rWrapper<?> d2rWrapper) {
     super(provider.getGeneralWrapperConfig(), d2rWrapper);
@@ -87,7 +91,7 @@ public class SQLWrapperService extends WrapperService {
     this.connectToRegister = generalConfig.getConnectToRegister();
 
       try {
-        startup(provider);
+        startup(provider, serverConfigProvider.getServerConfig());
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
         log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
         log.info("Graceful shutdown is initiated...");
@@ -130,11 +134,15 @@ public class SQLWrapperService extends WrapperService {
   /**
    * Does startup the sql wrapper.
    * @param provider A provider used to access the wrapper and server configurations
+   * @param serverConfig The server configuration.
    * @throws D2RException If the configuration file doesn't exists or is erroneous
    * @throws IOException If an IO-Error occurs.
    * @throws SQLException If the connection to the datasource could'nt be established.
    */
-  private void startup(ConfigProvider provider) throws D2RException, IOException, SQLException {
+  private void startup(ConfigProvider provider, ServerConfig serverConfig) throws
+      D2RException,
+      IOException,
+      SQLException {
 
     log.info("initializing SQL Wrapper...");
 
@@ -144,7 +152,6 @@ public class SQLWrapperService extends WrapperService {
     }
 
     Configuration d2rConfig = provider.getD2rConfig();
-    ServerConfig serverConfig = provider.getServerConfig();
 
     URI jdbcURI = d2rConfig.getJdbc();
 
