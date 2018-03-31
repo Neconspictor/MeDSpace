@@ -8,7 +8,7 @@ import de.unipassau.medspace.common.rdf.mapping.ObjectPropertyMapping;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
 import de.unipassau.medspace.common.util.Converter;
 import de.unipassau.medspace.common.util.RdfUtil;
-import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.LucenePdfFileDocAdapter;
+import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.PdfFileAdapter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.javatuples.Pair;
@@ -22,19 +22,10 @@ import java.util.List;
  */
 public class DocumentClassTriplizer implements Converter<Document, List<Triple>> {
 
-  /**
-   * TODO
-   */
-  private final List<LucenePdfFileDocAdapter<?>> adapters;
+  private final List<PdfFileAdapter> adapters;
 
-  /**
-   * Used to normalize the rdf triples.
-   */
   private final QNameNormalizer normalizer;
 
-  /**
-   * TODO
-   */
   private final RDFFactory rdfFactory;
 
   /**
@@ -43,7 +34,7 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
    * @param normalizer
    * @param rdfFactory
    */
-  public DocumentClassTriplizer(List<LucenePdfFileDocAdapter<?>> adapters,
+  public DocumentClassTriplizer(List<PdfFileAdapter> adapters,
                                 QNameNormalizer normalizer,
                                 RDFFactory rdfFactory) {
     this.adapters = adapters;
@@ -54,7 +45,7 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
   @Override
   public List<Triple> convert(Document source) throws IOException {
 
-    for (LucenePdfFileDocAdapter<?> adapter : adapters) {
+    for (PdfFileAdapter adapter : adapters) {
       if (adapter.isConvertible(source))
         return convert(adapter, source);
     }
@@ -62,13 +53,8 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
     throw new IOException("Document isn't convertable by any adapter: " + source);
   }
 
-  /**
-   * TODO
-   * @param adapter
-   * @param document
-   * @return
-   */
-  private List<Triple> convert(LucenePdfFileDocAdapter<?> adapter, Document document) {
+
+  private List<Triple> convert(PdfFileAdapter adapter, Document document) {
     List<Triple> triples = new ArrayList<>();
 
     String id = adapter.getObjectId(document);
@@ -90,16 +76,9 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
     return triples;
   }
 
-  /**
-   * TODO
-   * @param field
-   * @param adapter
-   * @param pair
-   * @param subject
-   * @return
-   */
+
   private Triple createTriple(IndexableField field,
-                         LucenePdfFileDocAdapter<?> adapter,
+                              PdfFileAdapter adapter,
                          Pair<String, PropertyMapping> pair,
                          RDFResource subject) {
 

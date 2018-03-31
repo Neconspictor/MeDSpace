@@ -15,7 +15,6 @@ import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.PdfFile;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.LuceneIndexFactory;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.Pdf_AdapterFactory;
-import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter.LucenePdfFileDocAdapter;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

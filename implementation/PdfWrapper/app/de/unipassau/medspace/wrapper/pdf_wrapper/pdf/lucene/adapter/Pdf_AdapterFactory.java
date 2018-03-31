@@ -31,10 +31,10 @@ public class Pdf_AdapterFactory {
    * Creates the adapter list.
    * @return the created adapter list.
    */
-  public List<LucenePdfFileDocAdapter<?>> createAdapters() {
-    List<LucenePdfFileDocAdapter<?>> adapters = new ArrayList<>();
+  public List<PdfFileAdapter> createAdapters() {
+    List<PdfFileAdapter> adapters = new ArrayList<>();
 
-    LucenePdfFileDocAdapter<?> adapter = new PdfFileAdapter(rootParsing.getPdfFile(), downloadService);
+    PdfFileAdapter adapter = new PdfFileAdapter(rootParsing.getPdfFile(), downloadService);
     adapters.add(adapter);
 
     return adapters;

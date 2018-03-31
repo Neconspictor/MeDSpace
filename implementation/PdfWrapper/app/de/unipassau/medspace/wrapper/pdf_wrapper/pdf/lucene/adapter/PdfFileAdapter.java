@@ -1,5 +1,6 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.pdf.lucene.adapter;
 
+import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
 import de.unipassau.medspace.common.rdf.mapping.PropertyMapping;
 import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.PdfFileMapping;
 import de.unipassau.medspace.wrapper.pdf_wrapper.pdf.PdfFile;
@@ -9,39 +10,50 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.javatuples.Pair;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * TODO
+ * A RDF class adapter for PDF files
  */
-public class PdfFileAdapter extends LucenePdfFileDocAdapter<PdfFile> {
+public class PdfFileAdapter extends LuceneClassAdapter<PdfFile> {
 
-  /**
-   * TODO
-   */
-  public static final String SOURCE = "SOURCE";
+  private static final String SOURCE = "SOURCE";
 
-  /**
-   * TODO
-   */
-  public static final String CONTENT = "CONTENT";
+  private static final String CONTENT = "CONTENT";
 
 
   private final String downloadService;
 
   /**
-   * TODO
-   * @param pdfFileParsing
-   * @param downloadService
+   * A list of fields that should be considered for searching but are not used for exporting RDF data.
    */
-  public PdfFileAdapter(PdfFileMapping pdfFileParsing, String downloadService) {
+  protected List<String> notExportedSearchableFields;
 
-    super(pdfFileParsing);
+  /**
+   * Creates a new PdfFileAdapter object.
+   * @param pdfFileMapping the rdf mapping for pdf files
+   * @param downloadService the base URL of the file download service.
+   */
+  public PdfFileAdapter(PdfFileMapping pdfFileMapping, String downloadService) {
+
+    super(pdfFileMapping, null);
     this.downloadService = downloadService;
+    this.notExportedSearchableFields = new ArrayList<>();
 
 
-    addPair(SOURCE, pdfFileParsing.getSource());
+    addPair(SOURCE, pdfFileMapping.getSource());
     addNotExportableSearchableField(CONTENT);
 
+  }
+
+  /**
+   * Provides the list of not exported but searchable fields.
+   * @return the list of not exported but searchable fields.
+   */
+  public List<String> getNotExportedSearchableFields() {
+    return Collections.unmodifiableList(notExportedSearchableFields);
   }
 
   @Override
@@ -52,6 +64,15 @@ public class PdfFileAdapter extends LucenePdfFileDocAdapter<PdfFile> {
 
     String extractedText = extractText(source);
     doc.add(createField(CONTENT, extractedText));
+  }
+
+
+  /**
+   * Adds a field to the list of not exported but searchable fields.
+   * @param fieldName a field that should be searchable ,but not exported.
+   */
+  protected void addNotExportableSearchableField(String fieldName) {
+    notExportedSearchableFields.add(fieldName);
   }
 
   @Override

@@ -25,7 +25,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
   /**
    * TODO
    */
-  private final List<LucenePdfFileDocAdapter<?>> adpaters;
+  private final List<PdfFileAdapter> adpaters;
 
   /**
    * The directory to store lucene index data to.
@@ -50,7 +50,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
    * @param normalizer
    */
   public LuceneIndexFactory(String directory,
-                            List<LucenePdfFileDocAdapter<?>> adpaters,
+                            List<PdfFileAdapter> adpaters,
                             RDFFactory factory,
                             QNameNormalizer normalizer) {
     this.directory = directory;
@@ -80,7 +80,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
    */
   private List<String> createFields() {
     List<String> fields = new ArrayList<>();
-    for (LucenePdfFileDocAdapter<?> adapter : adpaters) {
+    for (PdfFileAdapter adapter : adpaters) {
       List<Pair<String, PropertyMapping>> pairs = adapter.getFieldNamePropertyPairs();
       for (Pair<String, PropertyMapping> pair : pairs) {
         fields.add(pair.getValue0());
@@ -104,7 +104,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
     /**
      * TODO
      */
-    private final List<LucenePdfFileDocAdapter<?>> adapters;
+    private final List<PdfFileAdapter> adapters;
 
     /**
      * Creates a new TripleIndexManager.
@@ -114,7 +114,7 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
      */
     public PdfFileTripleIndexManager(IndexSearcher<Document> searcher,
                                      Converter<KeywordSearcher<Document>, KeywordSearcher<Triple>> tripleSearchConverter,
-                                     List<LucenePdfFileDocAdapter<?>> adapters) {
+                                     List<PdfFileAdapter> adapters) {
       super(searcher, tripleSearchConverter);
       this.adapters = adapters;
     }
