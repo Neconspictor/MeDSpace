@@ -21,7 +21,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Created by David Goeth on 10.10.2017.
+ * Lifecycle management for the Register module.
+ * Is responsible for reading datasources from a save file on startup and saving registered datasources to the save
+ * file when the application terminates. Additionally it is a provider for the Register.
  */
 public class RegisterLifecycle {
 
@@ -30,6 +32,11 @@ public class RegisterLifecycle {
 
   private final Register register;
 
+  /**
+   * Creates a new RegisterLifecycle object.
+   * @param lifecycle The application lifecycle.
+   * @throws IOException If an IO error occurs.
+   */
   @Inject
   public RegisterLifecycle(ApplicationLifecycle lifecycle) throws IOException {
 
@@ -92,10 +99,17 @@ public class RegisterLifecycle {
     }
   }
 
+  /**
+   * Provides the Register.
+   * @return the Register.
+   */
   public Register getRegister() {
     return register;
   }
 
+  /**
+   * Deserializes a datasource from JSON that is used as a key in a map.
+   */
   public static class DatasourceKeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
     @Override
     public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException {
@@ -106,6 +120,9 @@ public class RegisterLifecycle {
     }
   }
 
+  /**
+   * Serializes a datasource to JSON that is used as a key in a map.
+   */
   public static class DatasourceKeySerializer extends StdSerializer<Datasource> {
 
     protected DatasourceKeySerializer() {
