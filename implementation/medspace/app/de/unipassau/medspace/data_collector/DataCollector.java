@@ -13,36 +13,33 @@ import java.math.BigInteger;
 import java.util.Set;
 
 /**
- * TODO
+ * Defines and implements base functionality of the Data Collector module.
  */
 public abstract class DataCollector {
 
-  /**
-   * Logger instance of this class.
-   */
   private static final Logger log = LoggerFactory.getLogger(DataCollector.class);
 
 
   /**
-   * TODO
+   * A counter for query result IDs
    */
   protected BigInteger nextID = BigInteger.ZERO;
 
   /**
-   * TODO
+   * Lock for synchronizing access to 'nexID'
    */
   protected final Object nextIdLock = new Object();
 
 
   /**
-   * TODO
+   * Creates a new DataCollector object.
    */
   public DataCollector() { }
 
   /**
-   * TODO
-   * @return
-   * @throws IOException
+   * Creates a new query result ID.
+   * @return The new query result ID.
+   * @throws IOException If an IO error occurs.
    */
   public BigInteger createQueryResult() throws IOException {
     synchronized (nextIdLock) {
@@ -54,40 +51,40 @@ public abstract class DataCollector {
   }
 
   /**
-   * TODO
-   * @param resultID
-   * @param rdfData
-   * @param rdfFormat
-   * @param baseURI
-   * @throws NoValidArgumentException
-   * @throws IOException
+   * Adds a partial query result to an existing (query result) repository.
+   * @param resultID The ID of the repository.
+   * @param rdfData The RDF data
+   * @param rdfFormat The RDF language format of the RDF data.
+   * @param baseURI The base URI used in the RDF data.
+   * @throws NoValidArgumentException If one of the arguments is not valid.
+   * @throws IOException If an IO error occurs.
    */
   public abstract void addPartialQueryResult(BigInteger resultID, InputStream rdfData, String rdfFormat, String baseURI)
       throws NoValidArgumentException, IOException;
 
   /**
-   * TODO
-   * @param resultID
-   * @return
-   * @throws NoValidArgumentException
-   * @throws IOException
+   * Deletes a query result repository.
+   * @param resultID The ID of the repository.
+   * @return true if the repository was successfully removed.
+   * @throws NoValidArgumentException If the resultID cannot be matched to a repository.
+   * @throws IOException If an IO error occurs.
    */
   public abstract boolean deleteQueryResult(BigInteger resultID) throws NoValidArgumentException, IOException;
 
   /**
-   * TODO
-   * @param resultID
-   * @return
-   * @throws IOException
+   * Provides the namespaces used in a query result repository.
+   * @param resultID The ID of the repository.
+   * @return the namespaces used in a query result repository.
+   * @throws IOException If an IO error occurs.
    */
   public abstract Set<Namespace> getNamespaces(BigInteger resultID) throws IOException;
 
   /**
-   * TODO
-   * @param resultID
-   * @param rdfFormat
-   * @return
-   * @throws IOException
+   * Provides the content of a query result repository.
+   * @param resultID The ID of the repository.
+   * @param rdfFormat The RDF language format to use for the RDF data.
+   * @return the content of a query result repository.
+   * @throws IOException If an IO error occurs.
    */
   public abstract Stream<Triple> queryResult(BigInteger resultID, String rdfFormat) throws IOException;
 }
