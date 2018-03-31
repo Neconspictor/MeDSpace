@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<DBConnection jdbcDriver="medspace_client" jdbcDSN="k4N!rT"
-
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xmlns:d2r="http://www.medspace.com/D2Rmap"
-              xsi:schemaLocation="http://www.medspace.com/D2Rmap http://www.medspace.com/D2Rmap/Medspace_D2Rmap.xsd"
->
-    <d2r:DBAuthentification username="medspace_client" password="k4N!rT"/>
-</DBConnection>
