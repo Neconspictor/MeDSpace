@@ -21,11 +21,23 @@ autoScalaLibrary := false
 //fix the scala version (used by play and akka)
 scalaVersion := "2.12.2"
 
+//disable link warnings
+scalacOptions in (Compile, doc) ++= Seq(
+  "-no-link-warnings" // Suppresses problems with Scaladoc @throws links
+)
+
+// we use Java 8 for the source code
+javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked")
+
 // we don't want to use the strict mode of javadocs in Java 8
-javacOptions in Compile ++= Seq("-Xdoclint:none")
+javacOptions in (Compile, doc) ++= Seq("-Xdoclint:none")
 
 // Force SBT to create javadocs and not scaladocs!
 sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".java"))
+
+// Eclipse integration
+EclipseKeys.withSource := true
+EclipseKeys.withJavadoc := true
 
 // library dependencies. (orginization name) % (project name) % (version)
 libraryDependencies ++= Seq(

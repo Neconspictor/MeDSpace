@@ -6,19 +6,6 @@ description := "Medical Dataspace"
 
 version := "1.0"
 
-lazy val medspace = (project in file("."))
-  .enablePlugins(PlayJava, LauncherJarPlugin)
-  .aggregate(commons)
-  .dependsOn(commons)
-  .aggregate(commons_network)
-  .dependsOn(commons_network)
-  .aggregate(commons_play)
-  .dependsOn(commons_play)
-  
-lazy val commons = RootProject(file("../commons"))
-lazy val commons_network = RootProject(file("../commons_network"))
-lazy val commons_play = RootProject(file("../commons_play"))
-
 
 // Enables publishing to maven repo
 publishMavenStyle := true
@@ -32,14 +19,11 @@ autoScalaLibrary := false
 //fix the scala version (used by play and akka)
 scalaVersion := "2.12.2"
 
-// we don't want to use the strict mode of javadocs in Java 8
-javacOptions in Compile ++= Seq("-Xdoclint:none")
-
-
-javacOptions ++= Seq("-Xlint:unchecked")
-
 // we use Java 8 for the source code
-javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8")
+javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked")
+
+// we don't want to use the strict mode of javadocs in Java 8
+javacOptions in (Compile, doc) ++= Seq("-Xdoclint:none")
 
 //disable link warnings
 scalacOptions in (Compile, doc) ++= Seq(
@@ -49,6 +33,10 @@ scalacOptions in (Compile, doc) ++= Seq(
 // Force SBT to create javadocs and not scaladocs!
 sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".java"))
 
+// Eclipse integration
+EclipseKeys.withSource := true
+EclipseKeys.withJavadoc := true
+
 
 // additional resource directory ins app/resource
 unmanagedResourceDirectories in Test += baseDirectory.value / "app/resources"
@@ -57,6 +45,20 @@ unmanagedResourceDirectories in Compile += baseDirectory.value / "app/resources"
 // in sbt development mode we don't want to type always "run PORT -Dhttp.port=PORT"
 // So we specify it here
 PlayKeys.devSettings := Seq("play.server.http.port" -> "9500", "play.server.http.address" -> "localhost")
+
+
+lazy val medspace = (project in file("."))
+  .enablePlugins(PlayJava, LauncherJarPlugin)
+  .aggregate(commons)
+  .dependsOn(commons)
+  .aggregate(commons_network)
+  .dependsOn(commons_network)
+  .aggregate(commons_play)
+  .dependsOn(commons_play)
+  
+lazy val commons = RootProject(file("../commons"))
+lazy val commons_network = RootProject(file("../commons_network"))
+lazy val commons_play = RootProject(file("../commons_play"))
 
 
 // library dependencies

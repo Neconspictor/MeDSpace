@@ -45,6 +45,7 @@ public class ImageWrapperService extends WrapperService {
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
    * @param serverConfigProvider The server configuration provider
+   * @param shutdownService the shutdown service
    * @param wrapper The wrapper.
    */
   @Inject

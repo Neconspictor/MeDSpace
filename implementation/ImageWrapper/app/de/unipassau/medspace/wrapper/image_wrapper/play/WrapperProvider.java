@@ -62,6 +62,7 @@ public class WrapperProvider implements Provider<Wrapper> {
    *
    * @param configProvider The provider for the DDSM configurations.
    * @param shutdownService The shutdown service.
+   * @param serverConfigProvider the provider for the server configuration.
    * @throws IOException If an IO error occurs.
    */
   @Inject

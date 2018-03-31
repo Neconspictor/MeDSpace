@@ -18,12 +18,11 @@ autoScalaLibrary := false
 //fix the scala version (used by play and akka)
 scalaVersion := "2.12.2"
 
-// we don't want to use the strict mode of javadocs in Java 8
-javacOptions in Compile ++= Seq("-Xdoclint:none")
-
-
 // we use Java 8 for the source code
-javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8")
+javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked")
+
+// we don't want to use the strict mode of javadocs in Java 8
+javacOptions in (Compile, doc) ++= Seq("-Xdoclint:none")
 
 //disable link warnings
 scalacOptions in (Compile, doc) ++= Seq(
@@ -32,6 +31,10 @@ scalacOptions in (Compile, doc) ++= Seq(
 
 // Force SBT to create javadocs and not scaladocs!
 sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".java"))
+
+// Eclipse integration
+EclipseKeys.withSource := true
+EclipseKeys.withJavadoc := true
 
 
 lazy val sql_wrapper = (project in file("."))

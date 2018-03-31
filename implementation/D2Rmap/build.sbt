@@ -26,14 +26,18 @@ scalacOptions in (Compile, doc) ++= Seq(
   "-no-link-warnings" // Suppresses problems with Scaladoc @throws links
 )
 
-// we don't want to use the strict mode of javadocs in Java 8
-javacOptions in Compile ++= Seq("-Xdoclint:none")
-
 // we use Java 8 for the source code
-javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8")
+javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint:unchecked")
+
+// we don't want to use the strict mode of javadocs in Java 8
+javacOptions in (Compile, doc) ++= Seq("-Xdoclint:none")
 
 // Force SBT to create javadocs and not scaladocs!
 sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".java"))
+
+// Eclipse integration
+EclipseKeys.withSource := true
+EclipseKeys.withJavadoc := true
 
 
 lazy val d2rmap = (project in file("."))
