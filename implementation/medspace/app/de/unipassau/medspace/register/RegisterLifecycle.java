@@ -61,10 +61,6 @@ public class RegisterLifecycle {
     });
   }
 
-  public static String getDatasourcesStoreLocalPath() {
-    return DATASOURCES_STORE_LOCAL_PATH;
-  }
-
   private Map<Datasource, DatasourceState> loadFromDisk() throws IOException {
     File datasourceFile = new File(DATASOURCES_STORE_LOCAL_PATH);
     Map<Datasource, DatasourceState> datasources = new HashMap<>();
