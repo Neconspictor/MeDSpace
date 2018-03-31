@@ -13,38 +13,28 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * TODO
+ * Manages the lifecycle for the Data Collector module.
  */
 public class DataCollectorLifecycle implements Provider<LocalRepositoryManager> {
 
-  /**
-   * Logger instance of this class.
-   */
   private static final Logger log = LoggerFactory.getLogger(DataCollectorLifecycle.class);
 
-  /**
-   * TODO
-   */
   private static final File DATADIR = new File("./_work/data_collector/native_store");
 
-  /**
-   * TODO
-   */
   private final LocalRepositoryManager manager;
 
+  /**
+   * Creates a new DataCollectorLifecycle object.
+   *
+   * @param lifecycle The application lifecycle.
+   * @throws IOException If an IO error occurs.
+   */
   @Inject
   public DataCollectorLifecycle(ApplicationLifecycle lifecycle) throws IOException {
 
     initDataDirectory(DATADIR);
 
     manager = new LocalRepositoryManager(DATADIR.getAbsolutePath());
-
-    /*try{
-      //db.initialize();
-      manager.initialize();
-    } catch (RepositoryException e) {
-      log.error("Couldn't initialize Repository!");
-    }*/
 
     lifecycle.addStopHook(() -> {
       log.info("shutdown is executing...");
@@ -56,10 +46,6 @@ public class DataCollectorLifecycle implements Provider<LocalRepositoryManager> 
     log.info("DataCollectorLifecycle is initialized.");
   }
 
-  /**
-   * TODO
-   * @param datadir
-   */
   private void initDataDirectory(File datadir) {
     if (!datadir.exists()) {
       datadir.mkdirs();
