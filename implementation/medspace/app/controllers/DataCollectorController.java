@@ -29,30 +29,23 @@ import java.util.concurrent.*;
 import scala.concurrent.duration.FiniteDuration;
 
 /**
- * TODO
+ * The controller for the Data Collector module.
  */
 public class DataCollectorController extends Controller {
 
-  /**
-   * TODO
-   */
-  private final DataCollector dataCollector;
+  private static final Logger log = LoggerFactory.getLogger(DataCollectorController.class);
 
-  /**
-   * TODO
-   */
+  private final DataCollector dataCollector;
   private final RDFProvider provider;
 
-  /**
-   * TODO
-   */
+
   private ExecutorService executor;
 
   /**
-   * Logger instance for this class.
+   * Creates a new DataCollectorController object.
+   * @param dataCollector The data collector.
+   * @param provider The RDf provider.
    */
-  private static final Logger log = LoggerFactory.getLogger(DataCollectorController.class);
-
   @Inject
   public DataCollectorController(DataCollector dataCollector, RDFProvider provider) {
     this.dataCollector = dataCollector;
@@ -61,9 +54,9 @@ public class DataCollectorController extends Controller {
   }
 
   /**
-   * TODO
-   * @return
-   * @throws IOException
+   * Creates a new query result and provides the created query result id to the caller.
+   * @return The created query result id to the caller.
+   * @throws IOException If an IO error occurs.
    */
   public Result createQueryResult() throws IOException {
     BigInteger id = dataCollector.createQueryResult();
@@ -71,11 +64,12 @@ public class DataCollectorController extends Controller {
   }
 
   /**
-   * TODO
-   * @param resultID
-   * @param rdfFormat
-   * @param baseURI
-   * @return
+   * Adds a partial query result to an existing (previously created) query result.
+   * The partial query result is expected to be provided in the http body.
+   * @param resultID The ID of the query result.
+   * @param rdfFormat The RDF format of the partial query result.
+   * @param baseURI The base URI that is used in the RDF data of the partial query result.
+   * @return A message whether the adding process was done successfully.
    */
   @BodyParser.Of(InputStreamBodyParser.class)
   public CompletionStage<Result> addPartialQueryResult(String resultID, String rdfFormat, String baseURI) {
@@ -85,10 +79,12 @@ public class DataCollectorController extends Controller {
             addPartialQueryResultAction(resultID, rdfFormat, baseURI, in)), executor);
   }
 
+
   /**
-   * TODO
-   * @param resultID
-   * @return
+   * Deletes a query result.
+   *
+   * @param resultID The ID of the query result.
+   * @return A status message whether the deletion was successful.
    */
   public Result deleteQueryResult(String resultID) {
     BigInteger id;
@@ -114,11 +110,12 @@ public class DataCollectorController extends Controller {
       return badRequest("Query result with id '" + id + "' doesn't exist");
   }
 
+
   /**
-   * TODO
-   * @param resultID
-   * @param rdfFormat
-   * @return
+   * Provides the RDF data of a query result.
+   * @param resultID The ID of the query result.
+   * @param rdfFormat The format the RDf data should have.
+   * @return The RDF data as chunked http messages.
    */
   public Result queryResult(String resultID, String rdfFormat) {
     BigInteger id;
@@ -148,14 +145,7 @@ public class DataCollectorController extends Controller {
     return ok(in);
   }
 
-  /**
-   * TODO
-   * @param resultID
-   * @param rdfFormat
-   * @param baseURI
-   * @param in
-   * @return
-   */
+
   private Result addPartialQueryResultAction(String resultID, String rdfFormat, String baseURI, InputStream in) {
     //BigInteger resultID, String rdfFormat, String baseURI
     //String resultIDString = request().getQueryString("resultID");
@@ -182,17 +172,14 @@ public class DataCollectorController extends Controller {
   }
 
   /**
-   * TODO
+   * A body parser for an input stream.
    */
   public static class InputStreamBodyParser implements BodyParser<InputStream> {
 
-    /**
-     * TODO
-     */
     private Executor executor;
 
     /**
-     * TODO
+     * Creates a new InputStreamBodyParser object.
      * @param executor
      */
     @Inject
@@ -200,11 +187,7 @@ public class DataCollectorController extends Controller {
       this.executor = executor;
     }
 
-    /**
-     * TODO
-     * @param request
-     * @return
-     */
+
     @Override
     public Accumulator<ByteString, F.Either<Result, InputStream>> apply(Http.RequestHeader request) {
 
