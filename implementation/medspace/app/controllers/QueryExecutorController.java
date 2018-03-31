@@ -28,25 +28,30 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * TODO
+ * A controller for the Query Executor module.
  */
 public class QueryExecutorController extends Controller {
 
-  private final QueryExecutor queryExecutor;
+  private static final  Logger log = LoggerFactory.getLogger(QueryExecutorController.class);
 
+
+  private final QueryExecutor queryExecutor;
   private final RDFProvider rdfProvider;
 
-      /**
-      * Logger instance for this class.
-      */
-    private static final  Logger log = LoggerFactory.getLogger(QueryExecutorController.class);
-
+  /**
+   * Creates a new QueryExecutorController object.
+   *
+   * @param lifecycle The application lifecycle.
+   * @param serviceInvoker The service invoker.
+   * @param playConfig The Play configuration.
+   * @param rdfProvider The RDF provider.
+   * @throws MalformedURLException If the URL to the data colector module couldn't be created.
+   */
   @Inject
   public QueryExecutorController(ApplicationLifecycle lifecycle,
                                  ServiceInvoker serviceInvoker,
                                  Config playConfig,
-                                 RDFProvider rdfProvider) throws MalformedURLException,
-      ExecutionException, InterruptedException {
+                                 RDFProvider rdfProvider) throws MalformedURLException {
 
     //TODO the url (with port) should be stated in the config file for the QueryExecutor once it is split from the register
     int port = playConfig.getInt("play.server.http.port");
@@ -64,12 +69,13 @@ public class QueryExecutorController extends Controller {
   }
 
   /**
-   * TODO
-   * @param query
-   * @param rdfFormat
-   * @param useOr
-   * @param attach
-   * @return
+   * Executes a keyword search query on all registered datasources. The query results will be merged and
+   * returned as one RDF data set.
+   * @param query The keyword search query.
+   * @param rdfFormat The RDF language format that should be used for the final query result.
+   * @param useOr Specifies whether the 'OR' oeprator should be used instead of the 'AND' operator.
+   * @param attach Specifeis whether the query result should be attached as a file (important for browsers).
+   * @return The query result or an error message (if one should happen).
    */
   public Result searchByKeyword(String query, String rdfFormat, boolean useOr, boolean attach) {
     log.debug("query param: " + query);
@@ -109,6 +115,10 @@ public class QueryExecutorController extends Controller {
     return ok(logWrapper).as(mimeType).withHeader("Content-Disposition", dispositionValue);
   }
 
+  /**
+   * Clears the query cache.
+   * @return A status message whether the cache was sucessfully cleared.
+   */
   public Result clearCache() {
     queryExecutor.clearCache();
     return ok("Cleared query cache.");
