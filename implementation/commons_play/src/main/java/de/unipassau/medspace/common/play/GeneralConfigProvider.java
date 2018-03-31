@@ -27,7 +27,7 @@ public class GeneralConfigProvider {
   /**
    * The key for thegeneral wrapper config file.
    */
-  protected static final String WRAPPER_CONFIG_FILE_ID = "MeDSpaceWrapperConfig";
+  protected static final String WRAPPER_CONFIG_FILE_ID = "medspace.wrapper.config";
 
   /**
    * The general wrapper configuration.

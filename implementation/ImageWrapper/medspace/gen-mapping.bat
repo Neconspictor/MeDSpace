@@ -1,1 +1,0 @@
-xjc -b medspace-ddsm-mapping-binding.xml -p de.unipassau.medspace.wrapper.image_wrapper.config.mapping -d xjc-generated -extension ../../commons/src/main/resources/medspace-rdf-mapping-specification.xsd medspace-ddsm-mapping-specification.xsd

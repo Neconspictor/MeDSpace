@@ -1,0 +1,1 @@
+xjc -b medspace-d2rmap-binding.xml -p de.unipassau.medspace.d2r.config.parsing -d ../src/main/java -extension ../src/main/resources/Medspace_D2Rmap.xsd

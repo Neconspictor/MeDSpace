@@ -1,1 +1,1 @@
-xjc -b medspace-global-server-config-binding.xml -p de.unipassau.medspace.global.config.mapping -d ../app -extension ../app/resources/medspace_global_server_config_specification.xsd
+xjc -b medspace-global-server-config-binding.xml -p de.unipassau.medspace.global.config.mapping -d ../app -extension ../medspace/medspace_global_server_config_specification.xsd

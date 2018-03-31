@@ -28,13 +28,13 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
    */
   private static Logger log = LoggerFactory.getLogger(DdsmConfigProvider.class);
 
-  private static final String DDSM_CONFIG_FILE_ID = "MeDSpaceDdsmConfig";
+  private static final String DDSM_CONFIG_FILE_ID = "medspace.ddsm.config";
 
-  private static final String DDSM_MAPPING_CONFIG_FILE_ID = "MeDSpaceDdsmMappingConfig";
+  private static final String DDSM_MAPPING_CONFIG_FILE_ID = "medspace.ddsm.mapping.config";
 
-  private static final String DDSM_CONFIG_SPECIFICATION_FILE_ID = "MeDSpaceDdsmConfigSpecification";
+  private static final String DDSM_CONFIG_SPECIFICATION_FILE_ID = "medspace.ddsm.specification.config";
 
-  private static final String DDSM_MAPPING_CONFIG_SPECIFICATION_FILE_ID = "MeDSpaceDdsmMappingConfigSpecification";
+  private static final String DDSM_MAPPING_CONFIG_SPECIFICATION_FILE_ID = "medspace.ddsm.specification.mapping";
 
 
   private DDSMConfig ddsmConfig;

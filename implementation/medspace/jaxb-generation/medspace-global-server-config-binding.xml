@@ -3,7 +3,7 @@
     xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
     version="2.1">
 
-    <jxb:bindings schemaLocation="../app/resources/medspace_global_server_config_specification.xsd">
+    <jxb:bindings schemaLocation="../medspace/medspace_global_server_config_specification.xsd">
 			
 		<jxb:bindings node="//xsd:element[@name='Config']">
             <jxb:class name="ConfigMapping"/>
