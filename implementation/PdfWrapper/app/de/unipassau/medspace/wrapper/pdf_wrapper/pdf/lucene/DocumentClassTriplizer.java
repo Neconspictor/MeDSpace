@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A document triplizer for PDF files.
  */
 public class DocumentClassTriplizer implements Converter<Document, List<Triple>> {
 
@@ -29,10 +29,10 @@ public class DocumentClassTriplizer implements Converter<Document, List<Triple>>
   private final RDFFactory rdfFactory;
 
   /**
-   * TODO
-   * @param adapters
-   * @param normalizer
-   * @param rdfFactory
+   * Creates a new DocumentClassTriplizer object.
+   * @param adapters The adapters to use.
+   * @param normalizer Used fpr normalizing triples.
+   * @param rdfFactory Used to create RDF triples.
    */
   public DocumentClassTriplizer(List<PdfFileAdapter> adapters,
                                 QNameNormalizer normalizer,
