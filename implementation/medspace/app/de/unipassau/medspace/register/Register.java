@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * In a dataspace the register is responsible for managing the datasources.
+ * In MeDSpace the register is responsible for managing the datasources.
  * Thus, the register allows to add and remove datasources. If a datasource doesn't respond anymore, it is possible to
  * inform the register. The register then decides if it keeps the not responding datasource or removes it.
  * <br>
@@ -31,6 +31,9 @@ public class Register {
    */
   private final Map<Datasource, DatasourceState> datasources;
 
+  /**
+   * Specifies whether the register is closed.
+   */
   private boolean isClosed = false;
 
   /**
@@ -54,12 +57,14 @@ public class Register {
   private static final int COOL_DOWN_TIME = 10000;
 
   /**
-   * TODO
+   * A limit for IO errors that are allowed to occur for a datasource.
+   * When the limit is exceeded, the datasource should be removed.
    */
   private static final int IO_ERROR_LIMIT = 5;
 
   /**
-   * Creates a new Register.
+   * Creates a new Register object.
+   * @param datasources The registered datasources. Can be null
    */
   public Register(Map<Datasource, DatasourceState> datasources) {
     if (datasources == null) datasources = new HashMap<>();
@@ -114,6 +119,10 @@ public class Register {
     }
   }
 
+  /**
+   * Reports the register that an IO error has occurred for a datasource.
+   * @param datasource The datasource.
+   */
   public void datasourceIOError(Datasource datasource) {
     if (datasource == null) throw new IllegalArgumentException("datasource mustn't be null!");
     if (isClosed) return;
@@ -223,7 +232,7 @@ public class Register {
   }
 
   /**
-   * TODO
+   * Removes all datasources from the register.
    */
   public boolean removeAllDatasources() {
 
@@ -239,6 +248,9 @@ public class Register {
     }
   }
 
+  /**
+   * Closes the register.
+   */
   public void close() {
     if (isClosed) {
       log.warn("Register already closed.");
