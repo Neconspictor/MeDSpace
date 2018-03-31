@@ -13,13 +13,10 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * The Query executor is responsible to execute a query on a database.
+ * The Query executor is responsible to execute queries on all registered datasources.
  */
 public class QueryExecutor implements Closeable {
 
-  /**
-   * Logger instance for this class.
-   */
   private static Logger log = LoggerFactory.getLogger(QueryExecutor.class);
 
   private final ServiceInvoker serviceInvoker;
@@ -28,10 +25,10 @@ public class QueryExecutor implements Closeable {
   private final QueryCache queryCache;
 
   /**
-   * TODO
-   * @param serviceInvoker
-   * @param registerBase
-   * @param dataCollectorBase
+   * Creates a new QueryExecutor object.
+   * @param serviceInvoker The service invoker to use.
+   * @param registerBase The base URL to the register.
+   * @param dataCollectorBase The base URL to the data collector.
    */
   public QueryExecutor(ServiceInvoker serviceInvoker, URL registerBase, URL dataCollectorBase) {
     this.serviceInvoker = serviceInvoker;
@@ -44,19 +41,19 @@ public class QueryExecutor implements Closeable {
   }
 
   /**
-   * TODO
+   * Clears the query cache.
    */
   public void clearCache() {
     queryCache.clear();
   }
 
   /**
-   * TODO
-   * @param keywords
-   * @param operator
-   * @param rdfFormat
-   * @return
-   * @throws IOException
+   * Executes a keyword search query on all registered datasources and provides the resulting query result.
+   * @param keywords The keywords used for querying.
+   * @param operator The boolean operator to use.
+   * @param rdfFormat The RDF language format the query result should use.
+   * @return The query result of the keyword search query.
+   * @throws IOException If an IO error occurs.
    */
   public InputStream keywordService(List<String> keywords,
                                     KeywordSearcher.Operator operator,
@@ -183,6 +180,10 @@ public class QueryExecutor implements Closeable {
   }
 
 
+  /**
+   * An utility class that wraps an input stream provided by the Data collector and stores a corresponding
+   * ID of the query result repository where the input stream was created from.
+   */
   private class DataCollectorResultInputStream extends InputStream {
 
     private final InputStream in;
