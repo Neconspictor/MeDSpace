@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * TODO
+ * A cache for search queries.
  */
 public class QueryCache implements Closeable {
 
@@ -36,6 +36,11 @@ public class QueryCache implements Closeable {
 
   private final CacheEventListener<String, BigInteger> removeListener;
 
+  /**
+   * Creates a new QueryCache object.
+   * @param cacheSize The size of the cache.
+   * @param removeListener A listener that will be informed whenever an item of the caches gets removed.
+   */
   public QueryCache(int cacheSize, CacheEventListener<String, BigInteger> removeListener) {
 
     CacheEventListenerConfigurationBuilder cacheEventListenerConfiguration = CacheEventListenerConfigurationBuilder
@@ -76,18 +81,30 @@ public class QueryCache implements Closeable {
     this.removeListener = removeListener;
   }
 
+  /**
+   * Adds a keyword search query to the cache.
+   * @param keywords The keywords
+   * @param operator The used operator.
+   * @param resultID The ID of the repository where the query result is stored.
+   */
   public void add(List<String> keywords, KeywordSearcher.Operator operator, BigInteger resultID) {
     String key = buildKey(keywords, operator);
     cache.put(key, resultID);
   }
 
+  /**
+   * Provides the ID of a query result repository for a keyword search query.
+   * @param keywords The keywords
+   * @param operator The used operator.
+   * @return The ID of the query result repository or null if the query is not cached.
+   */
   public BigInteger get(List<String> keywords, KeywordSearcher.Operator operator) {
     String key = buildKey(keywords, operator);
     return cache.get(key);
   }
 
   /**
-   * TODO
+   * Deletes all cache elements.
    */
   public void clear() {
     cache.forEach( elem -> {
@@ -123,8 +140,12 @@ public class QueryCache implements Closeable {
     return key + "&" + operatorStr + "&";
   }
 
+  /**
+   * A remove listener that executes the registered remove listener when a cache item gets removed.
+   */
   private class RemoveListener implements CacheEventListener<String, BigInteger> {
 
+    @Override
     public void onEvent(CacheEvent<? extends String, ? extends BigInteger> event) {
 
       EventType type = event.getType();
