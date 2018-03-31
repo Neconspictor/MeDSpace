@@ -9,14 +9,12 @@ import de.unipassau.medspace.common.register.DatasourceState;
 import de.unipassau.medspace.register.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.*;
 import play.routing.JavaScriptReverseRouter;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -24,27 +22,22 @@ import java.util.*;
  */
 public class MeDSpaceController extends Controller {
 
-    /**
-     * Used to read http request data.
-     */
-    private final FormFactory formFactory;
-
-    /**
-     * The register, this controller is referring to.
-     */
-    private final Register register;
-
     private static Logger log = LoggerFactory.getLogger(MeDSpaceController.class);
 
+    private final Register register;
+
+  /**
+   * Creates a new MeDSpaceController object.
+   * @param lifecycle The lifecycle of the register.
+   */
     @Inject
-    public MeDSpaceController(FormFactory formFactory, RegisterLifecycle lifecycle) throws IOException {
-        this.formFactory = formFactory;
+    public MeDSpaceController(RegisterLifecycle lifecycle) {
         register = lifecycle.getRegister();
     }
 
     /**
-     * TODO
-     * @return
+     * Provides a status page that lists all registered datasources.
+     * @return a status page that lists all registered datasources.
      */
     public Result datasources() {
         Map<Datasource, DatasourceState> datasourceModifiedMap = register.getDatasources();
@@ -57,6 +50,7 @@ public class MeDSpaceController extends Controller {
 
     /**
      * An action that renders a page for testing the register services.
+     * @return a page for testing the register services.
      */
     public Result index() {
         Map<Datasource, DatasourceState> datasourceModifiedMap = register.getDatasources();
@@ -69,7 +63,7 @@ public class MeDSpaceController extends Controller {
 
     /**
      * Provides the user interface page for MeDSpace.
-     * @return
+     * @return the user interface page for MeDSpace.
      */
     public Result gui() {
         return ok(views.html.medspaceGUI.render());
@@ -106,8 +100,9 @@ public class MeDSpaceController extends Controller {
     }
 
     /**
-     * TODO
-     * @return
+     * Provides the IO error count for a datasource.
+     * The datasource is expected to be sent within the POST body and is serialized to JSON.
+     * @return the IO error count for a datasource.
      */
     public Result ioError() {
         Datasource datasource;
@@ -161,8 +156,8 @@ public class MeDSpaceController extends Controller {
     }
 
     /**
-     * TODO
-     * @return
+     * REST service that removes all registered datasources.
+     * @return A status message whether the deletion was successful.
      */
     public  Result removeAllDatasources() {
         boolean result = register.removeAllDatasources();
