@@ -10,34 +10,28 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO
+ * A manager fpr repositories that are stored locally on disk.
  */
 public class LocalRepositoryManager {
 
-  /**
-   * TODO
-   */
   private File root;
-
-  /**
-   * TODO
-   */
   private ConcurrentHashMap<String, Repository> createdRepos;
 
   /**
-   * TODO
-   * @param rootDir
-   * @throws IOException
+   * Creates a new LocalRepositoryManager object.
+   * @param rootDir The root folder for storing the repositories.
+   * @throws IOException If an IO error occurs.
    */
   public LocalRepositoryManager(String rootDir) throws IOException {
     root = createAndCleanDirectory(rootDir);
     this.createdRepos = new ConcurrentHashMap<>();
   }
-
+  
   /**
-   * TODO
-   * @param subPath
-   * @return
+   * Opens a registered repository.
+   * @param subPath The sub folder path the repository is stored.
+   * @return The opened repository.
+   * @throws IOException If an IO error occurs or if the repository doesn't exist.
    */
   public Repository open(String subPath) throws IOException {
     Repository repo = createdRepos.get(subPath);
@@ -50,8 +44,8 @@ public class LocalRepositoryManager {
   }
 
   /**
-   * TODO
-   * @param subPath
+   * Closes a repository.
+   * @param subPath The path for the repository.
    */
   public void close(String subPath) {
     Repository repo = createdRepos.get(subPath);
@@ -59,31 +53,13 @@ public class LocalRepositoryManager {
     if (repo.isInitialized()) {
       repo.shutDown();
     }
-
-
-    //TODO test stuff
-    /*if (createdRepos.size() > 10) {
-      int size = createdRepos.size() - 10;
-      Iterator<Map.Entry<String, Repository>> it = createdRepos.entrySet().iterator();
-      while(it.hasNext()) {
-        Map.Entry<String, Repository> current = it.next();
-        if (!current.getValue().isInitialized()) {
-          try {
-            it.remove();
-            remove(current.getKey());
-            //--size;
-          } catch (IOException e) {
-          }
-        }
-      }
-    }*/
   }
 
 
   /**
-   * TODO
-   * @param subPath
-   * @return
+   * Provides a repository.
+   * @param subPath The sub folder where the repository is stored.
+   * @return A repository identified by its sbu folder path.
    * @throws IOException
    */
   public Repository get(String subPath) throws IOException {
@@ -91,9 +67,9 @@ public class LocalRepositoryManager {
   }
 
   /**
-   * TODO
-   * @param subPath
-   * @throws IOException
+   * Creates a new repository.
+   * @param subPath The sub folder path for the repository.
+   * @throws IOException If an IO error occurs.
    */
   public void create(String subPath) throws IOException {
 
@@ -107,9 +83,9 @@ public class LocalRepositoryManager {
   }
 
   /**
-   * TODO
-   * @param subPath
-   * @throws IOException
+   * Removes a repository.
+   * @param subPath The sub folder path for the repository.
+   * @throws IOException If an IO error occurs.
    */
   public void remove(String subPath) throws IOException {
 
@@ -127,22 +103,11 @@ public class LocalRepositoryManager {
   }
 
 
-  /**
-   * TODO
-   * @param dataDir
-   * @return
-   */
   private Repository createRepository(File dataDir) {
     Repository repo = new SailRepository(new NativeStore(dataDir));
     return repo;
   }
 
-  /**
-   * TODO
-   * @param path
-   * @return
-   * @throws IOException
-   */
   private File createAndCleanDirectory(String path) throws IOException {
     File directory  = new File(path);
     directory.mkdirs();
@@ -154,12 +119,6 @@ public class LocalRepositoryManager {
     return directory;
   }
 
-  /**
-   * TODO
-   * @param root
-   * @param name
-   * @return
-   */
   private File getSubFolder(File root, String name) {
     File target = new File(root + "/" + name);
     if (!target.isDirectory()) return null;
@@ -174,13 +133,6 @@ public class LocalRepositoryManager {
     return target;
   }
 
-  /**
-   * TODO
-   * @param rootDir
-   * @param name
-   * @return
-   * @throws IOException
-   */
   private File createSubFolder(File rootDir, String name) throws IOException {
     String path = rootDir.getPath() + "/" + name;
     File subFolder = new File(path);
