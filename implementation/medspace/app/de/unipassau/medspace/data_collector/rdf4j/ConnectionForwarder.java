@@ -14,23 +14,18 @@ import java.io.Reader;
 import java.net.URL;
 
 /**
- * TODO
+ * A wrapper for a repository connection. It is used to execute callback methods when the connection is closed.
  */
 public class ConnectionForwarder implements RepositoryConnection {
 
-  /**
-   * TODO
-   */
   private RepositoryConnection impl;
 
-  /**
-   * TODO
-   */
   private Runnable onCloseCallback;
 
   /**
-   * TODO
-   * @param source
+   * Creates a new ConnectionForwarder object.
+   * @param source The respository connection
+   * @param onClose Called when the repository connection gets closed.
    */
   public ConnectionForwarder(RepositoryConnection source, Runnable onClose) {
     impl = source;
