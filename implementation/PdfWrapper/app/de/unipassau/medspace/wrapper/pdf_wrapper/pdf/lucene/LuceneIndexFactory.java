@@ -18,36 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * A factory for triple an index for documents that contain data from PDF files and that are convertible to RDF.
  */
 public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile> {
 
-  /**
-   * TODO
-   */
   private final List<PdfFileAdapter> adpaters;
-
-  /**
-   * The directory to store lucene index data to.
-   */
   private final String directory;
-
-  /**
-   * TODO
-   */
   private final RDFFactory factory;
-
-  /**
-   * TODO
-   */
   private final QNameNormalizer normalizer;
 
   /**
-   * TODO
-   * @param directory
-   * @param adpaters
-   * @param factory
-   * @param normalizer
+   * Creates a new LuceneIndexFactory object.
+   * @param directory The root folder for locating PDf files.
+   * @param adpaters The used adapters
+   * @param factory Used to create RDF data.
+   * @param normalizer Used to normalize RDF data.
    */
   public LuceneIndexFactory(String directory,
                             List<PdfFileAdapter> adpaters,
@@ -74,10 +59,6 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
     return new PdfFileTripleIndexManager(searcher, converter, adpaters);
   }
 
-  /**
-   * TODO
-   * @return
-   */
   private List<String> createFields() {
     List<String> fields = new ArrayList<>();
     for (PdfFileAdapter adapter : adpaters) {
@@ -97,20 +78,18 @@ public class LuceneIndexFactory implements TripleIndexFactory<Document, PdfFile>
   }
 
   /**
-   * TODO
+   * A triple index manager for PDF files.
    */
   private static class PdfFileTripleIndexManager extends TripleIndexManager<Document, PdfFile> {
 
-    /**
-     * TODO
-     */
+
     private final List<PdfFileAdapter> adapters;
 
     /**
      * Creates a new TripleIndexManager.
      * @param searcher              Used for searching an {@link de.unipassau.medspace.common.indexing.Index}.
      * @param tripleSearchConverter Used to convert documents to triples.
-     * @param adapters TODO
+     * @param adapters The adapters for the PDF files.
      */
     public PdfFileTripleIndexManager(IndexSearcher<Document> searcher,
                                      Converter<KeywordSearcher<Document>, KeywordSearcher<Triple>> tripleSearchConverter,
