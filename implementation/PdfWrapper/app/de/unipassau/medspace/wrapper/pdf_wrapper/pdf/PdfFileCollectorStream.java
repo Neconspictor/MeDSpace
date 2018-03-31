@@ -8,28 +8,21 @@ import de.unipassau.medspace.common.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
- * TODO
+ * A stream that provides PDF files from a local folder (and its sub folders).
  */
 public class PdfFileCollectorStream implements Stream<PdfFile> {
 
-  /**
-   * TODO
-   */
   private final File root;
 
-  /**
-   * TODO
-   */
   private final List<MultiMediaContainer> pdfContainers;
 
   /**
-   * TODO
-   * @param root
-   * @throws IOException
+   * Creates a new PdfFileCollectorStream object.
+   * @param root The root directory used as a starting point for collecting the pdf files.
+   * @throws IOException If an IO error occurs.
    */
   public PdfFileCollectorStream(File root) throws IOException {
 
@@ -67,15 +60,7 @@ public class PdfFileCollectorStream implements Stream<PdfFile> {
       // Nothing has to be closed
   }
 
-  /**
-   * TODO
-   * @param root
-   * @param destination
-   * @return
-   * @throws UnsupportedEncodingException
-   */
-  private static String createID(File root, File destination) throws UnsupportedEncodingException {
+  private static String createID(File root, File destination) {
     return FileUtil.getRelativePath(root, destination);
-    //return URLEncoder.encode(id, "UTF-8");
   }
 }

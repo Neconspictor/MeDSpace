@@ -5,22 +5,19 @@ import de.unipassau.medspace.common.rdf.mapping.IdentifiableFile;
 import java.io.File;
 
 /**
- * TODO
+ * Represents a PDF file.
  */
 public class PdfFile implements IdentifiableFile {
 
 
   private final String id;
 
-  /**
-   * TODO
-   */
   private final File source;
 
   /**
-   * TODO
-   * @param source
-   * @param id
+   * Creates a new PdfFile object.
+   * @param source The source PDf file.
+   * @param id The id for the PDF file.
    */
   public PdfFile(File source, String id) {
     this.id = id;

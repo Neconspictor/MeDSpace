@@ -11,17 +11,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO
+ * A multimedia collector for PDf files.
  */
 public class PdfFileCollector implements MultiMediaCollector {
 
   /**
-   * TODO
+   * The file extension of PDF files.
    */
   private final static String PDF_FILE_EXTENSION = "pdf";
 
   /**
-   * TODO
+   * Creates a new PdfFileCollector object.
    */
   public PdfFileCollector() {}
 
@@ -40,11 +40,6 @@ public class PdfFileCollector implements MultiMediaCollector {
     return result;
   }
 
-  /**
-   * TODO
-   * @param files
-   * @return
-   */
   private List<MultiMediaContainer> collectContainers(List<File> files) {
     List<MultiMediaContainer> result = new ArrayList<>();
 
@@ -57,11 +52,6 @@ public class PdfFileCollector implements MultiMediaCollector {
     return result;
   }
 
-  /**
-   * TODO
-   * @param pdfFileSource
-   * @return
-   */
   private MultiMediaContainer createPdfFileContainer(File pdfFileSource) {
     MultiMediaFile pdfFile = new MultiMediaFile();
     pdfFile.setSource(pdfFileSource);
@@ -72,11 +62,6 @@ public class PdfFileCollector implements MultiMediaCollector {
     return container;
   }
 
-  /**
-   * TODO
-   * @param file
-   * @return
-   */
   private String getFileName(File file) {
     String fileName = file.getName();
     String extension = getFileExtension(file);
@@ -85,12 +70,6 @@ public class PdfFileCollector implements MultiMediaCollector {
     return fileName;
   }
 
-  /**
-   * TODO
-   * @param files
-   * @param extension
-   * @return
-   */
   private List<File> filterByExtension(List<File> files, String extension) {
     List<File> result = new ArrayList<>();
     extension = extension.toUpperCase();
@@ -105,11 +84,6 @@ public class PdfFileCollector implements MultiMediaCollector {
     return result;
   }
 
-  /**
-   * TODO
-   * @param file
-   * @return
-   */
   private String getFileExtension(File file) {
     String fileName = file.getAbsolutePath();
     String extension = "";
@@ -123,11 +97,6 @@ public class PdfFileCollector implements MultiMediaCollector {
     return extension;
   }
 
-  /**
-   * TODO
-   * @param root
-   * @return
-   */
   private List<File> getSubFolders(File root) {
     List<File> result = new ArrayList<>();
 
@@ -140,12 +109,6 @@ public class PdfFileCollector implements MultiMediaCollector {
     return result;
   }
 
-
-  /**
-   * TODO
-   * @param root
-   * @return
-   */
   private List<File> getNonFolderFiles (File root) {
     List<File> result = new ArrayList<>();
 
