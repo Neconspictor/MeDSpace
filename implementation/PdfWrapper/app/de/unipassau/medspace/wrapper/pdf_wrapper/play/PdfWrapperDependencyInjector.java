@@ -24,10 +24,11 @@ public class PdfWrapperDependencyInjector extends MeDSpaceDependencyInjector {
   /**
    * Creates a new AppRoot object.
    * @param environment The environment of the play application.
+   * @param configuration The Play application configuration.
    */
   @Inject
   public PdfWrapperDependencyInjector(Environment environment, Configuration configuration) {
-    super(environment);
+    super(environment, configuration);
   }
 
   @Override

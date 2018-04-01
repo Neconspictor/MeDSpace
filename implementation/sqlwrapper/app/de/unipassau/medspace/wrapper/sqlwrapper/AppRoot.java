@@ -3,6 +3,7 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.play.MeDSpaceDependencyInjector;
 import de.unipassau.medspace.common.play.ResourceProvider;
 import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
@@ -21,7 +22,7 @@ import java.util.Locale;
  * The AppRoot is a configuration class that configures the play framework for the sql wrapper.
  * It's main purpose is the definition of Dependency Injection definitions.
  */
-public class AppRoot extends AbstractModule {
+public class AppRoot extends MeDSpaceDependencyInjector {
 
   /**
    * Logger instance of this class.
@@ -39,7 +40,7 @@ public class AppRoot extends AbstractModule {
    * @param config Not used, but the play framework needs a constructor with this parameter.
    */
   public AppRoot(Environment environment, Configuration config) {
-    super();
+    super(environment);
     Locale.setDefault(Locale.US);
     this.environment = environment;
   }

@@ -9,6 +9,7 @@ import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.api.Configuration;
 import play.api.Environment;
 
 import javax.inject.Inject;
@@ -31,10 +32,14 @@ public class MeDSpaceDependencyInjector extends AbstractModule {
 
   /**
    * Creates a new MeDSpaceDependencyInjector object.
+   * NOTE: environment and configuration are both necessary for Play EVEN if you don't use them!
+   * If one of the arguments is mising, Play is not able to instantiate them!
+   *
    * @param environment The Play environment. Will be injected by Play.
+   * @param configuration The Play configuration. Will be injected by Play.
    */
   @Inject
-  public MeDSpaceDependencyInjector(Environment environment) {
+  public MeDSpaceDependencyInjector(Environment environment, Configuration configuration) {
     super();
     Locale.setDefault(Locale.US);
     this.environment = environment;
