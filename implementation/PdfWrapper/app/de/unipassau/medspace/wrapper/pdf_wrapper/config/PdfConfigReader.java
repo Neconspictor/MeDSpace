@@ -1,6 +1,6 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.config;
 
-import de.unipassau.medspace.common.play.GeneralConfigProvider;
+import de.unipassau.medspace.common.config.PathResolveParser;
 import de.unipassau.medspace.common.util.XmlUtil;
 import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import org.slf4j.Logger;
@@ -30,21 +30,21 @@ public class PdfConfigReader {
 
   private final String rdfMappingSpec;
 
-  private File projectFolder;
+  private final PathResolveParser resolveParser;
 
   /**
    * Creates a new PdfConfigReader object.
    * @param pdfConfigSpecificationSchema The XSD validation schema for the PDF wrapper configuration.
    * @param rdfMappingSpec The XSD validation schema for the RDF mapping.
-   * @param projectFolder The project folder. This is the folder
-   *                         where the folders bin, conf, public, etc. are stored.
+   * @param resolveParser The path resolve parser to use.
    */
   public PdfConfigReader(String pdfConfigSpecificationSchema,
                          String rdfMappingSpec,
-                         File projectFolder) {
+                         PathResolveParser resolveParser) {
     this.pdfConfigSpecificationSchema = pdfConfigSpecificationSchema;
     this.rdfMappingSpec = rdfMappingSpec;
-    this.projectFolder = projectFolder;
+
+    this.resolveParser = resolveParser;
   }
 
 
@@ -73,11 +73,9 @@ public class PdfConfigReader {
     String pdfRoot = rootMapping.getPdfRootDirectory();
 
     if (pdfRoot.startsWith(PROJECT_FOLDER_TOKEN)) {
-      log.debug("Replaced project folder macro by the actual path; original=" + pdfRoot);
-
-      pdfRoot = pdfRoot.substring(PROJECT_FOLDER_TOKEN.length(), pdfRoot.length());
-      pdfRoot = projectFolder + pdfRoot;
-      log.debug("Replacement: " + pdfRoot);
+      log.debug("Replace macros for PDF root folder: " + pdfRoot);
+      pdfRoot = resolveParser.replaceMacros(pdfRoot);
+      log.debug("PDF root folder is now: " + pdfRoot);
     }
 
     rootMapping.setPdfRootDirectory(pdfRoot);

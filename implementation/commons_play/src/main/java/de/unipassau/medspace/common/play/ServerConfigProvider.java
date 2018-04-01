@@ -7,10 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 
-public class ServerConfigProvider {
+public class ServerConfigProvider implements Provider<ServerConfig> {
 
   /**
    * Logger instance for this class.
@@ -65,6 +66,11 @@ public class ServerConfigProvider {
     }
   }
 
+  @Override
+  public ServerConfig get() {
+    return serverConfig;
+  }
+
   private void init(Config playConfig)
       throws IOException,
       ConfigException.Missing,
@@ -75,8 +81,7 @@ public class ServerConfigProvider {
     int portHTTP = playConfig.getInt(PORT_ID_HTTP);
     int portHTTPS = playConfig.getInt(PORT_ID_HTTP);
 
-    log.debug(ADDRESS_ID_HTTP + " = " + addressHTTP);
-    log.debug(PORT_ID_HTTP + " = " + portHTTP);
+    log.info("http server runs at: " + addressHTTP + ":" + portHTTP);
     //log.debug(ADDRESS_ID_HTTPS + " = " + addressHTTPS);
     //log.debug(PORT_ID_HTTPS + " = " + portHTTPS);
 
@@ -84,13 +89,5 @@ public class ServerConfigProvider {
     serverConfig = new ServerConfig(HTTP_PROTOCOL, addressHTTP, portHTTP);
 
     log.info("Reading server configuration done.");
-  }
-
-  /**
-   * Provides the server configuration.
-   * @return the server configuration.
-   */
-  public ServerConfig getServerConfig() {
-    return serverConfig;
   }
 }

@@ -51,6 +51,10 @@ lazy val commons = RootProject(file("../commons"))
 lazy val commons_network = RootProject(file("../commons_network"))
 
 // library dependencies. (orginization name) % (project name) % (version)
+
+// https://mvnrepository.com/artifact/com.google.inject/guice
+libraryDependencies += "com.google.inject" % "guice" % "4.0"
+
 libraryDependencies ++= Seq(
 
 	// https://mvnrepository.com/artifact/com.typesafe.play/play

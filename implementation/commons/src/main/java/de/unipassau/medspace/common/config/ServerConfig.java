@@ -19,6 +19,15 @@ public class ServerConfig {
   protected File generalWrapperConfigFile;
 
   /**
+   * Default constructor.
+   * Note: DO NOT DELETE, as it is needed for dependency injection.
+   * Should NOT be used in user code.
+   */
+  public ServerConfig() {
+
+  }
+
+  /**
    * Creates a new server configuration.
    * @param protocol The used protocol the server uses.
    * @param hostAddress The host address of the server.

@@ -1,8 +1,9 @@
 package controllers;
 
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.play.WrapperController;
 import de.unipassau.medspace.common.rdf.RDFProvider;
-import de.unipassau.medspace.wrapper.pdf_wrapper.play.PdfWrapperConfigProvider;
+import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import de.unipassau.medspace.wrapper.pdf_wrapper.play.PdfWrapperService;
 
 import org.slf4j.Logger;
@@ -37,16 +38,18 @@ public class PDFWrapperController extends WrapperController {
    * Creates a new SQLWrapperController object.
    * @param wrapperService The wrapper service to use.
    * @param rdfProvider The RDF provider to use.
-   * @param configProvider The configuration provider.
+   * @param generalWrapperConfig the general wrapper configuration.
+   * @param pdfConfig The pdf wrapper configuration.
    */
   @Inject
   PDFWrapperController(PdfWrapperService wrapperService,
                        RDFProvider rdfProvider,
-                       PdfWrapperConfigProvider configProvider) {
-    super(configProvider.getGeneralWrapperConfig(), rdfProvider, wrapperService);
+                       GeneralWrapperConfig generalWrapperConfig,
+                       RootMapping pdfConfig) {
+    super(generalWrapperConfig, rdfProvider, wrapperService);
     this.pdfWrapperService = wrapperService;
 
-    root = new File(configProvider.getPdfConfig().getPdfRootDirectory());
+    root = new File(pdfConfig.getPdfRootDirectory());
 
   }
 

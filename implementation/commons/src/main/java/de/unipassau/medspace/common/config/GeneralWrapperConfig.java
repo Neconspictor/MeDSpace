@@ -25,6 +25,15 @@ public class GeneralWrapperConfig {
   private final GeneralWrapperConfigData data;
 
   /**
+   * Default constructor.
+   * Note: DO NOT DELETE, as it is needed for dependency injection.
+   * Should NOT be used in user code.
+   */
+  public GeneralWrapperConfig() {
+    data = null;
+  }
+
+  /**
    * Creates a new GeneralWrapperConfig from a builder object.
    * @param data The builder object.
    */

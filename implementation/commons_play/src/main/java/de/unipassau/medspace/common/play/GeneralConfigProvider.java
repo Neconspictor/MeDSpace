@@ -4,11 +4,13 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.GeneralWrapperConfigReader;
+import de.unipassau.medspace.common.config.PathResolveParser;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,7 +18,7 @@ import java.io.IOException;
 /**
  * A provider for the general wrapper configuration.
  */
-public class GeneralConfigProvider {
+public class GeneralConfigProvider implements Provider<GeneralWrapperConfig> {
 
   /**
    * Logger instance for this class.
@@ -44,26 +46,27 @@ public class GeneralConfigProvider {
   @Inject
   public GeneralConfigProvider(com.typesafe.config.Config playConfig,
                         RDFProvider provider,
+                        PathResolveParser pathResolveParser,
                         ResourceProvider resourceProvider,
                         ShutdownService shutdownService) {
 
     try {
-      init(playConfig, provider, resourceProvider);
+      init(playConfig, provider, pathResolveParser, resourceProvider);
     } catch (ConfigException.Missing | ConfigException.WrongType | IOException  e) {
       log.error("Couldn't init general config provider: ", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
   }
 
-  /**
-   * Provides the general wrapper configuration.
-   * @return the general wrapper configuration.
-   */
-  public GeneralWrapperConfig getGeneralWrapperConfig() {
+  @Override
+  public GeneralWrapperConfig get() {
     return generalWrapperConfig;
   }
 
-  private void init(Config playConfig, RDFProvider provider, ResourceProvider resourceProvider)
+  private void init(Config playConfig,
+                    RDFProvider provider,
+                    PathResolveParser pathResolveParser,
+                    ResourceProvider resourceProvider)
       throws IOException,
       ConfigException.Missing,
       ConfigException.WrongType {
@@ -82,7 +85,8 @@ public class GeneralConfigProvider {
 
     log.info("Reading general wrapper configuration...");
 
-    generalWrapperConfig = new GeneralWrapperConfigReader(provider).readConfig(wrapperConfigFile);
+    generalWrapperConfig = new GeneralWrapperConfigReader(provider, pathResolveParser)
+        .readConfig(wrapperConfigFile);
 
     log.info("Reading general wrapper configuration done: ");
     log.debug(generalWrapperConfig.toString());

@@ -30,15 +30,19 @@ public class GeneralWrapperConfigReader {
   /**
    * The RDF provider.
    */
-  private RDFProvider provider;
+  private final RDFProvider provider;
+
+  private final PathResolveParser resolveParser;
 
 
   /**
    * Constructs a new {@link GeneralWrapperConfigReader}.
    * @param provider The RDF provider to use.
+   * @param resolveParser The path resolve parser to use.
    */
-  public GeneralWrapperConfigReader(RDFProvider provider) {
+  public GeneralWrapperConfigReader(RDFProvider provider, PathResolveParser resolveParser) {
     this.provider = provider;
+    this.resolveParser = resolveParser;
   }
 
   /**
@@ -78,6 +82,8 @@ public class GeneralWrapperConfigReader {
 
       config = (Config) unmarshaller.unmarshal(new File(filename));
 
+      replaceMacros(config);
+
       result.setDescription(config.getDescription());
       result.setConnectToRegister(config.isConnectToRegister());
       result.setIndexDirectory(new File(config.getIndexDirectoy()).toPath());
@@ -114,6 +120,12 @@ public class GeneralWrapperConfigReader {
     String prettyPrint = provider.getSupportedFormatsPrettyPrint();
     builder.append(prettyPrint);
     return new IOException(builder.toString());
+  }
+
+  private void replaceMacros(Config config) {
+    String indexDirectory = config.getIndexDirectoy();
+    indexDirectory = resolveParser.replaceMacros(indexDirectory);
+    config.setIndexDirectoy(indexDirectory);
   }
 
 }

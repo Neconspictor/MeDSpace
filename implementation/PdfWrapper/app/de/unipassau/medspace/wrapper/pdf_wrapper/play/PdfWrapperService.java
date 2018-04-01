@@ -1,6 +1,7 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.play;
 
 import com.typesafe.config.ConfigException;
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.play.ServerConfigProvider;
@@ -10,6 +11,7 @@ import de.unipassau.medspace.common.play.wrapper.RegisterClient;
 import de.unipassau.medspace.common.register.Datasource;
 
 import de.unipassau.medspace.common.wrapper.Wrapper;
+import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.api.inject.ApplicationLifecycle;
@@ -17,6 +19,7 @@ import play.api.inject.ApplicationLifecycle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,25 +43,25 @@ public class PdfWrapperService extends WrapperService {
    * Creates a new PdfWrapperService object.
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
-   * @param provider Used to read wrapper configuration.
-   * @param serverConfigProvider Used to read server configuration.
+   * @param generalWrapperConfig The general wrapper configuration.
+   * @param serverConfig the server configuration.
    * @param wrapper The wrapper to use.
    */
   @Inject
   public PdfWrapperService(ApplicationLifecycle lifecycle,
                            RegisterClient registerClient,
-                           ServerConfigProvider serverConfigProvider,
-                           PdfWrapperConfigProvider provider,
+                           ServerConfig serverConfig,
+                           GeneralWrapperConfig generalWrapperConfig,
                            ShutdownService shutdownService,
                            Wrapper wrapper) {
 
-    super(provider.getGeneralWrapperConfig(), wrapper);
+    super(generalWrapperConfig, wrapper);
 
     this.registerClient = registerClient;
     this.connectToRegister = generalConfig.getConnectToRegister();
 
       try {
-        startup(provider, serverConfigProvider);
+        startup(serverConfig);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
         log.error("Error on startup: ", e);
         log.info("Graceful shutdown is initiated...");
@@ -76,18 +79,17 @@ public class PdfWrapperService extends WrapperService {
         log.info("Shutdown is executing...");
         if (connectToRegister) deregister();
         wrapper.close();
+        log.info("...done.");
         return CompletableFuture.completedFuture(null);
       });
   }
 
   /**
    * Does startup the sql wrapper.
-   * @param provider A provider used to access the wrapper configuration
-   * @param serverConfigProvider Used to read server configuration.
+   * @param serverConfig The server configuration.
    * @throws IOException If an IO-Error occurs.
    */
-  private void startup(PdfWrapperConfigProvider provider,
-                       ServerConfigProvider serverConfigProvider) throws IOException {
+  private void startup(ServerConfig serverConfig) throws IOException {
 
     log.info("initializing Wrapper...");
 
@@ -95,8 +97,6 @@ public class PdfWrapperService extends WrapperService {
       throw new IOException("This wrapper needs an index, but no index directory is stated "
           + "in the general wrapper configuration.");
     }
-
-    ServerConfig serverConfig = serverConfigProvider.getServerConfig();
 
     Datasource.Builder builder = new Datasource.Builder();
     builder.setDescription(generalConfig.getDescription());

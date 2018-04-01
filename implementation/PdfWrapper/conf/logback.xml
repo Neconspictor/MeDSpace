@@ -24,12 +24,20 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="play" level="DEBUG" />
-  <logger name="application" level="DEBUG" />
 
-  <logger name="de.unipassau.medspace" level="DEBUG" />
-  <logger name="de.unipassau.medspace.wrapper.pdf_wrapper.play.AppRoot" level="DEBUG" />
+  <!-- Dependency injectors should always log! -->
+  <logger name="de.unipassau.medspace.common.play.MeDSpaceDependencyInjector" level="DEBUG" />
+  <logger name="de.unipassau.medspace.wrapper.pdf_wrapper.play.PdfWrapperDependencyInjector" level="DEBUG" />
+
+
+  <!-- Wrapper services should always log! -->
   <logger name="de.unipassau.medspace.wrapper.pdf_wrapper.play.PdfWrapperService" level="DEBUG" />
+
+  <!-- ServerConfigProvider should always log! -->
+  <logger name="de.unipassau.medspace.common.play.ServerConfigProvider" level="DEBUG" />
+
+  <!-- ShutdownService should always log! -->
+  <logger name="de.unipassau.medspace.common.play.ShutdownService" level="DEBUG" />
 
   <!-- Suppress warning bug from https://hibernate.atlassian.net/browse/HV-1323 -->
   <logger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="error"/>
@@ -43,7 +51,7 @@
   <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
 
-  <root level="DEBUG">
+  <root level="WARN">
     <appender-ref ref="ASYNCFILE" />
     <appender-ref ref="ASYNCSTDOUT" />
   </root>
