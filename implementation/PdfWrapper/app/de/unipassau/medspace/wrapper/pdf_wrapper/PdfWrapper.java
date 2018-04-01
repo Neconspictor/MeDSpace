@@ -60,6 +60,8 @@ public class PdfWrapper<DocType> extends AbstractWrapper<DocType, PdfFile> {
       FileUtil.closeSilently(docStream, true);
     }
 
+    log.info("(Re)indexed pdf files.");
+
     long now = System.currentTimeMillis();
     log.debug("Needed time: " + (now - before)/1000.0f + " seconds");
   }
