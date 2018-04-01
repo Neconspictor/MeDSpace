@@ -46,6 +46,7 @@
     <xsd:complexType name="Register">
         <xsd:sequence>
             <xsd:element name="BaseURL" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="DatasourceSaveFolder" type="xsd:string" minOccurs="1" maxOccurs="1"/>
             <xsd:element name="IO-Error-Limit" type="xsd:int" minOccurs="1" maxOccurs="1"/>
         </xsd:sequence>
     </xsd:complexType>

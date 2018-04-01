@@ -9,6 +9,7 @@
 	</global:QueryExecutor>
 	<global:Register>
 		<global:BaseURL>[server-address]/register</global:BaseURL>
+        <global:DatasourceSaveFolder>[project-folder]</global:DatasourceSaveFolder>
 		<global:IO-Error-Limit>5</global:IO-Error-Limit>
 	</global:Register>
 </global:Config>

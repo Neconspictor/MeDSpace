@@ -74,9 +74,8 @@ public class WrapperProvider implements Provider<Wrapper> {
 
     try {
       init(configProvider, generalWrapperConfig, serverConfig);
-    } catch (IOException e) {
+    } catch (Exception e) {
       log.error("Error while initializing the Wrapper Provider: ", e);
-
       log.info("Shutting down application...");
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }

@@ -1,0 +1,1 @@
+xjc -b medspace-ddsm-config-binding.xml -p de.unipassau.medspace.wrapper.image_wrapper.config -d ../app -extension  ../conf/medspace/medspace-ddsm-config-specification.xsd

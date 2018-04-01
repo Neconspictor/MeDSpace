@@ -30,9 +30,11 @@ import java.util.concurrent.CompletableFuture;
 public class RegisterLifecycle {
 
   private static final Logger log = LoggerFactory.getLogger(RegisterLifecycle.class);
-  private static final String DATASOURCES_STORE_LOCAL_PATH = "./datasources.json";
+  private static final String DATASOURCES_SAVE_FILE_NAME = "datasources.json";
 
   private Register register;
+
+  private String datasourceSaveFolder;
 
   /**
    * Creates a new RegisterLifecycle object.
@@ -46,6 +48,7 @@ public class RegisterLifecycle {
                            ShutdownService shutdownService) throws IOException {
 
     try {
+      datasourceSaveFolder = globalConfig.getRegister().getDatasourceSaveFolder();
       init(globalConfig);
     } catch (Exception e) {
       log.error("Error while initializing register", e);
@@ -57,7 +60,7 @@ public class RegisterLifecycle {
       log.info("shutdown is executing...");
       try {
         register.close();
-        saveToDisk(register);
+        saveToDisk(register, datasourceSaveFolder);
       } catch (IOException e) {
         log.error("Couldn't store registered datasources to disk", e);
       }
@@ -86,10 +89,14 @@ public class RegisterLifecycle {
   }
 
   private Map<Datasource, DatasourceState> loadFromDisk() throws IOException {
-    File datasourceFile = new File(DATASOURCES_STORE_LOCAL_PATH);
+
+    File datasourceFile = new File(datasourceSaveFolder + File.separator + DATASOURCES_SAVE_FILE_NAME);
     Map<Datasource, DatasourceState> datasources = new HashMap<>();
 
     if (datasourceFile.exists()) {
+
+      log.info("Read saved datasources from disk; save file: " + datasourceFile);
+
       ObjectMapper mapper = new ObjectMapper();
 
       JsonNode root = null;
@@ -106,11 +113,12 @@ public class RegisterLifecycle {
     return datasources;
   }
 
-  private void saveToDisk(Register register) throws IOException {
+  private void saveToDisk(Register register, String datasourceSaveFolder) throws IOException {
     log.info("Save registered datasources to disk...");
     Map<Datasource, DatasourceState> datasources = register.getDatasources();
 
-    try (FileOutputStream out = new FileOutputStream(DATASOURCES_STORE_LOCAL_PATH)) {
+    try (FileOutputStream out = new FileOutputStream(datasourceSaveFolder
+        + File.separator + DATASOURCES_SAVE_FILE_NAME)) {
       JsonNode node = Json.toJson(datasources);
       Json.mapper().writer().writeValue(out, node);
     }

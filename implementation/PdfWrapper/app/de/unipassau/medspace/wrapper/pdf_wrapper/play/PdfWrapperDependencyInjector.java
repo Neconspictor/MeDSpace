@@ -11,10 +11,9 @@ import play.api.Environment;
 import javax.inject.Inject;
 
 /**
- * The AppRoot is a configuration class that configures the play framework for the PDF wrapper.
- * It's main purpose is the definition of Dependency Injection definitions.
+ * A dependency injector for the PDF wrapper.
  */
-public class PdfWrapperDependencyInjector extends MeDSpaceDependencyInjector {
+public class PdfWrapperDependencyInjector extends WrapperDependencyInjector {
 
   /**
    * Logger instance of this class.

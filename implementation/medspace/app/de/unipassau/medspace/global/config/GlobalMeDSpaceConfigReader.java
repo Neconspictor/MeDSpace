@@ -4,6 +4,9 @@ import de.unipassau.medspace.common.config.PathResolveParser;
 import de.unipassau.medspace.common.play.ProjectResourceManager;
 import de.unipassau.medspace.common.util.XmlUtil;
 import de.unipassau.medspace.global.config.mapping.ConfigMapping;
+import de.unipassau.medspace.register.RegisterLifecycle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
@@ -18,6 +21,12 @@ import java.io.IOException;
  * A reader for the global MeDSpace configuration.
  */
 public class GlobalMeDSpaceConfigReader {
+
+
+  /**
+   * Logger instance for this class.
+   */
+  private static final Logger log = LoggerFactory.getLogger(RegisterLifecycle.class);
 
   private static final String THIS_BASE_URL_TOKEN = "[server-address]";
 
@@ -93,5 +102,14 @@ public class GlobalMeDSpaceConfigReader {
     String nativeStoreDirectory = config.getDataCollector().getNativeStoreDirectory();
     nativeStoreDirectory = pathResolveParser.replaceMacros(nativeStoreDirectory);
     config.getDataCollector().setNativeStoreDirectory(nativeStoreDirectory);
+
+    log.info("Data Collector repository native store folder: " + nativeStoreDirectory);
+
+    String saveFolder = config.getRegister().getDatasourceSaveFolder();
+    saveFolder = pathResolveParser.replaceMacros(saveFolder);
+    config.getRegister().setDatasourceSaveFolder(saveFolder);
+
+    log.info("Register Datasource save folder: " + saveFolder);
+
   }
 }

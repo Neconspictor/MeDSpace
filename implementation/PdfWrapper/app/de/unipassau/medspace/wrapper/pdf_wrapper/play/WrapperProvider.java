@@ -46,13 +46,25 @@ public class WrapperProvider implements Provider<Wrapper> {
    * @param generalWrapperConfig the general wrapper configuration
    * @param serverConfig the server configuration
    * @param shutdownService The shutdown service.
-   * @throws IOException IF an IO error occurs.
    */
   @Inject
   public WrapperProvider(RootMapping pdfConfig,
                          GeneralWrapperConfig generalWrapperConfig,
                          ServerConfig serverConfig,
-                         ShutdownService shutdownService) throws IOException {
+                         ShutdownService shutdownService)  {
+
+    try {
+      init(pdfConfig, generalWrapperConfig, serverConfig);
+    }catch (Exception e) {
+      log.error("Error while initializing the wrapper");
+      log.info("Shutdown application...");
+      shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
+    }
+  }
+
+  private void init(RootMapping pdfConfig,
+                    GeneralWrapperConfig generalWrapperConfig,
+                    ServerConfig serverConfig) throws IOException {
 
     String host = serverConfig.getServerURL().toString();
     if (!host.endsWith("/")) {
@@ -97,6 +109,7 @@ public class WrapperProvider implements Provider<Wrapper> {
       wrapper.reindexData();
       log.info("Indexing done.");
     }
+
   }
 
   @Override

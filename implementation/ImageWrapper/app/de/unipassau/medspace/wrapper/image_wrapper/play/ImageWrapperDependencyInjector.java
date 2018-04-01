@@ -1,6 +1,6 @@
 package de.unipassau.medspace.wrapper.image_wrapper.play;
 
-import de.unipassau.medspace.common.play.MeDSpaceDependencyInjector;
+import de.unipassau.medspace.common.play.WrapperDependencyInjector;
 import de.unipassau.medspace.common.wrapper.Wrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import java.util.Locale;
  * The AppRoot is a configuration class that configures the play framework for the sql wrapper.
  * It's main purpose is the definition of Dependency Injection definitions.
  */
-public class ImageWrapperDependencyInjector extends MeDSpaceDependencyInjector {
+public class ImageWrapperDependencyInjector extends WrapperDependencyInjector {
 
   /**
    * Logger instance of this class.

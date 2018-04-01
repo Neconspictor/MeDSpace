@@ -17,7 +17,7 @@
     <pdf:PdfRootDirectory>[project-folder]/_work/pdfFiles/</pdf:PdfRootDirectory>
 
     <pdf:PdfFile rdfType="http://www.medspace.com/pdf/pdf_file" classId="pdfFile">
-		<rdf-mapping:metaData>test</rdf-mapping:metaData>
+		<rdf-mapping:metaData></rdf-mapping:metaData>
         <pdf:source propertyType="pdf_file:source" dataType="xsd:string"/>
     </pdf:PdfFile>
 </pdf:Root>

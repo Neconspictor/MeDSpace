@@ -65,15 +65,8 @@ public class ImageWrapperService extends WrapperService {
 
       try {
         startup(provider, serverConfig);
-      }catch(ConfigException.Missing | ConfigException.WrongType e) {
-        log.error("Error while initializing the Image wrapper service", e);
-        log.info("Graceful shutdown is initiated...");
-        shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
-      } catch(Throwable e) {
-
-        // Catching Throwable is regarded to be a bad habit, but as we catch the Throwable only
-        // for allowing the application to shutdown gracefully, it is ok to do so.
-        log.error("Failed to initialize SQL Wrapper", e);
+      }catch(Throwable t) {
+        log.error("Error while initializing the Image wrapper service", t);
         log.info("Graceful shutdown is initiated...");
         shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
       }

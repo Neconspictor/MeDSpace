@@ -53,8 +53,9 @@ public class DdsmConfigProvider {
                             ShutdownService shutdownService) {
     try {
       init(playConfig, resourceManager);
-    } catch (ConfigException.Missing | ConfigException.WrongType | IOException | JAXBException | SAXException e) {
+    } catch (Exception e) {
       log.error("Couldn't init ddsm config provider: ", e);
+      log.error("Shutting down application...");
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
 

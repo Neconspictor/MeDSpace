@@ -57,20 +57,10 @@ public class PdfWrapperService extends WrapperService {
 
     super(generalWrapperConfig, wrapper);
 
-    this.registerClient = registerClient;
-    this.connectToRegister = generalConfig.getConnectToRegister();
-
       try {
-        startup(serverConfig);
-      }catch(ConfigException.Missing | ConfigException.WrongType e) {
+        startup(serverConfig, registerClient, generalWrapperConfig);
+      }catch(Throwable e) {
         log.error("Error on startup: ", e);
-        log.info("Graceful shutdown is initiated...");
-        shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
-      } catch(Throwable e) {
-
-        // Catching Throwable is regarded to be a bad habit, but as we catch the Throwable only
-        // for allowing the application to shutdown gracefully, it is ok to do so.
-        log.error("Failed to initialize Wrapper", e);
         log.info("Graceful shutdown is initiated...");
         shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
       }
@@ -84,14 +74,14 @@ public class PdfWrapperService extends WrapperService {
       });
   }
 
-  /**
-   * Does startup the sql wrapper.
-   * @param serverConfig The server configuration.
-   * @throws IOException If an IO-Error occurs.
-   */
-  private void startup(ServerConfig serverConfig) throws IOException {
+  private void startup(ServerConfig serverConfig,
+                       RegisterClient registerClient,
+                       GeneralWrapperConfig generalWrapperConfig) throws IOException {
 
     log.info("initializing Wrapper...");
+
+    this.registerClient = registerClient;
+    this.connectToRegister = generalConfig.getConnectToRegister();
 
     if (!generalConfig.isIndexUsed()) {
       throw new IOException("This wrapper needs an index, but no index directory is stated "
@@ -113,7 +103,7 @@ public class PdfWrapperService extends WrapperService {
 
     //check connection to the register
     if (connectToRegister) {
-      boolean registered = registerClient.register(wrapperDatasource, generalConfig.getRegisterURL());
+      boolean registered = this.registerClient.register(wrapperDatasource, generalConfig.getRegisterURL());
       if (registered) {
         log.info("Successfuly registered to the Register.");
       } else {
