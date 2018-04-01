@@ -56,7 +56,7 @@ public class WrapperProvider implements Provider<D2rWrapper<?>> {
       init(d2rConfig,
           generalWrapperConfig,
           connectionPool);
-    } catch (D2RException | IOException e) {
+    } catch (Exception e) {
       log.error("Couldn't create D2rWrapper: ", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }

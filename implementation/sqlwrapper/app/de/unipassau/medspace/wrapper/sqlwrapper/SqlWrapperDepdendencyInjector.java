@@ -2,7 +2,7 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.google.inject.TypeLiteral;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
-import de.unipassau.medspace.common.play.MeDSpaceDependencyInjector;
+import de.unipassau.medspace.common.play.WrapperDependencyInjector;
 import de.unipassau.medspace.d2r.D2rWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import java.util.Locale;
 /**
  * The SqlWrapperDepdendencyInjector injects dependencies for the SQL wrapper module.
  */
-public class SqlWrapperDepdendencyInjector extends MeDSpaceDependencyInjector {
+public class SqlWrapperDepdendencyInjector extends WrapperDependencyInjector {
 
   /**
    * Logger instance of this class.

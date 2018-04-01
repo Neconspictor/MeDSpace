@@ -1,21 +1,14 @@
-import com.google.inject.AbstractModule;
 
-import de.unipassau.medspace.common.config.ServerConfig;
-import de.unipassau.medspace.common.play.ResourceProvider;
-import de.unipassau.medspace.common.play.ServerConfigProvider;
-import de.unipassau.medspace.common.play.ShutdownService;
+import de.unipassau.medspace.common.play.DependencyInjector;
 import de.unipassau.medspace.data_collector.DataCollectorLifecycle;
-import de.unipassau.medspace.common.rdf.RDFProvider;
-import de.unipassau.medspace.common.rdf.rdf4j.RDF4J_RDFProvider;
 import de.unipassau.medspace.data_collector.DataCollector;
 import de.unipassau.medspace.data_collector.rdf4j.LocalRepositoryManager;
 import de.unipassau.medspace.data_collector.rdf4j.RDF4J_DataCollector;
 import de.unipassau.medspace.global.config.GlobalConfigProvider;
+import de.unipassau.medspace.global.config.mapping.ConfigMapping;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
-import de.unipassau.medspace.register.RegisterLifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.Application;
 import play.api.Configuration;
 import play.api.Environment;
 
@@ -23,7 +16,7 @@ import play.api.Environment;
  * The GlobalModule is a configuration class that configures the play framework for the global MeDSpace server.
  * It's main purpose is the definition of Dependency Injection definitions.
  */
-public class GlobalModule extends AbstractModule {
+public class GlobalModule extends DependencyInjector {
 
   private static Logger log = LoggerFactory.getLogger(GlobalModule.class);
 
@@ -38,27 +31,24 @@ public class GlobalModule extends AbstractModule {
    * @param config Not used, but the play framework needs a constructor with this parameter.
    */
   public GlobalModule(Environment environment, Configuration config) {
-    super();
+    super(environment, config);
     this.environment = environment;
 
   }
 
   @Override
   protected void configure() {
+    // very important!
+    super.configure();
+
     if (environment.asJava().isTest()) return;
 
-    log.info("GlobuleModule configures dependencies...");
-    bind(ShutdownService.class).asEagerSingleton();
-    bind(ResourceProvider.class).asEagerSingleton();
-    bind(Test.class).asEagerSingleton();
-    bind(ServerConfigProvider.class).asEagerSingleton();
-    bind(GlobalConfigProvider.class).asEagerSingleton();
-    bind(RDFProvider.class).to(RDF4J_RDFProvider.class).asEagerSingleton();
-    bind(RegisterLifecycle.class).asEagerSingleton();
+    log.info("configure dependencies...");
+    bind(ConfigMapping.class).toProvider(GlobalConfigProvider.class).asEagerSingleton();
     bind(ServiceInvoker.class).asEagerSingleton();
     bind(DataCollectorLifecycle.class).asEagerSingleton();
     bind(LocalRepositoryManager.class).toProvider(DataCollectorLifecycle.class).asEagerSingleton();
     bind(DataCollector.class).to(RDF4J_DataCollector.class).asEagerSingleton();
-    log.info("done.");
+    log.info("configured dependencies.");
   }
 }

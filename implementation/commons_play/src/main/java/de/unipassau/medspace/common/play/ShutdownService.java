@@ -2,15 +2,11 @@ package de.unipassau.medspace.common.play;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import play.Application;
-import play.api.Play;
-import play.api.inject.ApplicationLifecycle;
-import scala.Option;
+import play.inject.ApplicationLifecycle;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /**
  * A service for gracefully shutting down a Play application.
@@ -36,17 +32,13 @@ public class ShutdownService {
 
   private final ApplicationLifecycle lifecycle;
 
-  private final Provider<Application> application;
-
   /**
    * Creates a new ShutdownService object.
    * @param lifecycle The play application lifecycle.
-   * @param application The play application.
    */
   @Inject
-  public ShutdownService(ApplicationLifecycle lifecycle, Provider<Application> application) {
+  public ShutdownService(ApplicationLifecycle lifecycle) {
     this.lifecycle = lifecycle;
-    this.application = application;
   }
 
 
@@ -57,7 +49,7 @@ public class ShutdownService {
   public void gracefulShutdown(int errorCode) {
     log.info("Graceful shutdown is initiated...");
     try {
-      Future<?> future = lifecycle.stop();
+      Future<?> future = lifecycle.asScala().stop();
       Await.result(future, (scala.concurrent.duration.Duration) scala.concurrent.duration.Duration.Inf());
     } catch (Throwable t) {
       log.error("Error while calling shutdown hooks", t);
@@ -68,7 +60,7 @@ public class ShutdownService {
 
     //play.Application is initialized not until the Application is running
     //This is not the case while the initialization process is performed
-    Option<play.api.Application> maybe = Play.maybeApplication();
+    //Option<play.api.Application> maybe = Play.maybeApplication();
     //if (!maybe.isEmpty()) Play.stop(maybe.get());
 
     // Stopping the application lifecycle is enough to trigger a graceful shutdown

@@ -24,23 +24,46 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="play" level="ERROR" />
-  <logger name="application" level="ERROR" />
-  <logger name="de.unipassau.medspace.register" level="ERROR" />
-  <logger name="de.unipassau.medspace.query_executor" level="ERROR" />
-  <logger name="de.unipassau.medspace.query_executor.QueryCache" level="DEBUG" />
-  <logger name="de.unipassau.medspace.data_collector" level="ERROR" />
 
+
+  <!-- root logging -->
+
+  <root level="INFO">
+    <appender-ref ref="ASYNCFILE" />
+    <appender-ref ref="ASYNCSTDOUT" />
+  </root>
+
+
+
+  <!-- Global MeDSpace loggers -->
+
+  <!-- MeDSpaceDependencyInjector should log infos! -->
+  <logger name="de.unipassau.medspace.common.play.MeDSpaceDependencyInjector" level="INFO" />
+
+  <!-- ServerConfigProvider should log infos! -->
+  <logger name="de.unipassau.medspace.common.play.ServerConfigProvider" level="INFO" />
+
+  <!-- ShutdownService should always log infos! -->
+  <logger name="de.unipassau.medspace.common.play.ShutdownService" level="DEBUG" />
+
+
+
+
+  <!-- Other loggers -->
+
+  <!-- AkkaHttpServer should log at which address and port the server runs!-->
+  <logger name="play.core.server.AkkaHttpServer" level="INFO" />
+
+
+  <!-- Suppress warning bug from https://hibernate.atlassian.net/browse/HV-1323 -->
+  <logger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="error"/>
+
+  <!-- Disable HikariCP logger as we catch exceptions and log them ourselves -->
+  <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />
   <logger name="com.avaje.ebeaninternal.server.core.XmlConfigLoader" level="OFF" />
   <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
-
-  <root level="ERROR">
-    <appender-ref ref="ASYNCFILE" />
-    <appender-ref ref="ASYNCSTDOUT" />
-  </root>
-
 </configuration>

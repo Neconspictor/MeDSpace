@@ -16,14 +16,14 @@ import javax.inject.Inject;
 import java.util.Locale;
 
 /**
- * A default dependency injector class for MeDSpace modules
+ * A dependency injector class for wrappers
  */
-public class MeDSpaceDependencyInjector extends AbstractModule {
+public class WrapperDependencyInjector extends DependencyInjector {
 
   /**
    * Logger instance of this class.
    */
-  private static Logger log = LoggerFactory.getLogger(MeDSpaceDependencyInjector.class);
+  private static Logger log = LoggerFactory.getLogger(WrapperDependencyInjector.class);
 
   /**
    * The environment of the play application.
@@ -31,7 +31,7 @@ public class MeDSpaceDependencyInjector extends AbstractModule {
   protected final Environment environment;
 
   /**
-   * Creates a new MeDSpaceDependencyInjector object.
+   * Creates a new WrapperDependencyInjector object.
    * NOTE: environment and configuration are both necessary for Play EVEN if you don't use them!
    * If one of the arguments is mising, Play is not able to instantiate them!
    *
@@ -39,8 +39,8 @@ public class MeDSpaceDependencyInjector extends AbstractModule {
    * @param configuration The Play configuration. Will be injected by Play.
    */
   @Inject
-  public MeDSpaceDependencyInjector(Environment environment, Configuration configuration) {
-    super();
+  public WrapperDependencyInjector(Environment environment, Configuration configuration) {
+    super(environment, configuration);
     Locale.setDefault(Locale.US);
     this.environment = environment;
   }
@@ -49,27 +49,14 @@ public class MeDSpaceDependencyInjector extends AbstractModule {
   @Override
   protected void configure() {
 
+    //very important
+    super.configure();
+
     if (environment.asJava().isTest()) return;
-
-    log.info("configure dependencies...");
-    bind(ShutdownService.class).asEagerSingleton();
-
-    bind(ResourceProvider.class).asEagerSingleton();
-
-    bind(PathResolveParser.class)
-        .toProvider(PathResolveParserProvider.class).asEagerSingleton();
-
-    bind(ServerConfig.class)
-        .toProvider(ServerConfigProvider.class).asEagerSingleton();
-
-    bind(RDFProvider.class)
-        .to(RDF4J_RDFProvider.class)
-        .asEagerSingleton();
 
     bind(GeneralWrapperConfig.class)
         .toProvider(GeneralConfigProvider.class).asEagerSingleton();
 
-    bind(RegisterClient.class).asEagerSingleton();
 
     log.info("configured dependencies.");
   }

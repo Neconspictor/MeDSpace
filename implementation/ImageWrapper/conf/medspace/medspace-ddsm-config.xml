@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <ddsm:Root xmlns:ddsm="http://www.medspace.com/images/ddsm/config">
-    <ddsm:ImageDirectory>./_work/medspace/caseFiles</ddsm:ImageDirectory>
+    <ddsm:ImageDirectory>[project-folder]/_work/medspace/caseFiles</ddsm:ImageDirectory>
 </ddsm:Root>

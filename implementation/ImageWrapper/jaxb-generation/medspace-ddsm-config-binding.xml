@@ -5,7 +5,7 @@
 	
 
 
-    <jxb:bindings schemaLocation="medspace-ddsm-config-specification.xsd">
+    <jxb:bindings schemaLocation="../conf/medspace/medspace-ddsm-config-specification.xsd">
             <jxb:bindings node="//xsd:element[@name='Root']">
                 <jxb:class name="DDSMConfig"/>
             </jxb:bindings>

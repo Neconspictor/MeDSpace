@@ -1,5 +1,6 @@
 package controllers;
 
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.play.WrapperController;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.zip.ZipProject;
@@ -43,15 +44,17 @@ public class ImageWrapperController extends WrapperController {
 
   /**
    * Creates a new ImageWrapperController object.
+   * @param generalWrapperConfig The general wrapper configuration.
    * @param wrapperService The service of the image wrapper.
    * @param rdfProvider The RDF provider.
    * @param configProvider The configuration provider.
    */
   @Inject
-  ImageWrapperController(ImageWrapperService wrapperService,
+  ImageWrapperController(GeneralWrapperConfig generalWrapperConfig,
+                         ImageWrapperService wrapperService,
                          RDFProvider rdfProvider,
                          DdsmConfigProvider configProvider) {
-    super(configProvider.getGeneralWrapperConfig(), rdfProvider, wrapperService);
+    super(generalWrapperConfig, rdfProvider, wrapperService);
     this.imageWrapperService = wrapperService;
     String imageDirectory = configProvider.getDdsmConfig().getImageDirectory();
     root = new File(imageDirectory);

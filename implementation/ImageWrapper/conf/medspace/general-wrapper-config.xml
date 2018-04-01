@@ -16,7 +16,7 @@
 		Specifies where the wrapper should store indexed data
 		<wrapper:Index directory="./_work/medspace/index"/>
 	<-->
-	<wrapper:IndexDirectoy>./_work/medspace/index</wrapper:IndexDirectoy>
+	<wrapper:IndexDirectoy>[project-folder]/_work/medspace/index</wrapper:IndexDirectoy>
 
 	<wrapper:Namespaces>
 		<wrapper:Namespace prefix="test" namespace="http://localhost/patient_test_namespace#"/>
@@ -52,6 +52,6 @@
 
 	<wrapper:RegisterUrl>http://localhost:9500/register</wrapper:RegisterUrl>
 
-	<wrapper:ConnectToRegister>true</wrapper:ConnectToRegister>
+	<wrapper:ConnectToRegister>false</wrapper:ConnectToRegister>
 
 </wrapper:Config>

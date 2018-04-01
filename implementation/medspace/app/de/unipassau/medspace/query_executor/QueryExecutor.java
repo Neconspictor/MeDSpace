@@ -29,12 +29,17 @@ public class QueryExecutor implements Closeable {
    * @param serviceInvoker The service invoker to use.
    * @param registerBase The base URL to the register.
    * @param dataCollectorBase The base URL to the data collector.
+   * @param queryCacheSize The cache size for cached search queries
    */
-  public QueryExecutor(ServiceInvoker serviceInvoker, URL registerBase, URL dataCollectorBase) {
+  public QueryExecutor(ServiceInvoker serviceInvoker,
+                       URL registerBase,
+                       URL dataCollectorBase,
+                       int queryCacheSize) {
     this.serviceInvoker = serviceInvoker;
     this.registerBase = registerBase;
     this.dataCollectorBase = dataCollectorBase;
-    queryCache = new QueryCache(10, event->{
+
+    queryCache = new QueryCache(queryCacheSize, event->{
       if (event.getOldValue() == null) return;
       deleteQueryResult(event.getOldValue());
     });

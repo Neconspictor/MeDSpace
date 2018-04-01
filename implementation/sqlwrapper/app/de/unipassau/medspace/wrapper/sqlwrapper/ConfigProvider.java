@@ -2,9 +2,7 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
-import de.unipassau.medspace.common.config.ServerConfig;
-import de.unipassau.medspace.common.play.GeneralConfigProvider;
-import de.unipassau.medspace.common.play.ResourceProvider;
+import de.unipassau.medspace.common.play.ProjectResourceManager;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.d2r.config.Configuration;
@@ -36,18 +34,18 @@ public class ConfigProvider implements Provider<Configuration> {
    * Creates a new ConfigProvider object.
    * @param playConfig The play configuration.
    * @param provider The RDF provider to use.
-   * @param resourceProvider the resource provider
+   * @param resourceManager the resource manager.
    * @param shutdownService The shutdown service to use.
    */
   @Inject
   public ConfigProvider(com.typesafe.config.Config playConfig,
                         RDFProvider provider,
-                        ResourceProvider resourceProvider,
+                        ProjectResourceManager resourceManager,
                         ShutdownService shutdownService) {
 
     try {
-      init(playConfig, provider, resourceProvider);
-    } catch (ConfigException.Missing | ConfigException.WrongType | IOException e) {
+      init(playConfig, provider, resourceManager);
+    } catch (Exception  e) {
       log.error("Couldn't init config provider: ", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
@@ -62,13 +60,13 @@ public class ConfigProvider implements Provider<Configuration> {
 
 
   private void init(Config playConfig, RDFProvider provider,
-                    ResourceProvider resourceProvider)
+                    ProjectResourceManager resourceManager)
       throws IOException,
       ConfigException.Missing,
       ConfigException.WrongType {
 
-    String d2rConfigFile = playConfig.getString(D2R_CONFIG_FILE_ID);
-    d2rConfigFile = resourceProvider.getResourceAsFile(d2rConfigFile).getAbsolutePath();
+    String d2rConfigFile = resourceManager
+        .getResolvedPath(playConfig.getString(D2R_CONFIG_FILE_ID));
 
     log.debug(D2R_CONFIG_FILE_ID + " = " + d2rConfigFile);
     log.info("Reading MeDSpace D2RMap configuration...");

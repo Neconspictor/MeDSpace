@@ -43,6 +43,8 @@ public class QueryCache implements Closeable {
    */
   public QueryCache(int cacheSize, CacheEventListener<String, BigInteger> removeListener) {
 
+    logger.debug("Query cache size: " + cacheSize);
+
     CacheEventListenerConfigurationBuilder cacheEventListenerConfiguration = CacheEventListenerConfigurationBuilder
         .newEventListenerConfiguration(new RemoveListener(),
             EventType.EXPIRED,

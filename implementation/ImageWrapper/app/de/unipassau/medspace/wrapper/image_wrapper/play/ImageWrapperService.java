@@ -1,6 +1,7 @@
 package de.unipassau.medspace.wrapper.image_wrapper.play;
 
 import com.typesafe.config.ConfigException;
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
 import de.unipassau.medspace.common.play.ServerConfigProvider;
@@ -42,28 +43,30 @@ public class ImageWrapperService extends WrapperService {
   /**
    * Creates a new SQLWrapperService.
    * @param lifecycle Used to add shutdown hooks to the play framework.
+   * @param generalWrapperConfig The general wrapper configuration.
    * @param registerClient Used for communication with the register.
    * @param provider Used to read configurations.
-   * @param serverConfigProvider The server configuration provider
+   * @param serverConfig The server configuration
    * @param shutdownService the shutdown service
    * @param wrapper The wrapper.
    */
   @Inject
   public ImageWrapperService(ApplicationLifecycle lifecycle,
+                             GeneralWrapperConfig generalWrapperConfig,
                              RegisterClient registerClient,
                              DdsmConfigProvider provider,
-                             ServerConfigProvider serverConfigProvider,
+                             ServerConfig serverConfig,
                              ShutdownService shutdownService,
                              Wrapper wrapper) {
 
-    super(provider.getGeneralWrapperConfig(), wrapper);
+    super(generalWrapperConfig, wrapper);
     this.registerClient = registerClient;
     this.connectToRegister = generalConfig.getConnectToRegister();
 
       try {
-        startup(provider, serverConfigProvider.getServerConfig());
+        startup(provider, serverConfig);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
-        log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
+        log.error("Error while initializing the Image wrapper service", e);
         log.info("Graceful shutdown is initiated...");
         shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
       } catch(Throwable e) {
@@ -91,7 +94,7 @@ public class ImageWrapperService extends WrapperService {
    */
   private void startup(DdsmConfigProvider provider, ServerConfig serverConfig) throws IOException {
 
-    log.info("initializing SQL Wrapper...");
+    log.info("initializing...");
 
     if (!generalConfig.isIndexUsed()) {
       throw new IOException("This wrapper needs an index, but no index directory is stated "
@@ -121,7 +124,7 @@ public class ImageWrapperService extends WrapperService {
       }
     }
 
-    log.info("Initialized SQL Wrapper");
+    log.info("Initialized Wrapper");
   }
 
 

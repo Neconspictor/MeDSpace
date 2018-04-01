@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<global:Config xmlns:global="http://www.medspace.com/global/global-server-config-specification"
->
+<global:Config xmlns:global="http://www.medspace.com/global/global-server-config-specification">
 	<global:DataCollector>
-		<global:NativeStoreDirectory>./_work/data_collector/</global:NativeStoreDirectory>
+		<global:BaseURL>[server-address]/data-collector</global:BaseURL>
+		<global:NativeStoreDirectory>[project-folder]/_work/data_collector/</global:NativeStoreDirectory>
 	</global:DataCollector>
 	<global:QueryExecutor>
-		<global:DataCollectorBaseURL>[this]/data-collector</global:DataCollectorBaseURL>
-		<global:RegisterBaseURL>[this]/register</global:RegisterBaseURL>
+		<global:QueryCacheSize>100</global:QueryCacheSize>
 	</global:QueryExecutor>
 	<global:Register>
+		<global:BaseURL>[server-address]/register</global:BaseURL>
 		<global:IO-Error-Limit>5</global:IO-Error-Limit>
 	</global:Register>
 </global:Config>

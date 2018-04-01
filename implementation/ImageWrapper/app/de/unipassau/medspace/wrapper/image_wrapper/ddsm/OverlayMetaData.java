@@ -50,8 +50,8 @@ public class OverlayMetaData extends DDSM_CaseIdentifiable {
    * @param file The overlay source file
    * @param id The ID for the overlay file.
    * @param caseName The name of the case the overlay file belongs to.
-   * @return
-   * @throws IOException
+   * @return  othe parsed verlay meta data from an overlay file.
+   * @throws IOException If an IO error occurs.
    */
   public static OverlayMetaData parse(File file, String id, String caseName) throws IOException {
     OverlayMetaData result =  new Parser(id).parse(file, caseName);

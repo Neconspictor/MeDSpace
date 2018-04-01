@@ -5,10 +5,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.register.Datasource;
 
 import de.unipassau.medspace.common.register.DatasourceState;
-import de.unipassau.medspace.global.config.GlobalConfigProvider;
+import de.unipassau.medspace.global.config.mapping.ConfigMapping;
 import de.unipassau.medspace.global.config.mapping.RegisterMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,33 +32,26 @@ public class RegisterLifecycle {
   private static final Logger log = LoggerFactory.getLogger(RegisterLifecycle.class);
   private static final String DATASOURCES_STORE_LOCAL_PATH = "./datasources.json";
 
-  private final Register register;
+  private Register register;
 
   /**
    * Creates a new RegisterLifecycle object.
    * @param lifecycle The application lifecycle.
+   * @param globalConfig The global MeDSpace configuration.
    * @throws IOException If an IO error occurs.
    */
   @Inject
   public RegisterLifecycle(ApplicationLifecycle lifecycle,
-                           GlobalConfigProvider provider) throws IOException {
+                           ConfigMapping globalConfig,
+                           ShutdownService shutdownService) throws IOException {
 
-    log.info("Load saved datasources to register...");
-    SimpleModule simpleModule = new SimpleModule();
-    simpleModule.addKeyDeserializer(Datasource.class, new DatasourceKeyDeserializer());
-    simpleModule.addKeySerializer(Datasource.class, new DatasourceKeySerializer());
-    Json.mapper().registerModule(simpleModule);
-
-    RegisterMapping registerMapping = provider.getGlobalConfig().getRegister();
-
-
-    Map<Datasource, DatasourceState> datasources = null;
     try {
-      datasources = loadFromDisk();
-    } catch (IOException e) {
-     log.error("Couldn't load stored datasources from disk", e);
+      init(globalConfig);
+    } catch (Exception e) {
+      log.error("Error while initializing register", e);
+      log.info("Shutting down application...");
+      shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
-    register = new Register(datasources, registerMapping.getIOErrorLimit());
 
     lifecycle.addStopHook(() -> {
       log.info("shutdown is executing...");
@@ -70,6 +64,25 @@ public class RegisterLifecycle {
       log.info("shutdown cleanup done.");
       return CompletableFuture.completedFuture(null);
     });
+  }
+
+  private void init(ConfigMapping globalConfig) throws IllegalArgumentException {
+    log.info("Load saved datasources to register...");
+    SimpleModule simpleModule = new SimpleModule();
+    simpleModule.addKeyDeserializer(Datasource.class, new DatasourceKeyDeserializer());
+    simpleModule.addKeySerializer(Datasource.class, new DatasourceKeySerializer());
+    Json.mapper().registerModule(simpleModule);
+
+    RegisterMapping registerMapping = globalConfig.getRegister();
+
+
+    Map<Datasource, DatasourceState> datasources = null;
+    try {
+      datasources = loadFromDisk();
+    } catch (IOException e) {
+      log.error("Couldn't load stored datasources from disk", e);
+    }
+    register = new Register(datasources, registerMapping.getIOErrorLimit());
   }
 
   private Map<Datasource, DatasourceState> loadFromDisk() throws IOException {

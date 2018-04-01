@@ -65,11 +65,15 @@ public class Register {
   /**
    * Creates a new Register object.
    * @param datasources The registered datasources. Can be null
+   * @throws IllegalArgumentException If ioErrorLimit < 0
    */
-  public Register(Map<Datasource, DatasourceState> datasources, int ioErrorLimit) {
+  public Register(Map<Datasource, DatasourceState> datasources, int ioErrorLimit) throws IllegalArgumentException {
     if (datasources == null) datasources = new HashMap<>();
     this.datasources = new TreeMap<>(datasources);
     this.readWriteLock = new ReentrantReadWriteLock();
+
+    if (ioErrorLimit < 0) throw new IllegalArgumentException("IO error limit mustn't be smaller zero!");
+
     this.ioErrorLimit = ioErrorLimit;
   }
 

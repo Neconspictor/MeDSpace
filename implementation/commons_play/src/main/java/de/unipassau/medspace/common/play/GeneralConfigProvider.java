@@ -40,20 +40,21 @@ public class GeneralConfigProvider implements Provider<GeneralWrapperConfig> {
    * Creates a new GeneralConfigProvider object.
    * @param playConfig The Play configuration.
    * @param provider The RDF provider.
-   * @param resourceProvider The resource provider
+   * @param resourceManager The resource manager
    * @param shutdownService The shutdown service.
    */
   @Inject
   public GeneralConfigProvider(com.typesafe.config.Config playConfig,
-                        RDFProvider provider,
-                        PathResolveParser pathResolveParser,
-                        ResourceProvider resourceProvider,
-                        ShutdownService shutdownService) {
+                               RDFProvider provider,
+                               PathResolveParser pathResolveParser,
+                               ProjectResourceManager resourceManager,
+                               ShutdownService shutdownService) {
 
     try {
-      init(playConfig, provider, pathResolveParser, resourceProvider);
-    } catch (ConfigException.Missing | ConfigException.WrongType | IOException  e) {
+      init(playConfig, provider, pathResolveParser, resourceManager);
+    } catch (Exception  e) {
       log.error("Couldn't init general config provider: ", e);
+      log.info("Shutting down application...");
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
   }
@@ -66,7 +67,7 @@ public class GeneralConfigProvider implements Provider<GeneralWrapperConfig> {
   private void init(Config playConfig,
                     RDFProvider provider,
                     PathResolveParser pathResolveParser,
-                    ResourceProvider resourceProvider)
+                    ProjectResourceManager resourceManager)
       throws IOException,
       ConfigException.Missing,
       ConfigException.WrongType {
@@ -75,7 +76,7 @@ public class GeneralConfigProvider implements Provider<GeneralWrapperConfig> {
     String wrapperConfigFile = playConfig.getString(WRAPPER_CONFIG_FILE_ID);
     log.debug(WRAPPER_CONFIG_FILE_ID + " = " + wrapperConfigFile);
 
-    File generalWrapperConfigFile = resourceProvider.getResourceAsFile(wrapperConfigFile);
+    File generalWrapperConfigFile = resourceManager.getResolved(wrapperConfigFile);
     wrapperConfigFile = generalWrapperConfigFile.getAbsolutePath();
 
     // The general wrapper file has to exist

@@ -1,6 +1,8 @@
 package de.unipassau.medspace.data_collector;
 
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.data_collector.rdf4j.LocalRepositoryManager;
+import de.unipassau.medspace.global.config.mapping.ConfigMapping;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,26 +21,37 @@ public class DataCollectorLifecycle implements Provider<LocalRepositoryManager> 
 
   private static final Logger log = LoggerFactory.getLogger(DataCollectorLifecycle.class);
 
-  private static final File DATADIR = new File("./_work/data_collector/native_store");
+  private final File dataDir;
 
-  private final LocalRepositoryManager manager;
+  private LocalRepositoryManager manager;
 
   /**
    * Creates a new DataCollectorLifecycle object.
    *
    * @param lifecycle The application lifecycle.
+   * @param globalConfig global MeDSpace configuration.
    * @throws IOException If an IO error occurs.
    */
   @Inject
-  public DataCollectorLifecycle(ApplicationLifecycle lifecycle) throws IOException {
+  public DataCollectorLifecycle(ApplicationLifecycle lifecycle,
+                                ConfigMapping globalConfig,
+                                ShutdownService shutdownService) throws IOException {
 
-    initDataDirectory(DATADIR);
+    dataDir = new File(globalConfig
+        .getDataCollector()
+        .getNativeStoreDirectory());
 
-    manager = new LocalRepositoryManager(DATADIR.getAbsolutePath());
+    try {
+      initDataDirectory(dataDir);
+      manager = new LocalRepositoryManager(dataDir.getAbsolutePath());
+    } catch (Exception e) {
+      log.error("Error while initializing the Data collector lifecycle", e);
+      shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
+    }
 
     lifecycle.addStopHook(() -> {
       log.info("shutdown is executing...");
-        initDataDirectory(DATADIR);
+        initDataDirectory(dataDir);
       log.info("shutdown cleanup done.");
       return CompletableFuture.completedFuture(null);
     });
@@ -53,7 +66,7 @@ public class DataCollectorLifecycle implements Provider<LocalRepositoryManager> 
 
     try {
       FileUtils.cleanDirectory(datadir);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new IllegalStateException("Couldn't clean data directory: " + datadir.getPath(), e);
     }
   }

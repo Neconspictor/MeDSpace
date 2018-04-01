@@ -2,12 +2,15 @@ package controllers;
 
 import com.typesafe.config.Config;
 import de.unipassau.medspace.common.play.ServerConfigProvider;
+import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.query.KeywordSearcher;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.stream.LogWrapperInputStream;
 import de.unipassau.medspace.global.config.GlobalConfigProvider;
+import de.unipassau.medspace.global.config.mapping.ConfigMapping;
 import de.unipassau.medspace.global.config.mapping.DataCollectorMapping;
 import de.unipassau.medspace.global.config.mapping.QueryExecutorMapping;
+import de.unipassau.medspace.global.config.mapping.RegisterMapping;
 import de.unipassau.medspace.query_executor.QueryExecutor;
 import de.unipassau.medspace.query_executor.ServiceInvoker;
 import org.slf4j.Logger;
@@ -38,7 +41,7 @@ public class QueryExecutorController extends Controller {
   private static final  Logger log = LoggerFactory.getLogger(QueryExecutorController.class);
 
 
-  private final QueryExecutor queryExecutor;
+  private QueryExecutor queryExecutor;
   private final RDFProvider rdfProvider;
 
   /**
@@ -46,23 +49,32 @@ public class QueryExecutorController extends Controller {
    *
    * @param lifecycle The application lifecycle.
    * @param serviceInvoker The service invoker.
-   * @param playConfig The Play configuration.
+   * @param globalConfig The global MeDSpace configuration.
    * @param rdfProvider The RDF provider.
    * @throws MalformedURLException If the URL to the data colector module couldn't be created.
    */
   @Inject
   public QueryExecutorController(ApplicationLifecycle lifecycle,
                                  ServiceInvoker serviceInvoker,
-                                 Config playConfig,
-                                 ServerConfigProvider serverConfigProvider,
-                                 GlobalConfigProvider globalConfigProvider,
-                                 RDFProvider rdfProvider) throws MalformedURLException {
+                                 ConfigMapping globalConfig,
+                                 RDFProvider rdfProvider,
+                                 ShutdownService shutdownService)  {
 
 
-    QueryExecutorMapping queryExecutorMapping = globalConfigProvider.getGlobalConfig().getQueryExecutor();
+    RegisterMapping registerMapping = globalConfig.getRegister();
+    DataCollectorMapping dataCollectorMapping = globalConfig.getDataCollector();
+    QueryExecutorMapping queryExecutorMapping = globalConfig.getQueryExecutor();
 
-    queryExecutor = new QueryExecutor(serviceInvoker, new URL(queryExecutorMapping.getRegisterBaseURL()),
-        new URL(queryExecutorMapping.getDataCollectorBaseURL()));
+    try {
+      queryExecutor = new QueryExecutor(serviceInvoker,
+          new URL(registerMapping.getBaseURL()),
+          new URL(dataCollectorMapping.getBaseURL()),
+          queryExecutorMapping.getQueryCacheSize());
+    } catch (Exception e) {
+      log.error("Couldn't initialize Query Executor", e);
+      shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
+    }
+
     this.rdfProvider = rdfProvider;
 
     lifecycle.addStopHook(()->{

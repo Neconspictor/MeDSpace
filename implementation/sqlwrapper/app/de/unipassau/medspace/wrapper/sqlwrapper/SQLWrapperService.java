@@ -93,7 +93,7 @@ public class SQLWrapperService extends WrapperService {
 
       try {
         startup(d2rConfig, serverConfig);
-      }catch(ConfigException.Missing | ConfigException.WrongType e) {
+      }catch(Exception e) {
         log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
         log.info("Graceful shutdown is initiated...");
         shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);

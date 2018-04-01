@@ -2,9 +2,8 @@ package de.unipassau.medspace.wrapper.image_wrapper.play;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
-import de.unipassau.medspace.common.play.GeneralConfigProvider;
+import de.unipassau.medspace.common.play.ProjectResourceManager;
 import de.unipassau.medspace.common.play.ShutdownService;
-import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.wrapper.image_wrapper.config.DDSMConfig;
 import de.unipassau.medspace.wrapper.image_wrapper.config.DDSM_ConfigReader;
 import de.unipassau.medspace.wrapper.image_wrapper.config.mapping.DDSM_MappingConfigReader;
@@ -20,7 +19,7 @@ import java.io.IOException;
 /**
  * A Provider for the DDSM configurations.
  */
-public class DdsmConfigProvider extends GeneralConfigProvider {
+public class DdsmConfigProvider {
 
 
   /**
@@ -45,17 +44,15 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
    * Creates a new DdsmConfigProvider object.
    *
    * @param playConfig The Play configuration.
-   * @param provider The RDF provider
+   * @param resourceManager the project resource manager
    * @param shutdownService The shutdown service
    */
   @Inject
   public DdsmConfigProvider(com.typesafe.config.Config playConfig,
-                            RDFProvider provider,
+                            ProjectResourceManager resourceManager,
                             ShutdownService shutdownService) {
-    super(playConfig, provider, shutdownService);
-
     try {
-      init(playConfig);
+      init(playConfig, resourceManager);
     } catch (ConfigException.Missing | ConfigException.WrongType | IOException | JAXBException | SAXException e) {
       log.error("Couldn't init ddsm config provider: ", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
@@ -64,7 +61,7 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
     log.info("Reading MeDSpace DDSM Image configuration done.");
   }
 
-  private void init(Config playConfig)
+  private void init(Config playConfig, ProjectResourceManager resourceManager)
       throws IOException,
       ConfigException.Missing,
       ConfigException.WrongType,
@@ -73,11 +70,17 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
 
     log.info("Parsing ddsm image wrapper configuration...");
 
-    String ddsmConfigFilePath = playConfig.getString(DDSM_CONFIG_FILE_ID);
-    String ddsmConfigSpecificationFilePath = playConfig.getString(DDSM_CONFIG_SPECIFICATION_FILE_ID);
+    String ddsmConfigFilePath = resourceManager
+        .getResolvedPath(playConfig.getString(DDSM_CONFIG_FILE_ID));
 
-    String ddsmMappingConfigFilePath = playConfig.getString(DDSM_MAPPING_CONFIG_FILE_ID);
-    String ddsmMappingConfigSpecificationFilePath = playConfig.getString(DDSM_MAPPING_CONFIG_SPECIFICATION_FILE_ID);
+    String ddsmConfigSpecificationFilePath = resourceManager
+        .getResolvedPath(playConfig.getString(DDSM_CONFIG_SPECIFICATION_FILE_ID));
+
+    String ddsmMappingConfigFilePath = resourceManager
+        .getResolvedPath(playConfig.getString(DDSM_MAPPING_CONFIG_FILE_ID));
+
+    String ddsmMappingConfigSpecificationFilePath = resourceManager
+        .getResolvedPath(playConfig.getString(DDSM_MAPPING_CONFIG_SPECIFICATION_FILE_ID));
 
 
     // create the mapping config
@@ -85,7 +88,7 @@ public class DdsmConfigProvider extends GeneralConfigProvider {
     ddsmMappingConfig = mappingReader.parse(ddsmMappingConfigFilePath);
 
     // create the ddsm config
-    DDSM_ConfigReader configReader = new DDSM_ConfigReader(ddsmConfigSpecificationFilePath);
+    DDSM_ConfigReader configReader = new DDSM_ConfigReader(ddsmConfigSpecificationFilePath, resourceManager);
     ddsmConfig = configReader.parse(ddsmConfigFilePath);
 
     log.info("Parsing ddsm image wrapper configuration done.");

@@ -1,8 +1,8 @@
 package de.unipassau.medspace.wrapper.image_wrapper.play;
 
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.lucene.rdf.LuceneClassAdapter;
-import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.QNameNormalizer;
@@ -61,15 +61,31 @@ public class WrapperProvider implements Provider<Wrapper> {
    * Creates a new WrapperProvider object.
    *
    * @param configProvider The provider for the DDSM configurations.
+   * @param generalWrapperConfig the general wrapper config
    * @param shutdownService The shutdown service.
-   * @param serverConfigProvider the provider for the server configuration.
+   * @param serverConfig the server configuration.
    * @throws IOException If an IO error occurs.
    */
   @Inject
   public WrapperProvider(DdsmConfigProvider configProvider,
-                         ServerConfigProvider serverConfigProvider,
-                         ShutdownService shutdownService) throws IOException {
+                         GeneralWrapperConfig generalWrapperConfig,
+                         ServerConfig serverConfig,
+                         ShutdownService shutdownService) {
 
+    try {
+      init(configProvider, generalWrapperConfig, serverConfig);
+    } catch (IOException e) {
+      log.error("Error while initializing the Wrapper Provider: ", e);
+
+      log.info("Shutting down application...");
+      shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
+    }
+  }
+
+  private void init(DdsmConfigProvider configProvider,
+                    GeneralWrapperConfig generalWrapperConfig,
+                    ServerConfig serverConfig) throws IOException
+  {
     RootMapping rootParsing = configProvider.getDdsmMappingConfig();
     DDSMConfig ddsmConfig = configProvider.getDdsmConfig();
 
@@ -77,7 +93,7 @@ public class WrapperProvider implements Provider<Wrapper> {
 
     if (!caseDirectory.isDirectory()) throw new IOException("The image directory is not a valid directory: " + caseDirectory);
 
-    String downloadFileServiceURL = createGetFileServiceURL(configProvider, serverConfigProvider.getServerConfig());
+    String downloadFileServiceURL = createGetFileServiceURL(configProvider, serverConfig);
     DDSM_AdapterFactory adapterFactory = new DDSM_AdapterFactory(caseDirectory, rootParsing,
         downloadFileServiceURL);
     List<LuceneClassAdapter<?>> adapters = adapterFactory.createAdapters();
@@ -94,7 +110,7 @@ public class WrapperProvider implements Provider<Wrapper> {
     QNameNormalizer normalizer = qName -> RdfUtil.getNormalizedURI(namespaces, qName);;
     RDFFactory factory = new RDF4J_RDFProvider().getFactory();
 
-    Path indexDirectory = configProvider.getGeneralWrapperConfig().getIndexDirectory();
+    Path indexDirectory = generalWrapperConfig.getIndexDirectory();
 
     LuceneIndexFactory indexFactory = new LuceneIndexFactory(indexDirectory.toString(),
         adapters,

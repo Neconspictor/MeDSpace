@@ -60,8 +60,9 @@ public class ServerConfigProvider implements Provider<ServerConfig> {
                               ShutdownService shutdownService) {
     try {
       init(playConfig);
-    } catch (ConfigException.Missing | ConfigException.WrongType | IOException e) {
+    } catch (Exception e) {
       log.error("Couldn't init general config provider: ", e);
+      log.info("Shutting down application...");
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }
   }

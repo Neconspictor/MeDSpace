@@ -62,6 +62,8 @@ public class DDSM_ImageWrapper<DocType> extends AbstractWrapper<DocType, IcsFile
     } finally {
       FileUtil.closeSilently(docStream, true);
     }
+
+    log.info("Reindexed ddsm case files.");
   }
 
   @Override

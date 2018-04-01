@@ -1,6 +1,6 @@
 package de.unipassau.medspace.wrapper.pdf_wrapper.config;
 
-import de.unipassau.medspace.common.config.PathResolveParser;
+import de.unipassau.medspace.common.play.ProjectResourceManager;
 import de.unipassau.medspace.common.util.XmlUtil;
 import de.unipassau.medspace.wrapper.pdf_wrapper.config.mapping.RootMapping;
 import org.slf4j.Logger;
@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -30,21 +31,21 @@ public class PdfConfigReader {
 
   private final String rdfMappingSpec;
 
-  private final PathResolveParser resolveParser;
+  private final ProjectResourceManager resourceManager;
 
   /**
    * Creates a new PdfConfigReader object.
    * @param pdfConfigSpecificationSchema The XSD validation schema for the PDF wrapper configuration.
    * @param rdfMappingSpec The XSD validation schema for the RDF mapping.
-   * @param resolveParser The path resolve parser to use.
+   * @param resourceManager The resource manager.
    */
   public PdfConfigReader(String pdfConfigSpecificationSchema,
                          String rdfMappingSpec,
-                         PathResolveParser resolveParser) {
+                         ProjectResourceManager resourceManager) {
     this.pdfConfigSpecificationSchema = pdfConfigSpecificationSchema;
     this.rdfMappingSpec = rdfMappingSpec;
 
-    this.resolveParser = resolveParser;
+    this.resourceManager = resourceManager;
   }
 
 
@@ -63,19 +64,18 @@ public class PdfConfigReader {
     unmarshaller.setSchema(schema);
     RootMapping rootMapping = (RootMapping) unmarshaller.unmarshal(new File(fileName));
 
-    process(rootMapping);
+    resolveFiles(rootMapping);
 
     return rootMapping;
 
   }
 
-  private void process(RootMapping rootMapping) {
+  private void resolveFiles(RootMapping rootMapping) throws IOException {
     String pdfRoot = rootMapping.getPdfRootDirectory();
-
-    if (pdfRoot.startsWith(PROJECT_FOLDER_TOKEN)) {
-      log.debug("Replace macros for PDF root folder: " + pdfRoot);
-      pdfRoot = resolveParser.replaceMacros(pdfRoot);
-      log.debug("PDF root folder is now: " + pdfRoot);
+    try {
+      pdfRoot = resourceManager.getResolvedPath(pdfRoot);
+    } catch (FileNotFoundException e) {
+      throw new IOException("Couldn't find/resolve PDF root folder: " + pdfRoot, e);
     }
 
     rootMapping.setPdfRootDirectory(pdfRoot);

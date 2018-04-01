@@ -43,7 +43,7 @@ public class ConnectionPoolProvider implements Provider<ConnectionPool> {
           d2rConfig.getDatabasePassword(),
           d2rConfig.getPoolSize(),
           d2rConfig.getDataSourceProperties());
-    } catch (IOException e) {
+    } catch (Exception e) {
       log.error("Couldn't initialize connection pool", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }

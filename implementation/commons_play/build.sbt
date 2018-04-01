@@ -58,6 +58,9 @@ libraryDependencies += "com.google.inject" % "guice" % "4.0"
 libraryDependencies ++= Seq(
 
 	// https://mvnrepository.com/artifact/com.typesafe.play/play
-	"com.typesafe.play" %% "play" % "2.6.6"
+	"com.typesafe.play" %% "play" % "2.6.6",
+
+	// https://mvnrepository.com/artifact/com.typesafe.play/play-guice
+	"com.typesafe.play" %% "play-guice" % "2.6.6"
 
 )
