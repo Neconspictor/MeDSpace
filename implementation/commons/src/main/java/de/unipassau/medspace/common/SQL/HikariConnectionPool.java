@@ -69,7 +69,7 @@ public class HikariConnectionPool implements ConnectionPool {
    * @param password The password necessary for authentication.
    * @param poolSize The wished maximum connection pool size.
    * @param datasourceProperties Properties that should be send to the database.
-   * @throws HikariPool.PoolInitializationException if the connection pool couldn't be created.
+   * @throws IOException if the connection pool couldn't be created.
    */
   public HikariConnectionPool(URI jdbcURI,
                               Class driverClass,
@@ -77,7 +77,7 @@ public class HikariConnectionPool implements ConnectionPool {
                               String password,
                               int poolSize,
                               List<Pair<String, String>> datasourceProperties)
-      throws HikariPool.PoolInitializationException {
+      throws IOException {
 
     assert poolSize > 0;
 
@@ -125,8 +125,9 @@ public class HikariConnectionPool implements ConnectionPool {
 
   /**
    * Inits this connection pool.
+   * @throws IOException If the connection pool couldn't be initialized.
    */
-  private void init() throws HikariPool.PoolInitializationException {
+  private void init() throws  IOException {
     HikariConfig hikariConfig = new HikariConfig();
     hikariConfig.setJdbcUrl(jdbcURI.toString());
     hikariConfig.setDriverClassName(driverClass.getName());
@@ -140,7 +141,13 @@ public class HikariConnectionPool implements ConnectionPool {
     for (Pair<String, String> property : properties) {
       hikariConfig.addDataSourceProperty(property.getValue0(), property.getValue1());
     }
-    dataSource =  new HikariDataSource(hikariConfig);
+
+    try {
+      dataSource =  new HikariDataSource(hikariConfig);
+    } catch(HikariPool.PoolInitializationException e) {
+      log.error("Couldn't create HikariDataSource; reason: ", e);
+      throw new IOException("Couldn't establish SQL connection to " + jdbcURI);
+    }
   }
 
   @Override

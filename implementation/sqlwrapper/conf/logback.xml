@@ -3,6 +3,10 @@
 
   <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
 
+
+
+  <!-- appenders -->
+
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <file>${application.home:-.}/logs/application.log</file>
     <encoder>
@@ -24,12 +28,51 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="play" level="DEBUG" />
-  <logger name="application" level="DEBUG" />
 
-  <logger name="de.unipassau.medspace" level="DEBUG" />
-  <logger name="de.unipassau.medspace.wrapper.sqlwrapper.AppRoot" level="DEBUG" />
-  <logger name="de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService" level="DEBUG" />
+
+
+  <!-- root logging -->
+
+  <root level="INFO">
+    <appender-ref ref="ASYNCFILE" />
+    <appender-ref ref="ASYNCSTDOUT" />
+  </root>
+
+
+
+
+  <!-- SQL Wrapper specific logging -->
+
+  <!-- SqlWrapperDepdendencyInjector should log infos! -->
+  <logger name="de.unipassau.medspace.wrapper.sqlwrapper.SqlWrapperDepdendencyInjector" level="INFO" />
+
+  <!-- SQLWrapperService should log infos! -->
+  <logger name="de.unipassau.medspace.wrapper.sqlwrapper.SQLWrapperService" level="INFO" />
+
+
+
+
+
+
+  <!-- Global MeDSpace loggers -->
+
+  <!-- MeDSpaceDependencyInjector should log infos! -->
+  <logger name="de.unipassau.medspace.common.play.MeDSpaceDependencyInjector" level="INFO" />
+
+  <!-- ServerConfigProvider should log infos! -->
+  <logger name="de.unipassau.medspace.common.play.ServerConfigProvider" level="INFO" />
+
+  <!-- ShutdownService should always log infos! -->
+  <logger name="de.unipassau.medspace.common.play.ShutdownService" level="DEBUG" />
+
+
+
+
+  <!-- Other loggers -->
+
+  <!-- AkkaHttpServer should log at which address and port the server runs!-->
+  <logger name="play.core.server.AkkaHttpServer" level="INFO" />
+
 
   <!-- Suppress warning bug from https://hibernate.atlassian.net/browse/HV-1323 -->
   <logger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="error"/>
@@ -42,10 +85,5 @@
   <logger name="com.avaje.ebeaninternal.server.core.XmlConfigLoader" level="OFF" />
   <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
-
-  <root level="DEBUG">
-    <appender-ref ref="ASYNCFILE" />
-    <appender-ref ref="ASYNCSTDOUT" />
-  </root>
 
 </configuration>

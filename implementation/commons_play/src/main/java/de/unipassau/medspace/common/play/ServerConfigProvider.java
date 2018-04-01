@@ -81,7 +81,7 @@ public class ServerConfigProvider implements Provider<ServerConfig> {
     int portHTTP = playConfig.getInt(PORT_ID_HTTP);
     int portHTTPS = playConfig.getInt(PORT_ID_HTTP);
 
-    log.info("http server runs at: " + addressHTTP + ":" + portHTTP);
+    log.debug("http server address and port are: " + addressHTTP + ":" + portHTTP);
     //log.debug(ADDRESS_ID_HTTPS + " = " + addressHTTPS);
     //log.debug(PORT_ID_HTTPS + " = " + portHTTPS);
 

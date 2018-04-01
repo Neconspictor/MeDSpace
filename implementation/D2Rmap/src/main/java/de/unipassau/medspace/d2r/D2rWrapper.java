@@ -130,6 +130,7 @@ public class D2rWrapper<DocType> extends AbstractWrapper<DocType, MappedSqlTuple
       FileUtil.closeSilently(docStream, true);
     }
 
+    log.info("Reindexed data.");
     long now = System.currentTimeMillis();
     log.debug("Needed time: " + (now - before)/1000.0f + " seconds");
   }

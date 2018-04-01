@@ -2,7 +2,6 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.zaxxer.hikari.pool.HikariPool;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
 import de.unipassau.medspace.common.SQL.HikariConnectionPool;
 import de.unipassau.medspace.common.play.ShutdownService;
@@ -28,25 +27,23 @@ public class ConnectionPoolProvider implements Provider<ConnectionPool> {
 
   /**
    * Creates a new ConnectionPoolProvider object.
-   * @param provider The configuration provider.
+   * @param d2rConfig The d2r mapping configuration.
    * @param lifecycle The applicaiton lifecycle.
    * @param shutdownService The shutdown service.
    */
   @Inject
-  public ConnectionPoolProvider(ConfigProvider provider, ApplicationLifecycle lifecycle,
+  public ConnectionPoolProvider(Configuration d2rConfig, ApplicationLifecycle lifecycle,
                                 ShutdownService shutdownService) {
-
-    Configuration config = provider.getD2rConfig();
 
     try {
       connectionPool = new HikariConnectionPool(
-          config.getJdbc(),
-          config.getJdbcDriver(),
-          config.getDatabaseUsername(),
-          config.getDatabasePassword(),
-          config.getPoolSize(),
-          config.getDataSourceProperties());
-    } catch (HikariPool.PoolInitializationException e) {
+          d2rConfig.getJdbc(),
+          d2rConfig.getJdbcDriver(),
+          d2rConfig.getDatabaseUsername(),
+          d2rConfig.getDatabasePassword(),
+          d2rConfig.getPoolSize(),
+          d2rConfig.getDataSourceProperties());
+    } catch (IOException e) {
       log.error("Couldn't initialize connection pool", e);
       shutdownService.gracefulShutdown(ShutdownService.EXIT_ERROR);
     }

@@ -13,12 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 /**
- * A configuration provider for the SQL wrapper.
+ * A configuration provider for the D2R mapping configuration.
  */
-public class ConfigProvider extends GeneralConfigProvider {
+public class ConfigProvider implements Provider<Configuration> {
 
 
   /**
@@ -43,7 +44,6 @@ public class ConfigProvider extends GeneralConfigProvider {
                         RDFProvider provider,
                         ResourceProvider resourceProvider,
                         ShutdownService shutdownService) {
-    super(playConfig, provider, resourceProvider, shutdownService);
 
     try {
       init(playConfig, provider, resourceProvider);
@@ -53,6 +53,11 @@ public class ConfigProvider extends GeneralConfigProvider {
     }
 
     log.info("Reading MeDSpace D2RMap configuration done.");
+  }
+
+  @Override
+  public Configuration get() {
+    return d2rConfig;
   }
 
 
@@ -69,13 +74,6 @@ public class ConfigProvider extends GeneralConfigProvider {
     log.info("Reading MeDSpace D2RMap configuration...");
 
     d2rConfig = new ConfigurationReader(provider).readConfig(d2rConfigFile);
-  }
-
-  /**
-   * Provides the d2r mapping configuration.
-   * @return the d2r mapping configuration.
-   */
-  public Configuration getD2rConfig() {
-    return d2rConfig;
+    log.info("...readed D2RMap configuration.");
   }
 }

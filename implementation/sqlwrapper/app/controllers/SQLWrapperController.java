@@ -1,6 +1,7 @@
 package controllers;
 
 import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.play.WrapperController;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.wrapper.sqlwrapper.ConfigProvider;
@@ -59,20 +60,24 @@ public class SQLWrapperController extends WrapperController {
   /**
    * Creates a new SQLWrapperController
    * @param wrapperService The wrapper service to use.
+   * @param d2rConfig The D"R mapping configuration.
+   * @param connectionPool The SQL connection pool.
    * @param formFactory The form factory to use.
+   * @param generalWrapperConfig The general wrapper configuration.
    * @param rdfProvider The RDF provider to use.
    */
   @Inject
   SQLWrapperController(SQLWrapperService wrapperService,
+                       Configuration d2rConfig,
                        ConnectionPool connectionPool,
                        FormFactory formFactory,
-                       RDFProvider rdfProvider,
-                       ConfigProvider configProvider) {
-    super(configProvider.getGeneralWrapperConfig(), rdfProvider, wrapperService);
+                       GeneralWrapperConfig generalWrapperConfig,
+                       RDFProvider rdfProvider) {
+    super(generalWrapperConfig, rdfProvider, wrapperService);
 
     this.formFactory = formFactory;
     this.connectionPool = connectionPool;
-    this.d2rConfig = configProvider.getD2rConfig();
+    this.d2rConfig = d2rConfig;
     this.sqlWrapperService = wrapperService;
   }
 

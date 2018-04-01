@@ -41,18 +41,20 @@ public class WrapperProvider implements Provider<D2rWrapper<?>> {
 
   /**
    * Creates a new WrapperProvider object.
-   * @param configProvider The configuration provider.
+   * @param d2rConfig The configuration provider.
    * @param connectionPool The SQL connection pool.
+   * @param generalWrapperConfig The general wrapper configuration.
    * @param shutdownService The shutdown service.
    */
   @Inject
-  public WrapperProvider(ConfigProvider configProvider,
+  public WrapperProvider(Configuration d2rConfig,
                          ConnectionPool connectionPool,
+                         GeneralWrapperConfig generalWrapperConfig,
                          ShutdownService shutdownService) {
 
     try {
-      init(configProvider.getD2rConfig(),
-          configProvider.getGeneralWrapperConfig(),
+      init(d2rConfig,
+          generalWrapperConfig,
           connectionPool);
     } catch (D2RException | IOException e) {
       log.error("Couldn't create D2rWrapper: ", e);

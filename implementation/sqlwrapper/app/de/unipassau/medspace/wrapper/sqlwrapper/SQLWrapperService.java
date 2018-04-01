@@ -2,9 +2,9 @@ package de.unipassau.medspace.wrapper.sqlwrapper;
 
 import com.typesafe.config.ConfigException;
 import de.unipassau.medspace.common.SQL.ConnectionPool;
+import de.unipassau.medspace.common.config.GeneralWrapperConfig;
 import de.unipassau.medspace.common.config.ServerConfig;
 import de.unipassau.medspace.common.exception.NoValidArgumentException;
-import de.unipassau.medspace.common.play.ServerConfigProvider;
 import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.play.WrapperService;
 import de.unipassau.medspace.common.play.wrapper.RegisterClient;
@@ -69,21 +69,22 @@ public class SQLWrapperService extends WrapperService {
    *  Creates a new SQLWrapperService.
    * @param lifecycle Used to add shutdown hooks to the play framework.
    * @param registerClient Used for communication with the register.
-   * @param provider Used to read configurations.
+   * @param d2rConfig the D2R mapping configuration
    * @param connectionPool A connection pool to the relational database.
-   * @param serverConfigProvider The server configuration provider
+   * @param serverConfig The server configuration
    * @param shutdownService The shutdown service.
    * @param d2rWrapper The SQL wrapper.
    */
   @Inject
   public SQLWrapperService(ApplicationLifecycle lifecycle,
                            RegisterClient registerClient,
-                           ConfigProvider provider,
+                           Configuration d2rConfig,
                            ConnectionPool connectionPool,
-                           ServerConfigProvider serverConfigProvider,
+                           GeneralWrapperConfig generalWrapperConfig,
+                           ServerConfig serverConfig,
                            ShutdownService shutdownService,
                            D2rWrapper<?> d2rWrapper) {
-    super(provider.getGeneralWrapperConfig(), d2rWrapper);
+    super(generalWrapperConfig, d2rWrapper);
 
     this.registerClient = registerClient;
     this.connectionPool = connectionPool;
@@ -91,7 +92,7 @@ public class SQLWrapperService extends WrapperService {
     this.connectToRegister = generalConfig.getConnectToRegister();
 
       try {
-        startup(provider, serverConfigProvider.getServerConfig());
+        startup(d2rConfig, serverConfig);
       }catch(ConfigException.Missing | ConfigException.WrongType e) {
         log.error("Couldn't read MeDSpace mapping d2rConfig file: ", e);
         log.info("Graceful shutdown is initiated...");
@@ -133,13 +134,13 @@ public class SQLWrapperService extends WrapperService {
 
   /**
    * Does startup the sql wrapper.
-   * @param provider A provider used to access the wrapper and server configurations
+   * @param d2rConfig the d2r mapping configuration
    * @param serverConfig The server configuration.
    * @throws D2RException If the configuration file doesn't exists or is erroneous
    * @throws IOException If an IO-Error occurs.
    * @throws SQLException If the connection to the datasource could'nt be established.
    */
-  private void startup(ConfigProvider provider, ServerConfig serverConfig) throws
+  private void startup(Configuration d2rConfig, ServerConfig serverConfig) throws
       D2RException,
       IOException,
       SQLException {
@@ -150,8 +151,6 @@ public class SQLWrapperService extends WrapperService {
       throw new D2RException("This wrapper needs an index, but no index directory is stated "
           + "in the general wrapper configuration.");
     }
-
-    Configuration d2rConfig = provider.getD2rConfig();
 
     URI jdbcURI = d2rConfig.getJdbc();
 
