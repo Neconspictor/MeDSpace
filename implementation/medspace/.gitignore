@@ -22,7 +22,7 @@
 
 
 
-// register build
+// project build
 target/*
 logs/*
 .idea/*

@@ -21,7 +21,8 @@
 *.idea
 
 
-// sqlwrapper build
+
+// project build
 target/*
 logs/*
 .idea/*
