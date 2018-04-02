@@ -44,7 +44,7 @@
     </ddsm:IcsFile>
 
     <ddsm:Image rdfType="http://www.medspace.com/images/ddsm/image" classId="Image">
-        <rdf-mapping:metaData>DDSM IMAGE file</rdf-mapping:metaData>
+        <rdf-mapping:metaData>DDSM IMAGE file png</rdf-mapping:metaData>
         <rdf-mapping:source propertyType="image:source" dataType="xsd:anyURI"/>
         <ddsm:overlay propertyType="image:overlay"/>
     </ddsm:Image>
