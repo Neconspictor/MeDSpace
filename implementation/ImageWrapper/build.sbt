@@ -39,11 +39,8 @@ EclipseKeys.withJavadoc := true
 
 lazy val image_wrapper = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin) //, LauncherJarPlugin
-  .aggregate(commons)
   .dependsOn(commons)
-  .aggregate(commons_network)
   .dependsOn(commons_network)
-  .aggregate(common_play)
   .dependsOn(common_play)
 
 lazy val commons = RootProject(file("../commons"))

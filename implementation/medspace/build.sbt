@@ -49,11 +49,8 @@ PlayKeys.devSettings := Seq("play.server.http.port" -> "9500", "play.server.http
 
 lazy val medspace = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin)
-  .aggregate(commons)
   .dependsOn(commons)
-  .aggregate(commons_network)
   .dependsOn(commons_network)
-  .aggregate(commons_play)
   .dependsOn(commons_play)
   
 lazy val commons = RootProject(file("../commons"))
