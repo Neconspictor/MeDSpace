@@ -27,17 +27,17 @@ resources/
 
 
 //D2Rmap build and distribution files
-implementation/D2Rmap/.idea/*
-implementation/D2Rmap/_work/*
-implementation/D2Rmap/target/*
-implementation/D2Rmap/project/*/*
+implementation/d2rmap/.idea/*
+implementation/d2rmap/_work/*
+implementation/d2rmap/target/*
+implementation/d2rmap/project/*/*
 
 // sqlwrapper build
-implementation/sqlwrapper/target/*
-implementation/sqlwrapper/logs/*
-implementation/sqlwrapper/.idea/*
-implementation/sqlwrapper/project/*/*
-implementation/sqlwrapper/_work/*
+implementation/sql_wrapper/target/*
+implementation/sql_wrapper/logs/*
+implementation/sql_wrapper/.idea/*
+implementation/sql_wrapper/project/*/*
+implementation/sql_wrapper/_work/*
 
 // register build
 implementation/register/target/*
@@ -48,23 +48,23 @@ implementation/register/_work/*
 implementation/register/datasources.json
 
 // commons build
-implementation/commons/target/*
-implementation/commons/logs/*
-implementation/commons/.idea/*
-implementation/commons/project/*/*
+implementation/common/target/*
+implementation/common/logs/*
+implementation/common/.idea/*
+implementation/common/project/*/*
 
 
 // commons_network build
-implementation/commons_network/target/*
-implementation/commons_network/logs/*
-implementation/commons_network/.idea/*
-implementation/commons_network/project/*/*
+implementation/common_network/target/*
+implementation/common_network/logs/*
+implementation/common_network/.idea/*
+implementation/common_network/project/*/*
 
 // commons_play build
-implementation/commons_play/target/*
-implementation/commons_play/logs/*
-implementation/commons_play/.idea/*
-implementation/commons_play/project/*/*
+implementation/common_play/target/*
+implementation/common_play/logs/*
+implementation/common_play/.idea/*
+implementation/common_play/project/*/*
 
 //thesis
 thesis/latex source/rootFile.pdf
