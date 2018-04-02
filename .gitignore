@@ -22,6 +22,10 @@
 *.csv
 
 
+// resources
+resources/
+
+
 //D2Rmap build and distribution files
 implementation/D2Rmap/.idea/*
 implementation/D2Rmap/_work/*
