@@ -25,6 +25,9 @@
 // resources
 /resources/
 
+//binaries
+/binaries/
+
 //thesis
 thesis/latex source/rootFile.pdf
 thesis/sqlwrapper_doc/MeDSpace_D2RMap_Language_Specification.pdf
