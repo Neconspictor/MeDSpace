@@ -96,6 +96,10 @@ public class WrapperProvider implements Provider<D2rWrapper<?>> {
 
     boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
 
+    if (generalConfig.getForceReindex()) {
+      shouldReindex = true;
+    }
+
     if (shouldReindex) {
       log.info("Indexing data...");
       wrapper.reindexData();
