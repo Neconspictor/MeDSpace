@@ -71,7 +71,6 @@ public class RegisterLifecycle {
   }
 
   private void init(ConfigMapping globalConfig) throws IllegalArgumentException, IOException {
-    log.info("Load saved datasources to register...");
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addKeyDeserializer(Datasource.class, new DatasourceKeyDeserializer());
     simpleModule.addKeySerializer(Datasource.class, new DatasourceKeySerializer());
@@ -93,16 +92,20 @@ public class RegisterLifecycle {
 
 
     Map<Datasource, DatasourceState> datasources = null;
-    try {
-      datasources = loadFromDisk();
-    } catch (IOException e) {
-      log.error("Couldn't load stored datasources from disk", e);
+
+    if (registerMapping.isLoadDatasourcesFromFile()) {
+      try {
+        datasources = loadFromDisk();
+      } catch (IOException e) {
+        throw new IOException("Couldn't load stored datasources from disk", e);
+      }
     }
+
     register = new Register(datasources, registerMapping.getIOErrorLimit());
   }
 
   private Map<Datasource, DatasourceState> loadFromDisk() throws IOException {
-
+    log.info("Load saved datasources to register...");
     File datasourceFile = new File(datasourceSaveFolder + File.separator + DATASOURCES_SAVE_FILE_NAME);
     Map<Datasource, DatasourceState> datasources = new HashMap<>();
 
