@@ -1,0 +1,37 @@
+When you want to build the projects from source, please note:
+
+- You need to have installed SBT (at least version 0.13.15)
+
+- you can generate eclipse project files by running 'sbt eclipse'
+- you can generate intellij idea project files by running 'sbt idea'
+
+- eclipse integration is more complicated than for intellij idea (at least the ultimate version).
+
+- Please read this article to better understand how to work with SBT:
+  https://medium.com/@murphye/up-and-running-using-sbt-with-eclipse-or-intellij-640bb121e128
+
+- The projects commons, commons_network, commons_play, and D2rmap needn't to be build manually.
+  They are just used by the other modules. But of course, you can compile them ('sbt compile') 
+  and generate javadocs ('sbt doc')
+  
+  
+  
+- Projects using the Play framework can be run in development mode by running 'sbt run'.
+
+- Projects using the Play framework can be packaged by running 'sbt dist'. The zipped package 
+  which contains everything for distribution can then be found at the subfolder target/universal
+
+    
+- The following projects use Play: ImageWrapper, medspace, PdfWrapper, SqlWrapper
+
+
+	
+- There are some failed downloads:
+
+jakarta-regexp (sources)
+jakarta-regexp (docs)
+rdf4j-core.jar  (sources)
+
+But this downloads are not necessary for compilation.
+Thus, this warnings can be ignored.
+
