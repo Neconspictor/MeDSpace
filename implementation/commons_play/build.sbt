@@ -42,9 +42,7 @@ EclipseKeys.withJavadoc := true
 
 
 lazy val common_play = (project in file("."))
-	.aggregate(commons)
 	.dependsOn(commons)
-	.aggregate(commons_network)
 	.dependsOn(commons_network)
 
 lazy val commons = RootProject(file("../commons"))
