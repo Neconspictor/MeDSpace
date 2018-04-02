@@ -37,8 +37,8 @@
 
   <!-- Global MeDSpace loggers -->
 
-  <!-- MeDSpaceDependencyInjector should log infos! -->
-  <logger name="de.unipassau.medspace.common.play.MeDSpaceDependencyInjector" level="INFO" />
+  <!-- DependencyInjector should log infos! -->
+  <logger name="de.unipassau.medspace.common.play.DependencyInjector" level="INFO" />
 
   <!-- ServerConfigProvider should log infos! -->
   <logger name="de.unipassau.medspace.common.play.ServerConfigProvider" level="INFO" />
