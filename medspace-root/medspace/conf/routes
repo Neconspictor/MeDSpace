@@ -7,8 +7,6 @@ GET     /                            controllers.MeDSpaceController.index
 
 GET     /datasources                            controllers.MeDSpaceController.datasources
 
-GET     /gui                            controllers.MeDSpaceController.gui
-
 GET     /javascript-routes            controllers.MeDSpaceController.javascriptRoutes
 
 

@@ -48,25 +48,12 @@ public class MeDSpaceController extends Controller {
         return ok(views.html.datasources.render(list, datasourceModifiedMap));
     }
 
-    /**
-     * An action that renders a page for testing the register services.
-     * @return a page for testing the register services.
-     */
+  /**
+   * Provides the user interface page for MeDSpace.
+   * @return the user interface page for MeDSpace.
+   */
     public Result index() {
-        Map<Datasource, DatasourceState> datasourceModifiedMap = register.getDatasources();
-        Set<Datasource> datasources = datasourceModifiedMap.keySet();
-        List<Datasource> list = new LinkedList<>(datasources);
-        Collections.sort(list, Comparator.comparing(o -> o.getUrl().toExternalForm()));
-
-        return ok(views.html.index.render(list, datasourceModifiedMap));
-    }
-
-    /**
-     * Provides the user interface page for MeDSpace.
-     * @return the user interface page for MeDSpace.
-     */
-    public Result gui() {
-        return ok(views.html.medspaceGUI.render());
+      return ok(views.html.medspaceGUI.render());
     }
 
     /**
