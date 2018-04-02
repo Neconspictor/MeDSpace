@@ -41,10 +41,6 @@ EclipseKeys.withSource := true
 EclipseKeys.withJavadoc := true
 
 
-// add resource folder
-unmanagedResourceDirectories in Compile += baseDirectory.value / "resources"
-
-
 
 // library dependencies. (orginization name) % (project name) % (version)
 libraryDependencies ++= Seq(
