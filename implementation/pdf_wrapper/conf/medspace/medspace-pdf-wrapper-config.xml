@@ -14,10 +14,10 @@
 	<pdf:Namespace prefix="pdf_file" namespace="http://www.medspace.com/pdf/pdf_file#"/>
 
 
-    <pdf:PdfRootDirectory>[project-folder]/_work/pdfFiles/</pdf:PdfRootDirectory>
+    <pdf:PdfRootDirectory>[project-folder]/../../resources/pdf-files/</pdf:PdfRootDirectory>
 
     <pdf:PdfFile rdfType="http://www.medspace.com/pdf/pdf_file" classId="pdfFile">
-		<rdf-mapping:metaData></rdf-mapping:metaData>
+		<rdf-mapping:metaData>pdf file</rdf-mapping:metaData>
         <pdf:source propertyType="pdf_file:source" dataType="xsd:string"/>
     </pdf:PdfFile>
 </pdf:Root>
