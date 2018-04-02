@@ -30,7 +30,7 @@
 	<-->
 
     <ddsm:IcsFile rdfType="http://www.medspace.com/images/ddsm/ics_file" classId="IcsFile">
-        <rdf-mapping:metaData>DDSM ICS</rdf-mapping:metaData>
+        <rdf-mapping:metaData>DDSM ICS file</rdf-mapping:metaData>
         <rdf-mapping:source propertyType="ics_file:source" dataType="xsd:anyURI"/>
         <ddsm:dateOfStudy propertyType="ics_file:dateOfStudy" dataType="xsd:date"/>
         <ddsm:patientAge propertyType="ics_file:patientAge" dataType="xsd:integer"/>
@@ -44,7 +44,7 @@
     </ddsm:IcsFile>
 
     <ddsm:Image rdfType="http://www.medspace.com/images/ddsm/image" classId="Image">
-        <rdf-mapping:metaData>DDSM IMAGE</rdf-mapping:metaData>
+        <rdf-mapping:metaData>DDSM IMAGE file</rdf-mapping:metaData>
         <rdf-mapping:source propertyType="image:source" dataType="xsd:anyURI"/>
         <ddsm:overlay propertyType="image:overlay"/>
     </ddsm:Image>
