@@ -1,6 +1,8 @@
 package de.unipassau.medspace.common.config;
 
 import de.unipassau.medspace.common.config.general_wrapper.Config;
+import de.unipassau.medspace.common.config.general_wrapper.NamespacesAdapter;
+import de.unipassau.medspace.common.rdf.Namespace;
 import de.unipassau.medspace.common.rdf.RDFProvider;
 import de.unipassau.medspace.common.util.XmlUtil;
 
@@ -16,6 +18,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Used to read a general wrapper config file.
@@ -85,10 +88,15 @@ public class GeneralWrapperConfigReader {
       replaceMacros(config);
 
       result.setDescription(config.getDescription());
+      result.setForceReindex(config.isForceReindex());
       result.setConnectToRegister(config.isConnectToRegister());
       result.setIndexDirectory(new File(config.getIndexDirectoy()).toPath());
-      result.setServices(config.getServices());
-      result.setNamespaces(config.getNamespaces());
+      result.setServices(config.getServices().getService());
+
+      NamespacesAdapter namespacesAdapter = new NamespacesAdapter();
+      Map<String, Namespace> namespaces =  namespacesAdapter.unmarshal(config.getNamespaces());
+
+      result.setNamespaces(namespaces);
       result.setRegisterURL(config.getRegisterUrl());
       result.setUseIndex(config.getIndexDirectoy() != null);
 
@@ -127,5 +135,4 @@ public class GeneralWrapperConfigReader {
     indexDirectory = resolveParser.replaceMacros(indexDirectory);
     config.setIndexDirectoy(indexDirectory);
   }
-
 }

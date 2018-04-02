@@ -1,0 +1,1 @@
+xjc -b medspace-general-wrapper-config-binding.xml -p de.unipassau.medspace.common.config.general_wrapper -d ../src/main/java -extension ../src/main/resources/medspace-wrapper-config-specification.xsd

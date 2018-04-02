@@ -43,6 +43,14 @@ public class GeneralWrapperConfig {
   }
 
   /**
+   * Provides the option whether the wrapper should reindex the data on startup.
+   * @return the option whether the wrapper should reindex the data on startup.
+   */
+  public boolean getForceReindex() {
+    return data.forceReindex;
+  }
+
+  /**
    * Provides the datasource description.
    * @return The datasource description.
    */
@@ -124,6 +132,12 @@ public class GeneralWrapperConfig {
     private String description;
 
     /**
+     * The option whether the wrapper should reindex the data on startup.
+     */
+    private boolean forceReindex;
+
+
+    /**
      * The list of supported services.
      */
     private List<Service> services;
@@ -163,6 +177,7 @@ public class GeneralWrapperConfig {
      * Creates a default GeneralWrapperConfigData object.
      */
     public GeneralWrapperConfigData() {
+      forceReindex = false;
       indexDirectory = null; // null hints, that no index directory should be used
       namespaces = new HashMap<>();
       outputFormat = null;
@@ -177,6 +192,8 @@ public class GeneralWrapperConfig {
     public GeneralWrapperConfigData(GeneralWrapperConfigData data) {
 
       description = data.description.trim();
+
+      forceReindex = data.forceReindex;
 
       services = Lists.newLinkedList(data.services);
 
@@ -203,6 +220,23 @@ public class GeneralWrapperConfig {
      */
     public GeneralWrapperConfig build() {
       return new GeneralWrapperConfig(this);
+    }
+
+
+    /**
+     * Provides the option whether the wrapper should reindex the data on startup.
+     * @return The option whether the wrapper should reindex the data on startup.
+     */
+    public boolean getForceReindex() {
+      return forceReindex;
+    }
+
+    /**
+     * Sets the option whether the wrapper should reindex the data on startup.
+     * @param forceReindex The option whether the wrapper should reindex the data on startup.
+     */
+    public void setForceReindex(boolean forceReindex) {
+       this.forceReindex = forceReindex;
     }
 
     /**

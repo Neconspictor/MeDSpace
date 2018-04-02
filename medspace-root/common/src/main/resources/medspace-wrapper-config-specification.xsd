@@ -23,7 +23,8 @@
                 <!-->Elements that can occur any number of times and in any order<-->
                 <xsd:element name="Description" type="xsd:string" minOccurs="1" maxOccurs="1"/>
                 <xsd:element name="Services" type="wrapper:Services" minOccurs="0" maxOccurs="1"/>
-                <xsd:element name="IndexDirectoy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                <xsd:element name="IndexDirectoy" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="ForceReindex" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
                 <xsd:element name="Namespaces" type="wrapper:Namespaces" minOccurs="0" maxOccurs="1"/>
                 <xsd:element name="OutputFormat" type="xsd:string" minOccurs="1" maxOccurs="1"/>
                 <xsd:element name="RegisterUrl" type="wrapper:URL" minOccurs="1" maxOccurs="1"/>
@@ -42,7 +43,7 @@
 
     <xsd:complexType name="Services">
         <xsd:choice maxOccurs="unbounded">
-            <xsd:element name="Service" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="Service" type="wrapper:Service" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:choice>
     </xsd:complexType>
 
@@ -64,25 +65,14 @@
     </xsd:complexType>
 	
 	<xsd:simpleType name="URL"> 
-  <xsd:restriction base="xsd:string">
- 
-  </xsd:restriction>
-</xsd:simpleType> 	
-
-
-<xsd:annotation>
-    <xsd:appinfo>
-			
-		<jxb:bindings node="//xsd:simpleType[@name='URL']">
-			<jxb:javaType name="java.net.URL" 
-				parseMethod="de.unipassau.medspace.common.util.URLConverter.parseURL" 
-				printMethod="de.unipassau.medspace.common.util.URLConverter.printURL" />
-		</jxb:bindings>
-		
-		<jxb:bindings node="//xsd:complexType[@name='Namespace']">
-		</jxb:bindings>
-    </xsd:appinfo>
-</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="Service"> 
+		<xsd:restriction base="xsd:string">
+		</xsd:restriction>
+	</xsd:simpleType>
 
 	
 </xsd:schema>

@@ -1,6 +1,5 @@
 package de.unipassau.medspace.common.config.general_wrapper;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,11 +7,10 @@ import java.util.Map;
 /**
  * An Xml Adapter for XML namespaces property.
  */
-public class NamespacesAdapter extends XmlAdapter<Namespaces,
-    Map<String, de.unipassau.medspace.common.rdf.Namespace>>
+public class NamespacesAdapter
 {
-  @Override
-  public Map<String, de.unipassau.medspace.common.rdf.Namespace> unmarshal(Namespaces v) throws Exception {
+
+  public Map<String, de.unipassau.medspace.common.rdf.Namespace> unmarshal(Namespaces v)  {
     Map<String, de.unipassau.medspace.common.rdf.Namespace> result = new HashMap<>();
     for (Namespace namespace : v.getNamespace()) {
       result.put(namespace.getPrefix(), convert(namespace));
@@ -20,8 +18,8 @@ public class NamespacesAdapter extends XmlAdapter<Namespaces,
     return result;
   }
 
-  @Override
-  public Namespaces marshal(Map<String, de.unipassau.medspace.common.rdf.Namespace> v) throws Exception {
+
+  public Namespaces marshal(Map<String, de.unipassau.medspace.common.rdf.Namespace> v) {
     Namespaces result  = new Namespaces();
     List<Namespace> list = result.getNamespace();
 
@@ -39,7 +37,7 @@ public class NamespacesAdapter extends XmlAdapter<Namespaces,
    * @return The converted RDF namespace.
    * @throws Exception If an error occurs.
    */
-  private de.unipassau.medspace.common.rdf.Namespace convert(Namespace v) throws Exception {
+  private de.unipassau.medspace.common.rdf.Namespace convert(Namespace v)  {
     return new de.unipassau.medspace.common.rdf.Namespace(v.getPrefix(), v.getNamespace());
   }
 
@@ -49,7 +47,7 @@ public class NamespacesAdapter extends XmlAdapter<Namespaces,
    * @return The converted XML namespace property.
    * @throws Exception If an error occurs.
    */
-  private Namespace convert(de.unipassau.medspace.common.rdf.Namespace v) throws Exception {
+  private Namespace convert(de.unipassau.medspace.common.rdf.Namespace v)  {
 
     Namespace result = new Namespace();
     result.setPrefix(v.getPrefix());

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+  version="2.1">
+
+    <jaxb:bindings schemaLocation="../src/main/resources/medspace-wrapper-config-specification.xsd">
+		
+		<jaxb:bindings node="//xs:simpleType[@name='URL']">
+			<xjc:javaType name="java.net.URL" 
+				adapter="de.unipassau.medspace.common.config.general_wrapper.RegisterUrlAdapter"/>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:simpleType[@name='Service']">
+			<xjc:javaType name="de.unipassau.medspace.common.register.Service" 
+				adapter="de.unipassau.medspace.common.config.general_wrapper.ServiceAdapter"/>
+		</jaxb:bindings>
+		
+		
+		<jaxb:bindings node="//xs:complexType[@name='Namespace']">
+		</jaxb:bindings>
+	
+    </jaxb:bindings>
+</jaxb:bindings>

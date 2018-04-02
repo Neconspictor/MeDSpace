@@ -126,6 +126,10 @@ public class WrapperProvider implements Provider<Wrapper> {
     wrapper.getIndex().open();
     boolean shouldReindex = !wrapper.existsIndex() && wrapper.isIndexUsed();
 
+    if (generalWrapperConfig.getForceReindex()) {
+      shouldReindex = true;
+    }
+
     if (shouldReindex) {
       log.info("Indexing data...");
       wrapper.reindexData();
