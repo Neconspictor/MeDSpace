@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.medspace.com/D2Rmap"
+	xmlns:d2r="http://www.medspace.com/D2Rmap"
+	elementFormDefault="qualified">
+
+	<!-->
+		The root element for the D2R mapping.
+		It defines the structure of a valid D2R config file.
+	<-->
+	<xsd:element name="Root">
+		<xsd:complexType>
+			<xsd:sequence>
+				<!-->Elements that have to stated exact once, but have to occur<-->
+				<xsd:element name="DBConnection" type="d2r:DBConnection" minOccurs="1" maxOccurs="1"/>
+				<!-->Elements that can occur any number of times <-->
+				<xsd:element name="Namespace" type="d2r:Namespace" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="ClassMap" type="d2r:ClassMap" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<!-->
+		DBAuthentification is used to authenticate in the database with username and password
+	<-->
+	<xsd:complexType name="DBAuthentification">
+		<xsd:attribute name="username" type="xsd:string" use="required"/>
+		<xsd:attribute name="password" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+
+	<!-->
+		DBConnection holds information for connecting to the database.
+
+		@attribute jdbcDriver:		The jdbc driver to use for opening a jdbc connection to the database.
+
+		@attribute jdbcDSN:			The jdbc Data Source Name, i.d. the URI to address the database.
+
+		@attribute maxConnections:	The maximum size of the connection pool, the wrapper should use. If not specified
+									a default value is used.
+	<-->
+	<xsd:complexType name="DBConnection">
+		<xsd:sequence>
+			<xsd:element name="DBAuthentification" type="d2r:DBAuthentification" minOccurs="0" maxOccurs="1" />
+			<!-->datasource properties are optional and can occur any number of times<-->
+			<xsd:element name="DataSourceProperty" type="d2r:DataSourceProperty" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="jdbcDriver" type="xsd:string" use="required"/>
+		<xsd:attribute name="jdbcDSN" type="xsd:string" use="required"/>
+		<xsd:attribute name="poolSize" type="xsd:int" use="optional"/>
+	</xsd:complexType>
+
+
+	<!-->
+		A type for defining RDF namespaces
+
+		@attribute prefix:		The prefix to use in the rdf triples.
+
+		@attribute namespace:	The namespace represented by the prefix.
+	<-->
+	<xsd:complexType name="Namespace">
+		<xsd:attribute name="prefix" type="xsd:string" use="required"/>
+		<xsd:attribute name="namespace" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+
+	<!-->A ClassMap maps a View of SQL table data to rdf triples
+			@attribute type: 			  the type (rdf:type) for the mapped data.
+
+			@attribute sql:  			  A sql query, that specifies the sql data, that should be mapped.
+
+			@attribute baseURI: 		  a prefix used to generate the URI of the mapped sql data.
+
+			@attribute resourceIdColumns: Specifies the columns of the sql query, which are used along with the base URI
+										  	for generating the URI of rdf triples.
+
+			@attribute id:				  Assigns a unique id to the ClassMap. The is can be used by other ClassMaps
+											to refer this ClassMap.
+	<-->
+	<xsd:complexType name="ClassMap">
+		<xsd:sequence>
+			<xsd:choice maxOccurs="unbounded">
+				<xsd:element name="DataTypePropertyBridge" type="d2r:DataTypePropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="ObjectPropertyBridge" type="d2r:ObjectPropertyBridge" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			<xsd:element name="MetaData" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="sql" type="xsd:string" use="required"/>
+		<xsd:attribute name="resourceIdPattern" type="xsd:string" use="required"/>
+		<xsd:attribute name="id" type="xsd:string" use="required"/>
+		<xsd:attribute name="type" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+	
+	
+	<xsd:complexType abstract="true" name="Bridge">
+		<xsd:attribute name="property" type="xsd:string" use="required"/>
+		<xsd:attribute name="pattern" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
+
+	<!-->
+		A DataTypePropertyBridge definepropertyQNameerty for a rdf resource. The value of propertyQNameerty
+		is hereby a literal value.
+
+		@attribpropertyQNameerty: The uri of the propertyQNameerty
+
+		@attribute pattern: Defines the value of propertyQNameerty. It is possible to use the content of the sql tuple: The
+							content of a column of a SQL query (defined by the ClassMap propertyQNameerty bridge belongs to)
+							can be accessed by beginning with '@@' than writing the column in the format t.c (where t
+							is the table name and c is the column name) and than ending the expression with '@@'.
+
+							Example:
+							If 'patient' is a table and 'name' is a column of 'patient', than the content of 'name' can
+							be accessed by '@@patient.name@@'
+
+							NOTE: Aliases can be used. If m is an alias for maritalstatus,  @@m.name@@ is the same
+							as maritalstatus.name
+
+		@attribute dataType: Specifies a rdf datatype for propertyQNameerty.
+
+		@attribute lang: Specifies a language tag for propertyQNameerty.
+	<-->
+	<xsd:complexType name="DataTypePropertyBridge">
+		<xsd:complexContent>
+            <xsd:extension base="d2r:Bridge">
+				<xsd:attribute name="dataType" type="xsd:string" use="optional"/>
+				<xsd:attribute name="lang" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+	</xsd:complexType>
+
+	<!-->
+		A ObjectPropertyBridge definepropertyQNameerty for a rdf resource. The value of propertyQNameerty
+		is hereby another rdf resource. The referenced rdf resource has to be defined by another ClassMap
+
+		@attribpropertyQNameerty: The uri of the propertyQNameerty.
+
+		@attribute referredClass:   The id of the ClassMap the value of propertyQNameerty is referring.
+
+		@attribute referredColumns: The columns in the sql query (from the ClassMap tpropertyQNameerty belongs to and not
+									the referred ClassMap), that define the referred rdf resource. The columns should
+									match the attribute "resourceIdColumns" of the referred ClassMap in order ensure to
+									produce valid rdf resource references. This is important, as there is no automatic
+									validation. The User is responsible for specifying the right columns in the right
+									order.
+	<-->
+	<xsd:complexType name="ObjectPropertyBridge">
+		<xsd:complexContent>
+            <xsd:extension base="d2r:Bridge">
+				<xsd:attribute name="referredClass" type="xsd:string" use="optional"/>
+				<xsd:attribute name="referredColumns" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+	</xsd:complexType>
+
+	<!-->
+		DescribepropertyQNameerty, that is send to the datasource while establishing a connection to it.
+
+		@attribute name:  The name of propertyQNameerty.
+
+		@attribute value: The value of propertyQNameerty.
+	<-->
+	<xsd:complexType name="DataSourceProperty">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+</xsd:schema> 
