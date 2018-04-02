@@ -39,15 +39,15 @@ EclipseKeys.withJavadoc := true
 
 lazy val sql_wrapper = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin) //, LauncherJarPlugin
-  .dependsOn(commons)
-  .dependsOn(commons_network)
-  .dependsOn(commons_play)
+  .dependsOn(common)
+  .dependsOn(common_network)
+  .dependsOn(common_play)
   .dependsOn(d2rmap)
 
-lazy val commons = RootProject(file("../commons"))
-lazy val commons_network = RootProject(file("../commons_network"))
-lazy val commons_play = RootProject(file("../commons_play"))
-lazy val d2rmap = RootProject(file("../D2Rmap"))
+lazy val common = RootProject(file("../common"))
+lazy val common_network = RootProject(file("../common_network"))
+lazy val common_play = RootProject(file("../common_play"))
+lazy val d2rmap = RootProject(file("../d2rmap"))
 
 libraryDependencies += guice
 

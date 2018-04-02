@@ -41,6 +41,6 @@ EclipseKeys.withJavadoc := true
 
 
 lazy val d2rmap = (project in file("."))
-  .dependsOn(commons)
+  .dependsOn(common)
 
-lazy val commons = RootProject(file("../commons"))
+lazy val commons = RootProject(file("../common"))

@@ -1,6 +1,6 @@
 import sbt.Keys.libraryDependencies
 // Project name (artifact name in Maven)
-name := "medspace_common_play"
+name := "common_play"
 
 // orgnization name (e.g., the package name of the project)
 organization := "de.unipassau.medspace"
@@ -42,11 +42,11 @@ EclipseKeys.withJavadoc := true
 
 
 lazy val common_play = (project in file("."))
-	.dependsOn(commons)
-	.dependsOn(commons_network)
+	.dependsOn(common)
+	.dependsOn(common_network)
 
-lazy val commons = RootProject(file("../commons"))
-lazy val commons_network = RootProject(file("../commons_network"))
+lazy val common = RootProject(file("../common"))
+lazy val common_network = RootProject(file("../common_network"))
 
 // library dependencies. (orginization name) % (project name) % (version)
 

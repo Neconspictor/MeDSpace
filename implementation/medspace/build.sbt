@@ -49,13 +49,13 @@ PlayKeys.devSettings := Seq("play.server.http.port" -> "9500", "play.server.http
 
 lazy val medspace = (project in file("."))
   .enablePlugins(PlayJava, LauncherJarPlugin)
-  .dependsOn(commons)
-  .dependsOn(commons_network)
-  .dependsOn(commons_play)
+  .dependsOn(common)
+  .dependsOn(common_network)
+  .dependsOn(common_play)
   
-lazy val commons = RootProject(file("../commons"))
-lazy val commons_network = RootProject(file("../commons_network"))
-lazy val commons_play = RootProject(file("../commons_play"))
+lazy val common = RootProject(file("../common"))
+lazy val common_network = RootProject(file("../common_network"))
+lazy val common_play = RootProject(file("../common_play"))
 
 
 // library dependencies
