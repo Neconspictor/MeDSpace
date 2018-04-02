@@ -14,10 +14,13 @@
 
 	<!-->
 		Specifies where the wrapper should store indexed data
-		<wrapper:Index directory="./_work/medspace/index"/>
 	<-->
 	<wrapper:IndexDirectoy>[project-folder]/_work/medspace/index</wrapper:IndexDirectoy>
-	
+
+	<!--
+	  Specifies whether the wrapper should always reindex on startup. If set to false, the wrapper
+	  doesn't reindex the data on startup, if the index already exists.
+	-->
 	<wrapper:ForceReindex>true</wrapper:ForceReindex>
 
 	<wrapper:Namespaces>
@@ -34,13 +37,29 @@
 
 	<!-->
     	Which rdf serialization language should be used?
+
+    	Currently the following formats are supported:
+    	N-Triples,
+		RDF/XML,
+		Turtle,
+		N3,
+		RDF/JSON,
+		TriG,
+		N-Quads,
+		BinaryRDF,
+		TriX,
+		JSON-LD
+
     	For more information about the supported rdf formats see:
-    	https://jena.apache.org/documentation/io/streaming-io.html#rdfformat-and-lang
+    	http://docs.rdf4j.org/javadoc/2.2/org/eclipse/rdf4j/rio/RDFFormat.html
 	<-->
 	<wrapper:OutputFormat>TURTLE</wrapper:OutputFormat>
 
 	<wrapper:RegisterUrl>http://localhost:9500/register</wrapper:RegisterUrl>
 
+	<!--
+	  Should the wrapper register itself on startup?
+	-->
 	<wrapper:ConnectToRegister>true</wrapper:ConnectToRegister>
 
 </wrapper:Config>
