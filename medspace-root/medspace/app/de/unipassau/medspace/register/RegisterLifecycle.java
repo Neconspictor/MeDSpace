@@ -9,6 +9,7 @@ import de.unipassau.medspace.common.play.ShutdownService;
 import de.unipassau.medspace.common.register.Datasource;
 
 import de.unipassau.medspace.common.register.DatasourceState;
+import de.unipassau.medspace.common.util.FileUtil;
 import de.unipassau.medspace.global.config.mapping.ConfigMapping;
 import de.unipassau.medspace.global.config.mapping.RegisterMapping;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class RegisterLifecycle {
     });
   }
 
-  private void init(ConfigMapping globalConfig) throws IllegalArgumentException {
+  private void init(ConfigMapping globalConfig) throws IllegalArgumentException, IOException {
     log.info("Load saved datasources to register...");
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addKeyDeserializer(Datasource.class, new DatasourceKeyDeserializer());
@@ -77,6 +78,18 @@ public class RegisterLifecycle {
     Json.mapper().registerModule(simpleModule);
 
     RegisterMapping registerMapping = globalConfig.getRegister();
+
+    //ensure that the datasource folder structure exists since Fileoutputstream otherwise throws an exception
+    File saveFolder = new File(datasourceSaveFolder);
+    if (!saveFolder.exists()) {
+      FileUtil.createDirectory(datasourceSaveFolder);
+    }
+
+    // ensure that the datasource save folder exists
+    if (!saveFolder.exists())
+      throw new IOException("Couldn't create datasource save folder");
+
+
 
 
     Map<Datasource, DatasourceState> datasources = null;

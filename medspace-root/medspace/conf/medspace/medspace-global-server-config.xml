@@ -1,15 +1,48 @@
 <?xml version="1.0"?>
 <global:Config xmlns:global="http://www.medspace.com/global/global-server-config-specification">
 	<global:DataCollector>
+
+		<!--
+			The base URL to the Data Collector.
+		   The macro [server-address] is the server address of the running application.
+		-->
 		<global:BaseURL>[server-address]/data-collector</global:BaseURL>
+
+		<!--
+		  The folder for storing query results on disk
+
+		  The macro [project-folder] is the project folder (where the folders conf, public, bin, etc. are located.)
+		-->
 		<global:NativeStoreDirectory>[project-folder]/_work/data_collector/</global:NativeStoreDirectory>
 	</global:DataCollector>
 	<global:QueryExecutor>
+
+		<!--
+		  The size of the query cache
+		-->
 		<global:QueryCacheSize>100</global:QueryCacheSize>
 	</global:QueryExecutor>
 	<global:Register>
+
+		<!--
+		    The base URL to the register
+		   The macro [server-address] is the server address of the running application.
+		 -->
 		<global:BaseURL>[server-address]/register</global:BaseURL>
+
+		<!--
+		  A Folder for storing regsitered datasources when the application shuts down.
+		  This save file can be used to auto-register datasources on startup.
+		-->
         <global:DatasourceSaveFolder>[project-folder]/_work/register/</global:DatasourceSaveFolder>
+
+		<!-- Specifies whether the register should load registered datasources from a save file -->
+		<global:LoadDatasourcesFromFile>true</global:LoadDatasourcesFromFile>
+
+		<!--
+		 The maximal allowed IO errors for a registered datasources.
+		 If the limit exceeds, the datasource will automcatically be deregistered.
+		-->
 		<global:IO-Error-Limit>5</global:IO-Error-Limit>
 	</global:Register>
 </global:Config>
