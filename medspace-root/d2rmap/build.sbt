@@ -40,6 +40,10 @@ EclipseKeys.withSource := true
 EclipseKeys.withJavadoc := true
 
 
+// add resource folder
+unmanagedResourceDirectories in Compile += baseDirectory.value / "src/main/resources"
+
+
 lazy val d2rmap = (project in file("."))
   .dependsOn(common)
 
