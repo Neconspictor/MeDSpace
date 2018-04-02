@@ -25,47 +25,6 @@
 // resources
 resources/
 
-
-//D2Rmap build and distribution files
-implementation/d2rmap/.idea/*
-implementation/d2rmap/_work/*
-implementation/d2rmap/target/*
-implementation/d2rmap/project/*/*
-
-// sqlwrapper build
-implementation/sql_wrapper/target/*
-implementation/sql_wrapper/logs/*
-implementation/sql_wrapper/.idea/*
-implementation/sql_wrapper/project/*/*
-implementation/sql_wrapper/_work/*
-
-// register build
-implementation/register/target/*
-implementation/register/logs/*
-implementation/register/.idea/*
-implementation/register/project/*/*
-implementation/register/_work/*
-implementation/register/datasources.json
-
-// commons build
-implementation/common/target/*
-implementation/common/logs/*
-implementation/common/.idea/*
-implementation/common/project/*/*
-
-
-// commons_network build
-implementation/common_network/target/*
-implementation/common_network/logs/*
-implementation/common_network/.idea/*
-implementation/common_network/project/*/*
-
-// commons_play build
-implementation/common_play/target/*
-implementation/common_play/logs/*
-implementation/common_play/.idea/*
-implementation/common_play/project/*/*
-
 //thesis
 thesis/latex source/rootFile.pdf
 thesis/sqlwrapper_doc/MeDSpace_D2RMap_Language_Specification.pdf
