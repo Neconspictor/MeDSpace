@@ -4,7 +4,7 @@
     version="2.1">
 	
 	
-	<jxb:bindings schemaLocation="../../commons/src/main/resources/medspace-rdf-mapping-specification.xsd">
+	<jxb:bindings schemaLocation="../../common/src/main/resources/medspace-rdf-mapping-specification.xsd">
 		<jxb:bindings node="//xsd:complexType[@name='Class']">
 			<jxb:class ref="de.unipassau.medspace.common.rdf.mapping.ClassMapping">
 			</jxb:class>
