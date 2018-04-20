@@ -44,9 +44,9 @@ A MeDSpace D2R Map is a well-formed XML document. It's structure is defined by t
 	\textbf{http://www.medspace.com/D2Rmap}
 \end{center}
 
-\section{Root Element: Map}
+\section{Root Element: Root}
 \textbf{Description:} \newline
-Root element of the D2R-Map
+Root element of the d2r mapping.
 
 \textbf{Attributes:} \newline
 \BeginAttribute[xmlns, \emph{required}]
@@ -57,12 +57,6 @@ MeDSpace D2R namespace declaration.
 \BeginAttribute[DBConnection, \emph{required}]
 Has to occur has the first element and it may occur only once. 
 \EndAttribute
-\BeginAttribute[OutputFormat, \emph{required}]
-Has to occur after the DBConnection element and it may occur only once. 
-\EndAttribute
-\BeginAttribute[Index, \emph{optional}]
-It may occur only once and has to be stated after the OutputFormat element. 
-\EndAttribute
 \BeginAttribute[Namespace, \emph{optional}]
 Can occur any number of times
 \EndAttribute
@@ -71,15 +65,13 @@ Can occur any number of times
 \EndAttribute
 
 \begin{ExampleBox}
-	<d2r:Map xmlns:d2r="http://www.medspace.com/D2Rmap">
+	<d2r:Root xmlns:d2r="http://www.medspace.com/D2Rmap">
 		\begin{indention}{1cm}
 		\XMLComment{DBConnection element is required} \\		
-		\XMLComment{OutputFormat element is required} \\		
-		\XMLComment{The Index element is optional}\\
 		\XMLComment{Than follows an optional list of namespaces and class maps in any order}\\
 		
 		\end{indention}
-	</d2r:Map>
+	</d2r:Root>
 \end{ExampleBox}
 
 
@@ -96,7 +88,7 @@ The jdbc driver to use for opening a jdbc connection to the database.
 \BeginAttribute[jdbcDSN, \emph{required}]
 The jdbc Data Source Name, i.d. the URI to address the database.
 \EndAttribute
-\BeginAttribute[maxConnections, \emph{optional}]
+\BeginAttribute[poolSize, \emph{optional}]
 The maximum size of the connection pool, the wrapper should use. If not specified a default value is used.
 \EndAttribute
 
@@ -106,7 +98,7 @@ If it occurrs, it has to be stated has the first sub element.
 Can only occur once.
 \EndAttribute
 \BeginAttribute[DataSourceProperty, \emph{optional}]
-Can occur in any number of times.
+A property for the datasource. Can occur in any number of times.
 \EndAttribute
 
 \begin{ExampleBox}
@@ -114,7 +106,7 @@ Can occur in any number of times.
 	\begin{indention}{1cm}
 		jdbcDriver="com.mysql.jdbc.Driver"\\
 		jdbcDSN="jdbc:mysql://localhost:3306/medspace?useSSL=false"\\
-		maxConnections=10
+		poolSize=10
 	\end{indention}
 	>
 		\begin{indention}{1cm}
@@ -159,28 +151,6 @@ The value of the property.
 
 \begin{ExampleBox}
 	<d2r:DataSourceProperty name="cacheResultSetMetadata" value="true"/>
-\end{ExampleBox}
-
-
-\subsection{OutputFormat}
-\textbf{Description:} \newline
-Specifies the rdf language, the exported data should be written in. 
-
-\begin{ExampleBox}
-	<d2r:OutputFormat>NTRIPLES</d2r:OutputFormat>
-\end{ExampleBox}
-
-\subsection{Index}
-\textbf{Description:} \newline
-Specifies the directory the wrapper should store indexed sql data.
-
-\textbf{Attributes:} \newline
-\BeginAttribute[directory, \emph{required}]
-The directory the wrapper should store the index
-\EndAttribute
-
-\begin{ExampleBox}
-	<d2r:Index directory="\_work/medspace/index"/>
 \end{ExampleBox}
 
 
@@ -233,7 +203,9 @@ Defines a new datatype property bridge. Can occur in any number of times.
 \BeginAttribute[ObjectPropertyBridge, \emph{optional}]
 Defines a new object property bridge. Can occur in any number of times.
 \EndAttribute
-
+\BeginAttribute[MetaData, \emph{optional}]
+Adds searchable meta data tags. Tags have to be separated by spaces.
+\EndAttribute
 \begin{ExampleBox}
 	<d2r:ClassMap 
 	\begin{indention}{1cm}
@@ -248,7 +220,8 @@ Defines a new object property bridge. Can occur in any number of times.
 
 	\begin{indention}{1cm}
 		\XMLComment{Optional list of DataTypePropertieBridge instances}\\
-		\XMLComment{Optional list of ObjectPropertyBridge instances}
+		\XMLComment{Optional list of ObjectPropertyBridge instances}\\
+		\XMLComment{Optional list of MetaData instances}
 	\end{indention}	
 	
 	</d2r:ClassMap>
@@ -339,4 +312,15 @@ This attribute will be ignored, if the
 		referredColumns="patient.maritalstatus"
 	\end{indention}
 	/>
+\end{ExampleBox}
+
+
+\subsection{MetaData}
+\textbf{Description:} \newline
+MetaData is a searchable meta data tag. It is possible to state several tags. Each tag is thereby
+separated by a space.
+
+
+\begin{ExampleBox}
+	<d2r:MetaData>tag1 tag2</d2r:MetaData> 
 \end{ExampleBox}
